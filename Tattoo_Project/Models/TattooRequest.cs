@@ -12,6 +12,8 @@
         public int ClientId { get; set; }
         public Client Client { get; set; } = null!;
         public int TattooArtistId { get; set; }
+        public Consultation? Consultation { get; set; }
+        public ICollection<TattooSession> TattooSessions { get; set; } = new List<TattooSession>();
         public TattooArtist TattooArtist { get; set; } = null!;
         public ICollection<TattooReferenceImage> Images { get; set; } = new List<TattooReferenceImage>();
     }
