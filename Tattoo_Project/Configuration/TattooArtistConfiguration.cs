@@ -40,6 +40,9 @@ namespace Tattoo_Project.Configuration
                 .WithOne(x => x.TattooArtist)
                 .HasForeignKey(x => x.TattooArtistId);
 
+            builder.HasMany(x => x.Requirements)
+                 .WithOne(x => x.TattooArtist)
+                 .HasForeignKey(x => x.TattooArtistId);
         }
     }
 }

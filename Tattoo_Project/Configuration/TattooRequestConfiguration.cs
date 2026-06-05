@@ -18,9 +18,6 @@ namespace Tattoo_Project.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(x => x.EstimatedPrice)
-                .HasColumnType("decimal(18,2)");
-
             builder.HasMany(x => x.Images)
                 .WithOne(x => x.TattooRequest)
                 .HasForeignKey(x => x.TattooRequestId);
@@ -28,6 +25,11 @@ namespace Tattoo_Project.Configuration
             builder.HasOne(x => x.Consultation)
                 .WithOne(x => x.TattooRequest)
                 .HasForeignKey<Consultation>(x => x.TattooRequestId);
+
+            builder.HasOne(x => x.ArtistResponse)
+                .WithOne(x => x.TattooRequest)
+                .HasForeignKey<ArtistResponse>(x => x.TattooRequestId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

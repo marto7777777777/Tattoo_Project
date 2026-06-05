@@ -22,6 +22,10 @@ namespace Tattoo_Project.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(x => x.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(50);
+
             builder.HasMany(x => x.TattooRequests)
                 .WithOne(x => x.Client)
                 .HasForeignKey(x => x.ClientId)

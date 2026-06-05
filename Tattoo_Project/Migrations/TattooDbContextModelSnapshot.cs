@@ -22,6 +22,62 @@ namespace Tattoo_Project.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TattooArtistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooArtistId");
+
+                    b.ToTable("ArtistRequirement");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EstimatedHours")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("EstimatedPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ResponseMessage")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("TattooRequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooRequestId")
+                        .IsUnique();
+
+                    b.ToTable("ArtistResponse");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -45,6 +101,10 @@ namespace Tattoo_Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Clients");
@@ -61,6 +121,12 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsOnline")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -73,6 +139,29 @@ namespace Tattoo_Project.Migrations
                         .IsUnique();
 
                     b.ToTable("Consultations");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.PortfolioImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("TattooArtistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooArtistId");
+
+                    b.ToTable("PortfolioImage");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Schedule", b =>
@@ -110,6 +199,9 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal?>("DepositAmount")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -125,10 +217,23 @@ namespace Tattoo_Project.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("OffersOnlineConsultation")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("RequiresDeposit")
+                        .HasColumnType("bit");
 
                     b.Property<string>("StudioAddress")
                         .IsRequired()
@@ -187,16 +292,10 @@ namespace Tattoo_Project.Migrations
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
 
-                    b.Property<decimal?>("EstimatedPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Placement")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("RequiredHours")
-                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -221,8 +320,14 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("DurationHours")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("FinalPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
@@ -237,6 +342,28 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("TattooSessions");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistRequirement", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
+                        .WithMany("Requirements")
+                        .HasForeignKey("TattooArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TattooArtist");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistResponse", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooRequest", "TattooRequest")
+                        .WithOne("ArtistResponse")
+                        .HasForeignKey("Tattoo_Project.Models.ArtistResponse", "TattooRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TattooRequest");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Consultation", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.TattooRequest", "TattooRequest")
@@ -246,6 +373,17 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
 
                     b.Navigation("TattooRequest");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.PortfolioImage", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
+                        .WithMany("PortfolioImages")
+                        .HasForeignKey("TattooArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TattooArtist");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Schedule", b =>
@@ -307,6 +445,10 @@ namespace Tattoo_Project.Migrations
 
             modelBuilder.Entity("Tattoo_Project.Models.TattooArtist", b =>
                 {
+                    b.Navigation("PortfolioImages");
+
+                    b.Navigation("Requirements");
+
                     b.Navigation("Schedules");
 
                     b.Navigation("TattooRequests");
@@ -314,6 +456,9 @@ namespace Tattoo_Project.Migrations
 
             modelBuilder.Entity("Tattoo_Project.Models.TattooRequest", b =>
                 {
+                    b.Navigation("ArtistResponse")
+                        .IsRequired();
+
                     b.Navigation("Consultation");
 
                     b.Navigation("Images");
