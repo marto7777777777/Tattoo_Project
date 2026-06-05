@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using Tattoo_Project.Data;
+using Tattoo_Project.Services;
 namespace Tattoo_Project
 {
     public class Program
@@ -15,6 +17,8 @@ namespace Tattoo_Project
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
+
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -25,6 +29,7 @@ namespace Tattoo_Project
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();
