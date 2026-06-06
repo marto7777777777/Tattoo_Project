@@ -10,7 +10,7 @@ namespace Tattoo_Project.Controllers
     public class TattooArtistController(ITattooArtistService service) : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<TattooArtistDto>>> GetArtists()
+        public async Task<ActionResult<List<GetTattooArtistDto>>> GetArtists()
         {
             var tattooArtists = await service.GetAllArtistsAsync();
             if (tattooArtists is null || !tattooArtists.Any())
@@ -21,7 +21,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [HttpGet("{Id}")]
-        public async Task<ActionResult<TattooArtistDto>> GetArtistByIdAsync(int Id)
+        public async Task<ActionResult<GetTattooArtistDto>> GetArtistByIdAsync(int Id)
         {
             var tattooArtist = await service.GetTattooArtistByIdAsync(Id);
             if (tattooArtist is null)
@@ -30,6 +30,26 @@ namespace Tattoo_Project.Controllers
             }
             return Ok(tattooArtist);
         }
-        
+
+        [HttpPost]
+        public async Task<IActionResult> CreateArtist(CreateTattooArtistDto dto)
+        {
+            var id = await service.CreateArtist(dto);
+            return Ok(new { id });
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteArtist(int id)
+        {
+            var isDeleted = await service.DeleteArtist(id);
+            return Ok(isDeleted);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateArtist(int id, UpdateArtistDto dto)
+        {
+            var isUpdated = await service.UpdateArtist(id, dto);
+            return Ok(isUpdated);
+        }
     }
 }
