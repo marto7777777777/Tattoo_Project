@@ -19,5 +19,46 @@ namespace Tattoo_Project.Controllers
             }
             return Ok(clients);
         }
+
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<GetClientDto>> GetClientById(int id)
+        {
+            var client = await service.GetClientsByIdAsync(id);
+            if (client == null)
+            {
+                return NotFound($"Client with id {id} doesn't exist!");
+            }
+            return Ok(client);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteClientAsync(int id)
+        {
+            var isDeleted = await service.DeleteClient(id);
+            if (isDeleted == false)
+            {
+                return NotFound($"Client with id {id} already doesn't exist!");
+            }
+            return Ok(isDeleted);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateClientAsync(CreateClientDto dto)
+        {
+            var isCreated = await service.CreateClient(dto);
+            
+            return Ok(isCreated);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateClientAsync(int id, UpdateClientDto dto)
+        {
+            var isUpdated = await service.UpdateClient(id, dto);
+            if (isUpdated == false)
+            {
+                return NotFound($"Client with id {id} doesn't exist!");
+            }
+            return Ok(isUpdated);
+        }
     }
 }

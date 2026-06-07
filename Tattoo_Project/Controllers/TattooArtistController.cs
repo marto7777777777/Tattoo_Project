@@ -42,6 +42,10 @@ namespace Tattoo_Project.Controllers
         public async Task<IActionResult> DeleteArtist(int id)
         {
             var isDeleted = await service.DeleteArtist(id);
+            if (isDeleted == false)
+            {
+                return NotFound($"Artist with id {id} already doesn't exist!");
+            }
             return Ok(isDeleted);
         }
 

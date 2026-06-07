@@ -14,9 +14,9 @@ namespace Tattoo_Project.DTOs
 
         public string StudioAddress { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
-        public bool OffersOnlineConsultation { get; set; }
+        public bool OffersOnlineConsultation { get; set; } = false;
 
-        public bool RequiresDeposit { get; set; }
+        public bool RequiresDeposit { get; set; } = false;
 
         public decimal? DepositAmount { get; set; }
         public ICollection<TattooArtistRequirementsDto> Requirements { get; set; }

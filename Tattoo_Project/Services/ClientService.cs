@@ -3,19 +3,34 @@ using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs;
+using Tattoo_Project.Models;
 
 namespace Tattoo_Project.Services
 {
     public class ClientService(TattooDbContext context) : IClientService
     {
-        public async Task<bool> AddClient(AddClientDto dto)
+        public async Task<bool> CreateClient(CreateClientDto dto)
         {
-            throw new NotImplementedException();
+             context.Clients.Add(new Client
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                Email = dto.Email,
+                PhoneNumber = dto.PhoneNumber
+            });
+            await context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteClient(int id)
         {
-            throw new NotImplementedException();
+            var client = context.Clients.FirstOrDefault(x => x.Id == id);
+            if (client == null)
+            {
+                return false;
+            }
+            context.Remove(client);
+            return true;
         }
 
         public async Task<List<GetClientDto>> GetAllClientsAsync()
@@ -66,14 +81,71 @@ namespace Tattoo_Project.Services
             })
             .ToListAsync();
         
-        public async Task<ActionResult<GetClientDto>> GetClientsByIdAsync(int id)
+        public async Task<GetClientDto> GetClientsByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var client = context.Clients.FirstOrDefault(x => x.Id == id);
+            if (client == null)
+            {
+                return null;
+            }
+            var clientDto = new GetClientDto
+            {
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                Email = client.Email,
+                PhoneNumber = client.PhoneNumber,
+                ClientTattooRequestsDto = client.TattooRequests == null
+                ? null
+                : client.TattooRequests.Select(c => new ClientTattooRequestsDto
+                {
+                    Description = c.Description,
+                    Status = c.Status,
+                    CreatedOn = c.CreatedOn,
+                    Placement = c.Placement,
+                    Images = c.Images.Select(c => new TattooReferenceImageDto
+                    {
+                        ImageUrl = c.ImageUrl
+                    }).ToList(),
+                    TattooSessions = c.TattooSessions.Select(c => new TattooSessionDto
+                    {
+                        StartTime = c.StartTime,
+                        EndTime = c.EndTime,
+                        DurationHours = c.DurationHours,
+                        FinalPrice = c.FinalPrice
+                    }).ToList(),
+                    ArtistResponse = new ArtistResponseDto
+                    {
+                        EstimatedHours = c.ArtistResponse.EstimatedHours,
+                        CreatedOn = c.ArtistResponse.CreatedOn,
+                        EstimatedPrice = c.ArtistResponse.EstimatedPrice,
+                        ResponseMessage = c.ArtistResponse.ResponseMessage
+                    },
+                    Consultation = new ConsultationDto
+                    {
+                        StartTime = c.Consultation.StartTime,
+                        EndTime = c.Consultation.EndTime,
+                        IsOnline = c.Consultation.IsOnline,
+                        Notes = c.Consultation.Notes
+                    }
+                }).ToList()
+            };
+            return clientDto;
         }
 
         public async Task<bool> UpdateClient(int id, UpdateClientDto dto)
         {
-            throw new NotImplementedException();
+            var client = context.Clients.FirstOrDefault(c => c.Id == id);
+            if (client == null)
+            {
+                return false;
+            }
+            client.FirstName = dto.FirstName;
+            client.LastName = dto.LastName;
+            client.PhoneNumber = dto.PhoneNumber;
+            client.Email = dto.Email;
+
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }
