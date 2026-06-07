@@ -20,7 +20,7 @@ namespace Tattoo_Project.Controllers
             return Ok(clients);
         }
 
-        [HttpGet("{Id}")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<GetClientDto>> GetClientById(int id)
         {
             var client = await service.GetClientsByIdAsync(id);
@@ -31,7 +31,7 @@ namespace Tattoo_Project.Controllers
             return Ok(client);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClientAsync(int id)
         {
             var isDeleted = await service.DeleteClient(id);
@@ -50,7 +50,7 @@ namespace Tattoo_Project.Controllers
             return Ok(isCreated);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateClientAsync(int id, UpdateClientDto dto)
         {
             var isUpdated = await service.UpdateClient(id, dto);

@@ -34,7 +34,7 @@ namespace Tattoo_Project.Services
 
         public async Task<GetTattooArtistDto> GetTattooArtistByIdAsync(int Id)
         {
-            var artistFromData = context.TattooArtists.FirstOrDefault(i => i.Id == Id);
+            var artistFromData = await context.TattooArtists.FirstOrDefaultAsync(i => i.Id == Id);
             if (artistFromData is null)
             {
                 return null;
@@ -107,7 +107,7 @@ namespace Tattoo_Project.Services
 
         public async Task<bool> DeleteArtist(int id)
         {
-            var artist = context.TattooArtists.FirstOrDefault(x => x.Id == id);
+            var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.Id == id);
             if (artist is null)
             {
                 

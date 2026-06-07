@@ -24,12 +24,13 @@ namespace Tattoo_Project.Services
 
         public async Task<bool> DeleteClient(int id)
         {
-            var client = context.Clients.FirstOrDefault(x => x.Id == id);
+            var client = await context.Clients.FirstOrDefaultAsync(x => x.Id == id);
             if (client == null)
             {
                 return false;
             }
             context.Remove(client);
+            await context.SaveChangesAsync();
             return true;
         }
 
@@ -83,7 +84,7 @@ namespace Tattoo_Project.Services
         
         public async Task<GetClientDto> GetClientsByIdAsync(int id)
         {
-            var client = context.Clients.FirstOrDefault(x => x.Id == id);
+            var client = await context.Clients.FirstOrDefaultAsync(x => x.Id == id);
             if (client == null)
             {
                 return null;
@@ -134,7 +135,7 @@ namespace Tattoo_Project.Services
 
         public async Task<bool> UpdateClient(int id, UpdateClientDto dto)
         {
-            var client = context.Clients.FirstOrDefault(c => c.Id == id);
+            var client = await context.Clients.FirstOrDefaultAsync(c => c.Id == id);
             if (client == null)
             {
                 return false;
