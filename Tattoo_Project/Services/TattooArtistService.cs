@@ -12,7 +12,6 @@ namespace Tattoo_Project.Services
         public async Task<List<GetTattooArtistDto>> GetAllArtistsAsync()
         => await context.TattooArtists.Select(c => new GetTattooArtistDto
         {
-            Id = c.Id,
             FirstName = c.FirstName,
             LastName = c.LastName,
             DepositAmount = c.DepositAmount,
@@ -42,7 +41,6 @@ namespace Tattoo_Project.Services
             }
             var result = new GetTattooArtistDto
             {
-                Id = artistFromData.Id,
                 FirstName = artistFromData.FirstName,
                 LastName = artistFromData.LastName,
                 DepositAmount = artistFromData.DepositAmount,

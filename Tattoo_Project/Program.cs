@@ -17,6 +17,7 @@ namespace Tattoo_Project
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+            builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
