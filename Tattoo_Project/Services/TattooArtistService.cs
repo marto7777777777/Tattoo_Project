@@ -15,7 +15,8 @@ namespace Tattoo_Project.Services
     public class TattooArtistService(TattooDbContext context) : ITattooArtistService
     {
         public async Task<List<GetTattooArtistDto>> GetAllArtistsAsync()
-        => await context.TattooArtists.Select(c => new GetTattooArtistDto
+        => context.TattooArtists == null || !context.TattooArtists.Any()? null
+            :await context.TattooArtists.Select(c => new GetTattooArtistDto
         {
             FirstName = c.FirstName,
             LastName = c.LastName,

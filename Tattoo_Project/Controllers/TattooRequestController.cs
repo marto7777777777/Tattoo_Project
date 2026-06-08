@@ -23,7 +23,7 @@ namespace Tattoo_Project.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CreateTattooRequestDto>> GetTattooRequestById(int id)
         {
-            var tattooRequest = service.GetTattooRequestByIdAsync(id);
+            var tattooRequest = await service.GetTattooRequestByIdAsync(id);
             if (tattooRequest is null)
             {
                return NotFound($"Tattoo request with id {id} doesn't exist!");

@@ -21,6 +21,8 @@ namespace Tattoo_Project.Services
                 Status = x.Status,
                 CreatedOn = x.CreatedOn,
                 Placement = x.Placement,
+                ClientId = x.ClientId,
+                TattooArtistId = x.TattooArtistId,
                 ArtistResponse = x.ArtistResponse == null ? null
                 : new ArtistResponseDto
                 {
@@ -78,6 +80,8 @@ namespace Tattoo_Project.Services
                 Status = tattooRequest.Status,
                 CreatedOn = tattooRequest.CreatedOn,
                 Placement = tattooRequest.Placement,
+                ClientId = tattooRequest.ClientId,
+                TattooArtistId = tattooRequest.TattooArtistId,
                 ArtistResponse = tattooRequest.ArtistResponse == null ? null
                 : new ArtistResponseDto
                 {

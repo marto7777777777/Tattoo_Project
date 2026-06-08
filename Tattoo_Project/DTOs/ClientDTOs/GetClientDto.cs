@@ -12,6 +12,6 @@ namespace Tattoo_Project.DTOs.ClientDTOs
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
 
-        public List<TattooRequestDto> ClientTattooRequestsDto {  get; set; } = new List<TattooRequestDto>();
+        public List<TattooRequestDto>? ClientTattooRequestsDto {  get; set; } = new List<TattooRequestDto>();
     }
 }

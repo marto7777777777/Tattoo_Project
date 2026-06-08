@@ -26,7 +26,7 @@
         public ICollection<PortfolioImage> PortfolioImages { get; set; }
     = new List<PortfolioImage>();
 
-        public ICollection<TattooRequest> TattooRequests { get; set; }
+        public ICollection<TattooRequest>? TattooRequests { get; set; }
             = new List<TattooRequest>();
 
         public ICollection<Schedule> Schedules { get; set; } 

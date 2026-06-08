@@ -6,7 +6,7 @@ using Tattoo_Project.Services;
 namespace Tattoo_Project.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class TattooArtistController(ITattooArtistService service) : ControllerBase
     {
         [HttpGet]
@@ -20,13 +20,13 @@ namespace Tattoo_Project.Controllers
             return Ok(tattooArtists);
         }
 
-        [HttpGet("{Id}")]
-        public async Task<ActionResult<GetTattooArtistDto>> GetArtistByIdAsync(int Id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetTattooArtistDto>> GetArtistByIdAsync(int id)
         {
-            var tattooArtist = await service.GetTattooArtistByIdAsync(Id);
+            var tattooArtist = await service.GetTattooArtistByIdAsync(id);
             if (tattooArtist is null)
             {
-                return NotFound($"Artist with Id {Id} is not found!");
+                return NotFound($"Artist with Id {id} is not found!");
             }
             return Ok(tattooArtist);
         }
@@ -38,7 +38,7 @@ namespace Tattoo_Project.Controllers
             return Ok(new { id });
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArtist(int id)
         {
             var isDeleted = await service.DeleteArtist(id);
@@ -49,7 +49,7 @@ namespace Tattoo_Project.Controllers
             return Ok(isDeleted);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArtist(int id, UpdateArtistDto dto)
         {
             var isUpdated = await service.UpdateArtist(id, dto);
