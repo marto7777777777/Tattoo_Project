@@ -1,8 +1,9 @@
-﻿using Tattoo_Project.Models;
+﻿using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.Models;
 
-namespace Tattoo_Project.DTOs
+namespace Tattoo_Project.DTOs.TattooArtistDTOs
 {
-    public class UpdateArtistDto
+    public class GetTattooArtistDto
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
@@ -22,8 +23,12 @@ namespace Tattoo_Project.DTOs
         public ICollection<TattooArtistRequirementsDto> Requirements { get; set; }
            = new List<TattooArtistRequirementsDto>();
         public ICollection<TattooArtistPortfolioImageDto> PortfolioImages { get; set; }
-           = new List<TattooArtistPortfolioImageDto>();
+            = new List<TattooArtistPortfolioImageDto>();
+
+        public ICollection<TattooRequestDto> TattooRequests { get; set; }
+            = new List<TattooRequestDto>();
+
         public ICollection<TattooArtistScheduleDto> Schedules { get; set; }
-    = new List<TattooArtistScheduleDto>();
+            = new List<TattooArtistScheduleDto>();
     }
 }

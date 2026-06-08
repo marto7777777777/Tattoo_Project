@@ -1,6 +1,6 @@
-﻿namespace Tattoo_Project.DTOs
+﻿namespace Tattoo_Project.DTOs.ClientDTOs
 {
-    public class CreateClientDto
+    public class UpdateClientDto
     {
         public string FirstName { get; set; } = null!;
 

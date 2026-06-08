@@ -1,4 +1,4 @@
-﻿namespace Tattoo_Project.DTOs
+﻿namespace Tattoo_Project.DTOs.TattooSessionDTOs
 {
     public class TattooSessionDto
     {

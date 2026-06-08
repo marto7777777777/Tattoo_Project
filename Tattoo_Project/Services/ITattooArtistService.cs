@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Tattoo_Project.DTOs;
+using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
 
 namespace Tattoo_Project.Services

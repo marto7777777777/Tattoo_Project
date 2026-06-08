@@ -4,6 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs;
 using Tattoo_Project.Models;
+using Tattoo_Project.DTOs.ClientDTOs;
+using Tattoo_Project.DTOs.TattooSessionDTOs;
+using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
+using Tattoo_Project.DTOs.ArtistResponceDTOs;
+using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.DTOs.TattooRequestDTOs;
 
 namespace Tattoo_Project.Services
 {
@@ -41,12 +47,15 @@ namespace Tattoo_Project.Services
                 LastName = x.LastName,
                 Email = x.Email,
                 PhoneNumber = x.PhoneNumber,
-                ClientTattooRequestsDto = x.TattooRequests.Select(x => new ClientTattooRequestsDto
+                ClientTattooRequestsDto = x.TattooRequests == null || !x.TattooRequests.Any()? null
+                : x.TattooRequests.Select(x => new TattooRequestDto
                 {
                     Description = x.Description,
                     Placement = x.Placement,
                     CreatedOn = x.CreatedOn,
                     Status = x.Status,
+                    ClientId = x.ClientId,
+                    TattooArtistId = x.TattooArtistId,
                     Consultation = x.Consultation == null
                     ? null
                     : new ConsultationDto
@@ -56,7 +65,7 @@ namespace Tattoo_Project.Services
                         IsOnline = x.Consultation.IsOnline,
                         Notes = x.Consultation.Notes
                     },
-                    TattooSessions = x.TattooSessions == null
+                    TattooSessions = x.TattooSessions == null || !x.TattooSessions.Any()
                     ? null
                     : x.TattooSessions.Select(x => new TattooSessionDto
                     {
@@ -95,26 +104,30 @@ namespace Tattoo_Project.Services
                 LastName = client.LastName,
                 Email = client.Email,
                 PhoneNumber = client.PhoneNumber,
-                ClientTattooRequestsDto = client.TattooRequests == null
+                ClientTattooRequestsDto = client.TattooRequests == null || !client.TattooRequests.Any()
                 ? null
-                : client.TattooRequests.Select(c => new ClientTattooRequestsDto
+                : client.TattooRequests.Select(c => new TattooRequestDto
                 {
                     Description = c.Description,
                     Status = c.Status,
                     CreatedOn = c.CreatedOn,
                     Placement = c.Placement,
+                    ClientId = c.ClientId,
+                    TattooArtistId = c.TattooArtistId,
                     Images = c.Images.Select(c => new TattooReferenceImageDto
                     {
                         ImageUrl = c.ImageUrl
                     }).ToList(),
-                    TattooSessions = c.TattooSessions.Select(c => new TattooSessionDto
+                    TattooSessions = c.TattooSessions == null || !c.TattooSessions.Any() ? null
+                    : c.TattooSessions.Select(c => new TattooSessionDto
                     {
                         StartTime = c.StartTime,
                         EndTime = c.EndTime,
                         DurationHours = c.DurationHours,
                         FinalPrice = c.FinalPrice
                     }).ToList(),
-                    ArtistResponse = new ArtistResponseDto
+                    ArtistResponse = c.ArtistResponse == null ? null
+                    : new ArtistResponseDto
                     {
                         EstimatedHours = c.ArtistResponse.EstimatedHours,
                         CreatedOn = c.ArtistResponse.CreatedOn,

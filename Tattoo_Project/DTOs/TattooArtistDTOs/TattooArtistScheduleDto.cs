@@ -1,6 +1,6 @@
 ﻿using Tattoo_Project.Models;
 
-namespace Tattoo_Project.DTOs
+namespace Tattoo_Project.DTOs.TattooArtistDTOs
 {
     public class TattooArtistScheduleDto
     {

@@ -1,8 +1,6 @@
-﻿using Tattoo_Project.Models;
-
-namespace Tattoo_Project.DTOs
+﻿namespace Tattoo_Project.DTOs.ClientDTOs
 {
-    public class GetClientDto
+    public class CreateClientDto
     {
         public string FirstName { get; set; } = null!;
 
@@ -10,7 +8,5 @@ namespace Tattoo_Project.DTOs
 
         public string Email { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
-
-        public List<ClientTattooRequestsDto> ClientTattooRequestsDto {  get; set; } = new List<ClientTattooRequestsDto>();
     }
 }

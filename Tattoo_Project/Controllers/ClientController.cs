@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Tattoo_Project.DTOs;
+using Tattoo_Project.DTOs.ClientDTOs;
 using Tattoo_Project.Services;
 
 namespace Tattoo_Project.Controllers
