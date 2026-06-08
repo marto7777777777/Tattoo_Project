@@ -89,7 +89,18 @@ namespace Tattoo_Project.Services
 
         public async Task<GetTattooArtistDto> GetTattooArtistByIdAsync(int Id)
         {
-            var artistFromData = await context.TattooArtists.FirstOrDefaultAsync(i => i.Id == Id);
+            var artistFromData = await context.TattooArtists.Include(x => x.Schedules)
+                .Include(x => x.PortfolioImages)
+                .Include(x => x.Requirements)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.Images)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.TattooSessions)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.ArtistResponse)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.Consultation)
+                .FirstOrDefaultAsync(i => i.Id == Id);
             if (artistFromData is null)
             {
                 return null;
@@ -159,7 +170,7 @@ namespace Tattoo_Project.Services
                     }
                 }).ToList()
             };
-            return await Task.FromResult(result);
+            return result;
         }
 
         public async Task<int> CreateArtist(CreateTattooArtistDto dto)

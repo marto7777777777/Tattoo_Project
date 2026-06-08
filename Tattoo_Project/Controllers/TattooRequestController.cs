@@ -30,5 +30,22 @@ namespace Tattoo_Project.Controllers
             }
             return Ok(tattooRequest);
         }
+
+        [HttpPost]
+        public async Task<ActionResult<bool>> CreateTattooRequest(CreateTattooRequestDto dto)
+        {
+            var isCreated = await service.CreateTattooRequest(dto);
+            return Ok(isCreated);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<bool>> UpdateTattooRequest(int id, UpdateTattooRequestDto dto)
+        {
+            var isUpdated = await service.UpdateTattooRequest(id, dto);
+
+            return Ok(isUpdated);
+            
+        }
+
     }
 }

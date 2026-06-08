@@ -93,7 +93,16 @@ namespace Tattoo_Project.Services
         
         public async Task<GetClientDto> GetClientsByIdAsync(int id)
         {
-            var client = await context.Clients.FirstOrDefaultAsync(x => x.Id == id);
+            var client = await context.Clients
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.Images)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.TattooSessions)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.ArtistResponse)
+                .Include(x => x.TattooRequests)
+                .ThenInclude(x => x.Consultation)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (client == null)
             {
                 return null;
@@ -134,7 +143,8 @@ namespace Tattoo_Project.Services
                         EstimatedPrice = c.ArtistResponse.EstimatedPrice,
                         ResponseMessage = c.ArtistResponse.ResponseMessage
                     },
-                    Consultation = new ConsultationDto
+                    Consultation = c.Consultation == null ? null
+                    : new ConsultationDto
                     {
                         StartTime = c.Consultation.StartTime,
                         EndTime = c.Consultation.EndTime,

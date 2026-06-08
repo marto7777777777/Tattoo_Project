@@ -56,12 +56,26 @@ namespace Tattoo_Project.Services
         }
             
 
-        public Task<bool> CreateTattooRequest(CreateTattooRequestDto dto)
+        public async Task<bool> CreateTattooRequest(CreateTattooRequestDto dto)
         {
-            throw new NotImplementedException();
+            context.TattooRequests.AddAsync(new TattooRequest
+            {
+                ClientId = dto.ClientId,
+                TattooArtistId = dto.TattooArtistId,
+                Placement = dto.Placement,
+                Description = dto.Description,
+                CreatedOn = DateTime.Now,
+                Status = RequestStatus.Pending,
+                Images = dto.Images.Select(x => new TattooReferenceImage
+                {
+                    ImageUrl = x.ImageUrl
+                }).ToList()
+            });
+            await context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<bool> DeleteTattooRequest(int id)
+        public async Task<bool> DeleteTattooRequest(int id)
         {
             throw new NotImplementedException();
         }
@@ -69,7 +83,12 @@ namespace Tattoo_Project.Services
 
         public async Task<GetTattooRequestDto> GetTattooRequestByIdAsync(int id)
         {
-            var tattooRequest = await context.TattooRequests.FirstOrDefaultAsync(s => s.Id == id);
+            var tattooRequest = await context.TattooRequests
+                .Include(x => x.ArtistResponse)
+                .Include(x => x.Consultation)
+                .Include(x => x.TattooSessions)
+                .Include(x => x.Consultation)
+                .FirstOrDefaultAsync(s => s.Id == id);
             if (tattooRequest == null)
             {
                 return null;
@@ -115,9 +134,23 @@ namespace Tattoo_Project.Services
         }
 
 
-        public Task<bool> UpdateTattooRequest(int id, UpdateTattooRequestDto dto)
+        public async Task<bool> UpdateTattooRequest(int id, UpdateTattooRequestDto dto)
         {
-            throw new NotImplementedException();
+            var tattooRequest = await context.TattooRequests
+                .Include(x => x.Images)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (tattooRequest == null)
+            {
+                return false;
+            }
+
+            tattooRequest.Images = dto.Images.Select(x => new TattooReferenceImage
+            {
+                ImageUrl = x.ImageUrl
+            }).ToList();
+            tattooRequest.Description = dto.Description;
+            await context.SaveChangesAsync();
+            return true;
         }
     }
 }
