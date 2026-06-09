@@ -31,16 +31,18 @@ namespace Tattoo_Project.Services
                 ResponseMessage = dto.ResponseMessage,
                 TattooRequestId = dto.TattooRequestId
             });
-            await context.SaveChangesAsync();
 
             tattooRequest.Status = Models.RequestStatus.WaitingForConsultation;
+
+            await context.SaveChangesAsync();
+
 
             return true;
         }
 
         public async Task<bool> DeleteArtistResponseAsync(int id)
         {
-            var response = context.ArtistResponses.FirstOrDefault(x => x.Id == id);
+            var response = await context.ArtistResponses.FirstOrDefaultAsync(x => x.Id == id);
             if (response == null)
             {
                 return false;

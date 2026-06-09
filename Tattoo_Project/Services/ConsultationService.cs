@@ -19,19 +19,25 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            // 2. Валиден интервал ли е
+            // 2. Не може да се създаде consultation преди tattooResponse.
+            if (tattooRequest.Status != RequestStatus.WaitingForConsultation)
+            {
+                return false;
+            }
+
+            // 3. Валиден интервал ли е
             if (dto.StartTime >= dto.EndTime)
             {
                 return false;
             }
 
-            // 3. Не е ли в миналото (по желание)
+            // 4. Не е ли в миналото (по желание)
             if (dto.StartTime < DateTime.UtcNow)
             {
                 return false;
             }
 
-            // 4. Има ли вече консултация за тази заявка
+            // 5. Има ли вече консултация за тази заявка
             var consultationExists = await context.Consultations
                 .AnyAsync(c => c.TattooRequestId == dto.TattooRequestId);
 
@@ -40,7 +46,7 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            // 5. Свободен ли е татуистът
+            // 6. Свободен ли е татуистът
             var hasConflict = await context.Consultations
                 .AnyAsync(c =>
                     c.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
@@ -128,6 +134,7 @@ namespace Tattoo_Project.Services
             {
                 return false; //Валиден интервал ли е
             }
+
             if(dto.StartTime < DateTime.UtcNow)
             {
                 return false; // Не е ли в минало време
@@ -158,6 +165,7 @@ namespace Tattoo_Project.Services
             consultation.StartTime = dto.StartTime;
             consultation.EndTime = dto.EndTime;
 
+            await context.SaveChangesAsync();
             return true;
         }
     }
