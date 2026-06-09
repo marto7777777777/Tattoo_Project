@@ -65,7 +65,7 @@ namespace Tattoo_Project.Services
                 Placement = dto.Placement,
                 Description = dto.Description,
                 CreatedOn = DateTime.Now,
-                Status = RequestStatus.Pending,
+                Status = RequestStatus.Submitted,
                 Images = dto.Images.Select(x => new TattooReferenceImage
                 {
                     ImageUrl = x.ImageUrl

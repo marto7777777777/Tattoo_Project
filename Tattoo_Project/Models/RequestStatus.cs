@@ -2,7 +2,7 @@
 {
     public enum RequestStatus
     {
-        Pending,
+        Submitted,
         Reviewed,
         ConsultationScheduled,
         Approved,
