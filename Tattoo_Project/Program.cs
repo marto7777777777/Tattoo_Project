@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.Services;
+using Tattoo_Project.Services.Interfaces;
 namespace Tattoo_Project
 {
     public class Program
@@ -21,6 +22,8 @@ namespace Tattoo_Project
             builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
             builder.Services.AddScoped<ITattooRequestService, TattooRequestService>();
             builder.Services.AddScoped<IArtistResponseService, ArtistResponseService>();
+            builder.Services.AddScoped<IConsultationService, ConsultationService>();
+            builder.Services.AddScoped<ITattooSessionService, TattooSessionService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(

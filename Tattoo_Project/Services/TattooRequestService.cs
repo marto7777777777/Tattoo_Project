@@ -8,6 +8,7 @@ using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.TattooRequestDTOs;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
 using Tattoo_Project.Models;
+using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
 {

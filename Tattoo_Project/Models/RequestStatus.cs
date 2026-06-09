@@ -3,11 +3,12 @@
     public enum RequestStatus
     {
         Submitted,
-        Reviewed,
-        ConsultationScheduled,
+        UnderReview,
         Approved,
-        Rejected,
+        WaitingForConsultation,
+        ConsultationCompleted,
         TattooBooked,
-        Completed
+        Completed,
+        Rejected
     }
 }

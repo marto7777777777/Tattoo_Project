@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponseDTOs;
+using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
 {
@@ -31,6 +32,8 @@ namespace Tattoo_Project.Services
                 TattooRequestId = dto.TattooRequestId
             });
             await context.SaveChangesAsync();
+
+            tattooRequest.Status = Models.RequestStatus.WaitingForConsultation;
 
             return true;
         }

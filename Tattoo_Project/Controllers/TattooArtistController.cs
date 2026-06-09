@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
-using Tattoo_Project.Services;
+using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
 {

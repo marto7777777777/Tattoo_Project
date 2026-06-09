@@ -10,6 +10,7 @@ using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
 using Tattoo_Project.DTOs.ConsultationDTOs;
 using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
 {

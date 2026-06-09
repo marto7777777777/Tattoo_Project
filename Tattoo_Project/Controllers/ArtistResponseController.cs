@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.ArtistResponseDTOs;
-using Tattoo_Project.Services;
+using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
 {
