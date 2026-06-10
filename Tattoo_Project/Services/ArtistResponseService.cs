@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponseDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
@@ -85,6 +86,22 @@ namespace Tattoo_Project.Services
                 TattooRequestId = artistResponse.TattooRequestId
             };
             return artistResponseDto;
+        }
+
+        public async Task<bool> RejectTattooRequestAsync(int tattooRequestId)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            request.Status = RequestStatus.Rejected;
+
+            await context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

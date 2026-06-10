@@ -8,6 +8,7 @@
         WaitingForConsultation,
         ConsultationCompleted,
         TattooBooked,
+        InProgress,
         Completed,
         Rejected
     }

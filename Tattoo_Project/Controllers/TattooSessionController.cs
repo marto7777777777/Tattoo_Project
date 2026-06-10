@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
 using Tattoo_Project.Services.Interfaces;
@@ -55,6 +56,32 @@ namespace Tattoo_Project.Controllers
             var isDeleted = await service.DeleteTattooSessionAsync(id);
 
             return Ok(isDeleted);
+        }
+
+        [HttpPut("complete-tattoo/{tattooRequestId}")]
+        public async Task<IActionResult> CompleteTattooAsync(int tattooRequestId)
+        {
+            var result = await service.CompleteTattooAsync(tattooRequestId);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok("Tattoo completed successfully.");
+        }
+
+        [HttpPut("countinue-tattoo/{tattooRequestId}")]
+        public async Task<IActionResult> CountinueTattooAsync(int tattooRequestId)
+        {
+            var result = await service.CountinueTattooAsync(tattooRequestId);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok("Tattoo countinue.");
         }
     }
 }

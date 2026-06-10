@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
 using Tattoo_Project.Models;
@@ -8,6 +9,48 @@ namespace Tattoo_Project.Services
 {
     public class TattooSessionService(TattooDbContext context) : ITattooSessionService
     {
+        public async Task<bool> CompleteTattooAsync(int tattooRequestId)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            if (request.Status != RequestStatus.ConsultationCompleted && request.Status != RequestStatus.InProgress)
+            {
+                return false;
+            }
+
+            request.Status = RequestStatus.Completed;
+
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> CountinueTattooAsync(int tattooRequestId)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            if (request.Status != RequestStatus.ConsultationCompleted && request.Status != RequestStatus.InProgress)
+            {
+                return false;
+            }
+
+            request.Status = RequestStatus.InProgress;
+
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<bool> CreateTattooSessionAsync(CreateTattooSessionDto dto)
         {
             // 1. Проверка дали заявката съществува
@@ -18,12 +61,6 @@ namespace Tattoo_Project.Services
             {
                 return false;
             }
-
-            
-            //if (tattooRequest.Status != RequestStatus.ConsultationCompleted)
-            //{
-              //  return false; // Не е свършила консултацията или татуйста не е дал права на клиента за да запази тату сесия.
-            //}
 
             // 2. Валиден интервал (Start < End)
             if (dto.StartTime >= dto.EndTime)
@@ -47,6 +84,12 @@ namespace Tattoo_Project.Services
                     dto.EndTime > s.StartTime);
 
             if (hasConflict)
+            {
+                return false;
+            }
+
+            //5.Няма статус ConsultationCompleted или InProgress
+            if (tattooRequest.Status != RequestStatus.ConsultationCompleted && tattooRequest.Status != RequestStatus.InProgress)
             {
                 return false;
             }

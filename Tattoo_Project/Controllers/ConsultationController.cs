@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -52,6 +53,34 @@ namespace Tattoo_Project.Controllers
             var isDeleted = await service.DeleteConsultationAsync(id);
 
             return Ok(isDeleted);
+        }
+
+        [HttpPut("complete-consultation/{tattooRequestId}")]
+        public async Task<IActionResult> CompleteConsultationAsync(int tattooRequestId)
+        {
+            bool result = await service
+                .CompleteConsultationAsync(tattooRequestId);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok("Consultation completed successfully.");
+        }
+
+        [HttpPut("rejected-consultation/{tattooRequestId}")]
+        public async Task<IActionResult> RejectedConsultationAsync(int tattooRequestId)
+        {
+            bool result = await service
+                .RejectConsultationAsync(tattooRequestId);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok("Consultation rejected successfully.");
         }
     }
 }

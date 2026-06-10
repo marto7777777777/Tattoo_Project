@@ -65,6 +65,7 @@ namespace Tattoo_Project.Services
                 Notes = dto.Notes,
                 TattooRequestId = dto.TattooRequestId
             });
+
             await context.SaveChangesAsync();
             return true;
         }
@@ -166,6 +167,48 @@ namespace Tattoo_Project.Services
             consultation.EndTime = dto.EndTime;
 
             await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> CompleteConsultationAsync(int tattooRequestId)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            if (request.Status != RequestStatus.WaitingForConsultation)
+            {
+                return false;
+            }
+
+            request.Status = RequestStatus.ConsultationCompleted;
+
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> RejectConsultationAsync(int tattooRequestId)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            if (request.Status != RequestStatus.WaitingForConsultation)
+            {
+                return false;
+            }
+
+            request.Status = RequestStatus.Rejected;
+
+            await context.SaveChangesAsync();
+
             return true;
         }
     }

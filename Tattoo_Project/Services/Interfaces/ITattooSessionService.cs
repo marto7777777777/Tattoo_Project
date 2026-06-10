@@ -9,6 +9,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<bool> CreateTattooSessionAsync(CreateTattooSessionDto dto);
         Task<bool> UpdateTattooSessionAsync(int id, UpdateTattooSessionDto dto);
         Task<bool> DeleteTattooSessionAsync(int id);
-
+        Task<bool> CompleteTattooAsync(int tattooRequestId);
+        Task<bool> CountinueTattooAsync(int tattooRequestId);
     }
 }
