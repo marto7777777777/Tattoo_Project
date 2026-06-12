@@ -56,10 +56,10 @@ namespace Tattoo_Project.Controllers
         }
 
         [HttpPut("complete-consultation/{tattooRequestId}")]
-        public async Task<IActionResult> CompleteConsultationAsync(int tattooRequestId)
+        public async Task<IActionResult> CompleteConsultationAsync(int tattooRequestId, CompleteConsultationDto dto)
         {
             bool result = await service
-                .CompleteConsultationAsync(tattooRequestId);
+                .CompleteConsultationAsync(tattooRequestId, dto);
 
             if (!result)
             {

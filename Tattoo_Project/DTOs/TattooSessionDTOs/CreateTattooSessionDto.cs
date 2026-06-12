@@ -11,8 +11,6 @@ namespace Tattoo_Project.DTOs.TattooSessionDTOs
 
         public int TattooRequestId { get; set; }
 
-        public decimal FinalPrice { get; set; }
-
         public int DurationHours { get; set; }
     }
 }

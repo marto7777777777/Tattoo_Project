@@ -9,7 +9,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<bool> CreateConsultationAsync(CreateConsultationDto dto);
         Task<bool> UpdateConsultationAsync(int id,UpdateConsultationDto dto);
         Task<bool> DeleteConsultationAsync(int id);
-        Task<bool> CompleteConsultationAsync(int tattooRequestId);
+        Task<bool> CompleteConsultationAsync(int tattooRequestId, CompleteConsultationDto dto);
         Task<bool> RejectConsultationAsync(int tattooRequestId);
     }
 }

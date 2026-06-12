@@ -9,6 +9,32 @@ namespace Tattoo_Project.Services
 {
     public class TattooSessionService(TattooDbContext context) : ITattooSessionService
     {
+        public async Task<bool> AddMoreSessionsAsync(int tattooRequestId, AddAdditionalSessionsDto dto)
+        {
+            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+
+            if (request is null)
+            {
+                return false;
+            }
+
+            if (request.Status != RequestStatus.ConsultationCompleted &&
+                request.Status != RequestStatus.InProgress &&
+                request.Status != RequestStatus.TattooBooked)
+            {
+                return false;
+            }
+
+            request.RemainingSessionsToBook += dto.AdditionalSessions;
+            foreach (var session in dto.PriceForSession)
+            {
+                request.PriceForSession.Add(session);
+            }
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<bool> CompleteTattooAsync(int tattooRequestId)
         {
             var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
@@ -18,7 +44,15 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            if (request.Status != RequestStatus.ConsultationCompleted && request.Status != RequestStatus.InProgress)
+            var hasSessions = await context.TattooSessions
+                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
+
+            if (!hasSessions)
+            {
+                return false; //Трябва да има поне една сесия за да се приключи проекта.
+            }
+
+            if (request.Status != RequestStatus.TattooBooked && request.Status != RequestStatus.InProgress)
             {
                 return false;
             }
@@ -30,16 +64,25 @@ namespace Tattoo_Project.Services
             return true;
         }
 
-        public async Task<bool> CountinueTattooAsync(int tattooRequestId)
+        public async Task<bool> ContinueTattooAsync(int tattooRequestId)
         {
-            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+            var request = await context.TattooRequests
+                .FirstOrDefaultAsync(x => x.Id == tattooRequestId);
 
             if (request is null)
             {
                 return false;
             }
 
-            if (request.Status != RequestStatus.ConsultationCompleted && request.Status != RequestStatus.InProgress)
+            var hasSession = await context.TattooSessions
+                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
+
+            if (!hasSession)
+            {
+                return false; //Трябва да има поне една сесия за да продължът към следващите.
+            }
+
+            if (request.Status != RequestStatus.TattooBooked && request.Status != RequestStatus.InProgress)
             {
                 return false;
             }
@@ -55,6 +98,7 @@ namespace Tattoo_Project.Services
         {
             // 1. Проверка дали заявката съществува
             var tattooRequest = await context.TattooRequests
+                .Include(x => x.TattooSessions)
                 .FirstOrDefaultAsync(tr => tr.Id == dto.TattooRequestId);
 
             if (tattooRequest == null)
@@ -88,20 +132,47 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            //5.Няма статус ConsultationCompleted или InProgress
-            if (tattooRequest.Status != RequestStatus.ConsultationCompleted && tattooRequest.Status != RequestStatus.InProgress)
+            //5.Проверка за конфликт с консултации на същия татуйст
+            var hasConsultationConflict = await context.Consultations
+                .AnyAsync(c =>
+            c.TattooRequest.TattooArtistId == tattooArtistId &&
+            dto.StartTime < c.EndTime &&
+            dto.EndTime > c.StartTime);
+
+            if (hasConsultationConflict)
             {
                 return false;
             }
 
+            //6.Няма статус ConsultationCompleted или InProgress
+            if (tattooRequest.Status != RequestStatus.ConsultationCompleted &&
+                tattooRequest.Status != RequestStatus.InProgress &&
+                tattooRequest.Status != RequestStatus.TattooBooked)
+            {
+                return false;
+            }
+
+            //7.Има ли останали RemainingSessionsToBook
+            if (tattooRequest.RemainingSessionsToBook <= 0)
+            {
+                return false;
+            }
+
+            var numberSessionInProject = tattooRequest.TattooSessions.Count;
+            Console.WriteLine($"Count = {numberSessionInProject}");
+            Console.WriteLine($"Prices count = {tattooRequest.PriceForSession.Count}");
             await context.TattooSessions.AddAsync(new TattooSession
             {
                 StartTime = dto.StartTime,
                 DurationHours = dto.DurationHours,
                 EndTime = dto.EndTime,
-                FinalPrice = dto.FinalPrice,
+                PriceForTheSession = tattooRequest.PriceForSession[numberSessionInProject],
                 TattooRequestId = dto.TattooRequestId
             });
+
+            tattooRequest.Status = RequestStatus.TattooBooked;
+
+            tattooRequest.RemainingSessionsToBook--;
 
             await context.SaveChangesAsync();
 
@@ -136,7 +207,7 @@ namespace Tattoo_Project.Services
                 StartTime = x.StartTime,
                 DurationHours = x.DurationHours,
                 EndTime = x.EndTime,
-                FinalPrice = x.FinalPrice,
+                PriceForTheSession = x.PriceForTheSession,
                 TattooRequestId = x.TattooRequestId
             }).ToListAsync();
 
@@ -155,7 +226,7 @@ namespace Tattoo_Project.Services
                 StartTime = tattooSession.StartTime,
                 DurationHours = tattooSession.DurationHours,
                 EndTime = tattooSession.EndTime,
-                FinalPrice = tattooSession.FinalPrice,
+                PriceForTheSession = tattooSession.PriceForTheSession,
                 TattooRequestId = tattooSession.TattooRequestId
             };
             return tattooSessionDto;

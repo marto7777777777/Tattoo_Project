@@ -62,7 +62,7 @@ namespace Tattoo_Project.Services
                     StartTime = f.StartTime,
                     DurationHours = f.DurationHours,
                     EndTime = f.EndTime,
-                    FinalPrice = f.FinalPrice
+                    PriceForTheSession = f.PriceForTheSession
                 }).ToList(),
                 ArtistResponse = x.ArtistResponse == null? null
                 : new ArtistResponseDto
@@ -151,7 +151,7 @@ namespace Tattoo_Project.Services
                         StartTime = f.StartTime,
                         DurationHours = f.DurationHours,
                         EndTime = f.EndTime,
-                        FinalPrice = f.FinalPrice
+                        PriceForTheSession = f.PriceForTheSession
                     }).ToList(),
                     ArtistResponse = x.ArtistResponse == null ? null
                     : new ArtistResponseDto

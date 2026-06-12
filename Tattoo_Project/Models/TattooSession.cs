@@ -10,7 +10,7 @@
 
         public int TattooRequestId { get; set; }
 
-        public decimal FinalPrice { get; set; }
+        public decimal PriceForTheSession { get; set; }
 
         public int DurationHours { get; set; }
 

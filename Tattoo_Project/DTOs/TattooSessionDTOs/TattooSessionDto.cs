@@ -6,7 +6,7 @@
 
         public DateTime EndTime { get; set; }
 
-        public decimal FinalPrice { get; set; }
+        public decimal? PriceForTheSession { get; set; }
 
         public int DurationHours { get; set; }
     }

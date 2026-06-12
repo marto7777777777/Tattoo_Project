@@ -46,7 +46,7 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            // 6. Свободен ли е татуистът
+            // 6. Свободен ли е татуистъта проверка за консултации
             var hasConflict = await context.Consultations
                 .AnyAsync(c =>
                     c.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
@@ -56,6 +56,18 @@ namespace Tattoo_Project.Services
             if (hasConflict)
             {
                 return false; 
+            }
+
+            //7.Свободен ли е татуйста провека за сесии
+            var hasSessionConflict = await context.TattooSessions
+                .AnyAsync(s =>
+            s.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
+            dto.StartTime < s.EndTime &&
+            dto.EndTime > s.StartTime);
+
+            if (hasSessionConflict)
+            {
+                return false;
             }
 
             await context.Consultations.AddAsync(new Models.Consultation
@@ -170,7 +182,7 @@ namespace Tattoo_Project.Services
             return true;
         }
 
-        public async Task<bool> CompleteConsultationAsync(int tattooRequestId)
+        public async Task<bool> CompleteConsultationAsync(int tattooRequestId, CompleteConsultationDto dto)
         {
             var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
 
@@ -184,7 +196,18 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
+            var consultationExists = await context.Consultations
+                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
+
+            if (!consultationExists)
+            {
+                return false;
+            }
+
             request.Status = RequestStatus.ConsultationCompleted;
+
+            request.RemainingSessionsToBook = dto.SessionsToBook;
+            request.PriceForSession = dto.PriceForSession;
 
             await context.SaveChangesAsync();
 
@@ -201,6 +224,14 @@ namespace Tattoo_Project.Services
             }
 
             if (request.Status != RequestStatus.WaitingForConsultation)
+            {
+                return false;
+            }
+
+            var consultationExists = await context.Consultations
+                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
+
+            if (!consultationExists)
             {
                 return false;
             }

@@ -298,6 +298,12 @@ namespace Tattoo_Project.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.PrimitiveCollection<string>("PriceForSession")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RemainingSessionsToBook")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -327,7 +333,7 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("FinalPrice")
+                    b.Property<decimal>("PriceForTheSession")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartTime")

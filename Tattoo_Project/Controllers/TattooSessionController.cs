@@ -71,10 +71,10 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo completed successfully.");
         }
 
-        [HttpPut("countinue-tattoo/{tattooRequestId}")]
+        [HttpPut("continue-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> CountinueTattooAsync(int tattooRequestId)
         {
-            var result = await service.CountinueTattooAsync(tattooRequestId);
+            var result = await service.ContinueTattooAsync(tattooRequestId);
 
             if (!result)
             {
@@ -82,6 +82,19 @@ namespace Tattoo_Project.Controllers
             }
 
             return Ok("Tattoo countinue.");
+        }
+
+        [HttpPut("add-more-sessions/{tattooRequestId}")]
+        public async Task<IActionResult> AddMoreSessionsAsync(int tattooRequestId, AddAdditionalSessionsDto dto)
+        {
+            var result = await service.AddMoreSessionsAsync(tattooRequestId, dto);
+
+            if (!result)
+            {
+                return BadRequest();
+            }
+
+            return Ok($"{dto.AdditionalSessions} more sessions added!");
         }
     }
 }
