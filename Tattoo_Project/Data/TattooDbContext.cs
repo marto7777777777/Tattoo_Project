@@ -1,12 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Tattoo_Project.Models;
 
 namespace Tattoo_Project.Data
 {
-    public class TattooDbContext : DbContext
+    public class TattooDbContext : IdentityDbContext<ApplicationUser>
     {
-        public TattooDbContext(DbContextOptions<TattooDbContext> options) : base(options)
+        public TattooDbContext(DbContextOptions<TattooDbContext> options) 
+            : base(options)
         {
         }
 
@@ -23,13 +25,15 @@ namespace Tattoo_Project.Data
         public DbSet<Consultation> Consultations { get; set; }
 
         public DbSet<TattooSession> TattooSessions { get; set; }
-        public DbSet<ArtistResponse> ArtistResponses { get; set; }
 
+        public DbSet<ArtistResponse> ArtistResponses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                Assembly.GetExecutingAssembly());
         }
     }
 }
