@@ -206,6 +206,13 @@ namespace Tattoo_Project.Services
 
             request.Status = RequestStatus.ConsultationCompleted;
 
+
+            //Броя на сесиите равен ли е на броя на изброените цени
+            if (dto.SessionsToBook != dto.PriceForSession.Count)
+            {
+                return false;
+            }
+
             request.RemainingSessionsToBook = dto.SessionsToBook;
             request.PriceForSession = dto.PriceForSession;
 

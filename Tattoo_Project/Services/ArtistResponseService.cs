@@ -97,6 +97,13 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
+            //Проверка за статуса
+            if (request.Status != RequestStatus.Submitted &&
+                request.Status != RequestStatus.UnderReview)
+            {
+                return false;
+            }
+
             request.Status = RequestStatus.Rejected;
 
             await context.SaveChangesAsync();

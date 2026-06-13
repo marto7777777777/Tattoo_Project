@@ -158,9 +158,21 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
+            //8.Попълнена ли е цената за сесиите
+            if (tattooRequest.PriceForSession == null)
+            {
+                return false;
+            }
+
             var numberSessionInProject = tattooRequest.TattooSessions.Count;
-            Console.WriteLine($"Count = {numberSessionInProject}");
-            Console.WriteLine($"Prices count = {tattooRequest.PriceForSession.Count}");
+
+
+            //9.Да неби да има повече сесии от колкото цени за сесия са изброени
+            if (numberSessionInProject >= tattooRequest.PriceForSession.Count)
+            {
+                return false;
+            }
+
             await context.TattooSessions.AddAsync(new TattooSession
             {
                 StartTime = dto.StartTime,
