@@ -174,38 +174,79 @@ namespace Tattoo_Project.Services
             return result;
         }
 
-        public async Task<int> CreateArtist(CreateTattooArtistDto dto)
+        public async Task<bool> CreateTattooArtistProfileAsync(
+    CreateTattooArtistDto dto,
+    string userId)
         {
-            TattooArtist artist = new TattooArtist()
+            var alreadyHasArtistProfile = await context.TattooArtists
+                .AnyAsync(a => a.UserId == userId);
+
+            if (alreadyHasArtistProfile)
+            {
+                return false;
+            }
+
+            var user = await context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (dto.RequiresDeposit &&
+                (dto.DepositAmount == null || dto.DepositAmount <= 0))
+            {
+                return false;
+            }
+
+            if (!dto.RequiresDeposit)
+            {
+                dto.DepositAmount = null;
+            }
+
+            TattooArtist tattooArtist = new()
             {
                 FirstName = dto.FirstName,
-                LastName= dto.LastName,
-                DepositAmount = dto.DepositAmount,
-                Description = dto.Description,
-                Email = dto.Email,
-                OffersOnlineConsultation = dto.OffersOnlineConsultation,
-                PhoneNumber = dto.PhoneNumber,
-                RequiresDeposit = dto.RequiresDeposit,
-                StudioAddress = dto.StudioAddress,
+                LastName = dto.LastName,
+                Email = user.Email!,
+
                 StudioName = dto.StudioName,
-                Schedules = dto.Schedules.Select(x => new Schedule
+                Description = dto.Description,
+                StudioAddress = dto.StudioAddress,
+                PhoneNumber = dto.PhoneNumber,
+
+                IsVerified = false,
+
+                OffersOnlineConsultation = dto.OffersOnlineConsultation,
+                RequiresDeposit = dto.RequiresDeposit,
+                DepositAmount = dto.DepositAmount,
+
+                UserId = userId,
+
+                Requirements = dto.Requirements.Select(r => new ArtistRequirement
                 {
-                        StartTime = x.StartTime,
-                        DayOfWeek = x.DayOfWeek,
-                        EndTime = x.EndTime
+                    Description = dto.Description
                 }).ToList(),
-                Requirements = dto.Requirements.Select(x => new ArtistRequirement
+
+                PortfolioImages = dto.PortfolioImages.Select(p => new PortfolioImage
                 {
-                    Description = x.Description
+                    ImageUrl = p.ImageUrl
                 }).ToList(),
-                PortfolioImages = dto.PortfolioImages.Select(x => new PortfolioImage
+
+                Schedules = dto.Schedules.Select(s => new Schedule
                 {
-                    ImageUrl = x.ImageUrl
-                }).ToList(),
+                    DayOfWeek = s.DayOfWeek,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime
+                }).ToList()
             };
-            context.TattooArtists.Add(artist);
+
+            context.TattooArtists.Add(tattooArtist);
+
             await context.SaveChangesAsync();
-            return artist.Id;
+
+            return true;
         }
 
         public async Task<bool> DeleteArtist(int id)

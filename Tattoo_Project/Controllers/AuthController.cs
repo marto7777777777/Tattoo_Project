@@ -42,11 +42,6 @@ namespace Tattoo_Project.Controllers
                 return BadRequest("Email is already registered.");
             }
 
-            if (!await roleManager.RoleExistsAsync(dto.Role))
-            {
-                await roleManager.CreateAsync(new IdentityRole(dto.Role));
-            }
-
             ApplicationUser user = new()
             {
                 FirstName = dto.FirstName,
@@ -62,7 +57,19 @@ namespace Tattoo_Project.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await userManager.AddToRoleAsync(user, dto.Role);
+            await EnsureRoleExists(UserRoles.Client);
+            await EnsureRoleExists(UserRoles.TattooArtist);
+
+            if (dto.Role == UserRoles.Client)
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.Client);
+            }
+
+            if (dto.Role == UserRoles.TattooArtist)
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.Client);
+                await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
+            }
 
             return Ok("User registered successfully.");
         }
@@ -138,5 +145,12 @@ namespace Tattoo_Project.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        private async Task EnsureRoleExists(string role)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
     }
 }

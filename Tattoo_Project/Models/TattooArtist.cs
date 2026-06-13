@@ -21,6 +21,11 @@
         public bool RequiresDeposit { get; set; }
 
         public decimal? DepositAmount { get; set; }
+
+        public string UserId { get; set; } = null!;
+
+        public ApplicationUser User { get; set; } = null!;
+
         public ICollection<ArtistRequirement> Requirements { get; set; }
     = new List<ArtistRequirement>();
         public ICollection<PortfolioImage> PortfolioImages { get; set; }

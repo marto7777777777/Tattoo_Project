@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
+using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -31,11 +34,25 @@ namespace Tattoo_Project.Controllers
             return Ok(tattooArtist);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateArtist(CreateTattooArtistDto dto)
+        [Authorize(Roles = UserRoles.TattooArtist)]
+        [HttpPost("profile")]
+        public async Task<IActionResult> CreateTattooArtistProfile(CreateTattooArtistDto dto)
         {
-            var id = await service.CreateArtist(dto);
-            return Ok(new { id });
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.CreateTattooArtistProfileAsync(dto, userId);
+
+            if (!result)
+            {
+                return BadRequest("Tattoo artist profile already exists or invalid data.");
+            }
+
+            return Ok("Tattoo artist profile created successfully.");
         }
 
         [HttpDelete("{id}")]

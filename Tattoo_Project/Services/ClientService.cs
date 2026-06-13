@@ -16,16 +16,37 @@ namespace Tattoo_Project.Services
 {
     public class ClientService(TattooDbContext context) : IClientService
     {
-        public async Task<bool> CreateClient(CreateClientDto dto)
+        public async Task<bool> CreateClientProfileAsync(CreateClientDto dto, string userId)
         {
-             context.Clients.Add(new Client
+            var alreadyHasClientProfile = await context.Clients
+                .AnyAsync(c => c.UserId == userId);
+
+            if (alreadyHasClientProfile)
+            {
+                return false;
+            }
+
+            var userExists = await context.Users
+                .AnyAsync(u => u.Id == userId);
+
+            if (!userExists)
+            {
+                return false;
+            }
+
+            Client client = new()
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
                 Email = dto.Email,
-                PhoneNumber = dto.PhoneNumber
-            });
+                PhoneNumber = dto.PhoneNumber,
+                UserId = userId
+            };
+
+            context.Clients.Add(client);
+
             await context.SaveChangesAsync();
+
             return true;
         }
 

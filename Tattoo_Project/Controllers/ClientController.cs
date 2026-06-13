@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.DTOs.ClientDTOs;
+using Tattoo_Project.Models;
+using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -42,12 +47,25 @@ namespace Tattoo_Project.Controllers
             return Ok(isDeleted);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateClientAsync(CreateClientDto dto)
+        [Authorize(Roles = UserRoles.Client)]
+        [HttpPost("profile")]
+        public async Task<IActionResult> CreateClientProfile(CreateClientDto dto)
         {
-            var isCreated = await service.CreateClient(dto);
-            
-            return Ok(isCreated);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.CreateClientProfileAsync(dto, userId);
+
+            if (!result)
+            {
+                return BadRequest("Client profile already exists or invalid data.");
+            }
+
+            return Ok("Client profile created successfully.");
         }
 
         [HttpPut("{id}")]

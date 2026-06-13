@@ -43,6 +43,16 @@ namespace Tattoo_Project.Configuration
             builder.HasMany(x => x.Requirements)
                  .WithOne(x => x.TattooArtist)
                  .HasForeignKey(x => x.TattooArtistId);
+
+            builder
+                .HasOne(a => a.User)
+                .WithOne()
+                .HasForeignKey<TattooArtist>(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasIndex(a => a.UserId)
+                .IsUnique();
         }
     }
 }

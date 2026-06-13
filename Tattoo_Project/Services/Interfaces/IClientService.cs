@@ -7,7 +7,7 @@ namespace Tattoo_Project.Services.Interfaces
     {
         Task<List<GetClientDto>> GetAllClientsAsync();
         Task<GetClientDto> GetClientsByIdAsync(int id);
-        Task<bool> CreateClient(CreateClientDto dto);
+        Task<bool> CreateClientProfileAsync(CreateClientDto dto, string userId);
         Task<bool> DeleteClient(int id);
         Task<bool> UpdateClient(int id, UpdateClientDto dto);
     }

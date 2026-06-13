@@ -30,6 +30,16 @@ namespace Tattoo_Project.Configuration
                 .WithOne(x => x.Client)
                 .HasForeignKey(x => x.ClientId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .HasOne(c => c.User)
+                .WithOne()
+                .HasForeignKey<Client>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder
+                .HasIndex(c => c.UserId)
+                .IsUnique();
         }
     }
 }
