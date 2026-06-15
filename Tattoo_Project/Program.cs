@@ -22,7 +22,10 @@ namespace Tattoo_Project
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            builder.Services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            });
 
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
@@ -30,6 +33,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IArtistResponseService, ArtistResponseService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
             builder.Services.AddScoped<ITattooSessionService, TattooSessionService>();
+            builder.Services.AddScoped<ITokenService, TokenService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(

@@ -1,20 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs;
-using Tattoo_Project.Models;
-using Tattoo_Project.DTOs.ClientDTOs;
-using Tattoo_Project.DTOs.TattooSessionDTOs;
-using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
+using Tattoo_Project.DTOs.ClientDTOs;
 using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.DTOs.TattooSessionDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
 {
-    public class ClientService(TattooDbContext context) : IClientService
+    public class ClientService(
+        TattooDbContext context,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager)
+        : IClientService
     {
         public async Task<bool> CreateClientProfileAsync(CreateClientDto dto, string userId)
         {
@@ -26,21 +31,30 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            var userExists = await context.Users
-                .AnyAsync(u => u.Id == userId);
+            var user = await userManager.FindByIdAsync(userId);
 
-            if (!userExists)
+            if (user == null)
             {
                 return false;
             }
 
+            if (!await roleManager.RoleExistsAsync(UserRoles.Client))
+            {
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
+            }
+
+            if (!await userManager.IsInRoleAsync(user, UserRoles.Client))
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.Client);
+            }
+
             Client client = new()
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email!,
                 PhoneNumber = dto.PhoneNumber,
-                UserId = userId
+                UserId = user.Id
             };
 
             context.Clients.Add(client);
@@ -192,6 +206,14 @@ namespace Tattoo_Project.Services
 
             await context.SaveChangesAsync();
             return true;
+        }
+
+        private async Task EnsureRoleExists(string role)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
     }
 }

@@ -4,9 +4,6 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
 {
     public class CreateTattooArtistDto
     {
-        public string FirstName { get; set; } = null!;
-
-        public string LastName { get; set; } = null!;
 
         public string StudioName { get; set; } = null!;
 

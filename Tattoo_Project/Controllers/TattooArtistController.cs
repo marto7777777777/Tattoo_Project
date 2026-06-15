@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
@@ -10,7 +12,11 @@ namespace Tattoo_Project.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class TattooArtistController(ITattooArtistService service) : ControllerBase
+    public class TattooArtistController(
+    ITattooArtistService service,
+    UserManager<ApplicationUser> userManager,
+    ITokenService tokenService)
+    : ControllerBase
     {
         [HttpGet]
         public async Task<ActionResult<List<GetTattooArtistDto>>> GetArtists()
@@ -34,7 +40,7 @@ namespace Tattoo_Project.Controllers
             return Ok(tattooArtist);
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("profile")]
         public async Task<IActionResult> CreateTattooArtistProfile(CreateTattooArtistDto dto)
         {
@@ -52,7 +58,20 @@ namespace Tattoo_Project.Controllers
                 return BadRequest("Tattoo artist profile already exists or invalid data.");
             }
 
-            return Ok("Tattoo artist profile created successfully.");
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var token = await tokenService.GenerateJwtTokenAsync(user);
+
+            return Ok(new
+            {
+                Message = "Tattoo artist profile created successfully.",
+                Token = token
+            });
         }
 
         [HttpDelete("{id}")]

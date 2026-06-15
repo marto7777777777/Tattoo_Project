@@ -6,11 +6,11 @@ namespace Tattoo_Project.Services.Interfaces
     {
         Task<List<GetTattooSessionDto>> GetAllTattooSessionsAsync();
         Task<GetTattooSessionDto> GetTattooSessionByIdAsync(int id);
-        Task<bool> CreateTattooSessionAsync(CreateTattooSessionDto dto);
+        Task<bool> CreateTattooSessionAsync(CreateTattooSessionDto dto, string userId);
         Task<bool> UpdateTattooSessionAsync(int id, UpdateTattooSessionDto dto);
         Task<bool> DeleteTattooSessionAsync(int id);
-        Task<bool> CompleteTattooAsync(int tattooRequestId);
+        Task<bool> CompleteTattooAsync(int tattooRequestId, string userId);
         Task<bool> ContinueTattooAsync(int tattooRequestId);
-        Task<bool> AddMoreSessionsAsync(int tattooRequestId, AddAdditionalSessionsDto dto);
+        Task<bool> AddMoreSessionsAsync(int tattooRequestId, AddAdditionalSessionsDto dto, string userId);
     }
 }

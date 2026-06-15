@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tattoo_Project.DTOs.ArtistResponseDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -31,11 +35,27 @@ namespace Tattoo_Project.Controllers
             return Ok(artist);
         }
 
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
         [HttpPost]
         public async Task<IActionResult> CreateArtistResponse(CreateArtistResponseDto dto)
         {
-            var isCreated = await service.CreateArtistResponseAsync(dto);
-            return Ok(isCreated);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isCreated = await service.CreateArtistResponseAsync(dto, userId);
+
+            if (!isCreated)
+            {
+                return BadRequest("Artist response could not be created.");
+            }
+
+            return Ok("Artist response created successfully.");
         }
 
         [HttpDelete("{id}")]
@@ -43,6 +63,31 @@ namespace Tattoo_Project.Controllers
         {
             var isDeleted = await service.DeleteArtistResponseAsync(id);
             return Ok(isDeleted);
+        }
+
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = UserRoles.TattooArtist)]
+        [HttpPut("reject-tattoo-request/{tattooRequestId}")]
+        public async Task<IActionResult> RejectTattooRequest(int tattooRequestId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isRejected = await service.RejectTattooRequestAsync(
+                tattooRequestId,
+                userId);
+
+            if (!isRejected)
+            {
+                return BadRequest("Tattoo request could not be rejected.");
+            }
+
+            return Ok("Tattoo request rejected successfully.");
         }
     }
 }

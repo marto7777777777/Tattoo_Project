@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
@@ -32,11 +36,27 @@ namespace Tattoo_Project.Controllers
             return Ok(consultation);
         }
 
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
         [HttpPost]
-        public async Task<IActionResult> CreateConsultationAsync(CreateConsultationDto dto)
+        public async Task<IActionResult> CreateConsultation(CreateConsultationDto dto)
         {
-            var isCreated = await service.CreateConsultationAsync(dto);
-            return Ok(isCreated);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isCreated = await service.CreateConsultationAsync(dto, userId);
+
+            if (!isCreated)
+            {
+                return BadRequest("Consultation could not be created.");
+            }
+
+            return Ok("Consultation created successfully.");
         }
 
         [HttpPut("{id}")]
@@ -55,29 +75,55 @@ namespace Tattoo_Project.Controllers
             return Ok(isDeleted);
         }
 
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = UserRoles.TattooArtist)]
         [HttpPut("complete-consultation/{tattooRequestId}")]
-        public async Task<IActionResult> CompleteConsultationAsync(int tattooRequestId, CompleteConsultationDto dto)
+        public async Task<IActionResult> CompleteConsultation(
+    int tattooRequestId,
+    CompleteConsultationDto dto)
         {
-            bool result = await service
-                .CompleteConsultationAsync(tattooRequestId, dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!result)
+            if (userId == null)
             {
-                return BadRequest();
+                return Unauthorized();
+            }
+
+            var isCompleted = await service.CompleteConsultationAsync(
+                tattooRequestId,
+                dto,
+                userId);
+
+            if (!isCompleted)
+            {
+                return BadRequest("Consultation could not be completed.");
             }
 
             return Ok("Consultation completed successfully.");
         }
 
-        [HttpPut("rejected-consultation/{tattooRequestId}")]
-        public async Task<IActionResult> RejectedConsultationAsync(int tattooRequestId)
-        {
-            bool result = await service
-                .RejectConsultationAsync(tattooRequestId);
 
-            if (!result)
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = UserRoles.TattooArtist)]
+        [HttpPut("reject-consultation/{tattooRequestId}")]
+        public async Task<IActionResult> RejectConsultation(int tattooRequestId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
             {
-                return BadRequest();
+                return Unauthorized();
+            }
+
+            var isRejected = await service.RejectConsultationAsync(
+                tattooRequestId,
+                userId);
+
+            if (!isRejected)
+            {
+                return BadRequest("Consultation could not be rejected.");
             }
 
             return Ok("Consultation rejected successfully.");

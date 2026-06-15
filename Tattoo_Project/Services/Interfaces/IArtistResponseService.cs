@@ -6,8 +6,8 @@ namespace Tattoo_Project.Services.Interfaces
     {
         Task<List<GetArtistResponseDto>> GetAllArtistResponsesAsync();
         Task<GetArtistResponseDto> GetArtistResponseByIdAsync(int id);
-        Task<bool> CreateArtistResponseAsync(CreateArtistResponseDto dto);
+        Task<bool> CreateArtistResponseAsync(CreateArtistResponseDto dto, string userId);
         Task<bool> DeleteArtistResponseAsync(int id);
-        Task<bool> RejectTattooRequestAsync(int tattooRequestId);
+        Task<bool> RejectTattooRequestAsync(int tattooRequestId, string userId);
     }
 }

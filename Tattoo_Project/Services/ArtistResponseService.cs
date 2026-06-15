@@ -9,34 +9,58 @@ namespace Tattoo_Project.Services
 {
     public class ArtistResponseService(TattooDbContext context) : IArtistResponseService
     {
-        public async Task<bool> CreateArtistResponseAsync(CreateArtistResponseDto dto)
+        public async Task<bool> CreateArtistResponseAsync(
+    CreateArtistResponseDto dto,
+    string userId)
         {
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            if (tattooArtist == null)
+            {
+                return false;
+            }
+
             var tattooRequest = await context.TattooRequests
-                .Include(x => x.ArtistResponse)
-                .FirstOrDefaultAsync(x => x.Id == dto.TattooRequestId);
+                .FirstOrDefaultAsync(r => r.Id == dto.TattooRequestId);
 
             if (tattooRequest == null)
             {
-                return false; //Tattoo request not found.
+                return false;
             }
 
-            if (tattooRequest.ArtistResponse != null)
+            if (tattooRequest.TattooArtistId != tattooArtist.Id)
             {
-                return false; //This request already has a response.
+                return false;
             }
-            await context.ArtistResponses.AddAsync(new Models.ArtistResponse
+
+            var alreadyHasResponse = await context.ArtistResponses
+                .AnyAsync(r => r.TattooRequestId == dto.TattooRequestId);
+
+            if (alreadyHasResponse)
             {
-                CreatedOn = DateTime.Now,
-                EstimatedHours = dto.EstimatedHours,
-                EstimatedPrice = dto.EstimatedPrice,
+                return false;
+            }
+
+            if (tattooRequest.Status != RequestStatus.Submitted)
+            {
+                return false;
+            }
+
+            ArtistResponse artistResponse = new()
+            {
+                TattooRequestId = dto.TattooRequestId,
                 ResponseMessage = dto.ResponseMessage,
-                TattooRequestId = dto.TattooRequestId
-            });
+                EstimatedPrice = dto.EstimatedPrice,
+                CreatedOn = DateTime.UtcNow,
+                EstimatedHours = dto.EstimatedHours
+            };
 
-            tattooRequest.Status = Models.RequestStatus.WaitingForConsultation;
+            tattooRequest.Status = RequestStatus.WaitingForConsultation;
+
+            context.ArtistResponses.Add(artistResponse);
 
             await context.SaveChangesAsync();
-
 
             return true;
         }
@@ -88,23 +112,45 @@ namespace Tattoo_Project.Services
             return artistResponseDto;
         }
 
-        public async Task<bool> RejectTattooRequestAsync(int tattooRequestId)
+        public async Task<bool> RejectTattooRequestAsync(
+    int tattooRequestId,
+    string userId)
         {
-            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (request is null)
+            if (tattooArtist == null)
             {
                 return false;
             }
 
-            //Проверка за статуса
-            if (request.Status != RequestStatus.Submitted &&
-                request.Status != RequestStatus.UnderReview)
+            var tattooRequest = await context.TattooRequests
+                .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
+
+            if (tattooRequest == null)
             {
                 return false;
             }
 
-            request.Status = RequestStatus.Rejected;
+            if (tattooRequest.TattooArtistId != tattooArtist.Id)
+            {
+                return false;
+            }
+
+            if (tattooRequest.Status != RequestStatus.Submitted)
+            {
+                return false;
+            }
+
+            var alreadyHasResponse = await context.ArtistResponses
+                .AnyAsync(r => r.TattooRequestId == tattooRequestId);
+
+            if (alreadyHasResponse)
+            {
+                return false;
+            }
+
+            tattooRequest.Status = RequestStatus.Rejected;
 
             await context.SaveChangesAsync();
 

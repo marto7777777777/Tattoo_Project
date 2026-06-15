@@ -22,12 +22,6 @@ namespace Tattoo_Project.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            if (dto.Role != UserRoles.Client &&
-                dto.Role != UserRoles.TattooArtist)
-            {
-                return BadRequest("Invalid role.");
-            }
-
             var existingUserName = await userManager.FindByNameAsync(dto.UserName);
 
             if (existingUserName != null)
@@ -57,21 +51,7 @@ namespace Tattoo_Project.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await EnsureRoleExists(UserRoles.Client);
-            await EnsureRoleExists(UserRoles.TattooArtist);
-
-            if (dto.Role == UserRoles.Client)
-            {
-                await userManager.AddToRoleAsync(user, UserRoles.Client);
-            }
-
-            if (dto.Role == UserRoles.TattooArtist)
-            {
-                await userManager.AddToRoleAsync(user, UserRoles.Client);
-                await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
-            }
-
-            return Ok("User registered successfully.");
+            return Ok("User registered successfully. Please create a profile.");
         }
 
         [HttpPost("login")]

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.AuthDTOs;
@@ -12,8 +14,13 @@ namespace Tattoo_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientController(IClientService service) : ControllerBase
+    public class ClientController(
+    IClientService service,
+    UserManager<ApplicationUser> userManager,
+    ITokenService tokenService)
+    : ControllerBase
     {
+        
         [HttpGet]
         public async Task<ActionResult<GetClientDto>> GetAllClients()
         {
@@ -47,7 +54,7 @@ namespace Tattoo_Project.Controllers
             return Ok(isDeleted);
         }
 
-        [Authorize(Roles = UserRoles.Client)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("profile")]
         public async Task<IActionResult> CreateClientProfile(CreateClientDto dto)
         {
@@ -65,7 +72,20 @@ namespace Tattoo_Project.Controllers
                 return BadRequest("Client profile already exists or invalid data.");
             }
 
-            return Ok("Client profile created successfully.");
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var token = await tokenService.GenerateJwtTokenAsync(user);
+
+            return Ok(new
+            {
+                Message = "Client profile created successfully.",
+                Token = token
+            });
         }
 
         [HttpPut("{id}")]

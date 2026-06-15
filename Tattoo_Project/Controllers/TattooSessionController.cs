@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -34,12 +38,27 @@ namespace Tattoo_Project.Controllers
             return Ok(tattooSession);
         }
 
+        [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = UserRoles.Client)]
         [HttpPost]
-        public async Task<IActionResult> CreateTattooSessionAsync(CreateTattooSessionDto dto)
+        public async Task<IActionResult> CreateTattooSession(CreateTattooSessionDto dto)
         {
-            var isCreated = await service.CreateTattooSessionAsync(dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return Ok(isCreated);
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isCreated = await service.CreateTattooSessionAsync(dto, userId);
+
+            if (!isCreated)
+            {
+                return BadRequest("Tattoo session could not be created.");
+            }
+
+            return Ok("Tattoo session created successfully.");
         }
 
         [HttpPut("{id}")]
@@ -58,14 +77,26 @@ namespace Tattoo_Project.Controllers
             return Ok(isDeleted);
         }
 
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = UserRoles.TattooArtist)]
         [HttpPut("complete-tattoo/{tattooRequestId}")]
-        public async Task<IActionResult> CompleteTattooAsync(int tattooRequestId)
+        public async Task<IActionResult> CompleteTattoo(int tattooRequestId)
         {
-            var result = await service.CompleteTattooAsync(tattooRequestId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!result)
+            if (userId == null)
             {
-                return BadRequest();
+                return Unauthorized();
+            }
+
+            var isCompleted = await service.CompleteTattooAsync(
+                tattooRequestId,
+                userId);
+
+            if (!isCompleted)
+            {
+                return BadRequest("Tattoo could not be completed.");
             }
 
             return Ok("Tattoo completed successfully.");
@@ -84,17 +115,32 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo countinue.");
         }
 
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = UserRoles.TattooArtist)]
         [HttpPut("add-more-sessions/{tattooRequestId}")]
-        public async Task<IActionResult> AddMoreSessionsAsync(int tattooRequestId, AddAdditionalSessionsDto dto)
+        public async Task<IActionResult> AddMoreSessions(
+    int tattooRequestId,
+    AddAdditionalSessionsDto dto)
         {
-            var result = await service.AddMoreSessionsAsync(tattooRequestId, dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!result)
+            if (userId == null)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
-            return Ok($"{dto.AdditionalSessions} more sessions added!");
+            var isAdded = await service.AddMoreSessionsAsync(
+                tattooRequestId,
+                dto,
+                userId);
+
+            if (!isAdded)
+            {
+                return BadRequest("More sessions could not be added.");
+            }
+
+            return Ok("More sessions added successfully.");
         }
     }
 }

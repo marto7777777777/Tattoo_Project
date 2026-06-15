@@ -11,6 +11,7 @@
         public int TattooRequestId { get; set; }
 
         public bool IsOnline { get; set; }
+        public bool IsCompleted { get; set; }
 
         public string? Notes { get; set; }
 

@@ -55,24 +55,47 @@ namespace Tattoo_Project.Services
             }).ToListAsync();
             return tattooRequests;
         }
-            
 
-        public async Task<bool> CreateTattooRequest(CreateTattooRequestDto dto)
+
+        public async Task<bool> CreateTattooRequest(
+            CreateTattooRequestDto dto,
+            string userId)
         {
-            context.TattooRequests.AddAsync(new TattooRequest
+            var client = await context.Clients
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (client == null)
             {
-                ClientId = dto.ClientId,
+                return false;
+            }
+
+            var tattooArtistExists = await context.TattooArtists
+                .AnyAsync(a => a.Id == dto.TattooArtistId);
+
+            if (!tattooArtistExists)
+            {
+                return false;
+            }
+
+            TattooRequest tattooRequest = new()
+            {
+                ClientId = client.Id,
                 TattooArtistId = dto.TattooArtistId,
-                Placement = dto.Placement,
                 Description = dto.Description,
-                CreatedOn = DateTime.Now,
+                Placement = dto.Placement,
                 Status = RequestStatus.Submitted,
-                Images = dto.Images.Select(x => new TattooReferenceImage
+                CreatedOn = DateTime.UtcNow,
+
+                Images = dto.Images.Select(i => new TattooReferenceImage
                 {
-                    ImageUrl = x.ImageUrl
+                    ImageUrl = i.ImageUrl
                 }).ToList()
-            });
+            };
+
+            context.TattooRequests.Add(tattooRequest);
+
             await context.SaveChangesAsync();
+
             return true;
         }
 

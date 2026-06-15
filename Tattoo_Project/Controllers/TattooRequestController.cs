@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.TattooRequestDTOs;
 using Tattoo_Project.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Tattoo_Project.Models;
 
 namespace Tattoo_Project.Controllers
 {
@@ -31,11 +34,25 @@ namespace Tattoo_Project.Controllers
             return Ok(tattooRequest);
         }
 
+        [Authorize(Roles = UserRoles.Client)]
         [HttpPost]
         public async Task<ActionResult<bool>> CreateTattooRequest(CreateTattooRequestDto dto)
         {
-            var isCreated = await service.CreateTattooRequest(dto);
-            return Ok(isCreated);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isCreated = await service.CreateTattooRequest(dto, userId);
+
+            if (!isCreated)
+            {
+                return BadRequest("Tattoo request could not be created.");
+            }
+
+            return Ok(true);
         }
 
         [HttpPut("{id}")]

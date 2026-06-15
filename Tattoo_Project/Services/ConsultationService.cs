@@ -8,77 +8,100 @@ namespace Tattoo_Project.Services
 {
     public class ConsultationService(TattooDbContext context) : IConsultationService
     {
-        public async Task<bool> CreateConsultationAsync(CreateConsultationDto dto)
+        public async Task<bool> CreateConsultationAsync(
+    CreateConsultationDto dto,
+    string userId)
         {
-            var tattooRequest = await context.TattooRequests
-        .FirstOrDefaultAsync(tr => tr.Id == dto.TattooRequestId);
+            var client = await context.Clients
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
-            // 1. Съществува ли такъв tattoorequest
+            if (client == null)
+            {
+                return false;
+            }
+
+            var tattooRequest = await context.TattooRequests
+                .Include(r => r.TattooArtist)
+                .FirstOrDefaultAsync(r => r.Id == dto.TattooRequestId);
+
             if (tattooRequest == null)
             {
                 return false;
             }
 
-            // 2. Не може да се създаде consultation преди tattooResponse.
+            if (tattooRequest.ClientId != client.Id)
+            {
+                return false;
+            }
+
             if (tattooRequest.Status != RequestStatus.WaitingForConsultation)
             {
                 return false;
             }
 
-            // 3. Валиден интервал ли е
+            var alreadyHasConsultation = await context.Consultations
+                .AnyAsync(c => c.TattooRequestId == dto.TattooRequestId);
+
+            if (alreadyHasConsultation)
+            {
+                return false;
+            }
+
+            if (dto.StartTime <= DateTime.UtcNow)
+            {
+                return false;
+            }
+
+            if (dto.EndTime <= DateTime.UtcNow)
+            {
+                return false;
+            }
+
             if (dto.StartTime >= dto.EndTime)
             {
                 return false;
             }
 
-            // 4. Не е ли в миналото (по желание)
-            if (dto.StartTime < DateTime.UtcNow)
+            var tattooArtistId = tattooRequest.TattooArtistId;
+
+            var hasConsultationConflict = await context.Consultations.AnyAsync(c =>
+                c.TattooRequest.TattooArtistId == tattooArtistId &&
+                dto.StartTime < c.EndTime &&
+                dto.EndTime > c.StartTime);
+
+            if (hasConsultationConflict)
             {
                 return false;
             }
 
-            // 5. Има ли вече консултация за тази заявка
-            var consultationExists = await context.Consultations
-                .AnyAsync(c => c.TattooRequestId == dto.TattooRequestId);
-
-            if (consultationExists)
-            {
-                return false;
-            }
-
-            // 6. Свободен ли е татуистъта проверка за консултации
-            var hasConflict = await context.Consultations
-                .AnyAsync(c =>
-                    c.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
-                    dto.StartTime < c.EndTime &&
-                    dto.EndTime > c.StartTime);
-
-            if (hasConflict)
-            {
-                return false; 
-            }
-
-            //7.Свободен ли е татуйста провека за сесии
-            var hasSessionConflict = await context.TattooSessions
-                .AnyAsync(s =>
-            s.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
-            dto.StartTime < s.EndTime &&
-            dto.EndTime > s.StartTime);
+            var hasSessionConflict = await context.TattooSessions.AnyAsync(s =>
+                s.TattooRequest.TattooArtistId == tattooArtistId &&
+                dto.StartTime < s.EndTime &&
+                dto.EndTime > s.StartTime);
 
             if (hasSessionConflict)
             {
                 return false;
             }
 
-            await context.Consultations.AddAsync(new Models.Consultation
+            if (dto.EndTime - dto.StartTime < TimeSpan.FromMinutes(15))
             {
+                return false;
+            }
+
+            Consultation consultation = new()
+            {
+                TattooRequestId = dto.TattooRequestId,
                 StartTime = dto.StartTime,
                 EndTime = dto.EndTime,
                 Notes = dto.Notes,
-                TattooRequestId = dto.TattooRequestId
-            });
+                IsCompleted = false
+            };
+
+            context.Consultations.Add(consultation);
 
             await context.SaveChangesAsync();
+
             return true;
         }
 
@@ -182,68 +205,117 @@ namespace Tattoo_Project.Services
             return true;
         }
 
-        public async Task<bool> CompleteConsultationAsync(int tattooRequestId, CompleteConsultationDto dto)
+        public async Task<bool> CompleteConsultationAsync(
+    int tattooRequestId,
+    CompleteConsultationDto dto,
+    string userId)
         {
-            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (request is null)
+            if (tattooArtist == null)
             {
                 return false;
             }
 
-            if (request.Status != RequestStatus.WaitingForConsultation)
+            var tattooRequest = await context.TattooRequests
+                .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
+
+            if (tattooRequest == null)
             {
                 return false;
             }
 
-            var consultationExists = await context.Consultations
-                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
-
-            if (!consultationExists)
+            if (tattooRequest.TattooArtistId != tattooArtist.Id)
             {
                 return false;
             }
 
-            request.Status = RequestStatus.ConsultationCompleted;
-
-
-            //Броя на сесиите равен ли е на броя на изброените цени
-            if (dto.SessionsToBook != dto.PriceForSession.Count)
+            if (tattooRequest.Status != RequestStatus.WaitingForConsultation)
             {
                 return false;
             }
 
-            request.RemainingSessionsToBook = dto.SessionsToBook;
-            request.PriceForSession = dto.PriceForSession;
+            var consultation = await context.Consultations
+                .FirstOrDefaultAsync(c => c.TattooRequestId == tattooRequestId);
+
+            if (consultation == null)
+            {
+                return false;
+            }
+
+            if (consultation.IsCompleted)
+            {
+                return false;
+            }
+
+            if (dto.SessionsToBook <= 0)
+            {
+                return false;
+            }
+
+            if (dto.PriceForSession == null ||
+                dto.PriceForSession.Count != dto.SessionsToBook)
+            {
+                return false;
+            }
+
+            if (dto.PriceForSession.Any(price => price <= 0))
+            {
+                return false;
+            }
+
+            consultation.IsCompleted = true;
+
+            tattooRequest.Status = RequestStatus.ConsultationCompleted;
+            tattooRequest.RemainingSessionsToBook = dto.SessionsToBook;
+            tattooRequest.PriceForSession = dto.PriceForSession;
 
             await context.SaveChangesAsync();
 
             return true;
         }
 
-        public async Task<bool> RejectConsultationAsync(int tattooRequestId)
+        public async Task<bool> RejectConsultationAsync(
+    int tattooRequestId,
+    string userId)
         {
-            var request = await context.TattooRequests.FirstOrDefaultAsync(x => x.Id == tattooRequestId);
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (request is null)
+            if (tattooArtist == null)
             {
                 return false;
             }
 
-            if (request.Status != RequestStatus.WaitingForConsultation)
+            var tattooRequest = await context.TattooRequests
+                .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
+
+            if (tattooRequest == null)
             {
                 return false;
             }
 
-            var consultationExists = await context.Consultations
-                .AnyAsync(x => x.TattooRequestId == tattooRequestId);
-
-            if (!consultationExists)
+            if (tattooRequest.TattooArtistId != tattooArtist.Id)
             {
                 return false;
             }
 
-            request.Status = RequestStatus.Rejected;
+            if (tattooRequest.Status != RequestStatus.WaitingForConsultation &&
+                tattooRequest.Status != RequestStatus.ConsultationCompleted)
+            {
+                return false;
+            }
+
+            var consultation = await context.Consultations
+                .FirstOrDefaultAsync(c => c.TattooRequestId == tattooRequestId);
+
+            if (consultation == null)
+            {
+                return false;
+            }
+
+            tattooRequest.Status = RequestStatus.Rejected;
 
             await context.SaveChangesAsync();
 

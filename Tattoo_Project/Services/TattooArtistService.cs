@@ -1,19 +1,24 @@
-﻿using Tattoo_Project.Data;
-using Tattoo_Project.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Tattoo_Project.DTOs.TattooArtistDTOs;
-using Tattoo_Project.DTOs.TattooRequestDTOs;
-using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
-using Tattoo_Project.DTOs.TattooSessionDTOs;
+using Microsoft.EntityFrameworkCore;
+using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
 using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.DTOs.TattooArtistDTOs;
+using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
+using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.DTOs.TattooSessionDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services
 {
-    public class TattooArtistService(TattooDbContext context) : ITattooArtistService
+    public class TattooArtistService(
+        TattooDbContext context,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager)
+        : ITattooArtistService
     {
         public async Task<List<GetTattooArtistDto>> GetAllArtistsAsync()
         => context.TattooArtists == null || !context.TattooArtists.Any()? null
@@ -175,9 +180,9 @@ namespace Tattoo_Project.Services
         }
 
         public async Task<bool> CreateTattooArtistProfileAsync(
-    CreateTattooArtistDto dto,
-    string userId)
-        {
+            CreateTattooArtistDto dto,
+            string userId)
+            {
             var alreadyHasArtistProfile = await context.TattooArtists
                 .AnyAsync(a => a.UserId == userId);
 
@@ -186,8 +191,7 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            var user = await context.Users
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
@@ -200,15 +204,47 @@ namespace Tattoo_Project.Services
                 return false;
             }
 
-            if (!dto.RequiresDeposit)
+            if (!await roleManager.RoleExistsAsync(UserRoles.Client))
             {
-                dto.DepositAmount = null;
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
+            }
+
+            if (!await roleManager.RoleExistsAsync(UserRoles.TattooArtist))
+            {
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.TattooArtist));
+            }
+
+            if (!await userManager.IsInRoleAsync(user, UserRoles.Client))
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.Client);
+            }
+
+            if (!await userManager.IsInRoleAsync(user, UserRoles.TattooArtist))
+            {
+                await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
+            }
+
+            var hasClientProfile = await context.Clients
+                .AnyAsync(c => c.UserId == userId);
+
+            if (!hasClientProfile)
+            {
+                Client client = new()
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email!,
+                    PhoneNumber = dto.PhoneNumber,
+                    UserId = user.Id
+                };
+
+                context.Clients.Add(client);
             }
 
             TattooArtist tattooArtist = new()
             {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Email = user.Email!,
 
                 StudioName = dto.StudioName,
@@ -220,13 +256,13 @@ namespace Tattoo_Project.Services
 
                 OffersOnlineConsultation = dto.OffersOnlineConsultation,
                 RequiresDeposit = dto.RequiresDeposit,
-                DepositAmount = dto.DepositAmount,
+                DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null,
 
-                UserId = userId,
+                UserId = user.Id,
 
                 Requirements = dto.Requirements.Select(r => new ArtistRequirement
                 {
-                    Description = dto.Description
+                    Description = r.Description
                 }).ToList(),
 
                 PortfolioImages = dto.PortfolioImages.Select(p => new PortfolioImage
@@ -285,6 +321,14 @@ namespace Tattoo_Project.Services
             await context.SaveChangesAsync();
             return true;
             
+        }
+
+        private async Task EnsureRoleExists(string role)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
         }
     }
 }
