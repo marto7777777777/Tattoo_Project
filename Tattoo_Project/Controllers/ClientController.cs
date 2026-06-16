@@ -23,9 +23,14 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllClients()
         {
-            var clients = await service.GetAllClientsAsync();
+            var result = await service.GetAllClientsAsync();
 
-            return Ok(clients);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -34,14 +39,14 @@ namespace Tattoo_Project.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetClientById(int id)
         {
-            var client = await service.GetClientByIdAsync(id);
+            var result = await service.GetClientByIdAsync(id);
 
-            if (client == null)
+            if (!result.Success)
             {
-                return NotFound("Client not found.");
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok(client);
+            return Ok(result.Data);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -55,11 +60,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCreated = await service.CreateClientProfileAsync(dto, userId);
+            var result = await service.CreateClientProfileAsync(dto, userId);
 
-            if (!isCreated)
+            if (!result.Success)
             {
-                return BadRequest("Client profile already exists or invalid data.");
+                return BadRequest(result.ErrorMessage);
             }
 
             var user = await userManager.FindByIdAsync(userId);
@@ -91,11 +96,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isUpdated = await service.UpdateClientProfileAsync(dto, userId);
+            var result = await service.UpdateClientProfileAsync(dto, userId);
 
-            if (!isUpdated)
+            if (!result.Success)
             {
-                return BadRequest("Client profile could not be updated.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Client profile updated successfully.");
@@ -107,11 +112,11 @@ namespace Tattoo_Project.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteClient(int id)
         {
-            var isDeleted = await service.DeleteClientAsync(id);
+            var result = await service.DeleteClientAsync(id);
 
-            if (!isDeleted)
+            if (!result.Success)
             {
-                return NotFound("Client not found.");
+                return NotFound(result.ErrorMessage);
             }
 
             return Ok("Client deleted successfully.");

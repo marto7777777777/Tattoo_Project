@@ -6,108 +6,122 @@ using Tattoo_Project.DTOs.ArtistResponseDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
-[ApiController]
-[Route("api/[controller]")]
-public class ArtistResponseController(IArtistResponseService service)
-    : ControllerBase
+namespace Tattoo_Project.Controllers
 {
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.Admin)]
-    [HttpGet]
-    public async Task<IActionResult> GetAllArtistResponses()
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ArtistResponseController(IArtistResponseService service)
+        : ControllerBase
     {
-        var responses = await service.GetAllArtistResponsesAsync();
-
-        return Ok(responses);
-    }
-
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.TattooArtist)]
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetArtistResponseById(int id)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId == null)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
+        [HttpGet]
+        public async Task<IActionResult> GetAllArtistResponses()
         {
-            return Unauthorized();
+            var result = await service.GetAllArtistResponsesAsync();
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
-        var response = await service.GetArtistResponseByIdAsync(id, userId);
-
-        if (response == null)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetArtistResponseById(int id)
         {
-            return NotFound("Artist response not found.");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.GetArtistResponseByIdAsync(id, userId);
+
+            if (!result.Success)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
-        return Ok(response);
-    }
-
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.TattooArtist)]
-    [HttpGet("my-responses")]
-    public async Task<IActionResult> GetMyArtistResponses()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId == null)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpGet("my-responses")]
+        public async Task<IActionResult> GetMyArtistResponses()
         {
-            return Unauthorized();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.GetMyArtistResponsesAsync(userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
-        var responses = await service.GetMyArtistResponsesAsync(userId);
-
-        return Ok(responses);
-    }
-
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.TattooArtist)]
-    [HttpPost]
-    public async Task<IActionResult> CreateArtistResponse(CreateArtistResponseDto dto)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId == null)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpPost]
+        public async Task<IActionResult> CreateArtistResponse(
+            CreateArtistResponseDto dto)
         {
-            return Unauthorized();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.CreateArtistResponseAsync(dto, userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok("Artist response created successfully.");
         }
 
-        var isCreated = await service.CreateArtistResponseAsync(dto, userId);
-
-        if (!isCreated)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpPut("reject-tattoo-request/{tattooRequestId}")]
+        public async Task<IActionResult> RejectTattooRequest(int tattooRequestId)
         {
-            return BadRequest("Artist response could not be created.");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.RejectTattooRequestAsync(
+                tattooRequestId,
+                userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok("Tattoo request rejected successfully.");
         }
-
-        return Ok("Artist response created successfully.");
-    }
-
-    [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.TattooArtist)]
-    [HttpPut("reject-tattoo-request/{tattooRequestId}")]
-    public async Task<IActionResult> RejectTattooRequest(int tattooRequestId)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId == null)
-        {
-            return Unauthorized();
-        }
-
-        var isRejected = await service.RejectTattooRequestAsync(
-            tattooRequestId,
-            userId);
-
-        if (!isRejected)
-        {
-            return BadRequest("Tattoo request could not be rejected.");
-        }
-
-        return Ok("Tattoo request rejected successfully.");
     }
 }

@@ -1,21 +1,22 @@
 ﻿using Tattoo_Project.DTOs.TattooArtistDTOs;
+using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services.Interfaces
 {
     public interface ITattooArtistService
     {
-        Task<ICollection<GetTattooArtistDto>> GetAllTattooArtistsAsync();
+        Task<ResultService<ICollection<GetTattooArtistDto>>> GetAllTattooArtistsAsync();
 
-        Task<GetTattooArtistDto?> GetTattooArtistByIdAsync(int id);
+        Task<ResultService<GetTattooArtistDto>> GetTattooArtistByIdAsync(int id);
 
-        Task<bool> CreateTattooArtistProfileAsync(
+        Task<ResultService> CreateTattooArtistProfileAsync(
             CreateTattooArtistDto dto,
             string userId);
 
-        Task<bool> UpdateTattooArtistProfileAsync(
+        Task<ResultService> UpdateTattooArtistProfileAsync(
             UpdateArtistDto dto,
             string userId);
 
-        Task<bool> DeleteTattooArtistAsync(int id);
+        Task<ResultService> DeleteTattooArtistAsync(int id);
     }
 }

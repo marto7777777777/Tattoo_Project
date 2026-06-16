@@ -19,9 +19,14 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTattooSessions()
         {
-            var tattooSessions = await service.GetAllTattooSessionsAsync();
+            var result = await service.GetAllTattooSessionsAsync();
 
-            return Ok(tattooSessions);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -37,19 +42,19 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var tattooSession = await service.GetTattooSessionByIdAsync(
+            var result = await service.GetTattooSessionByIdAsync(
                 id,
                 userId,
                 User.IsInRole(UserRoles.Admin),
                 User.IsInRole(UserRoles.Client),
                 User.IsInRole(UserRoles.TattooArtist));
 
-            if (tattooSession == null)
+            if (!result.Success)
             {
-                return NotFound("Tattoo session not found.");
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok(tattooSession);
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -66,11 +71,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCreated = await service.CreateTattooSessionAsync(dto, userId);
+            var result = await service.CreateTattooSessionAsync(dto, userId);
 
-            if (!isCreated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo session could not be created.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo session created successfully.");
@@ -91,14 +96,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isUpdated = await service.UpdateTattooSessionAsync(
-                id,
-                dto,
-                userId);
+            var result = await service.UpdateTattooSessionAsync(id, dto, userId);
 
-            if (!isUpdated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo session could not be updated.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo session updated successfully.");
@@ -117,11 +119,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isDeleted = await service.DeleteTattooSessionAsync(id, userId);
+            var result = await service.DeleteTattooSessionAsync(id, userId);
 
-            if (!isDeleted)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo session could not be deleted.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo session deleted successfully.");
@@ -142,14 +144,14 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isAdded = await service.AddMoreSessionsAsync(
+            var result = await service.AddMoreSessionsAsync(
                 tattooRequestId,
                 dto,
                 userId);
 
-            if (!isAdded)
+            if (!result.Success)
             {
-                return BadRequest("More sessions could not be added.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("More sessions added successfully.");
@@ -168,28 +170,26 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCompleted = await service.CompleteTattooAsync(
+            var result = await service.CompleteTattooAsync(
                 tattooRequestId,
                 userId);
 
-            if (!isCompleted)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo could not be completed.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo completed successfully.");
         }
 
-        // Optional / future feature.
-        // Оставяме го без Identity засега, защото не е част от активния workflow.
         [HttpPut("continue-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> ContinueTattoo(int tattooRequestId)
         {
-            var isContinued = await service.ContinueTattooAsync(tattooRequestId);
+            var result = await service.ContinueTattooAsync(tattooRequestId);
 
-            if (!isContinued)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo could not be continued.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo continued successfully.");

@@ -19,9 +19,14 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTattooRequests()
         {
-            var tattooRequests = await service.GetAllTattooRequestsAsync();
+            var result = await service.GetAllTattooRequestsAsync();
 
-            return Ok(tattooRequests);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -37,19 +42,19 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var tattooRequest = await service.GetTattooRequestByIdAsync(
+            var result = await service.GetTattooRequestByIdAsync(
                 id,
                 userId,
                 User.IsInRole(UserRoles.Admin),
                 User.IsInRole(UserRoles.Client),
                 User.IsInRole(UserRoles.TattooArtist));
 
-            if (tattooRequest == null)
+            if (!result.Success)
             {
-                return NotFound("Tattoo request not found.");
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok(tattooRequest);
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -65,9 +70,14 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var tattooRequests = await service.GetMyTattooRequestsAsync(userId);
+            var result = await service.GetMyTattooRequestsAsync(userId);
 
-            return Ok(tattooRequests);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -84,11 +94,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCreated = await service.CreateTattooRequest(dto, userId);
+            var result = await service.CreateTattooRequestAsync(dto, userId);
 
-            if (!isCreated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo request could not be created.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo request created successfully.");
@@ -109,14 +119,14 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isUpdated = await service.UpdateTattooRequestAsync(
+            var result = await service.UpdateTattooRequestAsync(
                 id,
                 dto,
                 userId);
 
-            if (!isUpdated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo request could not be updated.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo request updated successfully.");

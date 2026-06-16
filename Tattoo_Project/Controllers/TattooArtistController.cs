@@ -20,22 +20,27 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllTattooArtists()
         {
-            var tattooArtists = await service.GetAllTattooArtistsAsync();
+            var result = await service.GetAllTattooArtistsAsync();
 
-            return Ok(tattooArtists);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTattooArtistById(int id)
         {
-            var tattooArtist = await service.GetTattooArtistByIdAsync(id);
+            var result = await service.GetTattooArtistByIdAsync(id);
 
-            if (tattooArtist == null)
+            if (!result.Success)
             {
-                return NotFound("Tattoo artist not found.");
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok(tattooArtist);
+            return Ok(result.Data);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -50,13 +55,13 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCreated = await service.CreateTattooArtistProfileAsync(
+            var result = await service.CreateTattooArtistProfileAsync(
                 dto,
                 userId);
 
-            if (!isCreated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo artist profile already exists or invalid data.");
+                return BadRequest(result.ErrorMessage);
             }
 
             var user = await userManager.FindByIdAsync(userId);
@@ -89,13 +94,13 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isUpdated = await service.UpdateTattooArtistProfileAsync(
+            var result = await service.UpdateTattooArtistProfileAsync(
                 dto,
                 userId);
 
-            if (!isUpdated)
+            if (!result.Success)
             {
-                return BadRequest("Tattoo artist profile could not be updated.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Tattoo artist profile updated successfully.");
@@ -107,11 +112,11 @@ namespace Tattoo_Project.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTattooArtist(int id)
         {
-            var isDeleted = await service.DeleteTattooArtistAsync(id);
+            var result = await service.DeleteTattooArtistAsync(id);
 
-            if (!isDeleted)
+            if (!result.Success)
             {
-                return NotFound("Tattoo artist not found.");
+                return NotFound(result.ErrorMessage);
             }
 
             return Ok("Tattoo artist deleted successfully.");

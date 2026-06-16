@@ -4,6 +4,7 @@ using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ClientDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
+using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
@@ -13,9 +14,9 @@ namespace Tattoo_Project.Services
         RoleManager<IdentityRole> roleManager)
         : IClientService
     {
-        public async Task<ICollection<GetClientDto>> GetAllClientsAsync()
+        public async Task<ResultService<ICollection<GetClientDto>>> GetAllClientsAsync()
         {
-            return await context.Clients
+            var clients = await context.Clients
                 .Select(c => new GetClientDto
                 {
                     FirstName = c.FirstName,
@@ -24,28 +25,32 @@ namespace Tattoo_Project.Services
                     PhoneNumber = c.PhoneNumber
                 })
                 .ToListAsync();
+
+            return ResultService<ICollection<GetClientDto>>.Ok(clients);
         }
 
-        public async Task<GetClientDto?> GetClientByIdAsync(int id)
+        public async Task<ResultService<GetClientDto>> GetClientByIdAsync(int id)
         {
             var client = await context.Clients
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (client == null)
             {
-                return null;
+                return ResultService<GetClientDto>.Fail("Client was not found.");
             }
 
-            return new GetClientDto
+            var dto = new GetClientDto
             {
                 FirstName = client.FirstName,
                 LastName = client.LastName,
                 Email = client.Email,
                 PhoneNumber = client.PhoneNumber
             };
+
+            return ResultService<GetClientDto>.Ok(dto);
         }
 
-        public async Task<bool> CreateClientProfileAsync(
+        public async Task<ResultService> CreateClientProfileAsync(
             CreateClientDto dto,
             string userId)
         {
@@ -54,14 +59,14 @@ namespace Tattoo_Project.Services
 
             if (alreadyHasClientProfile)
             {
-                return false;
+                return ResultService.Fail("Client profile already exists.");
             }
 
             var user = await userManager.FindByIdAsync(userId);
 
             if (user == null)
             {
-                return false;
+                return ResultService.Fail("User was not found.");
             }
 
             if (!await roleManager.RoleExistsAsync(UserRoles.Client))
@@ -87,10 +92,10 @@ namespace Tattoo_Project.Services
 
             await context.SaveChangesAsync();
 
-            return true;
+            return ResultService.Ok();
         }
 
-        public async Task<bool> UpdateClientProfileAsync(
+        public async Task<ResultService> UpdateClientProfileAsync(
             UpdateClientDto dto,
             string userId)
         {
@@ -99,31 +104,31 @@ namespace Tattoo_Project.Services
 
             if (client == null)
             {
-                return false;
+                return ResultService.Fail("Client profile was not found.");
             }
 
             client.PhoneNumber = dto.PhoneNumber;
 
             await context.SaveChangesAsync();
 
-            return true;
+            return ResultService.Ok();
         }
 
-        public async Task<bool> DeleteClientAsync(int id)
+        public async Task<ResultService> DeleteClientAsync(int id)
         {
             var client = await context.Clients
                 .FirstOrDefaultAsync(c => c.Id == id);
 
             if (client == null)
             {
-                return false;
+                return ResultService.Fail("Client was not found.");
             }
 
             context.Clients.Remove(client);
 
             await context.SaveChangesAsync();
 
-            return true;
+            return ResultService.Ok();
         }
     }
 }

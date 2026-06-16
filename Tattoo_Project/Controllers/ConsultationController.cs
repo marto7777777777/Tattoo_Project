@@ -19,9 +19,14 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllConsultations()
         {
-            var consultations = await service.GetAllConsultationsAsync();
+            var result = await service.GetAllConsultationsAsync();
 
-            return Ok(consultations);
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -37,19 +42,19 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var consultation = await service.GetConsultationByIdAsync(
+            var result = await service.GetConsultationByIdAsync(
                 id,
                 userId,
                 User.IsInRole(UserRoles.Admin),
                 User.IsInRole(UserRoles.Client),
                 User.IsInRole(UserRoles.TattooArtist));
 
-            if (consultation == null)
+            if (!result.Success)
             {
-                return NotFound("Consultation not found.");
+                return NotFound(result.ErrorMessage);
             }
 
-            return Ok(consultation);
+            return Ok(result.Data);
         }
 
         [Authorize(
@@ -65,11 +70,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCreated = await service.CreateConsultationAsync(dto, userId);
+            var result = await service.CreateConsultationAsync(dto, userId);
 
-            if (!isCreated)
+            if (!result.Success)
             {
-                return BadRequest("Consultation could not be created.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Consultation created successfully.");
@@ -90,14 +95,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isUpdated = await service.UpdateConsultationAsync(
-                id,
-                dto,
-                userId);
+            var result = await service.UpdateConsultationAsync(id, dto, userId);
 
-            if (!isUpdated)
+            if (!result.Success)
             {
-                return BadRequest("Consultation could not be updated.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Consultation updated successfully.");
@@ -116,11 +118,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isDeleted = await service.DeleteConsultationAsync(id, userId);
+            var result = await service.DeleteConsultationAsync(id, userId);
 
-            if (!isDeleted)
+            if (!result.Success)
             {
-                return BadRequest("Consultation could not be deleted.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Consultation deleted successfully.");
@@ -141,14 +143,14 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isCompleted = await service.CompleteConsultationAsync(
+            var result = await service.CompleteConsultationAsync(
                 tattooRequestId,
                 dto,
                 userId);
 
-            if (!isCompleted)
+            if (!result.Success)
             {
-                return BadRequest("Consultation could not be completed.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Consultation completed successfully.");
@@ -167,13 +169,13 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var isRejected = await service.RejectConsultationAsync(
+            var result = await service.RejectConsultationAsync(
                 tattooRequestId,
                 userId);
 
-            if (!isRejected)
+            if (!result.Success)
             {
-                return BadRequest("Consultation could not be rejected.");
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok("Consultation rejected successfully.");

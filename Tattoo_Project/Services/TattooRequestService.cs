@@ -1,35 +1,36 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
+using Tattoo_Project.DTOs.ArtistResponceDTOs;
+using Tattoo_Project.DTOs.ConsultationDTOs;
 using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.DTOs.TattooSessionDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
+using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
     public class TattooRequestService(TattooDbContext context)
         : ITattooRequestService
     {
-        public async Task<ICollection<GetTattooRequestDto>> GetAllTattooRequestsAsync()
+        public async Task<ResultService<ICollection<GetTattooRequestDto>>> GetAllTattooRequestsAsync()
         {
-            return await context.TattooRequests
+            var tattooRequests = await context.TattooRequests
                 .Include(r => r.Images)
-                .Select(r => new GetTattooRequestDto
-                {
-                    TattooArtistId = r.TattooArtistId,
-                    Description = r.Description,
-                    Placement = r.Placement,
-                    Status = r.Status,
-                    CreatedOn = r.CreatedOn,
-                    Images = r.Images.Select(i => new TattooReferenceImageDto
-                    {
-                        ImageUrl = i.ImageUrl
-                    }).ToList()
-                })
+                .Include(r => r.TattooSessions)
+                .Include(r => r.ArtistResponse)
+                .Include(r => r.Consultation)
                 .ToListAsync();
+
+            var result = tattooRequests
+                .Select(MapToGetTattooRequestDto)
+                .ToList();
+
+            return ResultService<ICollection<GetTattooRequestDto>>.Ok(result);
         }
 
-        public async Task<GetTattooRequestDto?> GetTattooRequestByIdAsync(
+        public async Task<ResultService<GetTattooRequestDto>> GetTattooRequestByIdAsync(
             int id,
             string userId,
             bool isAdmin,
@@ -38,16 +39,20 @@ namespace Tattoo_Project.Services
         {
             var tattooRequest = await context.TattooRequests
                 .Include(r => r.Images)
+                .Include(r => r.TattooSessions)
+                .Include(r => r.ArtistResponse)
+                .Include(r => r.Consultation)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (tattooRequest == null)
             {
-                return null;
+                return ResultService<GetTattooRequestDto>.Fail("Tattoo request was not found.");
             }
 
             if (isAdmin)
             {
-                return MapToDto(tattooRequest);
+                return ResultService<GetTattooRequestDto>.Ok(
+                    MapToGetTattooRequestDto(tattooRequest));
             }
 
             if (isClient)
@@ -58,7 +63,8 @@ namespace Tattoo_Project.Services
                 if (client != null &&
                     tattooRequest.ClientId == client.Id)
                 {
-                    return MapToDto(tattooRequest);
+                    return ResultService<GetTattooRequestDto>.Ok(
+                        MapToGetTattooRequestDto(tattooRequest));
                 }
             }
 
@@ -70,14 +76,16 @@ namespace Tattoo_Project.Services
                 if (tattooArtist != null &&
                     tattooRequest.TattooArtistId == tattooArtist.Id)
                 {
-                    return MapToDto(tattooRequest);
+                    return ResultService<GetTattooRequestDto>.Ok(
+                        MapToGetTattooRequestDto(tattooRequest));
                 }
             }
 
-            return null;
+            return ResultService<GetTattooRequestDto>.Fail(
+                "You do not have permission to view this tattoo request.");
         }
 
-        public async Task<ICollection<GetTattooRequestDto>> GetMyTattooRequestsAsync(
+        public async Task<ResultService<ICollection<GetTattooRequestDto>>> GetMyTattooRequestsAsync(
             string userId)
         {
             var client = await context.Clients
@@ -85,28 +93,26 @@ namespace Tattoo_Project.Services
 
             if (client == null)
             {
-                return new List<GetTattooRequestDto>();
+                return ResultService<ICollection<GetTattooRequestDto>>.Fail(
+                    "Client profile was not found.");
             }
 
-            return await context.TattooRequests
+            var tattooRequests = await context.TattooRequests
                 .Include(r => r.Images)
+                .Include(r => r.TattooSessions)
+                .Include(r => r.ArtistResponse)
+                .Include(r => r.Consultation)
                 .Where(r => r.ClientId == client.Id)
-                .Select(r => new GetTattooRequestDto
-                {
-                    TattooArtistId = r.TattooArtistId,
-                    Description = r.Description,
-                    Placement = r.Placement,
-                    Status = r.Status,
-                    CreatedOn = r.CreatedOn,
-                    Images = r.Images.Select(i => new TattooReferenceImageDto
-                    {
-                        ImageUrl = i.ImageUrl
-                    }).ToList()
-                })
                 .ToListAsync();
+
+            var result = tattooRequests
+                .Select(MapToGetTattooRequestDto)
+                .ToList();
+
+            return ResultService<ICollection<GetTattooRequestDto>>.Ok(result);
         }
 
-        public async Task<bool> CreateTattooRequest(
+        public async Task<ResultService> CreateTattooRequestAsync(
             CreateTattooRequestDto dto,
             string userId)
         {
@@ -115,21 +121,36 @@ namespace Tattoo_Project.Services
 
             if (client == null)
             {
-                return false;
+                return ResultService.Fail("Client profile was not found.");
             }
 
-            var tattooArtistExists = await context.TattooArtists
-                .AnyAsync(a => a.Id == dto.TattooArtistId);
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
 
-            if (!tattooArtistExists)
+            if (tattooArtist == null)
             {
-                return false;
+                return ResultService.Fail("Tattoo artist was not found.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Description))
+            {
+                return ResultService.Fail("Tattoo request description is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Placement))
+            {
+                return ResultService.Fail("Tattoo placement is required.");
+            }
+
+            if (dto.Images.Any(i => string.IsNullOrWhiteSpace(i.ImageUrl)))
+            {
+                return ResultService.Fail("Every reference image must have a valid image URL.");
             }
 
             TattooRequest tattooRequest = new()
             {
                 ClientId = client.Id,
-                TattooArtistId = dto.TattooArtistId,
+                TattooArtistId = tattooArtist.Id,
                 Description = dto.Description,
                 Placement = dto.Placement,
                 Status = RequestStatus.Submitted,
@@ -144,10 +165,10 @@ namespace Tattoo_Project.Services
 
             await context.SaveChangesAsync();
 
-            return true;
+            return ResultService.Ok();
         }
 
-        public async Task<bool> UpdateTattooRequestAsync(
+        public async Task<ResultService> UpdateTattooRequestAsync(
             int id,
             UpdateTattooRequestDto dto,
             string userId)
@@ -157,7 +178,7 @@ namespace Tattoo_Project.Services
 
             if (client == null)
             {
-                return false;
+                return ResultService.Fail("Client profile was not found.");
             }
 
             var tattooRequest = await context.TattooRequests
@@ -166,17 +187,28 @@ namespace Tattoo_Project.Services
 
             if (tattooRequest == null)
             {
-                return false;
+                return ResultService.Fail("Tattoo request was not found.");
             }
 
             if (tattooRequest.ClientId != client.Id)
             {
-                return false;
+                return ResultService.Fail("You can update only your own tattoo requests.");
             }
 
             if (tattooRequest.Status != RequestStatus.Submitted)
             {
-                return false;
+                return ResultService.Fail(
+                    "Tattoo request can be updated only while it is submitted.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Description))
+            {
+                return ResultService.Fail("Tattoo request description is required.");
+            }
+
+            if (dto.Images.Any(i => string.IsNullOrWhiteSpace(i.ImageUrl)))
+            {
+                return ResultService.Fail("Every reference image must have a valid image URL.");
             }
 
             tattooRequest.Description = dto.Description;
@@ -193,22 +225,55 @@ namespace Tattoo_Project.Services
 
             await context.SaveChangesAsync();
 
-            return true;
+            return ResultService.Ok();
         }
 
-        private static GetTattooRequestDto MapToDto(TattooRequest tattooRequest)
+        private static GetTattooRequestDto MapToGetTattooRequestDto(
+            TattooRequest tattooRequest)
         {
             return new GetTattooRequestDto
             {
-                TattooArtistId = tattooRequest.TattooArtistId,
                 Description = tattooRequest.Description,
                 Placement = tattooRequest.Placement,
-                Status = tattooRequest.Status,
                 CreatedOn = tattooRequest.CreatedOn,
+                ClientId = tattooRequest.ClientId,
+                TattooArtistId = tattooRequest.TattooArtistId,
+                Status = tattooRequest.Status,
+
                 Images = tattooRequest.Images.Select(i => new TattooReferenceImageDto
                 {
                     ImageUrl = i.ImageUrl
-                }).ToList()
+                }).ToList(),
+
+                TattooSessions = tattooRequest.TattooSessions == null ||
+                                 !tattooRequest.TattooSessions.Any()
+                    ? null
+                    : tattooRequest.TattooSessions.Select(s => new TattooSessionDto
+                    {
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime,
+                        DurationHours = s.DurationHours,
+                        PriceForTheSession = s.PriceForTheSession
+                    }).ToList(),
+
+                ArtistResponse = tattooRequest.ArtistResponse == null
+                    ? null
+                    : new ArtistResponseDto
+                    {
+                        EstimatedPrice = tattooRequest.ArtistResponse.EstimatedPrice,
+                        EstimatedHours = tattooRequest.ArtistResponse.EstimatedHours,
+                        ResponseMessage = tattooRequest.ArtistResponse.ResponseMessage,
+                        CreatedOn = tattooRequest.ArtistResponse.CreatedOn
+                    },
+
+                Consultation = tattooRequest.Consultation == null
+                    ? null
+                    : new ConsultationDto
+                    {
+                        StartTime = tattooRequest.Consultation.StartTime,
+                        EndTime = tattooRequest.Consultation.EndTime,
+                        Notes = tattooRequest.Consultation.Notes
+                    }
             };
         }
     }

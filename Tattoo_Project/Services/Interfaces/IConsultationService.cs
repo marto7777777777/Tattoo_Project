@@ -1,37 +1,38 @@
 ﻿using Tattoo_Project.DTOs.ConsultationDTOs;
+using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services.Interfaces
 {
     public interface IConsultationService
     {
-        Task<ICollection<GetConsultationDto>> GetAllConsultationsAsync();
+        Task<ResultService<ICollection<GetConsultationDto>>> GetAllConsultationsAsync();
 
-        Task<GetConsultationDto?> GetConsultationByIdAsync(
+        Task<ResultService<GetConsultationDto>> GetConsultationByIdAsync(
             int id,
             string userId,
             bool isAdmin,
             bool isClient,
             bool isArtist);
 
-        Task<bool> CreateConsultationAsync(
+        Task<ResultService> CreateConsultationAsync(
             CreateConsultationDto dto,
             string userId);
 
-        Task<bool> UpdateConsultationAsync(
+        Task<ResultService> UpdateConsultationAsync(
             int id,
             UpdateConsultationDto dto,
             string userId);
 
-        Task<bool> DeleteConsultationAsync(
+        Task<ResultService> DeleteConsultationAsync(
             int id,
             string userId);
 
-        Task<bool> CompleteConsultationAsync(
+        Task<ResultService> CompleteConsultationAsync(
             int tattooRequestId,
             CompleteConsultationDto dto,
             string userId);
 
-        Task<bool> RejectConsultationAsync(
+        Task<ResultService> RejectConsultationAsync(
             int tattooRequestId,
             string userId);
     }
