@@ -9,5 +9,6 @@
         public bool IsOnline { get; set; }
 
         public string? Notes { get; set; }
+        public bool? IsCompleted { get; set; }
     }
 }

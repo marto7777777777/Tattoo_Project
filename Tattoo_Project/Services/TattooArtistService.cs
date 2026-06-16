@@ -1,14 +1,7 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
-using Tattoo_Project.DTOs.ArtistResponceDTOs;
-using Tattoo_Project.DTOs.ConsultationDTOs;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
-using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
-using Tattoo_Project.DTOs.TattooRequestDTOs;
-using Tattoo_Project.DTOs.TattooSessionDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
@@ -20,169 +13,87 @@ namespace Tattoo_Project.Services
         RoleManager<IdentityRole> roleManager)
         : ITattooArtistService
     {
-        public async Task<List<GetTattooArtistDto>> GetAllArtistsAsync()
-        => context.TattooArtists == null || !context.TattooArtists.Any()? null
-            :await context.TattooArtists.Select(c => new GetTattooArtistDto
+        public async Task<ICollection<GetTattooArtistDto>> GetAllTattooArtistsAsync()
         {
-            FirstName = c.FirstName,
-            LastName = c.LastName,
-            DepositAmount = c.DepositAmount,
-            Description = c.Description,
-            Email = c.Email,
-            OffersOnlineConsultation = c.OffersOnlineConsultation,
-            PhoneNumber = c.PhoneNumber,
-            RequiresDeposit = c.RequiresDeposit,
-            StudioAddress = c.StudioAddress,
-            StudioName = c.StudioName,
-            Schedules = c.Schedules.Select(x => new TattooArtistScheduleDto
-            {
-                DayOfWeek = x.DayOfWeek,
-                EndTime = x.EndTime,
-                StartTime = x.StartTime,
-            }).ToList(),
-            PortfolioImages = c.PortfolioImages.Select(x => new TattooArtistPortfolioImageDto
-            {
-                ImageUrl = x.ImageUrl
-            }).ToList(),
-            Requirements = c.Requirements.Select(x => new TattooArtistRequirementsDto
-            {
-                Description = x.Description
-            }).ToList(),
-            TattooRequests = c.TattooRequests == null || !c.TattooRequests.Any() ? null
-            : c.TattooRequests.Select(x => new TattooRequestDto
-            {
-                Status = x.Status,
-                CreatedOn = x.CreatedOn,
-                Description = x.Description,
-                Placement = x.Placement,
-                ClientId = x.ClientId,
-                TattooArtistId = x.TattooArtistId,
-                Images = x.Images.Select(f => new TattooReferenceImageDto
+            return await context.TattooArtists
+                .Select(a => new GetTattooArtistDto
                 {
-                    ImageUrl = f.ImageUrl
-                }).ToList(),
-                TattooSessions = x.TattooSessions == null || !x.TattooSessions.Any() ? null
-                : x.TattooSessions.Select(f => new TattooSessionDto
-                {
-                    StartTime = f.StartTime,
-                    DurationHours = f.DurationHours,
-                    EndTime = f.EndTime,
-                    PriceForTheSession = f.PriceForTheSession
-                }).ToList(),
-                ArtistResponse = x.ArtistResponse == null? null
-                : new ArtistResponseDto
-                {
-                    CreatedOn = x.ArtistResponse.CreatedOn,
-                    EstimatedHours = x.ArtistResponse.EstimatedHours,
-                    EstimatedPrice = x.ArtistResponse.EstimatedPrice,
-                    ResponseMessage = x.ArtistResponse.ResponseMessage
-                },
-                Consultation = x.Consultation == null ? null
-                : new ConsultationDto
-                {
-                    StartTime = x.Consultation.StartTime,
-                    EndTime = x.Consultation.EndTime,
-                    IsOnline = x.Consultation.IsOnline,
-                    Notes = x.Consultation.Notes
-                }
-            }).ToList()
+                    FirstName = a.FirstName,
+                    LastName = a.LastName,
+                    Email = a.Email,
+                    StudioName = a.StudioName,
+                    Description = a.Description,
+                    StudioAddress = a.StudioAddress,
+                    PhoneNumber = a.PhoneNumber,
+                    IsVerified = a.IsVerified,
+                    OffersOnlineConsultation = a.OffersOnlineConsultation,
+                    RequiresDeposit = a.RequiresDeposit,
+                    DepositAmount = a.DepositAmount,
+                    Requirements = a.Requirements.Select(r => new TattooArtistRequirementsDto
+                    {
+                        Description = r.Description
+                    }).ToList(),
+                    PortfolioImages = a.PortfolioImages.Select(p => new TattooArtistPortfolioImageDto
+                    {
+                        ImageUrl = p.ImageUrl,
+                    }).ToList(),
+                    Schedules = a.Schedules.Select(s => new TattooArtistScheduleDto
+                    {
+                        DayOfWeek = s.DayOfWeek,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime
+                    }).ToList()
+                })
+                .ToListAsync();
+        }
 
-        }).ToListAsync();
-
-
-
-
-
-        public async Task<GetTattooArtistDto> GetTattooArtistByIdAsync(int Id)
+        public async Task<GetTattooArtistDto?> GetTattooArtistByIdAsync(int id)
         {
-            var artistFromData = await context.TattooArtists.Include(x => x.Schedules)
-                .Include(x => x.PortfolioImages)
-                .Include(x => x.Requirements)
-                .Include(x => x.TattooRequests)
-                .ThenInclude(x => x.Images)
-                .Include(x => x.TattooRequests)
-                .ThenInclude(x => x.TattooSessions)
-                .Include(x => x.TattooRequests)
-                .ThenInclude(x => x.ArtistResponse)
-                .Include(x => x.TattooRequests)
-                .ThenInclude(x => x.Consultation)
-                .FirstOrDefaultAsync(i => i.Id == Id);
-            if (artistFromData is null)
+            var tattooArtist = await context.TattooArtists
+                .Include(a => a.Requirements)
+                .Include(a => a.PortfolioImages)
+                .Include(a => a.Schedules)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (tattooArtist == null)
             {
                 return null;
             }
-            var result = new GetTattooArtistDto
+
+            return new GetTattooArtistDto
             {
-                FirstName = artistFromData.FirstName,
-                LastName = artistFromData.LastName,
-                DepositAmount = artistFromData.DepositAmount,
-                Description = artistFromData.Description,
-                Email = artistFromData.Email,
-                OffersOnlineConsultation = artistFromData.OffersOnlineConsultation,
-                PhoneNumber = artistFromData.PhoneNumber,
-                RequiresDeposit = artistFromData.RequiresDeposit,
-                StudioAddress = artistFromData.StudioAddress,
-                StudioName = artistFromData.StudioName,
-                Schedules = artistFromData.Schedules.Select(x => new TattooArtistScheduleDto
+                FirstName = tattooArtist.FirstName,
+                LastName = tattooArtist.LastName,
+                Email = tattooArtist.Email,
+                StudioName = tattooArtist.StudioName,
+                Description = tattooArtist.Description,
+                StudioAddress = tattooArtist.StudioAddress,
+                PhoneNumber = tattooArtist.PhoneNumber,
+                IsVerified = tattooArtist.IsVerified,
+                OffersOnlineConsultation = tattooArtist.OffersOnlineConsultation,
+                RequiresDeposit = tattooArtist.RequiresDeposit,
+                DepositAmount = tattooArtist.DepositAmount,
+                Requirements = tattooArtist.Requirements.Select(r => new TattooArtistRequirementsDto
                 {
-                    DayOfWeek = x.DayOfWeek,
-                    EndTime = x.EndTime,
-                    StartTime = x.StartTime,
+                    Description = r.Description
                 }).ToList(),
-                PortfolioImages = artistFromData.PortfolioImages.Select(x => new TattooArtistPortfolioImageDto
+                PortfolioImages = tattooArtist.PortfolioImages.Select(p => new TattooArtistPortfolioImageDto
                 {
-                    ImageUrl = x.ImageUrl
+                    ImageUrl = p.ImageUrl
                 }).ToList(),
-                Requirements = artistFromData.Requirements.Select(x => new TattooArtistRequirementsDto
+                Schedules = tattooArtist.Schedules.Select(s => new TattooArtistScheduleDto
                 {
-                    Description = x.Description
-                }).ToList(),
-                TattooRequests = artistFromData.TattooRequests == null || !artistFromData.TattooRequests.Any()? null
-                : artistFromData.TattooRequests.Select(x => new TattooRequestDto
-                {
-                    Status = x.Status,
-                    CreatedOn = x.CreatedOn,
-                    Description = x.Description,
-                    Placement = x.Placement,
-                    ClientId = x.ClientId,
-                    TattooArtistId = x.TattooArtistId,
-                    Images = x.Images.Select(f => new TattooReferenceImageDto
-                    {
-                        ImageUrl = f.ImageUrl
-                    }).ToList(),
-                    TattooSessions = x.TattooSessions == null || !x.TattooSessions.Any()? null
-                    : x.TattooSessions.Select(f => new TattooSessionDto
-                    {
-                        StartTime = f.StartTime,
-                        DurationHours = f.DurationHours,
-                        EndTime = f.EndTime,
-                        PriceForTheSession = f.PriceForTheSession
-                    }).ToList(),
-                    ArtistResponse = x.ArtistResponse == null ? null
-                    : new ArtistResponseDto
-                    {
-                        CreatedOn = x.ArtistResponse.CreatedOn,
-                        EstimatedHours = x.ArtistResponse.EstimatedHours,
-                        EstimatedPrice = x.ArtistResponse.EstimatedPrice,
-                        ResponseMessage = x.ArtistResponse.ResponseMessage
-                    },
-                    Consultation = x.Consultation == null ? null
-                    : new ConsultationDto
-                    {
-                        StartTime = x.Consultation.StartTime,
-                        EndTime = x.Consultation.EndTime,
-                        IsOnline = x.Consultation.IsOnline,
-                        Notes = x.Consultation.Notes
-                    }
+                    DayOfWeek = s.DayOfWeek,
+                    StartTime = s.StartTime,
+                    EndTime = s.EndTime
                 }).ToList()
             };
-            return result;
         }
 
         public async Task<bool> CreateTattooArtistProfileAsync(
             CreateTattooArtistDto dto,
             string userId)
-            {
+        {
             var alreadyHasArtistProfile = await context.TattooArtists
                 .AnyAsync(a => a.UserId == userId);
 
@@ -200,6 +111,11 @@ namespace Tattoo_Project.Services
 
             if (dto.RequiresDeposit &&
                 (dto.DepositAmount == null || dto.DepositAmount <= 0))
+            {
+                return false;
+            }
+
+            if (!dto.RequiresDeposit && dto.DepositAmount != null)
             {
                 return false;
             }
@@ -285,50 +201,90 @@ namespace Tattoo_Project.Services
             return true;
         }
 
-        public async Task<bool> DeleteArtist(int id)
+        public async Task<bool> UpdateTattooArtistProfileAsync(
+            UpdateArtistDto dto,
+            string userId)
         {
-            var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.Id == id);
-            if (artist is null)
-            {
-                
-                return false;
-            }
-            context.TattooArtists.Remove(artist);
+            var tattooArtist = await context.TattooArtists
+                .Include(a => a.Requirements)
+                .Include(a => a.PortfolioImages)
+                .Include(a => a.Schedules)
+                .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            await context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> UpdateArtist(int id, UpdateArtistDto dto)
-        {
-            TattooArtist artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.Id == id);
-            if (artist == null)
+            if (tattooArtist == null)
             {
                 return false;
             }
-            
-                artist.FirstName = dto.FirstName;
-                artist.LastName = dto.LastName;
-                artist.DepositAmount = dto.DepositAmount;
-                artist.Description = dto.Description;
-                artist.Email = dto.Email;
-                artist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
-                artist.PhoneNumber = dto.PhoneNumber;
-                artist.RequiresDeposit = dto.RequiresDeposit;
-                artist.StudioAddress = dto.StudioAddress;
-                artist.StudioName = dto.StudioName;
+
+            if (dto.RequiresDeposit &&
+                (dto.DepositAmount == null || dto.DepositAmount <= 0))
+            {
+                return false;
+            }
+
+            if (!dto.RequiresDeposit && dto.DepositAmount != null)
+            {
+                return false;
+            }
+
+            tattooArtist.StudioName = dto.StudioName;
+            tattooArtist.Description = dto.Description;
+            tattooArtist.StudioAddress = dto.StudioAddress;
+            tattooArtist.PhoneNumber = dto.PhoneNumber;
+            tattooArtist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
+            tattooArtist.RequiresDeposit = dto.RequiresDeposit;
+            tattooArtist.DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null;
+
+            tattooArtist.Requirements.Clear();
+            tattooArtist.PortfolioImages.Clear();
+            tattooArtist.Schedules.Clear();
+
+            foreach (var requirement in dto.Requirements)
+            {
+                tattooArtist.Requirements.Add(new ArtistRequirement
+                {
+                    Description = requirement.Description
+                });
+            }
+
+            foreach (var image in dto.PortfolioImages)
+            {
+                tattooArtist.PortfolioImages.Add(new PortfolioImage
+                {
+                    ImageUrl = image.ImageUrl
+                });
+            }
+
+            foreach (var schedule in dto.Schedules)
+            {
+                tattooArtist.Schedules.Add(new Schedule
+                {
+                    DayOfWeek = schedule.DayOfWeek,
+                    StartTime = schedule.StartTime,
+                    EndTime = schedule.EndTime
+                });
+            }
 
             await context.SaveChangesAsync();
+
             return true;
-            
         }
 
-        private async Task EnsureRoleExists(string role)
+        public async Task<bool> DeleteTattooArtistAsync(int id)
         {
-            if (!await roleManager.RoleExistsAsync(role))
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (tattooArtist == null)
             {
-                await roleManager.CreateAsync(new IdentityRole(role));
+                return false;
             }
+
+            context.TattooArtists.Remove(tattooArtist);
+
+            await context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

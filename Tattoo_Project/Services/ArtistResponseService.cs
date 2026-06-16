@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
+using Tattoo_Project.DTOs.ArtistResponceDTOs;
 using Tattoo_Project.DTOs.ArtistResponseDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
@@ -78,38 +79,75 @@ namespace Tattoo_Project.Services
 
         }
 
-        public async Task<List<GetArtistResponseDto>> GetAllArtistResponsesAsync()
+        public async Task<ICollection<GetArtistResponseDto>> GetAllArtistResponsesAsync()
         {
-            if (context.ArtistResponses == null || !context.ArtistResponses.Any())
-            {
-                return null;
-            }
-            return await context.ArtistResponses.Select(x => new GetArtistResponseDto
+            return await context.ArtistResponses
+                .Select(r => new GetArtistResponseDto
                 {
-                    CreatedOn = x.CreatedOn,
-                    EstimatedHours = x.EstimatedHours,
-                    EstimatedPrice = x.EstimatedPrice,
-                    ResponseMessage = x.ResponseMessage,
-                    TattooRequestId = x.TattooRequestId
-                }).ToListAsync();
+                    TattooRequestId = r.TattooRequestId,
+                    ResponseMessage = r.ResponseMessage,
+                    EstimatedPrice = r.EstimatedPrice,
+                    CreatedOn = r.CreatedOn
+                })
+                .ToListAsync();
         }
 
-        public async Task<GetArtistResponseDto> GetArtistResponseByIdAsync(int id)
+        public async Task<GetArtistResponseDto?> GetArtistResponseByIdAsync(
+    int id,
+    string userId)
         {
-            var artistResponse = await context.ArtistResponses.FirstOrDefaultAsync(x => x.Id == id);
-            if (artistResponse == null)
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            if (tattooArtist == null)
             {
                 return null;
             }
-            var artistResponseDto = new GetArtistResponseDto
+
+            var response = await context.ArtistResponses
+                .Include(r => r.TattooRequest)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (response == null)
             {
-                CreatedOn = artistResponse.CreatedOn,
-                EstimatedHours = artistResponse.EstimatedHours,
-                EstimatedPrice = artistResponse.EstimatedPrice,
-                ResponseMessage = artistResponse.ResponseMessage,
-                TattooRequestId = artistResponse.TattooRequestId
+                return null;
+            }
+
+            if (response.TattooRequest.TattooArtistId != tattooArtist.Id)
+            {
+                return null;
+            }
+
+            return new GetArtistResponseDto
+            {
+                TattooRequestId = response.TattooRequestId,
+                ResponseMessage = response.ResponseMessage,
+                EstimatedPrice = response.EstimatedPrice,
+                CreatedOn = response.CreatedOn
             };
-            return artistResponseDto;
+        }
+
+        public async Task<ICollection<GetArtistResponseDto>> GetMyArtistResponsesAsync(
+    string userId)
+        {
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            if (tattooArtist == null)
+            {
+                return new List<GetArtistResponseDto>();
+            }
+
+            return await context.ArtistResponses
+                .Where(r => r.TattooRequest.TattooArtistId == tattooArtist.Id)
+                .Select(r => new GetArtistResponseDto
+                {
+                    TattooRequestId = r.TattooRequestId,
+                    ResponseMessage = r.ResponseMessage,
+                    EstimatedPrice = r.EstimatedPrice,
+                    CreatedOn = r.CreatedOn
+                })
+                .ToListAsync();
         }
 
         public async Task<bool> RejectTattooRequestAsync(

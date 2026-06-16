@@ -5,44 +5,43 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
-using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class TattooArtistController(
-    ITattooArtistService service,
-    UserManager<ApplicationUser> userManager,
-    ITokenService tokenService)
-    : ControllerBase
+        ITattooArtistService service,
+        UserManager<ApplicationUser> userManager,
+        ITokenService tokenService)
+        : ControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<GetTattooArtistDto>>> GetArtists()
+        public async Task<IActionResult> GetAllTattooArtists()
         {
-            var tattooArtists = await service.GetAllArtistsAsync();
-            if (tattooArtists is null || !tattooArtists.Any())
-            {
-               return NotFound("No artists yet!");
-            }
+            var tattooArtists = await service.GetAllTattooArtistsAsync();
+
             return Ok(tattooArtists);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetTattooArtistDto>> GetArtistByIdAsync(int id)
+        public async Task<IActionResult> GetTattooArtistById(int id)
         {
             var tattooArtist = await service.GetTattooArtistByIdAsync(id);
-            if (tattooArtist is null)
+
+            if (tattooArtist == null)
             {
-                return NotFound($"Artist with Id {id} is not found!");
+                return NotFound("Tattoo artist not found.");
             }
+
             return Ok(tattooArtist);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost("profile")]
-        public async Task<IActionResult> CreateTattooArtistProfile(CreateTattooArtistDto dto)
+        public async Task<IActionResult> CreateTattooArtistProfile(
+            CreateTattooArtistDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -51,9 +50,11 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var result = await service.CreateTattooArtistProfileAsync(dto, userId);
+            var isCreated = await service.CreateTattooArtistProfileAsync(
+                dto,
+                userId);
 
-            if (!result)
+            if (!isCreated)
             {
                 return BadRequest("Tattoo artist profile already exists or invalid data.");
             }
@@ -74,22 +75,46 @@ namespace Tattoo_Project.Controllers
             });
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteArtist(int id)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateTattooArtistProfile(
+            UpdateArtistDto dto)
         {
-            var isDeleted = await service.DeleteArtist(id);
-            if (isDeleted == false)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
             {
-                return NotFound($"Artist with id {id} already doesn't exist!");
+                return Unauthorized();
             }
-            return Ok(isDeleted);
+
+            var isUpdated = await service.UpdateTattooArtistProfileAsync(
+                dto,
+                userId);
+
+            if (!isUpdated)
+            {
+                return BadRequest("Tattoo artist profile could not be updated.");
+            }
+
+            return Ok("Tattoo artist profile updated successfully.");
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateArtist(int id, UpdateArtistDto dto)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTattooArtist(int id)
         {
-            var isUpdated = await service.UpdateArtist(id, dto);
-            return Ok(isUpdated);
+            var isDeleted = await service.DeleteTattooArtistAsync(id);
+
+            if (!isDeleted)
+            {
+                return NotFound("Tattoo artist not found.");
+            }
+
+            return Ok("Tattoo artist deleted successfully.");
         }
     }
 }

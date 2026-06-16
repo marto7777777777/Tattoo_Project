@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
@@ -12,37 +10,54 @@ namespace Tattoo_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TattooSessionController(ITattooSessionService service) : ControllerBase
+    public class TattooSessionController(ITattooSessionService service)
+        : ControllerBase
     {
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
         [HttpGet]
-        public async Task<ActionResult<List<GetTattooSessionDto>>> GetAllTattooSessionsAsync()
+        public async Task<IActionResult> GetAllTattooSessions()
         {
             var tattooSessions = await service.GetAllTattooSessionsAsync();
-            if (tattooSessions == null || !tattooSessions.Any())
-            {
-                return NotFound("No tattoo sessions yet!");
-            }
 
             return Ok(tattooSessions);
         }
 
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetTattooSessionDto>> GetATattooSessionByIdAsync(int id)
+        public async Task<IActionResult> GetTattooSessionById(int id)
         {
-            var tattooSession = await service.GetTattooSessionByIdAsync(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var tattooSession = await service.GetTattooSessionByIdAsync(
+                id,
+                userId,
+                User.IsInRole(UserRoles.Admin),
+                User.IsInRole(UserRoles.Client),
+                User.IsInRole(UserRoles.TattooArtist));
+
             if (tattooSession == null)
             {
-                return NotFound($"Tattoo request with id {id} doesn't exist!");
+                return NotFound("Tattoo session not found.");
             }
 
             return Ok(tattooSession);
         }
 
         [Authorize(
-        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-        Roles = UserRoles.Client)]
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
         [HttpPost]
-        public async Task<IActionResult> CreateTattooSession(CreateTattooSessionDto dto)
+        public async Task<IActionResult> CreateTattooSession(
+            CreateTattooSessionDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -61,25 +76,88 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo session created successfully.");
         }
 
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTattooSessionAsync(int id, UpdateTattooSessionDto dto)
+        public async Task<IActionResult> UpdateTattooSession(
+            int id,
+            UpdateTattooSessionDto dto)
         {
-            var isUpdated = await service.UpdateTattooSessionAsync(id, dto);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return Ok(isUpdated);
-        }
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTattooSessionAsync(int id)
-        {
-            var isDeleted = await service.DeleteTattooSessionAsync(id);
+            var isUpdated = await service.UpdateTattooSessionAsync(
+                id,
+                dto,
+                userId);
 
-            return Ok(isDeleted);
+            if (!isUpdated)
+            {
+                return BadRequest("Tattoo session could not be updated.");
+            }
+
+            return Ok("Tattoo session updated successfully.");
         }
 
         [Authorize(
-    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-    Roles = UserRoles.TattooArtist)]
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteTattooSession(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isDeleted = await service.DeleteTattooSessionAsync(id, userId);
+
+            if (!isDeleted)
+            {
+                return BadRequest("Tattoo session could not be deleted.");
+            }
+
+            return Ok("Tattoo session deleted successfully.");
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpPut("add-more-sessions/{tattooRequestId}")]
+        public async Task<IActionResult> AddMoreSessions(
+            int tattooRequestId,
+            AddAdditionalSessionsDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var isAdded = await service.AddMoreSessionsAsync(
+                tattooRequestId,
+                dto,
+                userId);
+
+            if (!isAdded)
+            {
+                return BadRequest("More sessions could not be added.");
+            }
+
+            return Ok("More sessions added successfully.");
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
         [HttpPut("complete-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> CompleteTattoo(int tattooRequestId)
         {
@@ -102,45 +180,19 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo completed successfully.");
         }
 
+        // Optional / future feature.
+        // Оставяме го без Identity засега, защото не е част от активния workflow.
         [HttpPut("continue-tattoo/{tattooRequestId}")]
-        public async Task<IActionResult> CountinueTattooAsync(int tattooRequestId)
+        public async Task<IActionResult> ContinueTattoo(int tattooRequestId)
         {
-            var result = await service.ContinueTattooAsync(tattooRequestId);
+            var isContinued = await service.ContinueTattooAsync(tattooRequestId);
 
-            if (!result)
+            if (!isContinued)
             {
-                return BadRequest();
+                return BadRequest("Tattoo could not be continued.");
             }
 
-            return Ok("Tattoo countinue.");
-        }
-
-        [Authorize(
-    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-    Roles = UserRoles.TattooArtist)]
-        [HttpPut("add-more-sessions/{tattooRequestId}")]
-        public async Task<IActionResult> AddMoreSessions(
-    int tattooRequestId,
-    AddAdditionalSessionsDto dto)
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (userId == null)
-            {
-                return Unauthorized();
-            }
-
-            var isAdded = await service.AddMoreSessionsAsync(
-                tattooRequestId,
-                dto,
-                userId);
-
-            if (!isAdded)
-            {
-                return BadRequest("More sessions could not be added.");
-            }
-
-            return Ok("More sessions added successfully.");
+            return Ok("Tattoo continued successfully.");
         }
     }
 }

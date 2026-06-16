@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.DTOs.ClientDTOs;
 using Tattoo_Project.Models;
-using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -15,43 +12,36 @@ namespace Tattoo_Project.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class ClientController(
-    IClientService service,
-    UserManager<ApplicationUser> userManager,
-    ITokenService tokenService)
-    : ControllerBase
+        IClientService service,
+        UserManager<ApplicationUser> userManager,
+        ITokenService tokenService)
+        : ControllerBase
     {
-        
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
         [HttpGet]
-        public async Task<ActionResult<GetClientDto>> GetAllClients()
+        public async Task<IActionResult> GetAllClients()
         {
             var clients = await service.GetAllClientsAsync();
-            if (clients is null || !clients.Any())
-            {
-                return NotFound("No clients yet!");
-            }
+
             return Ok(clients);
         }
 
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetClientDto>> GetClientById(int id)
+        public async Task<IActionResult> GetClientById(int id)
         {
-            var client = await service.GetClientsByIdAsync(id);
+            var client = await service.GetClientByIdAsync(id);
+
             if (client == null)
             {
-                return NotFound($"Client with id {id} doesn't exist!");
+                return NotFound("Client not found.");
             }
-            return Ok(client);
-        }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClientAsync(int id)
-        {
-            var isDeleted = await service.DeleteClient(id);
-            if (isDeleted == false)
-            {
-                return NotFound($"Client with id {id} already doesn't exist!");
-            }
-            return Ok(isDeleted);
+            return Ok(client);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -65,9 +55,9 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var result = await service.CreateClientProfileAsync(dto, userId);
+            var isCreated = await service.CreateClientProfileAsync(dto, userId);
 
-            if (!result)
+            if (!isCreated)
             {
                 return BadRequest("Client profile already exists or invalid data.");
             }
@@ -88,15 +78,43 @@ namespace Tattoo_Project.Controllers
             });
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateClientAsync(int id, UpdateClientDto dto)
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateClientProfile(UpdateClientDto dto)
         {
-            var isUpdated = await service.UpdateClient(id, dto);
-            if (isUpdated == false)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
             {
-                return NotFound($"Client with id {id} doesn't exist!");
+                return Unauthorized();
             }
-            return Ok(isUpdated);
+
+            var isUpdated = await service.UpdateClientProfileAsync(dto, userId);
+
+            if (!isUpdated)
+            {
+                return BadRequest("Client profile could not be updated.");
+            }
+
+            return Ok("Client profile updated successfully.");
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Admin)]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteClient(int id)
+        {
+            var isDeleted = await service.DeleteClientAsync(id);
+
+            if (!isDeleted)
+            {
+                return NotFound("Client not found.");
+            }
+
+            return Ok("Client deleted successfully.");
         }
     }
 }
