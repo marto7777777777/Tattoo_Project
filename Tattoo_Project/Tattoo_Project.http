@@ -1,6 +1,0 @@
-@Tattoo_Project_HostAddress = http://localhost:5230
-
-GET {{Tattoo_Project_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
