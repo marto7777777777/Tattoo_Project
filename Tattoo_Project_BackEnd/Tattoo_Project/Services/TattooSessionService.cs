@@ -101,24 +101,9 @@ namespace Tattoo_Project.Services
                     "You can book tattoo sessions only for your own tattoo requests.");
             }
 
-            if (dto.StartTime >= dto.EndTime)
-            {
-                return ResultService.Fail("Start time must be before end time.");
-            }
-
             if (dto.StartTime <= DateTime.UtcNow)
             {
                 return ResultService.Fail("Tattoo session cannot be booked in the past.");
-            }
-
-            if (dto.EndTime - dto.StartTime < TimeSpan.FromMinutes(15))
-            {
-                return ResultService.Fail("Tattoo session must be at least 15 minutes long.");
-            }
-
-            if (dto.DurationHours <= 0)
-            {
-                return ResultService.Fail("Duration hours must be greater than zero.");
             }
 
             if (tattooRequest.Status != RequestStatus.ConsultationCompleted &&
@@ -141,6 +126,18 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("No session prices were defined for this tattoo request.");
             }
 
+            if (tattooRequest.DurationHoursForSession == null ||
+                !tattooRequest.DurationHoursForSession.Any())
+            {
+                return ResultService.Fail("No session durations were defined for this tattoo request.");
+            }
+
+            if (tattooRequest.PriceForSession.Count != tattooRequest.DurationHoursForSession.Count)
+            {
+                return ResultService.Fail(
+                    "Session prices and session durations count must match.");
+            }
+
             var existingSessionsCount = await context.TattooSessions
                 .CountAsync(s => s.TattooRequestId == dto.TattooRequestId);
 
@@ -149,12 +146,33 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("All planned session prices have already been used.");
             }
 
+            if (existingSessionsCount >= tattooRequest.DurationHoursForSession.Count)
+            {
+                return ResultService.Fail("All planned session durations have already been used.");
+            }
+
+            var price = tattooRequest.PriceForSession[existingSessionsCount];
+            var durationHours = tattooRequest.DurationHoursForSession[existingSessionsCount];
+
+            if (durationHours <= 0)
+            {
+                return ResultService.Fail("Session duration must be greater than zero.");
+            }
+
+            var endTime = dto.StartTime.AddHours(durationHours);
+
+            if (endTime - dto.StartTime < TimeSpan.FromMinutes(15))
+            {
+                return ResultService.Fail("Tattoo session must be at least 15 minutes long.");
+            }
+
             var tattooArtistId = tattooRequest.TattooArtistId;
 
             var isWithinSchedule = await IsArtistAvailableInScheduleAsync(
-            tattooArtistId,
-            dto.StartTime,
-            dto.EndTime);
+                tattooArtistId,
+                dto.StartTime,
+                endTime,
+                ScheduleType.TattooSession);
 
             if (!isWithinSchedule)
             {
@@ -165,7 +183,7 @@ namespace Tattoo_Project.Services
             var hasTattooSessionConflict = await context.TattooSessions.AnyAsync(s =>
                 s.TattooRequest.TattooArtistId == tattooArtistId &&
                 dto.StartTime < s.EndTime &&
-                dto.EndTime > s.StartTime);
+                endTime > s.StartTime);
 
             if (hasTattooSessionConflict)
             {
@@ -176,7 +194,7 @@ namespace Tattoo_Project.Services
             var hasConsultationConflict = await context.Consultations.AnyAsync(c =>
                 c.TattooRequest.TattooArtistId == tattooArtistId &&
                 dto.StartTime < c.EndTime &&
-                dto.EndTime > c.StartTime);
+                endTime > c.StartTime);
 
             if (hasConsultationConflict)
             {
@@ -184,21 +202,23 @@ namespace Tattoo_Project.Services
                     "Tattoo artist already has a consultation at this time.");
             }
 
-            var price = tattooRequest.PriceForSession[existingSessionsCount];
-
             TattooSession tattooSession = new()
             {
                 TattooRequestId = dto.TattooRequestId,
                 StartTime = dto.StartTime,
-                EndTime = dto.EndTime,
-                DurationHours = dto.DurationHours,
+                EndTime = endTime,
+                DurationHours = durationHours,
                 PriceForTheSession = price
             };
 
             context.TattooSessions.Add(tattooSession);
 
             tattooRequest.RemainingSessionsToBook--;
-            tattooRequest.Status = RequestStatus.TattooBooked;
+
+            if (tattooRequest.Status == RequestStatus.ConsultationCompleted)
+            {
+                tattooRequest.Status = RequestStatus.TattooBooked;
+            }
 
             await context.SaveChangesAsync();
 
@@ -238,24 +258,14 @@ namespace Tattoo_Project.Services
                     "Tattoo session can be updated only at least 24 hours before its start time.");
             }
 
-            if (dto.StartTime >= dto.EndTime)
-            {
-                return ResultService.Fail("Start time must be before end time.");
-            }
-
             if (dto.StartTime <= DateTime.UtcNow)
             {
                 return ResultService.Fail("Tattoo session cannot be moved to the past.");
             }
 
-            if (dto.EndTime - dto.StartTime < TimeSpan.FromMinutes(15))
+            if (tattooSession.DurationHours <= 0)
             {
-                return ResultService.Fail("Tattoo session must be at least 15 minutes long.");
-            }
-
-            if (dto.DurationHours <= 0)
-            {
-                return ResultService.Fail("Duration hours must be greater than zero.");
+                return ResultService.Fail("Tattoo session duration is invalid.");
             }
 
             if (tattooSession.TattooRequest.Status != RequestStatus.TattooBooked &&
@@ -265,13 +275,32 @@ namespace Tattoo_Project.Services
                     "Tattoo session cannot be updated for the current tattoo request status.");
             }
 
+            var endTime = dto.StartTime.AddHours(Convert.ToDouble(tattooSession.DurationHours));
+
+            if (endTime - dto.StartTime < TimeSpan.FromMinutes(15))
+            {
+                return ResultService.Fail("Tattoo session must be at least 15 minutes long.");
+            }
+
             var tattooArtistId = tattooSession.TattooRequest.TattooArtistId;
+
+            var isWithinSchedule = await IsArtistAvailableInScheduleAsync(
+                tattooArtistId,
+                dto.StartTime,
+                endTime,
+                ScheduleType.TattooSession);
+
+            if (!isWithinSchedule)
+            {
+                return ResultService.Fail(
+                    "The selected tattoo session time is outside the tattoo artist's working schedule.");
+            }
 
             var hasTattooSessionConflict = await context.TattooSessions.AnyAsync(s =>
                 s.Id != id &&
                 s.TattooRequest.TattooArtistId == tattooArtistId &&
                 dto.StartTime < s.EndTime &&
-                dto.EndTime > s.StartTime);
+                endTime > s.StartTime);
 
             if (hasTattooSessionConflict)
             {
@@ -282,7 +311,7 @@ namespace Tattoo_Project.Services
             var hasConsultationConflict = await context.Consultations.AnyAsync(c =>
                 c.TattooRequest.TattooArtistId == tattooArtistId &&
                 dto.StartTime < c.EndTime &&
-                dto.EndTime > c.StartTime);
+                endTime > c.StartTime);
 
             if (hasConsultationConflict)
             {
@@ -291,8 +320,7 @@ namespace Tattoo_Project.Services
             }
 
             tattooSession.StartTime = dto.StartTime;
-            tattooSession.EndTime = dto.EndTime;
-            tattooSession.DurationHours = dto.DurationHours;
+            tattooSession.EndTime = endTime;
 
             await context.SaveChangesAsync();
 
@@ -385,7 +413,20 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Every session price must be greater than zero.");
             }
 
+            if (dto.DurationHoursForSession == null ||
+                dto.DurationHoursForSession.Count != dto.AdditionalSessions)
+            {
+                return ResultService.Fail(
+                    "Duration count must match the number of additional sessions.");
+            }
+
+            if (dto.DurationHoursForSession.Any(duration => duration <= 0))
+            {
+                return ResultService.Fail("Every session duration must be greater than zero.");
+            }
+
             tattooRequest.PriceForSession ??= new List<decimal>();
+            tattooRequest.DurationHoursForSession ??= new List<int>();
             tattooRequest.RemainingSessionsToBook ??= 0;
 
             tattooRequest.RemainingSessionsToBook += dto.AdditionalSessions;
@@ -393,6 +434,11 @@ namespace Tattoo_Project.Services
             foreach (var price in dto.PriceForSession)
             {
                 tattooRequest.PriceForSession.Add(price);
+            }
+
+            foreach (var duration in dto.DurationHoursForSession)
+            {
+                tattooRequest.DurationHoursForSession.Add(duration);
             }
 
             await context.SaveChangesAsync();
@@ -490,9 +536,10 @@ namespace Tattoo_Project.Services
         }
 
         private async Task<bool> IsArtistAvailableInScheduleAsync(
-    int tattooArtistId,
-    DateTime startTime,
-    DateTime endTime)
+            int tattooArtistId,
+            DateTime startTime,
+            DateTime endTime,
+            ScheduleType scheduleType)
         {
             if (startTime.Date != endTime.Date)
             {
@@ -507,7 +554,8 @@ namespace Tattoo_Project.Services
             var schedules = await context.Schedules
                 .Where(s =>
                     s.TattooArtistId == tattooArtistId &&
-                    s.DayOfWeek == requestedDay)
+                    s.DayOfWeek == requestedDay &&
+                    s.ScheduleType == scheduleType)
                 .ToListAsync();
 
             return schedules.Any(s =>

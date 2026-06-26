@@ -24,6 +24,8 @@
 
         public string UserId { get; set; } = null!;
 
+        public int ConsultationDurationMinutes { get; set; }
+
         public ApplicationUser User { get; set; } = null!;
 
         public ICollection<ArtistRequirement> Requirements { get; set; }

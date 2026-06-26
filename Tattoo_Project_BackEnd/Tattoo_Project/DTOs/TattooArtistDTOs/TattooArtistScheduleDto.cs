@@ -10,5 +10,7 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
         public TimeOnly StartTime { get; set; }
 
         public TimeOnly EndTime { get; set; }
+
+        public ScheduleType ScheduleType { get; set; }
     }
 }

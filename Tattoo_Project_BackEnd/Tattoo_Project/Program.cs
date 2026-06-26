@@ -68,6 +68,20 @@ namespace Tattoo_Project
                     };
                 });
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("ReactApp", policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "http://localhost:5174",
+                            "http://127.0.0.1:5174"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -78,6 +92,8 @@ namespace Tattoo_Project
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("ReactApp");
 
             app.UseAuthentication();
 

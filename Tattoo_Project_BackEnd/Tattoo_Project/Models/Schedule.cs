@@ -10,6 +10,8 @@
 
         public TimeOnly EndTime { get; set; }
 
+        public ScheduleType ScheduleType { get; set; }
+
         public int TattooArtistId { get; set; }
 
         public TattooArtist TattooArtist { get; set; } = null!;

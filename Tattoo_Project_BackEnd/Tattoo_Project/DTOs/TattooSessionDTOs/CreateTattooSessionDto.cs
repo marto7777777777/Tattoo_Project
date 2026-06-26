@@ -6,11 +6,7 @@ namespace Tattoo_Project.DTOs.TattooSessionDTOs
     {
 
         public DateTime StartTime { get; set; }
-
-        public DateTime EndTime { get; set; }
-
         public int TattooRequestId { get; set; }
 
-        public int DurationHours { get; set; }
     }
 }

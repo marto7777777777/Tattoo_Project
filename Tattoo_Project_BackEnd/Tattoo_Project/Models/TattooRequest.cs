@@ -6,6 +6,7 @@
         public string Description { get; set; } = null!;
         public string Placement { get; set; } = null!;
         public List<decimal>? PriceForSession { get; set; }
+        public List<int>? DurationHoursForSession { get; set; }
         public DateTime CreatedOn { get; set; }
         public RequestStatus Status { get; set; }
         public int ClientId { get; set; }

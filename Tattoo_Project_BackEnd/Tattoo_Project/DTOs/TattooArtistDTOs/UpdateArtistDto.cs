@@ -12,6 +12,8 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
 
         public string Description { get; set; } = null!;
 
+        public int ConsultationDurationMinutes { get; set; }
+
         public string StudioAddress { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
         public bool OffersOnlineConsultation { get; set; }

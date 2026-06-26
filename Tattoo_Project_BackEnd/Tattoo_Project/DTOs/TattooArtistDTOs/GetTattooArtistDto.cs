@@ -20,6 +20,8 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
         public bool RequiresDeposit { get; set; }
         public bool? IsVerified { get; set; }
 
+        public int ConsultationDurationMinutes { get; set; }
+
         public decimal? DepositAmount { get; set; }
         public ICollection<TattooArtistRequirementsDto> Requirements { get; set; }
            = new List<TattooArtistRequirementsDto>();

@@ -91,9 +91,34 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Deposit amount must be greater than zero when deposit is required.");
             }
 
+            if (dto.ConsultationDurationMinutes < 15)
+            {
+                return ResultService.Fail("Consultation duration must be at least 15 minutes.");
+            }
+
+            if (dto.ConsultationDurationMinutes > 180)
+            {
+                return ResultService.Fail("Consultation duration cannot be longer than 180 minutes.");
+            }
+
+            if (dto.Schedules == null || !dto.Schedules.Any())
+            {
+                return ResultService.Fail("At least one schedule is required.");
+            }
+
             if (dto.Schedules.Any(s => s.StartTime >= s.EndTime))
             {
                 return ResultService.Fail("Every schedule start time must be before end time.");
+            }
+
+            if (!dto.Schedules.Any(s => s.ScheduleType == ScheduleType.Consultation))
+            {
+                return ResultService.Fail("At least one consultation schedule is required.");
+            }
+
+            if (!dto.Schedules.Any(s => s.ScheduleType == ScheduleType.TattooSession))
+            {
+                return ResultService.Fail("At least one tattoo session schedule is required.");
             }
 
             await EnsureRoleExists(UserRoles.Client);
@@ -143,6 +168,8 @@ namespace Tattoo_Project.Services
                 RequiresDeposit = dto.RequiresDeposit,
                 DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null,
 
+                ConsultationDurationMinutes = dto.ConsultationDurationMinutes,
+
                 UserId = user.Id,
 
                 Requirements = dto.Requirements.Select(r => new ArtistRequirement
@@ -159,7 +186,8 @@ namespace Tattoo_Project.Services
                 {
                     DayOfWeek = s.DayOfWeek,
                     StartTime = s.StartTime,
-                    EndTime = s.EndTime
+                    EndTime = s.EndTime,
+                    ScheduleType = s.ScheduleType
                 }).ToList()
             };
 
@@ -191,9 +219,34 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Deposit amount must be greater than zero when deposit is required.");
             }
 
+            if (dto.ConsultationDurationMinutes < 15)
+            {
+                return ResultService.Fail("Consultation duration must be at least 15 minutes.");
+            }
+
+            if (dto.ConsultationDurationMinutes > 180)
+            {
+                return ResultService.Fail("Consultation duration cannot be longer than 180 minutes.");
+            }
+
+            if (dto.Schedules == null || !dto.Schedules.Any())
+            {
+                return ResultService.Fail("At least one schedule is required.");
+            }
+
             if (dto.Schedules.Any(s => s.StartTime >= s.EndTime))
             {
                 return ResultService.Fail("Every schedule start time must be before end time.");
+            }
+
+            if (!dto.Schedules.Any(s => s.ScheduleType == ScheduleType.Consultation))
+            {
+                return ResultService.Fail("At least one consultation schedule is required.");
+            }
+
+            if (!dto.Schedules.Any(s => s.ScheduleType == ScheduleType.TattooSession))
+            {
+                return ResultService.Fail("At least one tattoo session schedule is required.");
             }
 
             artist.StudioName = dto.StudioName;
@@ -203,6 +256,7 @@ namespace Tattoo_Project.Services
             artist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
             artist.RequiresDeposit = dto.RequiresDeposit;
             artist.DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null;
+            artist.ConsultationDurationMinutes = dto.ConsultationDurationMinutes;
 
             artist.Requirements.Clear();
             artist.PortfolioImages.Clear();
@@ -230,7 +284,8 @@ namespace Tattoo_Project.Services
                 {
                     DayOfWeek = schedule.DayOfWeek,
                     StartTime = schedule.StartTime,
-                    EndTime = schedule.EndTime
+                    EndTime = schedule.EndTime,
+                    ScheduleType = schedule.ScheduleType
                 });
             }
 
@@ -281,11 +336,14 @@ namespace Tattoo_Project.Services
                 RequiresDeposit = artist.RequiresDeposit,
                 DepositAmount = artist.DepositAmount,
 
+                ConsultationDurationMinutes = artist.ConsultationDurationMinutes,
+
                 Schedules = artist.Schedules.Select(s => new TattooArtistScheduleDto
                 {
                     DayOfWeek = s.DayOfWeek,
                     StartTime = s.StartTime,
-                    EndTime = s.EndTime
+                    EndTime = s.EndTime,
+                    ScheduleType = s.ScheduleType
                 }).ToList(),
 
                 PortfolioImages = artist.PortfolioImages.Select(p => new TattooArtistPortfolioImageDto
