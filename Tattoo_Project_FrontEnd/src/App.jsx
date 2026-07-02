@@ -1,0 +1,48 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
+import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/LoginPage";
+import ChooseProfileTypePage from "./pages/ChooseProfileTypePage";
+import CreateClientProfilePage from "./pages/CreateClientProfilePage";
+import CreateArtistProfilePage from "./pages/CreateArtistProfilePage";
+import ArtistsPage from "./pages/ArtistsPage";
+import CreateTattooRequestPage from "./pages/CreateTattooRequestPage";
+import MyTattooRequestsPage from "./pages/MyTattooRequestsPage";
+import CreateConsultationPage from "./pages/CreateConsultationPage";
+import BookTattooSessionPage from "./pages/BookTattooSessionPage";
+import ArtistWorkspacePage from "./pages/ArtistWorkspacePage";
+import CreateArtistResponsePage from "./pages/CreateArtistResponsePage";
+import CompleteConsultationPage from "./pages/CompleteConsultationPage";
+import AddMoreSessionsPage from "./pages/AddMoreSessionsPage";
+import CompleteTattooPage from "./pages/CompleteTattooPage";
+
+function App() {
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/choose-profile" element={<ProtectedRoute><ChooseProfileTypePage /></ProtectedRoute>} />
+        <Route path="/create-client-profile" element={<ProtectedRoute><CreateClientProfilePage /></ProtectedRoute>} />
+        <Route path="/create-artist-profile" element={<ProtectedRoute><CreateArtistProfilePage /></ProtectedRoute>} />
+        <Route path="/artists" element={<ArtistsPage />} />
+        <Route path="/create-tattoo-request/:artistId?" element={<ProtectedRoute roles={["Client"]}><CreateTattooRequestPage /></ProtectedRoute>} />
+        <Route path="/my-requests" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />
+        <Route path="/book-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><CreateConsultationPage /></ProtectedRoute>} />
+        <Route path="/book-session/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><BookTattooSessionPage /></ProtectedRoute>} />
+        <Route path="/artist-workspace" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistWorkspacePage /></ProtectedRoute>} />
+        <Route path="/artist-response/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CreateArtistResponsePage /></ProtectedRoute>} />
+        <Route path="/complete-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CompleteConsultationPage /></ProtectedRoute>} />
+        <Route path="/add-more-sessions/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><AddMoreSessionsPage /></ProtectedRoute>} />
+        <Route path="/complete-tattoo/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CompleteTattooPage /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  );
+}
+
+export default App;
