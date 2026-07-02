@@ -1,4 +1,3 @@
-
 import { API_BASE_URL } from "./apiConfig";
 
 export async function createArtistProfile(artistData) {
@@ -11,6 +10,17 @@ export async function createArtistProfile(artistData) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(artistData),
+  });
+
+  return response;
+}
+
+export async function getAllArtists() {
+  const response = await fetch(`${API_BASE_URL}/api/TattooArtist`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
   return response;
