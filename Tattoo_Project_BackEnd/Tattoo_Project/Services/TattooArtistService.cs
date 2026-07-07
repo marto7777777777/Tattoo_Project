@@ -381,6 +381,50 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
+        public async Task<ResultService<ICollection<GetTattooArtistDto>>> GetRecommendedTattooArtistsAsync(string userId)
+        {
+            var client = await context.Clients
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (client == null)
+            {
+                return ResultService<ICollection<GetTattooArtistDto>>.Fail("Client profile not found.");
+            }
+
+            var clientCountry = client.Country.Trim().ToLower();
+
+            var artistsQuery = context.TattooArtists
+                .Include(a => a.Reviews)
+                .Include(a => a.Schedules)
+                .Include(a => a.PortfolioImages)
+                .Include(a => a.Requirements)
+                .AsQueryable();
+
+            var localArtistsExist = await artistsQuery
+                .AnyAsync(a => a.StudioCountry.ToLower() == clientCountry);
+
+            if (localArtistsExist)
+            {
+                artistsQuery = artistsQuery
+                    .Where(a => a.StudioCountry.ToLower() == clientCountry);
+            }
+
+            var artists = await artistsQuery
+                .OrderByDescending(a => a.IsVerified == true)
+                .ThenByDescending(a => a.Reviews.Any()
+                    ? a.Reviews.Average(r => r.Rating)
+                    : 0)
+                .ThenByDescending(a => a.Reviews.Count)
+                .ThenBy(a => a.StudioName)
+                .ToListAsync();
+
+            var result = artists
+                .Select(MapToGetTattooArtistDto)
+                .ToList();
+
+            return ResultService<ICollection<GetTattooArtistDto>>.Ok(result);
+        }
+
         private async Task EnsureRoleExists(string role)
         {
             if (!await roleManager.RoleExistsAsync(role))
@@ -393,9 +437,11 @@ namespace Tattoo_Project.Services
         {
             return new GetTattooArtistDto
             {
+                Id = artist.Id,
                 FirstName = artist.FirstName,
                 LastName = artist.LastName,
                 Email = artist.Email,
+                IsVerified = artist.IsVerified,
 
                 StudioName = artist.StudioName,
                 Description = artist.Description,

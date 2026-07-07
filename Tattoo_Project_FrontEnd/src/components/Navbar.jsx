@@ -21,6 +21,7 @@ function Navbar() {
         <NavLink to="/artists">Artists</NavLink>
 
         {isClient && <NavLink to="/my-requests">My requests</NavLink>}
+        {isClient && <NavLink to="/favorites">Favorites</NavLink>}
 
         {isArtist && <NavLink to="/artist-workspace">Artist workspace</NavLink>}
 

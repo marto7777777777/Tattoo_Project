@@ -233,6 +233,7 @@ namespace Tattoo_Project.Services
         {
             return new GetTattooRequestDto
             {
+                Id = tattooRequest.Id,
                 Description = tattooRequest.Description,
                 Placement = tattooRequest.Placement,
                 CreatedOn = tattooRequest.CreatedOn,

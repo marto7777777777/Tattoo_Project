@@ -20,5 +20,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> DeleteTattooArtistAsync(int id);
 
         Task<ResultService<ICollection<GetTattooArtistDto>>> SearchTattooArtistsAsync(string query);
+
+        Task<ResultService<ICollection<GetTattooArtistDto>>> GetRecommendedTattooArtistsAsync(string userId);
     }
 }

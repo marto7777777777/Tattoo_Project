@@ -44,6 +44,27 @@ namespace Tattoo_Project.Controllers
             return Ok(result.Data);
         }
 
+        [HttpGet("recommended")]
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> GetRecommendedTattooArtists()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.GetRecommendedTattooArtistsAsync(userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
+
         [HttpGet("search")]
         public async Task<IActionResult> SearchTattooArtists([FromQuery] string query)
         {

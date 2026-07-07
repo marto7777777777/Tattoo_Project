@@ -7,22 +7,78 @@ import { useAuth } from "../context/AuthContext";
 function CreateClientProfilePage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [form, setForm] = useState({ phoneNumber: "", city: "", country: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  async function handleSubmit(event) {
-    event.preventDefault(); setError(""); setSuccess("");
-    try {
-      const response = await createClientProfile({ phoneNumber });
-      const data = await readResponse(response);
-      if (!response.ok) { setError(typeof data === "string" ? data : JSON.stringify(data)); return; }
-      if (data.token || data.Token) saveAuthToken(data.token || data.Token);
-      setSuccess("Client profile created successfully.");
-      setTimeout(() => navigate("/artists"), 700);
-    } catch { setError("Server connection failed. Please try again."); }
+  function handleChange(event) {
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
   }
 
-  return <main className="center-container"><section className="card form-card"><div className="header"><p className="subtitle">Client Profile</p><h1>Create your client profile</h1><p>Add your phone number so artists can contact you.</p></div><form className="form" onSubmit={handleSubmit}><div className="form-group"><label>Phone number</label><input value={phoneNumber} onChange={(e)=>setPhoneNumber(e.target.value)} /></div>{error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}<button className="primary-button">Create Client Profile</button></form></section></main>;
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await createClientProfile({
+        phoneNumber: form.phoneNumber,
+        city: form.city,
+        country: form.country,
+      });
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+
+      if (data.token || data.Token) saveAuthToken(data.token || data.Token);
+
+      setSuccess("Client profile created successfully.");
+      setTimeout(() => navigate("/artists"), 700);
+    } catch {
+      setError("Server connection failed. Please try again.");
+    }
+  }
+
+  return (
+    <main className="center-container">
+      <section className="card form-card">
+        <div className="header">
+          <p className="subtitle">Client Profile</p>
+          <h1>Create your client profile</h1>
+          <p>Add your contact and location so we can recommend artists near you.</p>
+        </div>
+
+        <form className="form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Phone number</label>
+            <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>City</label>
+              <input name="city" value={form.city} onChange={handleChange} placeholder="Plovdiv" />
+            </div>
+
+            <div className="form-group">
+              <label>Country</label>
+              <input name="country" value={form.country} onChange={handleChange} placeholder="Bulgaria" />
+            </div>
+          </div>
+
+          {error && <p className="error">{error}</p>}
+          {success && <p className="success">{success}</p>}
+
+          <button className="primary-button">Create Client Profile</button>
+        </form>
+      </section>
+    </main>
+  );
 }
+
 export default CreateClientProfilePage;

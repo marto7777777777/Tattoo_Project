@@ -8,6 +8,7 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
 {
     public class GetTattooRequestDto
     {
+        public int Id { get; set; }
         public string Description { get; set; } = null!;
         public string Placement { get; set; } = null!;
         public DateTime CreatedOn { get; set; }

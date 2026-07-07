@@ -1,43 +1,201 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getAllArtists } from "../api/artistApi";
+import { useEffect, useMemo, useState } from "react";
+import ArtistCard from "../components/ArtistCard";
+import { getAllArtists, getRecommendedArtists, searchArtists } from "../api/artistApi";
+import { addFavoriteArtist, getMyFavoriteArtists, removeFavoriteArtist } from "../api/favoriteArtistApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
-import { formatTime, getDayName, getEntityId, getScheduleTypeName } from "../utils/format";
+import { getEntityId } from "../utils/format";
 
 function ArtistsPage() {
-  const navigate = useNavigate();
   const { isLoggedIn, isClient } = useAuth();
   const [artists, setArtists] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState([]);
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [title, setTitle] = useState("Recommended tattoo artists");
 
-  useEffect(() => { loadArtists(); }, []);
+  const favoriteIdSet = useMemo(() => new Set(favoriteIds.map(String)), [favoriteIds]);
 
-  async function loadArtists() {
+  useEffect(() => {
+    loadInitialArtists();
+  }, [isLoggedIn, isClient]);
+
+  async function loadInitialArtists() {
+    setIsLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      const response = await getAllArtists();
+      let response;
+
+      if (isLoggedIn && isClient) {
+        response = await getRecommendedArtists();
+        setTitle("Recommended tattoo artists near you");
+      } else {
+        response = await getAllArtists();
+        setTitle("Tattoo artists");
+      }
+
       const data = await readResponse(response);
-      if (!response.ok) { setError(typeof data === "string" ? data : JSON.stringify(data)); return; }
-      setArtists(data);
-    } catch { setError("Server connection failed. Please try again."); }
-    finally { setIsLoading(false); }
+
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+
+      setArtists(data || []);
+
+      if (isLoggedIn && isClient) {
+        await loadFavoriteIds();
+      }
+    } catch {
+      setError("Server connection failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  function handleCreateRequest(artist, index) {
+  async function loadFavoriteIds() {
+    try {
+      const response = await getMyFavoriteArtists();
+      const data = await readResponse(response);
+
+      if (!response.ok) return;
+
+      const ids = (data || [])
+        .map((artist, index) => getEntityId(artist, index))
+        .filter(Boolean);
+
+      setFavoriteIds(ids);
+    } catch {
+      // Favorites are helpful, but the page can still work without them.
+    }
+  }
+
+  async function handleSearch(event) {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    setIsLoading(true);
+
+    try {
+      if (!query.trim()) {
+        await loadInitialArtists();
+        return;
+      }
+
+      const response = await searchArtists(query.trim());
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+
+      setArtists(data || []);
+      setTitle(`Search results for "${query.trim()}"`);
+    } catch {
+      setError("Server connection failed. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleToggleFavorite(artist, index) {
+    if (!isLoggedIn) {
+      setError("Login first to add favorite artists.");
+      return;
+    }
+
+    if (!isClient) {
+      setError("Only clients can add favorite artists.");
+      return;
+    }
+
     const artistId = getEntityId(artist, index);
-    localStorage.setItem("selectedArtist", JSON.stringify({ ...artist, id: artistId }));
-    if (!isLoggedIn) navigate("/login");
-    else if (!isClient) navigate("/create-client-profile");
-    else navigate(`/create-tattoo-request/${artistId}`);
+
+    if (!artist?.id && !artist?.tattooArtistId) {
+      setError("Cannot perform this action for this artist. Please refresh the page and try again.");
+      return;
+    }
+
+    const isFavorite = favoriteIdSet.has(String(artistId));
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = isFavorite
+        ? await removeFavoriteArtist(artistId)
+        : await addFavoriteArtist(artistId);
+
+      const data = await readResponse(response);
+
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+
+      if (isFavorite) {
+        setFavoriteIds((current) => current.filter((id) => String(id) !== String(artistId)));
+        setSuccess("Artist removed from favorites.");
+      } else {
+        setFavoriteIds((current) => [...current, artistId]);
+        setSuccess("Artist added to favorites.");
+      }
+    } catch {
+      setError("Server connection failed. Please try again.");
+    }
   }
 
   return (
-    <main className="page-shell"><section className="container"><div className="header"><p className="subtitle">Tattoo Artists</p><h1>Find your tattoo artist</h1><p>Browse studios, portfolio images, requirements, consultation settings, and schedule blocks.</p></div>
-      {isLoading && <p className="message">Loading artists...</p>}{error && <p className="error">{error}</p>}{!isLoading && !error && artists.length === 0 && <p className="message">No tattoo artists found.</p>}
-      <div className="grid-2">{artists.map((artist,index)=><article className="card artist-card" key={index}><div className="card-head"><div><h2>{artist.studioName}</h2><p className="subtitle inline-subtitle">{artist.firstName} {artist.lastName}</p></div>{artist.isVerified && <span className="status-pill status-completed">Verified</span>}</div><p className="muted">{artist.description}</p><div className="info-list"><p><span>Address:</span> {artist.studioAddress}</p><p><span>Phone:</span> {artist.phoneNumber}</p><p><span>Online consultation:</span> {artist.offersOnlineConsultation ? "Yes" : "No"}</p><p><span>Deposit:</span> {artist.requiresDeposit ? `${artist.depositAmount} BGN` : "Not required"}</p><p><span>Consultation duration:</span> {artist.consultationDurationMinutes} minutes</p></div>{artist.requirements?.length > 0 && <div className="section"><h3>Requirements</h3><ul className="muted">{artist.requirements.map((r,i)=><li key={i}>{r.description}</li>)}</ul></div>}{artist.schedules?.length > 0 && <div className="section"><h3>Schedule</h3><div className="small-list">{artist.schedules.map((s,i)=><div className="small-list-row" key={i}><span>{getDayName(s.dayOfWeek)}</span><span>{formatTime(s.startTime)} - {formatTime(s.endTime)}</span><span className="status-pill">{getScheduleTypeName(s.scheduleType)}</span></div>)}</div></div>}{artist.portfolioImages?.length > 0 && <div className="section"><h3>Portfolio</h3><div className="image-grid">{artist.portfolioImages.slice(0,4).map((img,i)=><img key={i} src={img.imageUrl} alt="Portfolio" />)}</div></div>}<button className="primary-button full-button" onClick={()=>handleCreateRequest(artist,index)}>Create Tattoo Request</button></article>)}</div>
-      <p className="muted backend-note">Note: if artist IDs are missing from backend DTOs, this page uses a fallback index. Add Id to GetTattooArtistDto for fully reliable click-through.</p>
-    </section></main>
+    <main className="page-shell">
+      <section className="container">
+        <div className="header">
+          <p className="subtitle">Tattoo Artists</p>
+          <h1>{title}</h1>
+          <p>
+            Search by artist name, studio name, city, country, or address. Logged clients see recommended artists from their country first.
+          </p>
+        </div>
+
+        <form className="search-bar" onSubmit={handleSearch}>
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search Plovdiv, Bulgaria, studio name, artist name..."
+          />
+          <button className="primary-button" type="submit">Search</button>
+          <button className="secondary-button" type="button" onClick={() => { setQuery(""); loadInitialArtists(); }}>
+            Reset
+          </button>
+        </form>
+
+        {isLoading && <p className="message">Loading artists...</p>}
+        {error && <p className="error">{error}</p>}
+        {success && <p className="success">{success}</p>}
+        {!isLoading && !error && artists.length === 0 && <p className="message">No tattoo artists found.</p>}
+
+        <div className="grid-2">
+          {artists.map((artist, index) => {
+            const artistId = getEntityId(artist, index);
+
+            return (
+              <ArtistCard
+                artist={artist}
+                index={index}
+                key={`${artistId}-${index}`}
+                isFavorite={favoriteIdSet.has(String(artistId))}
+                showFavoriteButton={isLoggedIn && isClient}
+                onToggleFavorite={handleToggleFavorite}
+              />
+            );
+          })}
+        </div>
+      </section>
+    </main>
   );
 }
+
 export default ArtistsPage;

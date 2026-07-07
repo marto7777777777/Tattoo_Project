@@ -17,6 +17,8 @@ import CreateArtistResponsePage from "./pages/CreateArtistResponsePage";
 import CompleteConsultationPage from "./pages/CompleteConsultationPage";
 import AddMoreSessionsPage from "./pages/AddMoreSessionsPage";
 import CompleteTattooPage from "./pages/CompleteTattooPage";
+import FavoriteArtistsPage from "./pages/FavoriteArtistsPage";
+import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
         <Route path="/artists" element={<ArtistsPage />} />
         <Route path="/create-tattoo-request/:artistId?" element={<ProtectedRoute roles={["Client"]}><CreateTattooRequestPage /></ProtectedRoute>} />
         <Route path="/my-requests" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />
+        <Route path="/favorites" element={<ProtectedRoute roles={["Client"]}><FavoriteArtistsPage /></ProtectedRoute>} />
+        <Route path="/review/:tattooRequestId" element={<ProtectedRoute roles={["Client"]}><CreateArtistReviewPage /></ProtectedRoute>} />
         <Route path="/book-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><CreateConsultationPage /></ProtectedRoute>} />
         <Route path="/book-session/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><BookTattooSessionPage /></ProtectedRoute>} />
         <Route path="/artist-workspace" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistWorkspacePage /></ProtectedRoute>} />

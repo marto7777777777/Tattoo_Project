@@ -35,6 +35,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<ITattooSessionService, TattooSessionService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IArtistReviewService, ArtistReviewService>();
+            builder.Services.AddScoped<IClientFavoriteArtistService, ClientFavoriteArtistService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(

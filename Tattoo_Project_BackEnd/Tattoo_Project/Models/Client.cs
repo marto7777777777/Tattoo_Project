@@ -22,6 +22,9 @@
         public ICollection<TattooRequest>? TattooRequests { get; set; }
             = new List<TattooRequest>();
 
+        public ICollection<ClientFavoriteArtist> FavoriteArtists { get; set; }
+        = new List<ClientFavoriteArtist>();
+
         public ICollection<ArtistReview> ArtistReviews { get; set; }
             = new List<ArtistReview>();
     }

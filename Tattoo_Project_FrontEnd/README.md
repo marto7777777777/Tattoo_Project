@@ -1,6 +1,6 @@
 # Tattoo Project Frontend
 
-React/Vite frontend for the ASP.NET Core Tattoo Project backend.
+React/Vite frontend for the tattoo booking platform.
 
 ## Run
 
@@ -9,24 +9,24 @@ npm install
 npm run dev
 ```
 
-Backend base URL is configured in:
+Default backend URL is in:
 
 ```text
 src/api/apiConfig.js
 ```
 
-Default backend URL:
+## Added in this version
 
-```text
-https://localhost:7115
-```
+- Client profile city/country fields
+- Artist profile studio city/country/latitude/longitude fields
+- Recommended artists endpoint integration
+- Search artists by name/studio/city/country/address
+- Artist rating/review display
+- Favorite/unfavorite artists
+- My favorites page
+- Create review page for completed tattoo requests
 
-## Important backend note
+## Important backend DTO note
 
-The current backend DTOs for artists and tattoo requests do not return the database `Id` field in list/detail responses. The frontend includes fallback/manual ID inputs on workflow pages that need IDs. For a fully automatic click-through workflow, add `Id` to:
-
-- `GetTattooArtistDto`
-- `GetTattooRequestDto`
-- `TattooRequestDto`
-
-and map it in the backend services.
+For request/favorite buttons to be fully reliable, `GetTattooArtistDto` should return artist `Id`.
+For review buttons to be fully reliable, `GetTattooRequestDto` should return request `Id`.
