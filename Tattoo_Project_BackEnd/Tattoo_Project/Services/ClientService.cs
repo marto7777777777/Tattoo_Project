@@ -44,7 +44,9 @@ namespace Tattoo_Project.Services
                 FirstName = client.FirstName,
                 LastName = client.LastName,
                 Email = client.Email,
-                PhoneNumber = client.PhoneNumber
+                PhoneNumber = client.PhoneNumber,
+                City = client.City,
+                Country = client.Country,
             };
 
             return ResultService<GetClientDto>.Ok(dto);
@@ -78,6 +80,15 @@ namespace Tattoo_Project.Services
             {
                 await userManager.AddToRoleAsync(user, UserRoles.Client);
             }
+            if (string.IsNullOrWhiteSpace(dto.City))
+            {
+                return ResultService.Fail("City is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Country))
+            {
+                return ResultService.Fail("Country is required.");
+            }
 
             Client client = new()
             {
@@ -85,7 +96,9 @@ namespace Tattoo_Project.Services
                 LastName = user.LastName,
                 Email = user.Email!,
                 PhoneNumber = dto.PhoneNumber,
-                UserId = user.Id
+                UserId = user.Id,
+                City = dto.City,
+                Country = dto.Country
             };
 
             context.Clients.Add(client);
@@ -108,6 +121,8 @@ namespace Tattoo_Project.Services
             }
 
             client.PhoneNumber = dto.PhoneNumber;
+            client.City = dto.City;
+            client.Country = dto.Country;
 
             await context.SaveChangesAsync();
 

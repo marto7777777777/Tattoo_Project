@@ -28,6 +28,8 @@ namespace Tattoo_Project.Data
 
         public DbSet<ArtistResponse> ArtistResponses { get; set; }
 
+        public DbSet<ArtistReview> ArtistReviews { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

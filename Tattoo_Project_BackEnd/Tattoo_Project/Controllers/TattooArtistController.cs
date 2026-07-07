@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
+using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -38,6 +39,19 @@ namespace Tattoo_Project.Controllers
             if (!result.Success)
             {
                 return NotFound(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchTattooArtists([FromQuery] string query)
+        {
+            var result = await service.SearchTattooArtistsAsync(query);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok(result.Data);

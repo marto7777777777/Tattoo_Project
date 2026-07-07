@@ -18,5 +18,7 @@
         public TattooArtist TattooArtist { get; set; } = null!;
         public ICollection<TattooReferenceImage> Images { get; set; } = new List<TattooReferenceImage>();
         public ArtistResponse? ArtistResponse { get; set; }
+
+        public ArtistReview? ArtistReview { get; set; }
     }
 }

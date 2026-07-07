@@ -25,6 +25,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
+                .Include(a => a.Reviews)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Images)
                 .Include(a => a.TattooRequests!)
@@ -47,6 +48,7 @@ namespace Tattoo_Project.Services
             var artist = await context.TattooArtists
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
+                .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Images)
@@ -64,6 +66,49 @@ namespace Tattoo_Project.Services
             }
 
             return ResultService<GetTattooArtistDto>.Ok(MapToGetTattooArtistDto(artist));
+        }
+
+        public async Task<ResultService<ICollection<GetTattooArtistDto>>> SearchTattooArtistsAsync(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return await GetAllTattooArtistsAsync();
+            }
+
+            query = query.Trim().ToLower();
+
+            var artists = await context.TattooArtists
+                .Include(a => a.Schedules)
+                .Include(a => a.PortfolioImages)
+                .Include(a => a.Reviews)
+                .Include(a => a.Requirements)
+                .Include(a => a.TattooRequests!)
+                    .ThenInclude(r => r.Images)
+                .Include(a => a.TattooRequests!)
+                    .ThenInclude(r => r.TattooSessions)
+                .Include(a => a.TattooRequests!)
+                    .ThenInclude(r => r.ArtistResponse)
+                .Include(a => a.TattooRequests!)
+                    .ThenInclude(r => r.Consultation)
+                .Where(a =>
+                    a.StudioName.ToLower().Contains(query) ||
+                    a.FirstName.ToLower().Contains(query) ||
+                    a.LastName.ToLower().Contains(query) ||
+                    a.StudioCity.ToLower().Contains(query) ||
+                    a.StudioCountry.ToLower().Contains(query) ||
+                    a.StudioAddress.ToLower().Contains(query))
+                .OrderByDescending(a => a.Reviews.Any()
+                    ? a.Reviews.Average(r => r.Rating)
+                    : 0)
+                .ThenByDescending(a => a.Reviews.Count)
+                .ThenBy(a => a.StudioName)
+                .ToListAsync();
+
+            var result = artists
+                .Select(MapToGetTattooArtistDto)
+                .ToList();
+
+            return ResultService<ICollection<GetTattooArtistDto>>.Ok(result);
         }
 
         public async Task<ResultService> CreateTattooArtistProfileAsync(
@@ -134,6 +179,21 @@ namespace Tattoo_Project.Services
                 await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
             }
 
+            if (string.IsNullOrWhiteSpace(dto.StudioCity))
+            {
+                return ResultService.Fail("Studio city is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.StudioCountry))
+            {
+                return ResultService.Fail("Studio country is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.StudioAddress))
+            {
+                return ResultService.Fail("Studio address is required.");
+            }
+
             var hasClientProfile = await context.Clients
                 .AnyAsync(c => c.UserId == userId);
 
@@ -145,7 +205,9 @@ namespace Tattoo_Project.Services
                     LastName = user.LastName,
                     Email = user.Email!,
                     PhoneNumber = dto.PhoneNumber,
-                    UserId = user.Id
+                    UserId = user.Id,
+                    City = dto.StudioCity,
+                    Country = dto.StudioCountry,
                 };
 
                 context.Clients.Add(client);
@@ -160,6 +222,10 @@ namespace Tattoo_Project.Services
                 StudioName = dto.StudioName,
                 Description = dto.Description,
                 StudioAddress = dto.StudioAddress,
+                StudioCity = dto.StudioCity,
+                StudioCountry = dto.StudioCountry,
+                StudioLatitude = dto.StudioLatitude,
+                StudioLongitude = dto.StudioLongitude,
                 PhoneNumber = dto.PhoneNumber,
 
                 IsVerified = false,
@@ -252,6 +318,10 @@ namespace Tattoo_Project.Services
             artist.StudioName = dto.StudioName;
             artist.Description = dto.Description;
             artist.StudioAddress = dto.StudioAddress;
+            artist.StudioCity = dto.StudioCity;
+            artist.StudioCountry = dto.StudioCountry;
+            artist.StudioLatitude = dto.StudioLatitude;
+            artist.StudioLongitude = dto.StudioLongitude;
             artist.PhoneNumber = dto.PhoneNumber;
             artist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
             artist.RequiresDeposit = dto.RequiresDeposit;
@@ -330,11 +400,21 @@ namespace Tattoo_Project.Services
                 StudioName = artist.StudioName,
                 Description = artist.Description,
                 StudioAddress = artist.StudioAddress,
+                StudioCity = artist.StudioCity,
+                StudioCountry = artist.StudioCountry,
+                StudioLatitude = artist.StudioLatitude,
+                StudioLongitude = artist.StudioLongitude,
                 PhoneNumber = artist.PhoneNumber,
 
                 OffersOnlineConsultation = artist.OffersOnlineConsultation,
                 RequiresDeposit = artist.RequiresDeposit,
                 DepositAmount = artist.DepositAmount,
+
+                AverageRating = artist.Reviews.Any()
+                    ? Math.Round(artist.Reviews.Average(r => r.Rating), 1)
+                    : 0,
+
+                ReviewCount = artist.Reviews.Count,
 
                 ConsultationDurationMinutes = artist.ConsultationDurationMinutes,
 

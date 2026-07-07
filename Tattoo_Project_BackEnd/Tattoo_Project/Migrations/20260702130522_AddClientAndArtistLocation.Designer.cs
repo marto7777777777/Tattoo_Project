@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tattoo_Project.Data;
 
@@ -11,9 +12,11 @@ using Tattoo_Project.Data;
 namespace Tattoo_Project.Migrations
 {
     [DbContext(typeof(TattooDbContext))]
-    partial class TattooDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260702130522_AddClientAndArtistLocation")]
+    partial class AddClientAndArtistLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -282,45 +285,6 @@ namespace Tattoo_Project.Migrations
                         .IsUnique();
 
                     b.ToTable("ArtistResponses");
-                });
-
-            modelBuilder.Entity("Tattoo_Project.Models.ArtistReview", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ClientId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Comment")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TattooArtistId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TattooRequestId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("TattooArtistId");
-
-                    b.HasIndex("TattooRequestId")
-                        .IsUnique();
-
-                    b.ToTable("ArtistReviews");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
@@ -715,33 +679,6 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("TattooRequest");
                 });
 
-            modelBuilder.Entity("Tattoo_Project.Models.ArtistReview", b =>
-                {
-                    b.HasOne("Tattoo_Project.Models.Client", "Client")
-                        .WithMany("ArtistReviews")
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
-                        .WithMany("Reviews")
-                        .HasForeignKey("TattooArtistId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Tattoo_Project.Models.TattooRequest", "TattooRequest")
-                        .WithOne("ArtistReview")
-                        .HasForeignKey("Tattoo_Project.Models.ArtistReview", "TattooRequestId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Client");
-
-                    b.Navigation("TattooArtist");
-
-                    b.Navigation("TattooRequest");
-                });
-
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.ApplicationUser", "User")
@@ -840,8 +777,6 @@ namespace Tattoo_Project.Migrations
 
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
                 {
-                    b.Navigation("ArtistReviews");
-
                     b.Navigation("TattooRequests");
                 });
 
@@ -851,8 +786,6 @@ namespace Tattoo_Project.Migrations
 
                     b.Navigation("Requirements");
 
-                    b.Navigation("Reviews");
-
                     b.Navigation("Schedules");
 
                     b.Navigation("TattooRequests");
@@ -861,8 +794,6 @@ namespace Tattoo_Project.Migrations
             modelBuilder.Entity("Tattoo_Project.Models.TattooRequest", b =>
                 {
                     b.Navigation("ArtistResponse");
-
-                    b.Navigation("ArtistReview");
 
                     b.Navigation("Consultation");
 

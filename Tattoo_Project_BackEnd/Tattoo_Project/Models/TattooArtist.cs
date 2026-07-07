@@ -12,6 +12,15 @@
         public string Description { get; set; } = null!;
 
         public string StudioAddress { get; set; } = null!;
+
+        public string StudioCity { get; set; } = null!;
+
+        public string StudioCountry { get; set; } = null!;
+
+        public double? StudioLatitude { get; set; }
+
+        public double? StudioLongitude { get; set; }
+
         public string PhoneNumber { get; set; } = null!;
 
         public bool IsVerified { get; set; }
@@ -38,5 +47,8 @@
 
         public ICollection<Schedule> Schedules { get; set; } 
             = new List<Schedule>();
+
+        public ICollection<ArtistReview> Reviews { get; set; }
+            = new List<ArtistReview>();
     }
 }
