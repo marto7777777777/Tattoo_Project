@@ -1,27 +1,16 @@
-# Tattoo Project Frontend
+# Tattoo Project Frontend - Premium Design Polish
 
-Updated navigation:
+Updated frontend with a premium dark marketplace/dashboard visual style.
 
-- Explore
-- Bookings
-- Favorites
-- My Studio
-
-My Studio contains:
-
-- Requests
-- Calendar
-
-Calendar supports filters:
-
-- All
-- Consultations
-- Tattoo sessions
-- Days off
-
-Run:
+## Run
 
 ```bash
 npm install
 npm run dev
 ```
+
+## Notes
+
+- No Leaflet dependency is used.
+- `package-lock.json`, `node_modules`, and `dist` are intentionally not included.
+- Navigation is organized as: Explore, Bookings, Favorites, My Studio.
