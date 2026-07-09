@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
@@ -22,6 +22,7 @@ namespace Tattoo_Project.Services
         public async Task<ResultService<ICollection<GetTattooArtistDto>>> GetAllTattooArtistsAsync()
         {
             var artists = await context.TattooArtists
+                .Include(a => a.User)
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
@@ -46,6 +47,7 @@ namespace Tattoo_Project.Services
         public async Task<ResultService<GetTattooArtistDto>> GetTattooArtistByIdAsync(int id)
         {
             var artist = await context.TattooArtists
+                .Include(a => a.User)
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Reviews)
@@ -78,6 +80,7 @@ namespace Tattoo_Project.Services
             query = query.Trim().ToLower();
 
             var artists = await context.TattooArtists
+                .Include(a => a.User)
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Reviews)
@@ -394,6 +397,7 @@ namespace Tattoo_Project.Services
             var clientCountry = client.Country.Trim().ToLower();
 
             var artistsQuery = context.TattooArtists
+                .Include(a => a.User)
                 .Include(a => a.Reviews)
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
@@ -441,6 +445,7 @@ namespace Tattoo_Project.Services
                 FirstName = artist.FirstName,
                 LastName = artist.LastName,
                 Email = artist.Email,
+                ProfileImageUrl = artist.User?.ProfileImageUrl,
                 IsVerified = artist.IsVerified,
 
                 StudioName = artist.StudioName,
@@ -474,11 +479,13 @@ namespace Tattoo_Project.Services
 
                 PortfolioImages = artist.PortfolioImages.Select(p => new TattooArtistPortfolioImageDto
                 {
+                    Id = p.Id,
                     ImageUrl = p.ImageUrl
                 }).ToList(),
 
                 Requirements = artist.Requirements.Select(r => new TattooArtistRequirementsDto
                 {
+                    Id = r.Id,
                     Description = r.Description
                 }).ToList(),
 

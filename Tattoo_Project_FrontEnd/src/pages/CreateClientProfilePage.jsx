@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createClientProfile } from "../api/clientApi";
+import { updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,6 +9,7 @@ function CreateClientProfilePage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
   const [form, setForm] = useState({ phoneNumber: "", city: "", country: "" });
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -37,6 +39,10 @@ function CreateClientProfilePage() {
 
       if (data.token || data.Token) saveAuthToken(data.token || data.Token);
 
+      if (profileImageFile) {
+        await updateProfileImage(profileImageFile);
+      }
+
       setSuccess("Client profile created successfully.");
       setTimeout(() => navigate("/explore"), 700);
     } catch {
@@ -54,6 +60,24 @@ function CreateClientProfilePage() {
         </div>
 
         <form className="form" onSubmit={handleSubmit}>
+          <div className="profile-create-upload">
+            <label className="avatar-upload-label">
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)}
+              />
+              <div className="user-avatar user-avatar-xlarge">
+                {profileImageFile ? (
+                  <img src={URL.createObjectURL(profileImageFile)} alt="Preview" />
+                ) : (
+                  <span>＋</span>
+                )}
+              </div>
+              <span>Optional profile picture</span>
+            </label>
+          </div>
           <div className="form-group">
             <label>Phone number</label>
             <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />

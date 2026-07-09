@@ -37,6 +37,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IArtistReviewService, ArtistReviewService>();
             builder.Services.AddScoped<IClientFavoriteArtistService, ClientFavoriteArtistService>();
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
+            builder.Services.AddScoped<IProfileService, ProfileService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(
@@ -95,6 +96,8 @@ namespace Tattoo_Project
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
 
             app.UseCors("ReactApp");
 

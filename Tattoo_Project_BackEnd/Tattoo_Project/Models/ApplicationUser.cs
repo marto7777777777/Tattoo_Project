@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace Tattoo_Project.Models
 {
@@ -7,5 +7,7 @@ namespace Tattoo_Project.Models
         public string FirstName { get; set; } = null!;
 
         public string LastName { get; set; } = null!;
+
+        public string? ProfileImageUrl { get; set; }
     }
 }

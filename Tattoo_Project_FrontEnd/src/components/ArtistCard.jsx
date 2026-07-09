@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import UserAvatar from "./UserAvatar";
+import { getImageUrl } from "../utils/images";
 import { formatTime, getDayName, getEntityId, getScheduleTypeName } from "../utils/format";
 
 function ArtistCard({
@@ -36,12 +38,21 @@ function ArtistCard({
 
   return (
     <article className="card artist-card">
-      <div className="card-head">
-        <div>
-          <h2>{artist.studioName}</h2>
+      <div className="card-head artist-card-head">
+        <div className="artist-title-row">
+          <UserAvatar
+            firstName={artist.firstName}
+            lastName={artist.lastName}
+            email={artist.email}
+            imageUrl={artist.profileImageUrl}
+            size="medium"
+          />
+          <div>
+            <h2>{artist.studioName}</h2>
           <p className="subtitle inline-subtitle">
-            {artist.firstName} {artist.lastName}
-          </p>
+              {artist.firstName} {artist.lastName}
+            </p>
+          </div>
         </div>
 
         <div className="card-badges">
@@ -109,7 +120,7 @@ function ArtistCard({
           <h3>Portfolio</h3>
           <div className="image-grid">
             {artist.portfolioImages.slice(0, 4).map((image, imageIndex) => (
-              <img key={imageIndex} src={image.imageUrl} alt="Portfolio" />
+              <img key={imageIndex} src={getImageUrl(image.imageUrl)} alt="Portfolio" />
             ))}
           </div>
         </div>

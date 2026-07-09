@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createArtistProfile } from "../api/artistApi";
+import { addPortfolioImage, updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 
@@ -29,10 +30,12 @@ function CreateArtistProfilePage() {
     requiresDeposit: false,
     depositAmount: "",
     requirements: [""],
-    portfolioImages: [""],
+    portfolioImages: [],
     schedules: [emptySchedule],
   });
 
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [portfolioImageFiles, setPortfolioImageFiles] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -144,9 +147,7 @@ function CreateArtistProfilePage() {
       requirements: form.requirements
         .filter((requirement) => requirement.trim())
         .map((description) => ({ description })),
-      portfolioImages: form.portfolioImages
-        .filter((imageUrl) => imageUrl.trim())
-        .map((imageUrl) => ({ imageUrl })),
+      portfolioImages: [],
       schedules,
     };
 
@@ -160,6 +161,14 @@ function CreateArtistProfilePage() {
       }
 
       if (data.token || data.Token) saveAuthToken(data.token || data.Token);
+
+      if (profileImageFile) {
+        await updateProfileImage(profileImageFile);
+      }
+
+      for (const file of portfolioImageFiles) {
+        await addPortfolioImage(file);
+      }
 
       setSuccess("Tattoo artist profile created successfully.");
       setTimeout(() => navigate("/my-studio"), 800);
@@ -181,6 +190,24 @@ function CreateArtistProfilePage() {
         </div>
 
         <form className="form" onSubmit={handleSubmit}>
+          <div className="profile-create-upload">
+            <label className="avatar-upload-label">
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)}
+              />
+              <div className="user-avatar user-avatar-xlarge">
+                {profileImageFile ? (
+                  <img src={URL.createObjectURL(profileImageFile)} alt="Preview" />
+                ) : (
+                  <span>＋</span>
+                )}
+              </div>
+              <span>Optional profile picture</span>
+            </label>
+          </div>
           <div className="form-group">
             <label>Studio name</label>
             <input name="studioName" value={form.studioName} onChange={handleChange} />
@@ -301,18 +328,26 @@ function CreateArtistProfilePage() {
 
           <div className="section">
             <h2>Portfolio images</h2>
-            {form.portfolioImages.map((imageUrl, index) => (
-              <div className="form-group" key={index}>
-                <label>Image URL {index + 1}</label>
-                <input
-                  value={imageUrl}
-                  onChange={(event) => updateArray("portfolioImages", index, event.target.value)}
-                />
+            <label className="portfolio-upload-tile">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={(event) => setPortfolioImageFiles(Array.from(event.target.files || []))}
+              />
+              <span>＋</span>
+              <strong>Select portfolio photos</strong>
+              <small>They will be uploaded after your artist profile is created.</small>
+            </label>
+
+            {portfolioImageFiles.length > 0 && (
+              <div className="portfolio-preview-grid">
+                {portfolioImageFiles.map((file, index) => (
+                  <img key={`${file.name}-${index}`} src={URL.createObjectURL(file)} alt="Portfolio preview" />
+                ))}
               </div>
-            ))}
-            <button type="button" className="secondary-button" onClick={() => addArrayItem("portfolioImages")}>
-              Add portfolio image
-            </button>
+            )}
           </div>
 
           <div className="section">

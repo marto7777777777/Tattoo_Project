@@ -1,0 +1,375 @@
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, NavLink, useParams } from "react-router-dom";
+import {
+  addPortfolioImage,
+  addRequirement,
+  deletePortfolioImage,
+  deleteRequirement,
+  getMyProfile,
+  updateBoolField,
+  updateNumberField,
+  updateProfileImage,
+  updateRequirement,
+  updateStringField,
+} from "../api/profileApi";
+import UserAvatar from "../components/UserAvatar";
+import { useAuth } from "../context/AuthContext";
+import { getImageUrl } from "../utils/images";
+
+const sectionTitles = {
+  user: "User",
+  contact: "Contact",
+  studio: "Studio Information",
+  consultation: "Consultation Settings",
+  deposit: "Deposit Settings",
+  portfolio: "Portfolio",
+};
+
+function ProfileSectionPage() {
+  const { section = "user" } = useParams();
+  const { isArtist } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [editingKey, setEditingKey] = useState(null);
+  const [editValue, setEditValue] = useState("");
+  const [newRequirement, setNewRequirement] = useState("");
+
+  const allowedSections = useMemo(() => {
+    const sections = ["user", "contact"];
+    if (isArtist) sections.push("studio", "consultation", "deposit", "portfolio");
+    return sections;
+  }, [isArtist]);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  async function loadProfile() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await getMyProfile();
+      setProfile(data);
+    } catch (err) {
+      setError(err.message || "Profile could not be loaded.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function startEdit(field) {
+    setEditingKey(field.key);
+    setEditValue(field.value ?? "");
+    setError("");
+    setSuccess("");
+  }
+
+  async function saveField(field) {
+    setError("");
+    setSuccess("");
+
+    try {
+      if (field.type === "bool") {
+        await updateBoolField(field.path, editValue === true || editValue === "true");
+      } else if (field.type === "number") {
+        await updateNumberField(field.path, editValue);
+      } else {
+        await updateStringField(field.path, editValue);
+      }
+
+      setEditingKey(null);
+      setEditValue("");
+      setSuccess("Updated successfully.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Update failed.");
+    }
+  }
+
+  async function handleProfileImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setError("");
+    setSuccess("");
+
+    try {
+      await updateProfileImage(file);
+      setSuccess("Profile picture updated successfully.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Image upload failed.");
+    }
+  }
+
+  async function handleAddRequirement() {
+    if (!newRequirement.trim()) return;
+
+    try {
+      await addRequirement(newRequirement);
+      setNewRequirement("");
+      setSuccess("Requirement added.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Requirement could not be added.");
+    }
+  }
+
+  async function handleRequirementUpdate(requirement) {
+    const value = window.prompt("Edit requirement", requirement.description);
+    if (value === null) return;
+
+    try {
+      await updateRequirement(requirement.id, value);
+      setSuccess("Requirement updated.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Requirement could not be updated.");
+    }
+  }
+
+  async function handleDeleteRequirement(id) {
+    try {
+      await deleteRequirement(id);
+      setSuccess("Requirement deleted.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Requirement could not be deleted.");
+    }
+  }
+
+  async function handlePortfolioUpload(event) {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    try {
+      for (const file of files) {
+        await addPortfolioImage(file);
+      }
+      setSuccess("Portfolio image uploaded.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Portfolio upload failed.");
+    }
+  }
+
+  async function handleDeletePortfolioImage(id) {
+    try {
+      await deletePortfolioImage(id);
+      setSuccess("Portfolio image deleted.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Portfolio image could not be deleted.");
+    }
+  }
+
+  if (!allowedSections.includes(section)) {
+    return <Navigate to="/profile/user" replace />;
+  }
+
+  if (loading) {
+    return <main className="page-container"><p className="muted">Loading profile...</p></main>;
+  }
+
+  if (!profile) {
+    return <main className="page-container"><p className="error">{error || "Profile could not be loaded."}</p></main>;
+  }
+
+  const fields = getFieldsForSection(section, profile);
+
+  return (
+    <main className="page-container profile-page">
+      <section className="profile-header-card card">
+        <label className="profile-main-avatar-upload">
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleProfileImageChange}
+          />
+
+          <div className="profile-main-avatar-wrapper">
+            <UserAvatar
+              firstName={profile.firstName}
+              lastName={profile.lastName}
+              email={profile.email}
+              imageUrl={profile.profileImageUrl}
+              size="xlarge"
+            />
+
+            <div className="profile-avatar-edit-overlay">
+              Edit
+            </div>
+          </div>
+        </label>
+
+        <div>
+          <p className="subtitle">Profile</p>
+          <h1>{profile.firstName} {profile.lastName}</h1>
+          <p className="muted">Manage each profile detail separately.</p>
+        </div>
+      </section>
+
+      <div className="profile-layout">
+        <aside className="card profile-side-nav">
+          <NavLink to="/profile/user">User</NavLink>
+          <NavLink to="/profile/contact">Contact</NavLink>
+          {isArtist && <NavLink to="/profile/studio">Studio Information</NavLink>}
+          {isArtist && <NavLink to="/profile/consultation">Consultation Settings</NavLink>}
+          {isArtist && <NavLink to="/profile/deposit">Deposit Settings</NavLink>}
+          {isArtist && <NavLink to="/profile/portfolio">Portfolio</NavLink>}
+        </aside>
+
+        <section className="card profile-section-card">
+          <div className="card-head">
+            <div>
+              <p className="subtitle">Section</p>
+              <h2>{sectionTitles[section]}</h2>
+            </div>
+          </div>
+
+          {section !== "portfolio" && (
+            <div className="profile-field-list">
+              {fields.map((field) => (
+                <div className="profile-field-row" key={field.key}>
+                  <div>
+                    <span className="field-label">{field.label}</span>
+                    {editingKey === field.key ? (
+                      field.type === "bool" ? (
+                        <select value={String(editValue)} onChange={(event) => setEditValue(event.target.value)}>
+                          <option value="true">Yes</option>
+                          <option value="false">No</option>
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type === "number" ? "number" : "text"}
+                          value={editValue ?? ""}
+                          onChange={(event) => setEditValue(event.target.value)}
+                        />
+                      )
+                    ) : (
+                      <strong>{formatFieldValue(field)}</strong>
+                    )}
+                  </div>
+
+                  {editingKey === field.key ? (
+                    <div className="inline-actions">
+                      <button className="primary-button compact-button" type="button" onClick={() => saveField(field)}>Save</button>
+                      <button className="secondary-button compact-button" type="button" onClick={() => setEditingKey(null)}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button className="secondary-button compact-button" type="button" onClick={() => startEdit(field)}>Edit</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {section === "studio" && (
+            <div className="section profile-extra-section">
+              <h3>Requirements</h3>
+              <div className="inline-form-row">
+                <input value={newRequirement} onChange={(event) => setNewRequirement(event.target.value)} placeholder="Add new requirement" />
+                <button className="primary-button compact-button" type="button" onClick={handleAddRequirement}>Add</button>
+              </div>
+
+              <div className="small-list">
+                {(profile.artist?.requirements || []).map((requirement) => (
+                  <div className="small-list-row" key={requirement.id}>
+                    <span>{requirement.description}</span>
+                    <div className="inline-actions">
+                      <button className="secondary-button compact-button" type="button" onClick={() => handleRequirementUpdate(requirement)}>Edit</button>
+                      <button className="danger-button compact-button" type="button" onClick={() => handleDeleteRequirement(requirement.id)}>Delete</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {section === "portfolio" && (
+            <div className="section">
+              <label className="portfolio-upload-tile">
+                <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} />
+                <span>＋</span>
+                <strong>Add portfolio photos</strong>
+                <small>JPG, PNG or WEBP up to 5MB each</small>
+              </label>
+
+              <div className="portfolio-manage-grid">
+                {(profile.artist?.portfolioImages || []).map((image) => (
+                  <div className="portfolio-manage-card" key={image.id}>
+                    <img src={getImageUrl(image.imageUrl)} alt="Portfolio" />
+                    <button className="danger-button compact-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>
+                      Delete
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {error && <p className="error">{error}</p>}
+          {success && <p className="success">{success}</p>}
+        </section>
+      </div>
+    </main>
+  );
+}
+
+function getFieldsForSection(section, profile) {
+  const artist = profile.artist || {};
+
+  if (section === "user") {
+    return [
+      { key: "firstName", label: "First name", value: profile.firstName, path: "/api/Profile/user/first-name" },
+      { key: "lastName", label: "Last name", value: profile.lastName, path: "/api/Profile/user/last-name" },
+      { key: "email", label: "Email", value: profile.email, path: "/api/Profile/user/email" },
+    ];
+  }
+
+  if (section === "contact") {
+    return [
+      { key: "phoneNumber", label: "Phone number", value: profile.phoneNumber, path: "/api/Profile/contact/phone-number" },
+      { key: "city", label: "City", value: profile.city, path: "/api/Profile/contact/city" },
+      { key: "country", label: "Country", value: profile.country, path: "/api/Profile/contact/country" },
+    ];
+  }
+
+  if (section === "studio") {
+    return [
+      { key: "studioName", label: "Studio name", value: artist.studioName, path: "/api/Profile/studio/studio-name" },
+      { key: "description", label: "Description", value: artist.description, path: "/api/Profile/studio/description" },
+      { key: "studioCountry", label: "Studio country", value: artist.studioCountry, path: "/api/Profile/studio/studio-country" },
+      { key: "studioCity", label: "Studio city", value: artist.studioCity, path: "/api/Profile/studio/studio-city" },
+      { key: "studioAddress", label: "Studio address", value: artist.studioAddress, path: "/api/Profile/studio/studio-address" },
+    ];
+  }
+
+  if (section === "consultation") {
+    return [
+      { key: "consultationDurationMinutes", label: "Consultation duration minutes", value: artist.consultationDurationMinutes, type: "number", path: "/api/Profile/consultation/duration" },
+      { key: "offersOnlineConsultation", label: "Offers online consultation", value: artist.offersOnlineConsultation, type: "bool", path: "/api/Profile/consultation/offers-online" },
+    ];
+  }
+
+  if (section === "deposit") {
+    return [
+      { key: "requiresDeposit", label: "Requires deposit", value: artist.requiresDeposit, type: "bool", path: "/api/Profile/deposit/requires-deposit" },
+      { key: "depositAmount", label: "Deposit amount", value: artist.depositAmount ?? "", type: "number", path: "/api/Profile/deposit/amount" },
+    ];
+  }
+
+  return [];
+}
+
+function formatFieldValue(field) {
+  if (field.type === "bool") return field.value ? "Yes" : "No";
+  if (field.value === null || field.value === undefined || field.value === "") return "Not added yet";
+  return String(field.value);
+}
+
+export default ProfileSectionPage;

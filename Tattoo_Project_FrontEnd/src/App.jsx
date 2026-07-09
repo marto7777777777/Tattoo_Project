@@ -21,6 +21,7 @@ import FavoriteArtistsPage from "./pages/FavoriteArtistsPage";
 import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
 import ArtistRequestsPage from "./pages/ArtistRequestsPage";
 import ArtistSchedulePage from "./pages/ArtistSchedulePage";
+import ProfileSectionPage from "./pages/ProfileSectionPage";
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
         <Route path="/choose-profile" element={<ProtectedRoute><ChooseProfileTypePage /></ProtectedRoute>} />
         <Route path="/create-client-profile" element={<ProtectedRoute><CreateClientProfilePage /></ProtectedRoute>} />
         <Route path="/create-artist-profile" element={<ProtectedRoute><CreateArtistProfilePage /></ProtectedRoute>} />
+        <Route path="/profile/:section" element={<ProtectedRoute><ProfileSectionPage /></ProtectedRoute>} />
+        <Route path="/profile" element={<Navigate to="/profile/user" replace />} />
 
         <Route path="/explore" element={<ArtistsPage />} />
         <Route path="/artists" element={<Navigate to="/explore" replace />} />

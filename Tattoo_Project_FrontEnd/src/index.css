@@ -505,7 +505,11 @@ button:disabled,
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.card-head > div:first-child {
+  padding-left: 20px;
 }
 
 .card-badges {
@@ -1017,4 +1021,414 @@ button:disabled,
   .image-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* Profile dropdown and avatar polish */
+.navbar-user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text, #f8fafc);
+  border-radius: 999px;
+  padding: 6px 10px 6px 6px;
+  cursor: pointer;
+}
+
+.navbar-user-trigger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chevron {
+  color: var(--muted, #94a3b8);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 230px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.98);
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  z-index: 50;
+}
+
+.dropdown-item,
+.profile-submenu button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text, #f8fafc);
+  padding: 11px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.dropdown-item:hover,
+.profile-submenu button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dropdown-parent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-submenu {
+  margin: 4px 0 8px 12px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.logout-item {
+  color: #fecaca;
+}
+
+.user-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 999px;
+  overflow: hidden;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-small {
+  width: 34px;
+  height: 34px;
+  font-size: 0.82rem;
+}
+
+.user-avatar-medium {
+  width: 52px;
+  height: 52px;
+  font-size: 1rem;
+}
+
+.user-avatar-large {
+  width: 72px;
+  height: 72px;
+  font-size: 1.35rem;
+}
+
+.user-avatar-xlarge {
+  width: 128px;
+  height: 128px;
+  font-size: 2.25rem;
+}
+
+.artist-title-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.profile-page {
+  padding-bottom: 60px;
+}
+
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.profile-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.profile-side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: sticky;
+  top: 90px;
+}
+
+.profile-side-nav a {
+  color: var(--muted, #94a3b8);
+  text-decoration: none;
+  padding: 12px 14px;
+  border-radius: 14px;
+}
+
+.profile-side-nav a:hover,
+.profile-side-nav a.active {
+  color: var(--text, #f8fafc);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.profile-section-card {
+  min-height: 420px;
+}
+
+.profile-image-upload-box {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 28px;
+}
+
+.avatar-upload-label {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: var(--muted, #94a3b8);
+}
+
+.avatar-upload-label:hover .user-avatar {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28), inset 0 0 0 2px rgba(255, 255, 255, 0.24);
+}
+
+.profile-create-upload {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 18px;
+}
+
+.profile-field-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.profile-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+}
+
+.profile-field-row > div:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-field-row input,
+.profile-field-row select,
+.inline-form-row input {
+  width: 100%;
+}
+
+.field-label {
+  color: var(--muted, #94a3b8);
+  font-size: 0.86rem;
+}
+
+.inline-actions,
+.inline-form-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compact-button {
+  padding: 8px 12px;
+  min-height: auto;
+}
+
+.danger-button {
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.34);
+  color: #fecaca;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.danger-button:hover {
+  background: rgba(127, 29, 29, 0.5);
+}
+
+.profile-extra-section {
+  margin-top: 24px;
+}
+
+.portfolio-upload-tile {
+  min-height: 150px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--muted, #94a3b8);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.portfolio-upload-tile span {
+  font-size: 2rem;
+  color: var(--text, #f8fafc);
+}
+
+.portfolio-upload-tile:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.portfolio-manage-grid,
+.portfolio-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.portfolio-manage-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-manage-card img,
+.portfolio-preview-grid img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+.portfolio-manage-card button {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+@media (max-width: 850px) {
+  .profile-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-side-nav {
+    position: static;
+  }
+
+  .profile-field-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-actions {
+    justify-content: flex-end;
+  }
+}
+
+/* Final clean profile page avatar upload */
+.profile-header-card {
+  text-align: center !important;
+  display: grid !important;
+  justify-items: center !important;
+  align-items: center !important;
+  gap: 18px !important;
+}
+
+.profile-main-avatar-upload {
+  display: grid;
+  justify-items: center;
+  cursor: pointer;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.profile-main-avatar-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 999px;
+}
+
+.profile-main-avatar-wrapper .user-avatar {
+  width: 150px !important;
+  height: 150px !important;
+  font-size: 3.4rem !important;
+  border: 3px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.profile-avatar-edit-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff7ef;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transition: 0.18s ease;
+  pointer-events: none;
+}
+
+.profile-main-avatar-upload:hover .profile-avatar-edit-overlay,
+.profile-main-avatar-upload:focus-within .profile-avatar-edit-overlay,
+.profile-main-avatar-upload:active .profile-avatar-edit-overlay {
+  opacity: 1;
+}
+
+.profile-image-upload-box,
+.avatar-upload-label {
+  display: none !important;
+}
+
+@media (max-width: 560px) {
+  .profile-main-avatar-wrapper,
+  .profile-main-avatar-wrapper .user-avatar {
+    width: 124px !important;
+    height: 124px !important;
+  }
+
+  .profile-main-avatar-wrapper .user-avatar {
+    font-size: 2.7rem !important;
+  }
+
+  .profile-avatar-edit-overlay {
+    opacity: 0;
+  }
+
+  .profile-main-avatar-upload:active .profile-avatar-edit-overlay {
+    opacity: 1;
+  }
+}
+
+.card-head > div:first-child {
+  padding-top: 15px;
 }

@@ -1,4 +1,4 @@
-﻿using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.DTOs.TattooRequestDTOs;
 using Tattoo_Project.Models;
 
 namespace Tattoo_Project.DTOs.TattooArtistDTOs
@@ -9,6 +9,8 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
+
+        public string? ProfileImageUrl { get; set; }
 
         public string StudioName { get; set; } = null!;
 

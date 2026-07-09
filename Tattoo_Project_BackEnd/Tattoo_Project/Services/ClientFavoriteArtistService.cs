@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.TattooArtistDTOs;
 using Tattoo_Project.Models;
@@ -96,6 +96,8 @@ namespace Tattoo_Project.Services
             var favoriteArtists = await context.ClientFavoriteArtists
                 .Where(f => f.ClientId == client.Id)
                 .Include(f => f.TattooArtist)
+                    .ThenInclude(a => a.User)
+                .Include(f => f.TattooArtist)
                     .ThenInclude(a => a.Reviews)
                 .Include(f => f.TattooArtist)
                     .ThenInclude(a => a.Schedules)
@@ -122,6 +124,7 @@ namespace Tattoo_Project.Services
                 FirstName = artist.FirstName,
                 LastName = artist.LastName,
                 Email = artist.Email,
+                ProfileImageUrl = artist.User?.ProfileImageUrl,
 
                 StudioName = artist.StudioName,
                 Description = artist.Description,
@@ -148,11 +151,13 @@ namespace Tattoo_Project.Services
 
                 PortfolioImages = artist.PortfolioImages.Select(i => new TattooArtistPortfolioImageDto
                 { 
+                    Id = i.Id,
                     ImageUrl = i.ImageUrl
                 }).ToList(),
 
                 Requirements = artist.Requirements.Select(r => new TattooArtistRequirementsDto
                 {
+                    Id = r.Id,
                     Description = r.Description
                 }).ToList(),
 
