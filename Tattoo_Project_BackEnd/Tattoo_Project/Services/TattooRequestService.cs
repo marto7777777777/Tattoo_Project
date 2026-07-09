@@ -17,6 +17,8 @@ namespace Tattoo_Project.Services
         public async Task<ResultService<ICollection<GetTattooRequestDto>>> GetAllTattooRequestsAsync()
         {
             var tattooRequests = await context.TattooRequests
+                .Include(r => r.Client)
+                .Include(r => r.TattooArtist)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -38,6 +40,8 @@ namespace Tattoo_Project.Services
             bool isArtist)
         {
             var tattooRequest = await context.TattooRequests
+                .Include(r => r.Client)
+                .Include(r => r.TattooArtist)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -98,11 +102,53 @@ namespace Tattoo_Project.Services
             }
 
             var tattooRequests = await context.TattooRequests
+                .Include(r => r.Client)
+                .Include(r => r.TattooArtist)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
                 .Include(r => r.Consultation)
                 .Where(r => r.ClientId == client.Id)
+                .OrderByDescending(r => r.CreatedOn)
+                .ToListAsync();
+
+            var result = tattooRequests
+                .Select(MapToGetTattooRequestDto)
+                .ToList();
+
+            return ResultService<ICollection<GetTattooRequestDto>>.Ok(result);
+        }
+
+        public async Task<ResultService<ICollection<GetTattooRequestDto>>> GetMyArtistTattooRequestsAsync(
+            string userId,
+            RequestStatus? status)
+        {
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            if (tattooArtist == null)
+            {
+                return ResultService<ICollection<GetTattooRequestDto>>.Fail(
+                    "Tattoo artist profile was not found.");
+            }
+
+            var query = context.TattooRequests
+                .Include(r => r.Client)
+                .Include(r => r.TattooArtist)
+                .Include(r => r.Images)
+                .Include(r => r.TattooSessions)
+                .Include(r => r.ArtistResponse)
+                .Include(r => r.Consultation)
+                .Where(r => r.TattooArtistId == tattooArtist.Id)
+                .AsQueryable();
+
+            if (status.HasValue)
+            {
+                query = query.Where(r => r.Status == status.Value);
+            }
+
+            var tattooRequests = await query
+                .OrderByDescending(r => r.CreatedOn)
                 .ToListAsync();
 
             var result = tattooRequests
@@ -182,6 +228,8 @@ namespace Tattoo_Project.Services
             }
 
             var tattooRequest = await context.TattooRequests
+                .Include(r => r.Client)
+                .Include(r => r.TattooArtist)
                 .Include(r => r.Images)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
@@ -239,7 +287,29 @@ namespace Tattoo_Project.Services
                 CreatedOn = tattooRequest.CreatedOn,
                 ClientId = tattooRequest.ClientId,
                 TattooArtistId = tattooRequest.TattooArtistId,
+                ClientName = tattooRequest.Client == null
+                    ? null
+                    : $"{tattooRequest.Client.FirstName} {tattooRequest.Client.LastName}",
+                TattooArtistName = tattooRequest.TattooArtist == null
+                    ? null
+                    : $"{tattooRequest.TattooArtist.FirstName} {tattooRequest.TattooArtist.LastName}",
+                StudioName = tattooRequest.TattooArtist == null
+                    ? null
+                    : tattooRequest.TattooArtist.StudioName,
                 Status = tattooRequest.Status,
+
+                UpcomingConsultationStartTime = tattooRequest.Consultation != null &&
+                                                tattooRequest.Consultation.StartTime >= DateTime.UtcNow
+                    ? tattooRequest.Consultation.StartTime
+                    : null,
+
+                UpcomingTattooSessionStartTime = tattooRequest.TattooSessions != null
+                    ? tattooRequest.TattooSessions
+                        .Where(s => s.StartTime >= DateTime.UtcNow)
+                        .OrderBy(s => s.StartTime)
+                        .Select(s => (DateTime?)s.StartTime)
+                        .FirstOrDefault()
+                    : null,
 
                 Images = tattooRequest.Images.Select(i => new TattooReferenceImageDto
                 {

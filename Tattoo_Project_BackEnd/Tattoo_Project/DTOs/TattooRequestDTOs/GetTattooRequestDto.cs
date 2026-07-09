@@ -14,7 +14,12 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
         public DateTime CreatedOn { get; set; }
         public int ClientId { get; set; }
         public int TattooArtistId { get; set; }
+        public string? ClientName { get; set; }
+        public string? TattooArtistName { get; set; }
+        public string? StudioName { get; set; }
         public RequestStatus Status { get; set; }
+        public DateTime? UpcomingConsultationStartTime { get; set; }
+        public DateTime? UpcomingTattooSessionStartTime { get; set; }
         public ConsultationDto? Consultation { get; set; }
         public ICollection<TattooSessionDto>? TattooSessions { get; set; } = new List<TattooSessionDto>();
         public ICollection<TattooReferenceImageDto> Images { get; set; } = new List<TattooReferenceImageDto>();

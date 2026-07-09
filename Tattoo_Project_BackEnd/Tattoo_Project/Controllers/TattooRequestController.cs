@@ -31,6 +31,32 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpGet("my-artist-requests")]
+        public async Task<IActionResult> GetMyArtistTattooRequests(
+            [FromQuery] RequestStatus? status)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.GetMyArtistTattooRequestsAsync(
+                userId,
+                status);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTattooRequestById(int id)

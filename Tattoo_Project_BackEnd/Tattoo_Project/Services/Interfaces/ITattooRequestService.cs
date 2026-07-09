@@ -1,4 +1,5 @@
 ﻿using Tattoo_Project.DTOs.TattooRequestDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services.Interfaces
@@ -16,6 +17,10 @@ namespace Tattoo_Project.Services.Interfaces
 
         Task<ResultService<ICollection<GetTattooRequestDto>>> GetMyTattooRequestsAsync(
             string userId);
+
+        Task<ResultService<ICollection<GetTattooRequestDto>>> GetMyArtistTattooRequestsAsync(
+            string userId,
+            RequestStatus? status);
 
         Task<ResultService> CreateTattooRequestAsync(
             CreateTattooRequestDto dto,
