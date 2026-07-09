@@ -18,12 +18,12 @@ function Navbar() {
       </NavLink>
 
       <nav className="navbar-links">
-        <NavLink to="/artists">Artists</NavLink>
+        <NavLink to="/explore">Explore</NavLink>
 
-        {isClient && <NavLink to="/my-requests">My requests</NavLink>}
+        {isClient && <NavLink to="/bookings">Bookings</NavLink>}
         {isClient && <NavLink to="/favorites">Favorites</NavLink>}
 
-        {isArtist && <NavLink to="/artist-workspace">Artist workspace</NavLink>}
+        {isArtist && <NavLink to="/my-studio">My Studio</NavLink>}
 
         {!isLoggedIn && <NavLink to="/register">Register</NavLink>}
         {!isLoggedIn && <NavLink to="/login">Login</NavLink>}

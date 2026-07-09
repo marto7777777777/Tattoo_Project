@@ -50,5 +50,8 @@
 
         public ICollection<ArtistReview> Reviews { get; set; }
             = new List<ArtistReview>();
+
+        public ICollection<ArtistUnavailableDate> UnavailableDates { get; set; }
+        = new List<ArtistUnavailableDate>();
     }
 }

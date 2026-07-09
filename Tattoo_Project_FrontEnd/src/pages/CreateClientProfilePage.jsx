@@ -38,7 +38,7 @@ function CreateClientProfilePage() {
       if (data.token || data.Token) saveAuthToken(data.token || data.Token);
 
       setSuccess("Client profile created successfully.");
-      setTimeout(() => navigate("/artists"), 700);
+      setTimeout(() => navigate("/explore"), 700);
     } catch {
       setError("Server connection failed. Please try again.");
     }

@@ -35,14 +35,14 @@ function MyTattooRequestsPage() {
     <main className="page-shell">
       <section className="container">
         <div className="header">
-          <p className="subtitle">My Tattoo Requests</p>
-          <h1>Track your tattoo ideas</h1>
+          <p className="subtitle">Bookings</p>
+          <h1>Track your bookings</h1>
           <p>View statuses, artist responses, consultation details, tattoo sessions, and leave a review after completion.</p>
         </div>
 
         {isLoading && <p className="message">Loading tattoo requests...</p>}
         {error && <p className="error">{error}</p>}
-        {!isLoading && !error && requests.length === 0 && <p className="message">You have not created any tattoo requests yet.</p>}
+        {!isLoading && !error && requests.length === 0 && <p className="message">You do not have any bookings yet.</p>}
 
         <div className="grid-2">
           {requests.map((request, index) => {

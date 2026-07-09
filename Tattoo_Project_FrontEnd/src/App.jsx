@@ -19,6 +19,8 @@ import AddMoreSessionsPage from "./pages/AddMoreSessionsPage";
 import CompleteTattooPage from "./pages/CompleteTattooPage";
 import FavoriteArtistsPage from "./pages/FavoriteArtistsPage";
 import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
+import ArtistRequestsPage from "./pages/ArtistRequestsPage";
+import ArtistSchedulePage from "./pages/ArtistSchedulePage";
 
 function App() {
   return (
@@ -31,14 +33,25 @@ function App() {
         <Route path="/choose-profile" element={<ProtectedRoute><ChooseProfileTypePage /></ProtectedRoute>} />
         <Route path="/create-client-profile" element={<ProtectedRoute><CreateClientProfilePage /></ProtectedRoute>} />
         <Route path="/create-artist-profile" element={<ProtectedRoute><CreateArtistProfilePage /></ProtectedRoute>} />
-        <Route path="/artists" element={<ArtistsPage />} />
+
+        <Route path="/explore" element={<ArtistsPage />} />
+        <Route path="/artists" element={<Navigate to="/explore" replace />} />
+
         <Route path="/create-tattoo-request/:artistId?" element={<ProtectedRoute roles={["Client"]}><CreateTattooRequestPage /></ProtectedRoute>} />
-        <Route path="/my-requests" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />
+        <Route path="/bookings" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />
+        <Route path="/my-requests" element={<Navigate to="/bookings" replace />} />
         <Route path="/favorites" element={<ProtectedRoute roles={["Client"]}><FavoriteArtistsPage /></ProtectedRoute>} />
         <Route path="/review/:tattooRequestId" element={<ProtectedRoute roles={["Client"]}><CreateArtistReviewPage /></ProtectedRoute>} />
         <Route path="/book-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><CreateConsultationPage /></ProtectedRoute>} />
         <Route path="/book-session/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><BookTattooSessionPage /></ProtectedRoute>} />
-        <Route path="/artist-workspace" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistWorkspacePage /></ProtectedRoute>} />
+
+        <Route path="/my-studio" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistWorkspacePage /></ProtectedRoute>} />
+        <Route path="/artist-workspace" element={<Navigate to="/my-studio" replace />} />
+        <Route path="/my-studio/requests" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistRequestsPage /></ProtectedRoute>} />
+        <Route path="/artist-requests" element={<Navigate to="/my-studio/requests" replace />} />
+        <Route path="/my-studio/calendar" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistSchedulePage /></ProtectedRoute>} />
+        <Route path="/artist-schedule" element={<Navigate to="/my-studio/calendar" replace />} />
+
         <Route path="/artist-response/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CreateArtistResponsePage /></ProtectedRoute>} />
         <Route path="/complete-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CompleteConsultationPage /></ProtectedRoute>} />
         <Route path="/add-more-sessions/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><AddMoreSessionsPage /></ProtectedRoute>} />

@@ -21,7 +21,7 @@ function LoginPage() {
       saveAuthToken(data.token);
       const roles = data.user?.roles || data.user?.Roles || [];
       if (roles.length === 0) navigate("/choose-profile");
-      else navigate("/artists");
+      else navigate("/explore");
     } catch { setError("Server connection failed. Please try again."); }
   }
 

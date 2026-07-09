@@ -1,0 +1,55 @@
+
+.location-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.location-search-row {
+  display: flex;
+  gap: 10px;
+}
+
+.location-search-row input {
+  flex: 1;
+}
+
+.location-search-row button {
+  min-width: 110px;
+}
+
+.location-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.location-result-item {
+  text-align: left;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.location-result-item:hover {
+  background: #f5f5f5;
+}
+
+.selected-location {
+  font-size: 14px;
+  color: #444;
+}
+
+.map-wrapper {
+  height: 320px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.studio-map {
+  height: 100%;
+  width: 100%;
+}

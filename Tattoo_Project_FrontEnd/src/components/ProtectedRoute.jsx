@@ -9,7 +9,7 @@ function ProtectedRoute({ children, roles = [] }) {
   }
 
   if (roles.length > 0 && !roles.some((role) => userRoles.includes(role))) {
-    return <Navigate to="/artists" replace />;
+    return <Navigate to="/explore" replace />;
   }
 
   return children;

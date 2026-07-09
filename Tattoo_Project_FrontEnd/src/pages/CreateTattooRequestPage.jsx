@@ -51,7 +51,7 @@ function CreateTattooRequestPage() {
       }
 
       setSuccess("Tattoo request created successfully.");
-      setTimeout(() => navigate("/my-requests"), 800);
+      setTimeout(() => navigate("/bookings"), 800);
     } catch {
       setError("Server connection failed. Please try again.");
     }
@@ -67,7 +67,7 @@ function CreateTattooRequestPage() {
             <p>Open the Artists page and select the artist you want to contact.</p>
           </div>
 
-          <Link className="primary-button" to="/artists">
+          <Link className="primary-button" to="/explore">
             Browse Artists
           </Link>
         </section>

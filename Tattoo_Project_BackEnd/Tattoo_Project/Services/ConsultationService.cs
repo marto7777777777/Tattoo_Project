@@ -152,6 +152,17 @@ namespace Tattoo_Project.Services
                     "The selected consultation time is outside the tattoo artist's consultation schedule.");
             }
 
+            var isArtistUnavailable = await context.ArtistUnavailableDates
+            .AnyAsync(u =>
+                u.TattooArtistId == tattooArtist.Id &&
+                dto.StartTime < u.EndDateTime &&
+                endTime > u.StartDateTime);
+
+            if (isArtistUnavailable)
+            {
+                return ResultService.Fail("Artist is unavailable during this period.");
+            }
+
             var hasConsultationConflict = await context.Consultations.AnyAsync(c =>
                 c.TattooRequest.TattooArtistId == tattooArtistId &&
                 dto.StartTime < c.EndTime &&
@@ -273,6 +284,17 @@ namespace Tattoo_Project.Services
             {
                 return ResultService.Fail(
                     "Tattoo artist already has a consultation at this time.");
+            }
+
+            var isArtistUnavailable = await context.ArtistUnavailableDates
+            .AnyAsync(u =>
+                u.TattooArtistId == tattooArtist.Id &&
+                dto.StartTime < u.EndDateTime &&
+                endTime > u.StartDateTime);
+
+            if (isArtistUnavailable)
+            {
+                return ResultService.Fail("Artist is unavailable during this period.");
             }
 
             var hasTattooSessionConflict = await context.TattooSessions.AnyAsync(s =>

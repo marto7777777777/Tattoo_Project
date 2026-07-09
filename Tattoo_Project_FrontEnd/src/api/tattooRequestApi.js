@@ -12,6 +12,10 @@ export function getMyTattooRequests() {
   return apiRequest("/api/TattooRequest/my-requests");
 }
 
+export function getMyArtistTattooRequests() {
+  return apiRequest("/api/TattooRequest/my-artist-requests");
+}
+
 export function createTattooRequest(requestData) {
   return apiRequest("/api/TattooRequest", {
     method: "POST",

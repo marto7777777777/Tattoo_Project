@@ -31,7 +31,7 @@ function CreateArtistReviewPage() {
       }
 
       setSuccess("Review created successfully.");
-      setTimeout(() => navigate("/my-requests"), 800);
+      setTimeout(() => navigate("/bookings"), 800);
     } catch {
       setError("Server connection failed. Please try again.");
     }

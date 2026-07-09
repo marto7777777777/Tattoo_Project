@@ -19,10 +19,10 @@ function HomePage() {
         <div className="grid-2">
           <div className="card form-card">
             <h2>For clients</h2>
-            <p className="muted">Browse artists, send tattoo requests, book consultations, and schedule approved tattoo sessions.</p>
+            <p className="muted">Explore artists, send tattoo requests, book consultations, and schedule approved tattoo sessions.</p>
             <div className="home-actions">
-              <Link className="primary-button" to="/artists">Browse artists</Link>
-              {isClient && <Link className="secondary-button" to="/my-requests">My requests</Link>}
+              <Link className="primary-button" to="/explore">Explore artists</Link>
+              {isClient && <Link className="secondary-button" to="/bookings">Bookings</Link>}
             </div>
           </div>
 
@@ -31,7 +31,7 @@ function HomePage() {
             <p className="muted">Set working schedules, answer tattoo requests, complete consultations, and manage sessions.</p>
             <div className="home-actions">
               {isArtist ? (
-                <Link className="primary-button" to="/artist-workspace">Open workspace</Link>
+                <Link className="primary-button" to="/my-studio">Open My Studio</Link>
               ) : isLoggedIn ? (
                 <Link className="primary-button" to="/create-artist-profile">Create artist profile</Link>
               ) : (
