@@ -3,9 +3,11 @@ import { Navigate, NavLink, useParams } from "react-router-dom";
 import {
   addPortfolioImage,
   addRequirement,
+  changePasswordWithCode,
   deletePortfolioImage,
   deleteRequirement,
   getMyProfile,
+  sendPasswordChangeCode,
   updateBoolField,
   updateNumberField,
   updateProfileImage,
@@ -35,6 +37,8 @@ function ProfileSectionPage() {
   const [editingKey, setEditingKey] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [newRequirement, setNewRequirement] = useState("");
+  const [passwordStep, setPasswordStep] = useState("idle");
+  const [passwordForm, setPasswordForm] = useState({ code: "", newPassword: "", confirmNewPassword: "" });
 
   const allowedSections = useMemo(() => {
     const sections = ["user", "contact"];
@@ -102,6 +106,39 @@ function ProfileSectionPage() {
       await loadProfile();
     } catch (err) {
       setError(err.message || "Image upload failed.");
+    }
+  }
+
+  async function handleSendPasswordCode() {
+    setError("");
+    setSuccess("");
+
+    try {
+      await sendPasswordChangeCode();
+      setPasswordStep("code");
+      setSuccess("Password change code sent to your email. It expires in 10 minutes. If you do not see it, check your Spam folder.");
+    } catch (err) {
+      setError(err.message || "Password change code could not be sent.");
+    }
+  }
+
+  async function handleChangePassword() {
+    setError("");
+    setSuccess("");
+
+    try {
+      await changePasswordWithCode(
+        passwordForm.code,
+        passwordForm.newPassword,
+        passwordForm.confirmNewPassword
+      );
+
+      setPasswordStep("success");
+      setPasswordForm({ code: "", newPassword: "", confirmNewPassword: "" });
+      setSuccess("Password changed successfully.");
+      setTimeout(() => setPasswordStep("idle"), 3000);
+    } catch (err) {
+      setError(err.message || "Password could not be changed.");
     }
   }
 
@@ -209,7 +246,6 @@ function ProfileSectionPage() {
         <div>
           <p className="subtitle">Profile</p>
           <h1>{profile.firstName} {profile.lastName}</h1>
-          <p className="muted">Manage each profile detail separately.</p>
         </div>
       </section>
 
@@ -226,7 +262,6 @@ function ProfileSectionPage() {
         <section className="card profile-section-card">
           <div className="card-head">
             <div>
-              <p className="subtitle">Section</p>
               <h2>{sectionTitles[section]}</h2>
             </div>
           </div>
@@ -265,6 +300,48 @@ function ProfileSectionPage() {
                   )}
                 </div>
               ))}
+
+              {section === "user" && (
+                <div className="profile-field-row">
+                  <div>
+                    <span className="field-label">Password</span>
+                    {passwordStep === "code" ? (
+                      <div className="inline-form-row">
+                        <input
+                          value={passwordForm.code}
+                          onChange={(event) => setPasswordForm({ ...passwordForm, code: event.target.value.replace(/\D/g, "").slice(0, 6) })}
+                          inputMode="numeric"
+                          maxLength="6"
+                          placeholder="Code"
+                        />
+                        <input
+                          type="password"
+                          value={passwordForm.newPassword}
+                          onChange={(event) => setPasswordForm({ ...passwordForm, newPassword: event.target.value })}
+                          placeholder="New password"
+                        />
+                        <input
+                          type="password"
+                          value={passwordForm.confirmNewPassword}
+                          onChange={(event) => setPasswordForm({ ...passwordForm, confirmNewPassword: event.target.value })}
+                          placeholder="Confirm password"
+                        />
+                      </div>
+                    ) : (
+                      <strong>••••••••</strong>
+                    )}
+                  </div>
+
+                  {passwordStep === "code" ? (
+                    <div className="inline-actions">
+                      <button className="primary-button compact-button" type="button" onClick={handleChangePassword}>Save</button>
+                      <button className="secondary-button compact-button" type="button" onClick={() => setPasswordStep("idle")}>Cancel</button>
+                    </div>
+                  ) : (
+                    <button className="secondary-button compact-button" type="button" onClick={handleSendPasswordCode}>Change</button>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

@@ -53,3 +53,16 @@ export async function getRecommendedArtists() {
 
   return response;
 }
+
+export async function updateArtistProfile(artistData) {
+  const token = localStorage.getItem("token");
+
+  return fetch(`${API_BASE_URL}/api/TattooArtist/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(artistData),
+  });
+}

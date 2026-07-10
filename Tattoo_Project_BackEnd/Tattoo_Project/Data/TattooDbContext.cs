@@ -33,6 +33,8 @@ namespace Tattoo_Project.Data
 
         public DbSet<ArtistUnavailableDate> ArtistUnavailableDates { get; set; }
 
+        public DbSet<EmailVerificationCode> EmailVerificationCodes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

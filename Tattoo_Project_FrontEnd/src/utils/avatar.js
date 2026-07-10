@@ -10,7 +10,7 @@ export const avatarColors = [
 ];
 
 export function getAvatarColor(value) {
-  const text = value || "InkFlow";
+  const text = value || "InkRoute";
   let sum = 0;
 
   for (let i = 0; i < text.length; i += 1) {

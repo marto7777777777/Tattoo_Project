@@ -91,3 +91,17 @@ export function deletePortfolioImage(id) {
     method: "DELETE",
   });
 }
+
+
+export function sendPasswordChangeCode() {
+  return requestJson("/api/Profile/user/password/send-code", {
+    method: "POST",
+  });
+}
+
+export function changePasswordWithCode(code, newPassword, confirmNewPassword) {
+  return requestJson("/api/Profile/user/password/change", {
+    method: "POST",
+    body: JSON.stringify({ code, newPassword, confirmNewPassword }),
+  });
+}

@@ -12,6 +12,7 @@ import {
   getStatusClass,
   getStatusName,
 } from "../utils/format";
+import { getImageUrl } from "../utils/images";
 
 const STATUS = {
   SUBMITTED: 0,
@@ -163,6 +164,7 @@ function ArtistRequestsPage() {
       }
 
       setRequests(data || []);
+      return data || [];
     } catch {
       setError("Server connection failed. Please try again.");
     } finally {
@@ -254,10 +256,12 @@ function ArtistRequestsPage() {
       }
 
       setSuccess("Action completed successfully.");
-      await loadRequests();
-      setTimeout(() => {
-        setActiveAction("");
-      }, 500);
+      const updatedRequests = await loadRequests();
+      const updatedSelected = updatedRequests?.find((item) => item.id === selectedRequest.id);
+      if (updatedSelected) {
+        setSelectedRequest(updatedSelected);
+      }
+      setActiveAction("");
     } catch {
       setError("Server connection failed. Please try again.");
     }
@@ -268,7 +272,7 @@ function ArtistRequestsPage() {
       return <p className="muted">No active actions for this request.</p>;
     }
 
-    if (!request.artistResponse || request.status === STATUS.SUBMITTED) {
+    if (request.status === STATUS.SUBMITTED && !request.artistResponse) {
       return (
         <div className="action-row">
           <button className="primary-button" type="button" onClick={() => setActiveAction("response")}>
@@ -382,6 +386,7 @@ function ArtistRequestsPage() {
               <p className="muted clamp-text">{request.description}</p>
 
               <div className="info-list">
+                {request.clientName && <p><span>Client:</span> {request.clientName}</p>}
                 <p><span>Created:</span> {formatDate(request.createdOn)}</p>
               </div>
               {renderRequestTiming(request)}
@@ -419,12 +424,22 @@ function ArtistRequestsPage() {
               {renderRequestTiming(selectedRequest)}
             </div>
 
+            <div className="section highlighted">
+              <h3>Client contact</h3>
+              <div className="info-list">
+                <p><span>Name:</span> {selectedRequest.clientName || "Not provided"}</p>
+                <p><span>Email:</span> {selectedRequest.clientEmail || "Not provided"}</p>
+                <p><span>Phone:</span> {selectedRequest.clientPhoneNumber || "Not provided"}</p>
+                <p><span>Location:</span> {[selectedRequest.clientCity, selectedRequest.clientCountry].filter(Boolean).join(", ") || "Not provided"}</p>
+              </div>
+            </div>
+
             {selectedRequest.images?.length > 0 && (
               <div className="section">
                 <h3>Reference images</h3>
                 <div className="image-grid">
                   {selectedRequest.images.map((image, index) => (
-                    <img key={index} src={image.imageUrl} alt="Tattoo reference" />
+                    <img key={index} src={getImageUrl(image.imageUrl)} alt="Tattoo reference" />
                   ))}
                 </div>
               </div>

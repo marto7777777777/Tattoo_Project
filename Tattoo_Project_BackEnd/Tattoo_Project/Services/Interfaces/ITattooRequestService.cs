@@ -26,6 +26,15 @@ namespace Tattoo_Project.Services.Interfaces
             CreateTattooRequestDto dto,
             string userId);
 
+        Task<ResultService<int>> CreateTattooRequestWithImagesAsync(
+            CreateTattooRequestWithImagesDto dto,
+            string userId);
+
+        Task<ResultService<BookingAvailabilityDto>> GetBookingAvailabilityAsync(
+            int tattooRequestId,
+            string bookingType,
+            string userId);
+
         Task<ResultService> UpdateTattooRequestAsync(
             int id,
             UpdateTattooRequestDto dto,

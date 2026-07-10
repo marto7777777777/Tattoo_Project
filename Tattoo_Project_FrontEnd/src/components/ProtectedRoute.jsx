@@ -1,7 +1,8 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children, roles = [] }) {
+  const location = useLocation();
   const { isLoggedIn, roles: userRoles } = useAuth();
 
   if (!isLoggedIn) {
@@ -9,7 +10,27 @@ function ProtectedRoute({ children, roles = [] }) {
   }
 
   if (roles.length > 0 && !roles.some((role) => userRoles.includes(role))) {
-    return <Navigate to="/explore" replace />;
+    const returnTo = `${location.pathname}${location.search}`;
+
+    if (roles.includes("Client")) {
+      return (
+        <Navigate
+          to={`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(returnTo)}`}
+          replace
+        />
+      );
+    }
+
+    if (roles.includes("TattooArtist")) {
+      return (
+        <Navigate
+          to="/create-artist-profile?profileRequired=1"
+          replace
+        />
+      );
+    }
+
+    return <Navigate to="/choose-profile" replace />;
   }
 
   return children;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createClientProfile } from "../api/clientApi";
 import { updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
@@ -7,7 +7,10 @@ import { useAuth } from "../context/AuthContext";
 
 function CreateClientProfilePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { saveAuthToken } = useAuth();
+  const profileRequired = searchParams.get("profileRequired") === "1";
+  const returnTo = searchParams.get("returnTo");
   const [form, setForm] = useState({ phoneNumber: "", city: "", country: "" });
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [error, setError] = useState("");
@@ -44,7 +47,7 @@ function CreateClientProfilePage() {
       }
 
       setSuccess("Client profile created successfully.");
-      setTimeout(() => navigate("/explore"), 700);
+      setTimeout(() => navigate(returnTo || "/explore"), 700);
     } catch {
       setError("Server connection failed. Please try again.");
     }
@@ -56,7 +59,13 @@ function CreateClientProfilePage() {
         <div className="header">
           <p className="subtitle">Client Profile</p>
           <h1>Create your client profile</h1>
-          <p>Add your contact and location so we can recommend artists near you.</p>
+          {profileRequired ? (
+            <p className="error">
+              You need to create a client profile before you can send tattoo requests, add favorites, or manage bookings.
+            </p>
+          ) : (
+            <p>Add your contact and location so we can recommend artists near you.</p>
+          )}
         </div>
 
         <form className="form" onSubmit={handleSubmit}>

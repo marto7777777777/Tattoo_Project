@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.DTOs.ProfileDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
@@ -12,7 +13,9 @@ namespace Tattoo_Project.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ProfileController(IProfileService service) : ControllerBase
+    public class ProfileController(
+        IProfileService service,
+        IEmailVerificationService emailVerificationService) : ControllerBase
     {
         [HttpGet("me")]
         public async Task<IActionResult> GetMyProfile()
@@ -37,6 +40,36 @@ namespace Tattoo_Project.Controllers
         [HttpPatch("user/email")]
         public async Task<IActionResult> UpdateEmail(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateEmailAsync);
+
+
+        [HttpPost("user/password/send-code")]
+        public async Task<IActionResult> SendPasswordChangeCode()
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var result = await emailVerificationService.SendPasswordChangeCodeAsync(userId);
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+
+            return Ok("Password change code sent successfully.");
+        }
+
+        [HttpPost("user/password/change")]
+        public async Task<IActionResult> ChangePassword(ChangePasswordWithCodeDto dto)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var result = await emailVerificationService.ChangePasswordWithCodeAsync(
+                userId,
+                dto.Code,
+                dto.NewPassword,
+                dto.ConfirmNewPassword);
+
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+
+            return Ok("Password changed successfully.");
+        }
 
         [HttpPatch("contact/profile-image")]
         public async Task<IActionResult> UpdateProfileImage(IFormFile image)

@@ -1,3 +1,5 @@
+using Tattoo_Project.DTOs.TattooArtistDTOs;
+
 namespace Tattoo_Project.DTOs.ProfileDTOs
 {
     public class CurrentProfileDto
@@ -30,6 +32,7 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
         public decimal? DepositAmount { get; set; }
         public ICollection<ProfileRequirementDto> Requirements { get; set; } = new List<ProfileRequirementDto>();
         public ICollection<ProfilePortfolioImageDto> PortfolioImages { get; set; } = new List<ProfilePortfolioImageDto>();
+        public ICollection<TattooArtistScheduleDto> Schedules { get; set; } = new List<TattooArtistScheduleDto>();
     }
 
     public class ProfileRequirementDto

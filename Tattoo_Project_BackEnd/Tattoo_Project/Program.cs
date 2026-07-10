@@ -38,6 +38,8 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IClientFavoriteArtistService, ClientFavoriteArtistService>();
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(

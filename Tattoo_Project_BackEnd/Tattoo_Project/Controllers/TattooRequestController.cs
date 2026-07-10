@@ -133,6 +133,55 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Client)]
+        [HttpPost("with-images")]
+        public async Task<IActionResult> CreateTattooRequestWithImages(
+            [FromForm] CreateTattooRequestWithImagesDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.CreateTattooRequestWithImagesAsync(dto, userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(new { Message = "Tattoo request created successfully.", TattooRequestId = result.Data });
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
+        [HttpGet("{id}/availability")]
+        public async Task<IActionResult> GetBookingAvailability(
+            int id,
+            [FromQuery] string bookingType)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.GetBookingAvailabilityAsync(id, bookingType, userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok(result.Data);
+        }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.Client)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTattooRequest(
             int id,

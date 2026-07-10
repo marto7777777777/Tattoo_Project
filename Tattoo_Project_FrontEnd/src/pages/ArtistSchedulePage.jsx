@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getMyProfile } from "../api/profileApi";
+import { updateArtistProfile } from "../api/artistApi";
 import {
   createUnavailableDate,
   deleteUnavailableDate,
@@ -15,6 +17,8 @@ const EVENT_FILTERS = [
   { label: "Tattoo sessions", value: "tattoo-session" },
   { label: "Days off", value: "unavailable" },
 ];
+
+const emptySchedule = { dayOfWeek: "", startTime: "", endTime: "", scheduleType: "" };
 
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -86,10 +90,32 @@ function ArtistSchedulePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
+  const [showScheduleEditor, setShowScheduleEditor] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState([emptySchedule]);
 
   useEffect(() => {
     loadCalendarData();
+    loadProfile();
   }, []);
+
+  async function loadProfile() {
+    try {
+      const data = await getMyProfile();
+      setProfile(data);
+      const schedules = data.artist?.schedules?.length
+        ? data.artist.schedules.map((schedule) => ({
+            dayOfWeek: String(schedule.dayOfWeek),
+            startTime: String(schedule.startTime).slice(0, 5),
+            endTime: String(schedule.endTime).slice(0, 5),
+            scheduleType: String(schedule.scheduleType),
+          }))
+        : [emptySchedule];
+      setScheduleForm(schedules);
+    } catch {
+      // Schedule editing is optional; calendar can still load.
+    }
+  }
 
   const allEventsByDate = useMemo(() => {
     const result = {};
@@ -235,6 +261,83 @@ function ArtistSchedulePage() {
     }
   }
 
+  function updateSchedule(index, field, value) {
+    setScheduleForm((current) => {
+      const copy = [...current];
+      copy[index] = { ...copy[index], [field]: value };
+      return copy;
+    });
+  }
+
+  function addScheduleRow() {
+    setScheduleForm((current) => [...current, emptySchedule]);
+  }
+
+  function removeScheduleRow(index) {
+    setScheduleForm((current) => current.filter((_, itemIndex) => itemIndex !== index));
+  }
+
+  async function handleUpdateSchedule(event) {
+    event.preventDefault();
+    if (!profile?.artist) {
+      setError("Artist profile was not loaded yet.");
+      return;
+    }
+
+    setError("");
+    setSuccess("");
+
+    const schedules = scheduleForm
+      .filter((schedule) => schedule.dayOfWeek !== "" && schedule.startTime && schedule.endTime && schedule.scheduleType !== "")
+      .map((schedule) => ({
+        dayOfWeek: Number(schedule.dayOfWeek),
+        startTime: `${schedule.startTime}:00`,
+        endTime: `${schedule.endTime}:00`,
+        scheduleType: Number(schedule.scheduleType),
+      }));
+
+    if (!schedules.some((schedule) => schedule.scheduleType === 1) || !schedules.some((schedule) => schedule.scheduleType === 0)) {
+      setError("Add at least one consultation schedule and one tattoo session schedule.");
+      return;
+    }
+
+    const payload = {
+      firstName: profile.firstName,
+      lastName: profile.lastName,
+      email: profile.email,
+      studioName: profile.artist.studioName,
+      description: profile.artist.description,
+      consultationDurationMinutes: profile.artist.consultationDurationMinutes,
+      studioAddress: profile.artist.studioAddress,
+      studioCity: profile.artist.studioCity,
+      studioCountry: profile.artist.studioCountry,
+      studioLatitude: null,
+      studioLongitude: null,
+      phoneNumber: profile.phoneNumber || "",
+      offersOnlineConsultation: profile.artist.offersOnlineConsultation,
+      requiresDeposit: profile.artist.requiresDeposit,
+      depositAmount: profile.artist.depositAmount,
+      requirements: (profile.artist.requirements || []).map((requirement) => ({ description: requirement.description })),
+      portfolioImages: (profile.artist.portfolioImages || []).map((image) => ({ imageUrl: image.imageUrl })),
+      schedules,
+    };
+
+    try {
+      const response = await updateArtistProfile(payload);
+      const data = await readResponse(response);
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+      setSuccess("Schedule updated successfully.");
+      setShowScheduleEditor(false);
+      await loadProfile();
+      await loadCalendarData();
+    } catch {
+      setError("Server connection failed. Please try again.");
+    }
+  }
+
   async function handleDeleteUnavailable(id) {
     setError("");
     setSuccess("");
@@ -264,8 +367,58 @@ function ArtistSchedulePage() {
             <h1>Calendar</h1>
             <p>View consultations, tattoo sessions, and days off on one calendar.</p>
           </div>
-          <Link className="secondary-button" to="/my-studio/requests">Open Requests</Link>
+          <div className="action-row">
+            <button className="secondary-button" type="button" onClick={() => setShowScheduleEditor((current) => !current)}>
+              {showScheduleEditor ? "Close schedule editor" : "Edit Schedule"}
+            </button>
+            <Link className="secondary-button" to="/my-studio/requests">Open Requests</Link>
+          </div>
         </div>
+
+        {showScheduleEditor && (
+          <form className="card form-card form-card-large section" onSubmit={handleUpdateSchedule}>
+            <h2>Edit working schedule</h2>
+            <p className="muted">Update the same consultation and tattoo session schedule you added during artist profile creation.</p>
+            {scheduleForm.map((schedule, index) => (
+              <div className="schedule-row" key={index}>
+                <div className="form-group">
+                  <label>Day</label>
+                  <select value={schedule.dayOfWeek} onChange={(event) => updateSchedule(index, "dayOfWeek", event.target.value)}>
+                    <option value="">Choose</option>
+                    <option value="1">Monday</option>
+                    <option value="2">Tuesday</option>
+                    <option value="3">Wednesday</option>
+                    <option value="4">Thursday</option>
+                    <option value="5">Friday</option>
+                    <option value="6">Saturday</option>
+                    <option value="0">Sunday</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Start</label>
+                  <input type="time" value={schedule.startTime} onChange={(event) => updateSchedule(index, "startTime", event.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label>End</label>
+                  <input type="time" value={schedule.endTime} onChange={(event) => updateSchedule(index, "endTime", event.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label>Type</label>
+                  <select value={schedule.scheduleType} onChange={(event) => updateSchedule(index, "scheduleType", event.target.value)}>
+                    <option value="">Choose</option>
+                    <option value="1">Consultation</option>
+                    <option value="0">Tattoo session</option>
+                  </select>
+                </div>
+                <button className="danger-button compact-button" type="button" onClick={() => removeScheduleRow(index)}>Remove</button>
+              </div>
+            ))}
+            <div className="action-row">
+              <button className="secondary-button" type="button" onClick={addScheduleRow}>Add row</button>
+              <button className="primary-button">Save schedule</button>
+            </div>
+          </form>
+        )}
 
         <div className="filter-tabs">
           {EVENT_FILTERS.map((filter) => (

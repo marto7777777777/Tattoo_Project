@@ -3,6 +3,29 @@ import { Link } from "react-router-dom";
 import { getMyTattooRequests } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
 import { formatDate, formatDateTime, formatTime, getEntityId, getStatusClass, getStatusName } from "../utils/format";
+import { getImageUrl } from "../utils/images";
+
+const STATUS = {
+  SUBMITTED: 0,
+  WAITING_FOR_CONSULTATION: 3,
+  CONSULTATION_COMPLETED: 4,
+  TATTOO_BOOKED: 5,
+  IN_PROGRESS: 6,
+  COMPLETED: 7,
+  REJECTED: 8,
+};
+
+function canBookConsultation(request) {
+  return request.status === STATUS.WAITING_FOR_CONSULTATION && request.artistResponse && !request.consultation;
+}
+
+function canBookSession(request) {
+  return (
+    request.status === STATUS.CONSULTATION_COMPLETED ||
+    request.status === STATUS.TATTOO_BOOKED ||
+    request.status === STATUS.IN_PROGRESS
+  ) && (request.remainingSessionsToBook === undefined || request.remainingSessionsToBook === null || request.remainingSessionsToBook > 0);
+}
 
 function MyTattooRequestsPage() {
   const [requests, setRequests] = useState([]);
@@ -47,7 +70,7 @@ function MyTattooRequestsPage() {
         <div className="grid-2">
           {requests.map((request, index) => {
             const id = getEntityId(request, index);
-            const isCompleted = request.status === 7 || request.status === "Completed";
+            const isCompleted = request.status === STATUS.COMPLETED || request.status === "Completed";
 
             return (
               <article className="card artist-card" key={index}>
@@ -61,6 +84,14 @@ function MyTattooRequestsPage() {
 
                 <p className="muted">{request.description}</p>
 
+                <div className="section highlighted">
+                  <h3>Artist</h3>
+                  <div className="info-list">
+                    <p><span>Name:</span> {request.tattooArtistName || "Not provided"}</p>
+                    <p><span>Studio:</span> {request.studioName || "Not provided"}</p>
+                  </div>
+                </div>
+
                 <div className="info-list">
                   <p><span>Created:</span> {formatDate(request.createdOn)}</p>
                 </div>
@@ -70,7 +101,7 @@ function MyTattooRequestsPage() {
                     <h3>Reference images</h3>
                     <div className="image-grid">
                       {request.images.slice(0, 4).map((image, imageIndex) => (
-                        <img key={imageIndex} src={image.imageUrl} alt="Reference" />
+                        <img key={imageIndex} src={getImageUrl(image.imageUrl)} alt="Reference" />
                       ))}
                     </div>
                   </div>
@@ -115,15 +146,21 @@ function MyTattooRequestsPage() {
                 )}
 
                 <div className="action-row">
-                  <Link className="secondary-button" to={`/book-consultation/${id}`}>Book consultation</Link>
-                  <Link className="primary-button" to={`/book-session/${id}`}>Book session</Link>
+                  {canBookConsultation(request) && (
+                    <Link className="secondary-button" to={`/book-consultation/${id}`}>Book consultation</Link>
+                  )}
+                  {canBookSession(request) && (
+                    <Link className="primary-button" to={`/book-session/${id}`}>Book session</Link>
+                  )}
                   {isCompleted && <Link className="secondary-button" to={`/review/${id}`}>Leave review</Link>}
+                  {!canBookConsultation(request) && !canBookSession(request) && !isCompleted && (
+                    <p className="muted">No booking action is available for this status.</p>
+                  )}
                 </div>
               </article>
             );
           })}
         </div>
-
       </section>
     </main>
   );

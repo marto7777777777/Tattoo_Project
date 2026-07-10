@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { createTattooRequest } from "../api/tattooRequestApi";
+import { createTattooRequestWithImages } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
 
 function CreateTattooRequestPage() {
@@ -8,18 +8,25 @@ function CreateTattooRequestPage() {
   const params = useParams();
   const storedArtist = JSON.parse(localStorage.getItem("selectedArtist") || "null");
   const artistId = params.artistId || storedArtist?.id || storedArtist?.tattooArtistId || "";
-  const [form, setForm] = useState({ description: "", placement: "", images: [""] });
+  const [form, setForm] = useState({ description: "", placement: "" });
+  const [imageFiles, setImageFiles] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const previews = useMemo(() => imageFiles.map((file) => ({ file, url: URL.createObjectURL(file) })), [imageFiles]);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function updateImage(index, value) {
-    const copy = [...form.images];
-    copy[index] = value;
-    setForm({ ...form, images: copy });
+  function handleImagesChange(event) {
+    const files = Array.from(event.target.files || []);
+    setImageFiles((current) => [...current, ...files]);
+    event.target.value = "";
+  }
+
+  function removeImage(index) {
+    setImageFiles((current) => current.filter((_, itemIndex) => itemIndex !== index));
   }
 
   async function handleSubmit(e) {
@@ -32,21 +39,24 @@ function CreateTattooRequestPage() {
       return;
     }
 
-    const requestData = {
-      tattooArtistId: Number(artistId),
-      description: form.description,
-      placement: form.placement,
-      images: form.images
-        .filter((imageUrl) => imageUrl.trim())
-        .map((imageUrl) => ({ imageUrl })),
-    };
-
     try {
-      const response = await createTattooRequest(requestData);
+      const response = await createTattooRequestWithImages(
+        {
+          tattooArtistId: Number(artistId),
+          description: form.description,
+          placement: form.placement,
+        },
+        imageFiles
+      );
       const data = await readResponse(response);
 
       if (!response.ok) {
-        setError(typeof data === "string" ? data : JSON.stringify(data));
+        const message = typeof data === "string" ? data : JSON.stringify(data);
+        if (message.includes("Client profile")) {
+          navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(`/create-tattoo-request/${artistId}`)}`);
+          return;
+        }
+        setError(message);
         return;
       }
 
@@ -64,7 +74,7 @@ function CreateTattooRequestPage() {
           <div className="header">
             <p className="subtitle">Tattoo Request</p>
             <h1>Choose an artist first</h1>
-            <p>Open the Artists page and select the artist you want to contact.</p>
+            <p>Open Explore and select the artist you want to contact.</p>
           </div>
 
           <Link className="primary-button" to="/explore">
@@ -84,7 +94,7 @@ function CreateTattooRequestPage() {
           <p className="muted">
             {storedArtist
               ? `${storedArtist.firstName} ${storedArtist.lastName}`
-              : "You selected this artist from the Artists page."}
+              : "You selected this artist from Explore."}
           </p>
 
           <div className="info-list">
@@ -102,7 +112,7 @@ function CreateTattooRequestPage() {
           <div className="header">
             <p className="subtitle">Tattoo Request</p>
             <h1>Describe your tattoo idea</h1>
-            <p>Add details, placement, and reference image URLs.</p>
+            <p>Add details, placement, and upload reference images.</p>
           </div>
 
           <form className="form" onSubmit={handleSubmit}>
@@ -118,19 +128,24 @@ function CreateTattooRequestPage() {
 
             <div className="section">
               <h2>Reference images</h2>
-              {form.images.map((imageUrl, index) => (
-                <div className="form-group" key={index}>
-                  <label>Image URL {index + 1}</label>
-                  <input value={imageUrl} onChange={(e) => updateImage(index, e.target.value)} />
+              <label className="portfolio-upload-tile">
+                <input type="file" accept="image/*" multiple hidden onChange={handleImagesChange} />
+                <span>＋</span>
+                Upload tattoo reference photos
+              </label>
+
+              {previews.length > 0 && (
+                <div className="portfolio-manage-grid">
+                  {previews.map((preview, index) => (
+                    <div className="portfolio-manage-card" key={`${preview.file.name}-${index}`}>
+                      <img src={preview.url} alt="Tattoo reference preview" />
+                      <button className="danger-button compact-button" type="button" onClick={() => removeImage(index)}>
+                        Remove
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => setForm({ ...form, images: [...form.images, ""] })}
-              >
-                Add image
-              </button>
+              )}
             </div>
 
             {error && <p className="error">{error}</p>}

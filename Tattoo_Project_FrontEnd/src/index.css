@@ -505,10 +505,10 @@ button:disabled,
   align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
-.card-head > div:first-child {
+.card-head > :first-child {
   padding-left: 20px;
 }
 
@@ -1429,6 +1429,75 @@ button:disabled,
   }
 }
 
+/* Small fix: move card-head title text slightly to the right */
 .card-head > div:first-child {
-  padding-top: 15px;
+  padding-left: 10px;
+}
+
+/* Booking slot picker and request modal polish */
+.booking-day-grid,
+.booking-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 10px;
+}
+
+.booking-day,
+.booking-slot {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--text);
+  padding: 13px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.booking-day span,
+.booking-slot span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.booking-day-available:hover,
+.booking-slot:hover,
+.booking-day-selected,
+.booking-slot-selected {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+
+.booking-day-disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.request-modal {
+  display: block;
+  overflow-x: hidden;
+}
+
+.request-modal .small-list-row,
+.request-modal .calendar-event-item {
+  grid-template-columns: minmax(0, 1fr);
+  word-break: break-word;
+}
+
+.request-modal .image-grid img {
+  cursor: zoom-in;
+}
+
+.artist-card-head {
+  align-items: center;
+}
+
+@media (max-width: 720px) {
+  .booking-day-grid,
+  .booking-slot-grid {
+    grid-template-columns: 1fr;
+  }
 }

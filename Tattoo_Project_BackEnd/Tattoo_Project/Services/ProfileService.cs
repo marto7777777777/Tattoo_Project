@@ -33,6 +33,7 @@ namespace Tattoo_Project.Services
             var artist = await context.TattooArtists
                 .Include(a => a.Requirements)
                 .Include(a => a.PortfolioImages)
+                .Include(a => a.Schedules)
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
             var dto = new CurrentProfileDto
@@ -66,6 +67,13 @@ namespace Tattoo_Project.Services
                     {
                         Id = p.Id,
                         ImageUrl = p.ImageUrl
+                    }).ToList(),
+                    Schedules = artist.Schedules.Select(s => new Tattoo_Project.DTOs.TattooArtistDTOs.TattooArtistScheduleDto
+                    {
+                        DayOfWeek = s.DayOfWeek,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime,
+                        ScheduleType = s.ScheduleType
                     }).ToList()
                 }
             };

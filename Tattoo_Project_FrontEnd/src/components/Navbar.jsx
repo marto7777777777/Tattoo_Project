@@ -76,7 +76,7 @@ function Navbar() {
   return (
     <header className="navbar">
       <NavLink className="navbar-logo" to="/">
-        InkFlow
+        InkRoute
       </NavLink>
 
       <nav className="navbar-links">

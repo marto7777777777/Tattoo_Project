@@ -4,10 +4,12 @@ import { getAllArtists, getRecommendedArtists, searchArtists } from "../api/arti
 import { addFavoriteArtist, getMyFavoriteArtists, removeFavoriteArtist } from "../api/favoriteArtistApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
+import { getMyProfile } from "../api/profileApi";
 import { getEntityId } from "../utils/format";
 
 function ArtistsPage() {
-  const { isLoggedIn, isClient } = useAuth();
+  const { isLoggedIn, isClient, isArtist } = useAuth();
+  const [myProfile, setMyProfile] = useState(null);
   const [artists, setArtists] = useState([]);
   const [favoriteIds, setFavoriteIds] = useState([]);
   const [query, setQuery] = useState("");
@@ -18,7 +20,16 @@ function ArtistsPage() {
 
   const favoriteIdSet = useMemo(() => new Set(favoriteIds.map(String)), [favoriteIds]);
 
+  const visibleArtists = useMemo(() => {
+    return filterMyArtist(artists);
+  }, [artists, isLoggedIn, isArtist, myProfile]);
+
   useEffect(() => {
+    if (isLoggedIn) {
+      getMyProfile().then(setMyProfile).catch(() => setMyProfile(null));
+    } else {
+      setMyProfile(null);
+    }
     loadInitialArtists();
   }, [isLoggedIn, isClient]);
 
@@ -55,6 +66,15 @@ function ArtistsPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+
+  function filterMyArtist(items) {
+    if (!isLoggedIn || !isArtist || !myProfile?.email) {
+      return items;
+    }
+
+    return items.filter((artist) => String(artist.email || "").toLowerCase() !== String(myProfile.email).toLowerCase());
   }
 
   async function loadFavoriteIds() {
@@ -175,10 +195,10 @@ function ArtistsPage() {
         {isLoading && <p className="message">Loading artists...</p>}
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}
-        {!isLoading && !error && artists.length === 0 && <p className="message">No tattoo artists found.</p>}
+        {!isLoading && !error && visibleArtists.length === 0 && <p className="message">No tattoo artists found.</p>}
 
         <div className="grid-2">
-          {artists.map((artist, index) => {
+          {visibleArtists.map((artist, index) => {
             const artistId = getEntityId(artist, index);
 
             return (

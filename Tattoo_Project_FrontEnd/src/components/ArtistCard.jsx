@@ -29,7 +29,7 @@ function ArtistCard({
     }
 
     if (!isClient) {
-      navigate("/create-client-profile");
+      navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(`/create-tattoo-request/${artistId}`)}`);
       return;
     }
 
