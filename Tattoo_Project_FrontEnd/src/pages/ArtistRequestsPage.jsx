@@ -13,6 +13,7 @@ import {
   getStatusName,
 } from "../utils/format";
 import { getImageUrl } from "../utils/images";
+import RequestWorkflowTimeline from "../components/RequestWorkflowTimeline";
 
 const STATUS = {
   SUBMITTED: 0,
@@ -414,11 +415,17 @@ function ArtistRequestsPage() {
               {getStatusName(selectedRequest.status)}
             </span>
 
+            <div className="section workflow-section">
+              <h3>Project progress</h3>
+              <RequestWorkflowTimeline request={selectedRequest} />
+            </div>
+
             <div className="section">
               <h3>Request details</h3>
               <p className="muted">{selectedRequest.description}</p>
               <div className="info-list">
                 <p><span>Placement:</span> {selectedRequest.placement}</p>
+                <p><span>Style:</span> {selectedRequest.tattooStyle || "Not provided"}</p>
                 <p><span>Created:</span> {formatDate(selectedRequest.createdOn)}</p>
               </div>
               {renderRequestTiming(selectedRequest)}
@@ -485,7 +492,7 @@ function ArtistRequestsPage() {
 
             <div className="section">
               <h3>Available actions</h3>
-              {renderActionButtons(selectedRequest)}
+              {!activeAction && renderActionButtons(selectedRequest)}
             </div>
 
             {activeAction === "response" && (

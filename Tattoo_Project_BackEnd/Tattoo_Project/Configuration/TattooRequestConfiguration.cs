@@ -18,6 +18,10 @@ namespace Tattoo_Project.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(x => x.TattooStyle)
+                .IsRequired()
+                .HasMaxLength(100);
+
             builder.HasMany(x => x.Images)
                 .WithOne(x => x.TattooRequest)
                 .HasForeignKey(x => x.TattooRequestId);

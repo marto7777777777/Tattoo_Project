@@ -35,6 +35,7 @@ export async function createTattooRequestWithImages(requestData, files = []) {
   formData.append("tattooArtistId", requestData.tattooArtistId);
   formData.append("description", requestData.description);
   formData.append("placement", requestData.placement);
+  formData.append("tattooStyle", requestData.tattooStyle);
 
   files.forEach((file) => {
     formData.append("images", file);

@@ -1,4 +1,4 @@
-﻿using Tattoo_Project.DTOs.ArtistResponceDTOs;
+using Tattoo_Project.DTOs.ArtistResponceDTOs;
 using Tattoo_Project.DTOs.ConsultationDTOs;
 using Tattoo_Project.DTOs.TattooReferenceImageDTOs;
 using Tattoo_Project.DTOs.TattooSessionDTOs;
@@ -11,6 +11,7 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
         public int Id { get; set; }
         public string Description { get; set; } = null!;
         public string Placement { get; set; } = null!;
+        public string TattooStyle { get; set; } = null!;
         public DateTime CreatedOn { get; set; }
         public int ClientId { get; set; }
         public int TattooArtistId { get; set; }

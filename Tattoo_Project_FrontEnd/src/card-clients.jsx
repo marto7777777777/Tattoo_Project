@@ -1,4 +1,4 @@
-import ClientImage from './assets/clientImage.png'
+import ClientImage from './assets/clientImage.jpg'
 
 function CardClients() {
     return (

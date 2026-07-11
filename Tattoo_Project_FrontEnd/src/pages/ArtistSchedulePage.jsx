@@ -187,6 +187,9 @@ function ArtistSchedulePage() {
     return result;
   }, [allEventsByDate, eventFilter]);
 
+  const scheduledWeekdays = useMemo(() => new Set((profile?.artist?.schedules || []).map((schedule) => Number(schedule.dayOfWeek))), [profile]);
+  const selectedDayDate = new Date(`${selectedDateKey}T00:00:00`);
+  const selectedDayOutsideSchedule = profile?.artist && !scheduledWeekdays.has(selectedDayDate.getDay());
   const selectedEvents = eventsByDate[selectedDateKey] || [];
 
   async function loadCalendarData() {
@@ -471,10 +474,12 @@ function ArtistSchedulePage() {
                 const events = eventsByDate[key] || [];
                 const isCurrentMonth = day.getMonth() === monthDate.getMonth();
                 const isSelected = key === selectedDateKey;
+                const hasDayOff = events.some((event) => event.type === "unavailable");
+                const isOutsideSchedule = Boolean(profile?.artist) && !scheduledWeekdays.has(day.getDay());
 
                 return (
                   <button
-                    className={`calendar-day ${isCurrentMonth ? "" : "calendar-day-muted"} ${isSelected ? "calendar-day-selected" : ""}`}
+                    className={`calendar-day ${isCurrentMonth ? "" : "calendar-day-muted"} ${isSelected ? "calendar-day-selected" : ""} ${hasDayOff || isOutsideSchedule ? "calendar-day-off" : ""}`}
                     key={key}
                     type="button"
                     onClick={() => {
@@ -500,6 +505,7 @@ function ArtistSchedulePage() {
 
             <div className="section">
               <h3>Day events</h3>
+              {selectedDayOutsideSchedule && <p className="calendar-closed-message">Closed — this weekday is not included in the artist schedule.</p>}
               {selectedEvents.length === 0 && <p className="muted">No events for this filter.</p>}
 
               <div className="small-list">
@@ -533,7 +539,7 @@ function ArtistSchedulePage() {
             </div>
 
             <form className="section" onSubmit={handleCreateUnavailable}>
-              <h3>Add day off</h3>
+              <h3>Add day off or break</h3>
 
               <div className="form-group">
                 <label>Type</label>
@@ -573,7 +579,7 @@ function ArtistSchedulePage() {
             </form>
 
             <div className="section">
-              <h3>All days off</h3>
+              <h3>Days off and breaks</h3>
               {unavailableDates.length === 0 && <p className="muted">No days off yet.</p>}
               <div className="small-list">
                 {unavailableDates.map((period) => (

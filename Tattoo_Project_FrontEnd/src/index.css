@@ -1501,3 +1501,358 @@ button:disabled,
     grid-template-columns: 1fr;
   }
 }
+
+/* Structured request workflow UX */
+.request-card-list {
+  display: grid;
+  gap: 18px;
+}
+
+.structured-request-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  gap: 24px;
+  align-items: stretch;
+  padding: 26px;
+}
+
+.request-card-action {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding-left: 22px;
+  border-left: 1px solid var(--border);
+}
+
+.request-card-action .primary-button,
+.request-card-action .secondary-button {
+  width: 100%;
+  text-align: center;
+}
+
+.eyebrow-label {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.studio-line {
+  margin-top: 4px;
+}
+
+.request-timeline {
+  display: grid;
+  gap: 0;
+  margin-top: 18px;
+}
+
+.timeline-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.timeline-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 31px;
+  width: 2px;
+  height: 31px;
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.timeline-marker {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  background: #171718;
+  color: #fff;
+  font-size: 0.82rem;
+  z-index: 1;
+}
+
+.timeline-step-completed {
+  color: var(--text);
+}
+
+.timeline-step-completed .timeline-marker {
+  border-color: rgba(126, 224, 166, 0.62);
+  background: rgba(126, 224, 166, 0.18);
+  color: #baf2d0;
+}
+
+.timeline-step-current {
+  color: #ffe1d7;
+}
+
+.timeline-step-current .timeline-marker {
+  border-color: rgba(217, 107, 79, 0.9);
+  box-shadow: 0 0 0 5px rgba(217, 107, 79, 0.14);
+}
+
+.timeline-step-rejected {
+  color: #ffc0bd;
+}
+
+.timeline-step-rejected .timeline-marker {
+  border-color: rgba(255, 107, 107, 0.7);
+  background: rgba(255, 107, 107, 0.16);
+}
+
+.request-timeline-compact {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.request-timeline-compact .timeline-step {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  text-align: center;
+  gap: 7px;
+  min-height: auto;
+  font-size: 0.72rem;
+}
+
+.request-timeline-compact .timeline-step::after {
+  left: calc(50% + 15px);
+  top: 15px;
+  width: calc(100% - 24px);
+  height: 2px;
+}
+
+.request-detail-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 22px 0;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.request-detail-tab {
+  flex: 1;
+  min-width: 120px;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.request-detail-tab-active {
+  background: rgba(217, 107, 79, 0.18);
+  color: #ffe1d7;
+}
+
+.request-detail-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-section-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.consultation-accent-card {
+  border-left: 5px solid #40c878;
+}
+
+.session-accent-card {
+  border-left: 5px solid #4f8cff;
+}
+
+.modal-next-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.disabled-action-button {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.workflow-section {
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+/* Calendar: only three event meanings */
+.event-consultation {
+  background: #40c878 !important;
+}
+
+.event-tattoo-session {
+  background: #4f8cff !important;
+}
+
+.event-unavailable {
+  background: #ff5f62 !important;
+}
+
+.event-border-consultation {
+  border-left: 5px solid #40c878 !important;
+}
+
+.event-border-tattoo-session {
+  border-left: 5px solid #4f8cff !important;
+}
+
+.event-border-unavailable {
+  border-left: 5px solid #ff5f62 !important;
+  background: rgba(255, 95, 98, 0.11) !important;
+}
+
+.calendar-day-off {
+  border-color: rgba(255, 95, 98, 0.72) !important;
+  background: rgba(255, 95, 98, 0.13) !important;
+}
+
+.calendar-day-off:hover {
+  border-color: #ff5f62 !important;
+  background: rgba(255, 95, 98, 0.2) !important;
+}
+
+@media (max-width: 850px) {
+  .structured-request-card {
+    grid-template-columns: 1fr;
+  }
+
+  .request-card-action {
+    padding-left: 0;
+    padding-top: 18px;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .request-timeline-compact {
+    grid-template-columns: 1fr;
+  }
+
+  .request-timeline-compact .timeline-step {
+    grid-template-columns: 32px 1fr;
+    justify-items: start;
+    text-align: left;
+    min-height: 42px;
+  }
+
+  .request-timeline-compact .timeline-step::after {
+    left: 15px;
+    top: 31px;
+    width: 2px;
+    height: 27px;
+  }
+}
+
+
+/* Visual tattoo request selectors */
+.selection-section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:14px; }
+.selection-section-head h2 { margin:2px 0 0; }
+.selection-value { color:var(--text-soft); font-weight:800; }
+.visual-option-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
+.visual-option-card { overflow:hidden; padding:0; border:1px solid var(--border); border-radius:18px; background:rgba(255,255,255,.04); color:var(--text); cursor:pointer; text-align:left; transition:.18s ease; }
+.visual-option-card:hover { transform:translateY(-3px); border-color:rgba(217,107,79,.55); }
+.visual-option-card img { width:100%; aspect-ratio:1.15/1; object-fit:cover; display:block; background:#16161e; }
+.visual-option-card span { display:block; padding:12px 13px; font-weight:900; }
+.visual-option-selected { border-color:#ff6969; box-shadow:0 0 0 3px rgba(255,95,98,.17); background:rgba(255,95,98,.12); }
+.visual-option-selected span { background:linear-gradient(90deg,rgba(255,95,98,.95),rgba(217,107,79,.92)); color:#0b0b0e; }
+.calendar-closed-message { padding:12px 14px; border:1px solid rgba(255,95,98,.5); border-radius:12px; background:rgba(255,95,98,.13); color:#ffb6b8; font-weight:800; }
+@media(max-width:900px){.visual-option-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:520px){.visual-option-grid{grid-template-columns:1fr 1fr;gap:9px}.visual-option-card span{padding:9px;font-size:.86rem}.selection-section-head{align-items:flex-start;flex-direction:column;}}
+
+/* Horizontal tattoo placement and style selectors */
+.request-form-wide { min-width: 0; }
+.carousel-section { overflow: hidden; }
+.selector-carousel-shell { position: relative; min-width: 0; }
+.selector-carousel-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 4px 52px 10px;
+}
+.selector-carousel-track::-webkit-scrollbar { display: none; }
+.carousel-arrow {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(12,12,15,.94);
+  color: white;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+}
+.carousel-arrow:hover { border-color: rgba(217,107,79,.85); background: #242026; }
+.carousel-arrow-left { left: 4px; }
+.carousel-arrow-right { right: 4px; }
+.visual-carousel-card,
+.style-carousel-card {
+  flex: 0 0 205px;
+  scroll-snap-align: start;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.visual-carousel-card:hover,
+.style-carousel-card:hover { transform: translateY(-3px); border-color: rgba(217,107,79,.6); }
+.visual-carousel-card img { width: 100%; height: 235px; object-fit: cover; display: block; background: #111; }
+.visual-carousel-card > span,
+.style-carousel-card > strong { display: block; min-height: 48px; padding: 13px 14px; font-weight: 900; }
+.style-card-art {
+  height: 150px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 70% 25%, rgba(217,107,79,.34), transparent 34%),
+    linear-gradient(145deg, #26232d, #111116);
+  font-size: 2rem;
+  font-weight: 950;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.86);
+}
+.visual-carousel-card.visual-option-selected,
+.style-carousel-card.visual-option-selected { border-color: #ff6969; box-shadow: 0 0 0 3px rgba(255,95,98,.17); background: rgba(255,95,98,.12); }
+.visual-carousel-card.visual-option-selected > span,
+.style-carousel-card.visual-option-selected > strong { background: linear-gradient(90deg,rgba(255,95,98,.95),rgba(217,107,79,.92)); color:#0b0b0e; }
+@media (max-width: 700px) {
+  .selector-carousel-track { padding-left: 44px; padding-right: 44px; gap: 10px; }
+  .visual-carousel-card, .style-carousel-card { flex-basis: 165px; }
+  .visual-carousel-card img { height: 190px; }
+  .style-card-art { height: 125px; }
+  .carousel-arrow { width: 36px; height: 36px; font-size: 1.6rem; }
+}

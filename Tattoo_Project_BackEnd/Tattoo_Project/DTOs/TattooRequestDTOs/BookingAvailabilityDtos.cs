@@ -6,6 +6,7 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
     {
         public string Description { get; set; } = null!;
         public string Placement { get; set; } = null!;
+        public string TattooStyle { get; set; } = null!;
         public int TattooArtistId { get; set; }
         public ICollection<IFormFile> Images { get; set; } = new List<IFormFile>();
     }

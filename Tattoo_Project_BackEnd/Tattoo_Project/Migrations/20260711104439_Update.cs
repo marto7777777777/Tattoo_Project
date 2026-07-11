@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Tattoo_Project.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,7 @@ namespace Tattoo_Project.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -50,45 +51,6 @@ namespace Tattoo_Project.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Clients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Clients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TattooArtists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    StudioName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    StudioAddress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
-                    OffersOnlineConsultation = table.Column<bool>(type: "bit", nullable: false),
-                    RequiresDeposit = table.Column<bool>(type: "bit", nullable: false),
-                    DepositAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TattooArtists", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -198,6 +160,90 @@ namespace Tattoo_Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Clients",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Clients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Clients_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmailVerificationCodes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CodeHash = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Purpose = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UsedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmailVerificationCodes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmailVerificationCodes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TattooArtists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    StudioName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    StudioAddress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    StudioCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StudioCountry = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StudioLatitude = table.Column<double>(type: "float", nullable: true),
+                    StudioLongitude = table.Column<double>(type: "float", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsVerified = table.Column<bool>(type: "bit", nullable: false),
+                    OffersOnlineConsultation = table.Column<bool>(type: "bit", nullable: false),
+                    RequiresDeposit = table.Column<bool>(type: "bit", nullable: false),
+                    DepositAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ConsultationDurationMinutes = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TattooArtists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TattooArtists_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ArtistRequirement",
                 columns: table => new
                 {
@@ -211,6 +257,54 @@ namespace Tattoo_Project.Migrations
                     table.PrimaryKey("PK_ArtistRequirement", x => x.Id);
                     table.ForeignKey(
                         name: "FK_ArtistRequirement_TattooArtists_TattooArtistId",
+                        column: x => x.TattooArtistId,
+                        principalTable: "TattooArtists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ArtistUnavailableDates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TattooArtistId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtistUnavailableDates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ArtistUnavailableDates_TattooArtists_TattooArtistId",
+                        column: x => x.TattooArtistId,
+                        principalTable: "TattooArtists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClientFavoriteArtists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ClientId = table.Column<int>(type: "int", nullable: false),
+                    TattooArtistId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientFavoriteArtists", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientFavoriteArtists_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ClientFavoriteArtists_TattooArtists_TattooArtistId",
                         column: x => x.TattooArtistId,
                         principalTable: "TattooArtists",
                         principalColumn: "Id",
@@ -246,6 +340,7 @@ namespace Tattoo_Project.Migrations
                     DayOfWeek = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     EndTime = table.Column<TimeOnly>(type: "time", nullable: false),
+                    ScheduleType = table.Column<int>(type: "int", nullable: false),
                     TattooArtistId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -267,7 +362,9 @@ namespace Tattoo_Project.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     Placement = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    TattooStyle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PriceForSession = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DurationHoursForSession = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ClientId = table.Column<int>(type: "int", nullable: false),
@@ -315,6 +412,42 @@ namespace Tattoo_Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ArtistReviews",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TattooRequestId = table.Column<int>(type: "int", nullable: false),
+                    ClientId = table.Column<int>(type: "int", nullable: false),
+                    TattooArtistId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ArtistReviews", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ArtistReviews_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ArtistReviews_TattooArtists_TattooArtistId",
+                        column: x => x.TattooArtistId,
+                        principalTable: "TattooArtists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ArtistReviews_TattooRequests_TattooRequestId",
+                        column: x => x.TattooRequestId,
+                        principalTable: "TattooRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Consultations",
                 columns: table => new
                 {
@@ -324,6 +457,7 @@ namespace Tattoo_Project.Migrations
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TattooRequestId = table.Column<int>(type: "int", nullable: false),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -392,6 +526,27 @@ namespace Tattoo_Project.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_ArtistReviews_ClientId",
+                table: "ArtistReviews",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistReviews_TattooArtistId",
+                table: "ArtistReviews",
+                column: "TattooArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistReviews_TattooRequestId",
+                table: "ArtistReviews",
+                column: "TattooRequestId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistUnavailableDates_TattooArtistId",
+                table: "ArtistUnavailableDates",
+                column: "TattooArtistId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -431,10 +586,32 @@ namespace Tattoo_Project.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientFavoriteArtists_ClientId_TattooArtistId",
+                table: "ClientFavoriteArtists",
+                columns: new[] { "ClientId", "TattooArtistId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClientFavoriteArtists_TattooArtistId",
+                table: "ClientFavoriteArtists",
+                column: "TattooArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_UserId",
+                table: "Clients",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Consultations_TattooRequestId",
                 table: "Consultations",
                 column: "TattooRequestId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerificationCodes_UserId_Purpose_UsedAt",
+                table: "EmailVerificationCodes",
+                columns: new[] { "UserId", "Purpose", "UsedAt" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PortfolioImage_TattooArtistId",
@@ -445,6 +622,12 @@ namespace Tattoo_Project.Migrations
                 name: "IX_Schedules_TattooArtistId",
                 table: "Schedules",
                 column: "TattooArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TattooArtists_UserId",
+                table: "TattooArtists",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TattooReferenceImages_TattooRequestId",
@@ -477,6 +660,12 @@ namespace Tattoo_Project.Migrations
                 name: "ArtistResponses");
 
             migrationBuilder.DropTable(
+                name: "ArtistReviews");
+
+            migrationBuilder.DropTable(
+                name: "ArtistUnavailableDates");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -492,7 +681,13 @@ namespace Tattoo_Project.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ClientFavoriteArtists");
+
+            migrationBuilder.DropTable(
                 name: "Consultations");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerificationCodes");
 
             migrationBuilder.DropTable(
                 name: "PortfolioImage");
@@ -510,9 +705,6 @@ namespace Tattoo_Project.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "TattooRequests");
 
             migrationBuilder.DropTable(
@@ -520,6 +712,9 @@ namespace Tattoo_Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "TattooArtists");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
         }
     }
 }

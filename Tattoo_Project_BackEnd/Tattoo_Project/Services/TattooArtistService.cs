@@ -495,6 +495,7 @@ namespace Tattoo_Project.Services
                     {
                         Description = r.Description,
                         Placement = r.Placement,
+                        TattooStyle = r.TattooStyle,
                         CreatedOn = r.CreatedOn,
                         Status = r.Status,
                         ClientId = r.ClientId,

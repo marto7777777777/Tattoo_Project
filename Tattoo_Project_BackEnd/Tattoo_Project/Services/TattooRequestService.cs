@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
@@ -190,6 +190,11 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo placement is required.");
             }
 
+            if (string.IsNullOrWhiteSpace(dto.TattooStyle))
+            {
+                return ResultService.Fail("Tattoo style is required.");
+            }
+
             if (dto.Images.Any(i => string.IsNullOrWhiteSpace(i.ImageUrl)))
             {
                 return ResultService.Fail("Every reference image must have a valid image URL.");
@@ -201,6 +206,7 @@ namespace Tattoo_Project.Services
                 TattooArtistId = tattooArtist.Id,
                 Description = dto.Description,
                 Placement = dto.Placement,
+                TattooStyle = dto.TattooStyle.Trim(),
                 Status = RequestStatus.Submitted,
                 CreatedOn = DateTime.UtcNow,
                 Images = dto.Images.Select(i => new TattooReferenceImage
@@ -247,12 +253,18 @@ namespace Tattoo_Project.Services
                 return ResultService<int>.Fail("Tattoo placement is required.");
             }
 
+            if (string.IsNullOrWhiteSpace(dto.TattooStyle))
+            {
+                return ResultService<int>.Fail("Tattoo style is required.");
+            }
+
             var tattooRequest = new TattooRequest
             {
                 ClientId = client.Id,
                 TattooArtistId = tattooArtist.Id,
                 Description = dto.Description.Trim(),
                 Placement = dto.Placement.Trim(),
+                TattooStyle = dto.TattooStyle.Trim(),
                 Status = RequestStatus.Submitted,
                 CreatedOn = DateTime.UtcNow
             };
@@ -554,6 +566,7 @@ namespace Tattoo_Project.Services
                 Id = tattooRequest.Id,
                 Description = tattooRequest.Description,
                 Placement = tattooRequest.Placement,
+                TattooStyle = tattooRequest.TattooStyle,
                 CreatedOn = tattooRequest.CreatedOn,
                 ClientId = tattooRequest.ClientId,
                 TattooArtistId = tattooRequest.TattooArtistId,

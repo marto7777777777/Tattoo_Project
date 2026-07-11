@@ -1,10 +1,11 @@
-﻿namespace Tattoo_Project.Models
+namespace Tattoo_Project.Models
 {
     public class TattooRequest
     {
         public int Id { get; set; }
         public string Description { get; set; } = null!;
         public string Placement { get; set; } = null!;
+        public string TattooStyle { get; set; } = null!;
         public List<decimal>? PriceForSession { get; set; }
         public List<int>? DurationHoursForSession { get; set; }
         public DateTime CreatedOn { get; set; }

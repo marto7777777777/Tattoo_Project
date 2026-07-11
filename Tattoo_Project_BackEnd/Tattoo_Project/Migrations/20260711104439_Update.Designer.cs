@@ -12,8 +12,8 @@ using Tattoo_Project.Data;
 namespace Tattoo_Project.Migrations
 {
     [DbContext(typeof(TattooDbContext))]
-    [Migration("20260702134438_AddArtistReviews")]
-    partial class AddArtistReviews
+    [Migration("20260711104439_Update")]
+    partial class Update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,6 +208,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -326,6 +329,30 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("ArtistReviews");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistUnavailableDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TattooArtistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooArtistId");
+
+                    b.ToTable("ArtistUnavailableDates");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -374,6 +401,33 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteArtist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TattooArtistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooArtistId");
+
+                    b.HasIndex("ClientId", "TattooArtistId")
+                        .IsUnique();
+
+                    b.ToTable("ClientFavoriteArtists");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Consultation", b =>
                 {
                     b.Property<int>("Id")
@@ -406,6 +460,42 @@ namespace Tattoo_Project.Migrations
                         .IsUnique();
 
                     b.ToTable("Consultations");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.EmailVerificationCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Purpose")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Purpose", "UsedAt");
+
+                    b.ToTable("EmailVerificationCodes");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.PortfolioImage", b =>
@@ -606,6 +696,11 @@ namespace Tattoo_Project.Migrations
                     b.Property<int>("TattooArtistId")
                         .HasColumnType("int");
 
+                    b.Property<string>("TattooStyle")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -745,6 +840,17 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("TattooRequest");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistUnavailableDate", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
+                        .WithMany("UnavailableDates")
+                        .HasForeignKey("TattooArtistId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TattooArtist");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.ApplicationUser", "User")
@@ -756,6 +862,25 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteArtist", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.Client", "Client")
+                        .WithMany("FavoriteArtists")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
+                        .WithMany()
+                        .HasForeignKey("TattooArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("TattooArtist");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Consultation", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.TattooRequest", "TattooRequest")
@@ -765,6 +890,17 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
 
                     b.Navigation("TattooRequest");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.EmailVerificationCode", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.PortfolioImage", b =>
@@ -845,6 +981,8 @@ namespace Tattoo_Project.Migrations
                 {
                     b.Navigation("ArtistReviews");
 
+                    b.Navigation("FavoriteArtists");
+
                     b.Navigation("TattooRequests");
                 });
 
@@ -859,6 +997,8 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("Schedules");
 
                     b.Navigation("TattooRequests");
+
+                    b.Navigation("UnavailableDates");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.TattooRequest", b =>
