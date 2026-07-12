@@ -27,6 +27,25 @@ import fullLegImage from "../assets/body-placements/full-leg.jpeg";
 import neckImage from "../assets/body-placements/neck.jpeg";
 import faceImage from "../assets/body-placements/face.jpeg";
 
+import fineLineStyleImage from "../assets/tattoo-styles/fine-line.jpg";
+import realismStyleImage from "../assets/tattoo-styles/realism.jpg";
+import blackworkStyleImage from "../assets/tattoo-styles/blackwork.jpg";
+import japaneseStyleImage from "../assets/tattoo-styles/japanese-irezumi.jpg";
+import traditionalStyleImage from "../assets/tattoo-styles/american-traditional.jpg";
+import neoTraditionalStyleImage from "../assets/tattoo-styles/neo-traditional.jpg";
+import watercolorStyleImage from "../assets/tattoo-styles/watercolor.jpg";
+import letteringStyleImage from "../assets/tattoo-styles/lettering-script.jpg";
+import geometricStyleImage from "../assets/tattoo-styles/geometric.jpg";
+import tribalStyleImage from "../assets/tattoo-styles/tribal-polynesian.jpg";
+import dotworkStyleImage from "../assets/tattoo-styles/dotwork.jpg";
+import illustrativeStyleImage from "../assets/tattoo-styles/illustrative.jpg";
+import chicanoStyleImage from "../assets/tattoo-styles/chicano.jpg";
+import newSchoolStyleImage from "../assets/tattoo-styles/new-school.jpg";
+import biomechanicalStyleImage from "../assets/tattoo-styles/biomechanical.jpg";
+import trashPolkaStyleImage from "../assets/tattoo-styles/trash-polka.jpg";
+import portraitStyleImage from "../assets/tattoo-styles/portrait.jpg";
+import minimalistStyleImage from "../assets/tattoo-styles/minimalist.jpg";
+
 const PLACEMENTS = [
   { value: "Outer Forearm", image: outerForearmImage },
   { value: "Forearm", image: forearmImage },
@@ -54,12 +73,24 @@ const PLACEMENTS = [
 ];
 
 const TATTOO_STYLES = [
-  "Fine Line", "Realism", "Black & Grey", "Blackwork", "Japanese / Irezumi",
-  "American Traditional", "Neo Traditional", "Minimalist", "Geometric",
-  "Lettering / Script", "Watercolor", "Tribal / Polynesian", "Dotwork",
-  "Illustrative", "Chicano", "New School", "Biomechanical", "Trash Polka",
-  "Micro Realism", "Portrait", "Ornamental", "Anime / Manga", "Patchwork",
-  "Cybersigilism", "Other",
+  { value: "Fine Line", image: fineLineStyleImage },
+  { value: "Realism", image: realismStyleImage },
+  { value: "Blackwork", image: blackworkStyleImage },
+  { value: "Japanese / Irezumi", image: japaneseStyleImage },
+  { value: "American Traditional", image: traditionalStyleImage },
+  { value: "Neo Traditional", image: neoTraditionalStyleImage },
+  { value: "Watercolor", image: watercolorStyleImage },
+  { value: "Lettering / Script", image: letteringStyleImage },
+  { value: "Geometric", image: geometricStyleImage },
+  { value: "Tribal / Polynesian", image: tribalStyleImage },
+  { value: "Dotwork", image: dotworkStyleImage },
+  { value: "Illustrative", image: illustrativeStyleImage },
+  { value: "Chicano", image: chicanoStyleImage },
+  { value: "New School", image: newSchoolStyleImage },
+  { value: "Biomechanical", image: biomechanicalStyleImage },
+  { value: "Trash Polka", image: trashPolkaStyleImage },
+  { value: "Portrait", image: portraitStyleImage },
+  { value: "Minimalist", image: minimalistStyleImage },
 ];
 
 function HorizontalSelector({ title, subtitle, value, children, scrollRef }) {
@@ -186,9 +217,9 @@ function CreateTattooRequestPage() {
 
             <HorizontalSelector title="Pick a style" subtitle="Tattoo style" value={form.tattooStyle} scrollRef={styleTrackRef}>
               {TATTOO_STYLES.map((style) => (
-                <button key={style} type="button" className={`style-carousel-card ${form.tattooStyle === style ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, tattooStyle: style }))}>
-                  <div className="style-card-art" aria-hidden="true"><span>{style.slice(0, 2).toUpperCase()}</span></div>
-                  <strong>{style}</strong>
+                <button key={style.value} type="button" className={`visual-carousel-card ${form.tattooStyle === style.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, tattooStyle: style.value }))}>
+                  <img src={style.image} alt={style.value} loading="lazy" />
+                  <span>{style.value}</span>
                 </button>
               ))}
             </HorizontalSelector>
