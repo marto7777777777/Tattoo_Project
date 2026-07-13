@@ -18,6 +18,13 @@ const EVENT_FILTERS = [
   { label: "Days off", value: "unavailable" },
 ];
 
+const TIME_OPTIONS = Array.from({ length: 29 }, (_, index) => {
+  const totalMinutes = 7 * 60 + index * 30;
+  const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+  const minutes = String(totalMinutes % 60).padStart(2, "0");
+  return `${hours}:${minutes}`;
+});
+
 const emptySchedule = { dayOfWeek: "", startTime: "", endTime: "", scheduleType: "" };
 
 function startOfMonth(date) {
@@ -399,11 +406,11 @@ function ArtistSchedulePage() {
                 </div>
                 <div className="form-group">
                   <label>Start</label>
-                  <input type="time" value={schedule.startTime} onChange={(event) => updateSchedule(index, "startTime", event.target.value)} />
+                  <select value={schedule.startTime} onChange={(event) => updateSchedule(index, "startTime", event.target.value)}><option value="">Start time</option>{TIME_OPTIONS.map((time) => <option key={time} value={time}>{time}</option>)}</select>
                 </div>
                 <div className="form-group">
                   <label>End</label>
-                  <input type="time" value={schedule.endTime} onChange={(event) => updateSchedule(index, "endTime", event.target.value)} />
+                  <select value={schedule.endTime} onChange={(event) => updateSchedule(index, "endTime", event.target.value)}><option value="">End time</option>{TIME_OPTIONS.map((time) => <option key={time} value={time}>{time}</option>)}</select>
                 </div>
                 <div className="form-group">
                   <label>Type</label>

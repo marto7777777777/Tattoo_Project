@@ -95,7 +95,17 @@ const TATTOO_STYLES = [
 
 function HorizontalSelector({ title, subtitle, value, children, scrollRef }) {
   function scroll(direction) {
-    scrollRef.current?.scrollBy({ left: direction * 620, behavior: "smooth" });
+    const track = scrollRef.current;
+    if (!track) return;
+
+    const firstCard = track.querySelector(".visual-carousel-card");
+    if (!firstCard) return;
+
+    const styles = window.getComputedStyle(track);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0");
+    const pageWidth = (firstCard.getBoundingClientRect().width + gap) * 3;
+
+    track.scrollBy({ left: direction * pageWidth, behavior: "smooth" });
   }
 
   return (
@@ -190,9 +200,9 @@ function CreateTattooRequestPage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="request-layout">
-        <aside className="card side-panel">
+    <main className="center-container create-request-page">
+      <section className="request-layout create-request-layout">
+        <aside className="card side-panel create-request-artist-panel">
           <p className="subtitle">Selected Artist</p>
           <h2>{storedArtist?.studioName || "Artist selected"}</h2>
           <p className="muted">{storedArtist ? `${storedArtist.firstName} ${storedArtist.lastName}` : "You selected this artist from Explore."}</p>
@@ -203,7 +213,7 @@ function CreateTattooRequestPage() {
           </div>
         </aside>
 
-        <section className="card form-card request-form-wide">
+        <section className="card form-card request-form-wide create-request-form">
           <div className="header"><p className="subtitle">Tattoo Request</p><h1>Describe your tattoo idea</h1><p>Choose the placement and style, then add your description and reference images.</p></div>
           <form className="form" onSubmit={handleSubmit}>
             <HorizontalSelector title="Where do you want it?" subtitle="Placement" value={form.placement} scrollRef={placementTrackRef}>
@@ -228,7 +238,7 @@ function CreateTattooRequestPage() {
 
             <section className="section">
               <h2>Reference images</h2>
-              <label className="portfolio-upload-tile"><input type="file" accept="image/*" multiple hidden onChange={handleImagesChange} /><span>＋</span>Upload tattoo reference photos</label>
+              <label className="portfolio-upload-tile request-upload-zone"><input type="file" accept="image/*" multiple hidden onChange={handleImagesChange} /><span className="upload-zone-icon">＋</span><strong>Add reference images</strong><small>Click to browse JPG, PNG or WEBP files</small></label>
               {previews.length > 0 && <div className="portfolio-manage-grid">{previews.map((preview, index) => <div className="portfolio-manage-card" key={`${preview.file.name}-${index}`}><img src={preview.url} alt="Tattoo reference preview" /><button className="danger-button compact-button" type="button" onClick={() => removeImage(index)}>Remove</button></div>)}</div>}
             </section>
 

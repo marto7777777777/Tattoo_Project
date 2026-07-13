@@ -5,6 +5,13 @@ import { addPortfolioImage, updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 
+const TIME_OPTIONS = Array.from({ length: 29 }, (_, index) => {
+  const totalMinutes = 7 * 60 + index * 30;
+  const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+  const minutes = String(totalMinutes % 60).padStart(2, "0");
+  return `${hours}:${minutes}`;
+});
+
 const emptySchedule = {
   dayOfWeek: "",
   startTime: "",

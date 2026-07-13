@@ -1,135 +1,139 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import UserAvatar from "./UserAvatar";
+import ImageLightbox from "./ImageLightbox";
 import { getImageUrl } from "../utils/images";
-import { formatTime, getDayName, getEntityId, getScheduleTypeName } from "../utils/format";
+import { getEntityId } from "../utils/format";
 
-function ArtistCard({
-  artist,
-  index,
-  isFavorite = false,
-  showFavoriteButton = false,
-  onToggleFavorite,
-}) {
+function getPortfolioImageUrl(image) {
+  return getImageUrl(image?.imageUrl || image?.ImageUrl || image?.url || image);
+}
+
+function ArtistCard({ artist, index, isFavorite = false, showFavoriteButton = false, onToggleFavorite }) {
   const navigate = useNavigate();
   const { isLoggedIn, isClient } = useAuth();
+  const [previewImage, setPreviewImage] = useState(null);
   const artistId = getEntityId(artist, index);
   const canUseArtistActions = Boolean(artist?.id || artist?.tattooArtistId);
+  const portfolio = artist.portfolioImages || artist.PortfolioImages || [];
+  const previewImages = portfolio.slice(0, 3);
 
   function handleCreateRequest() {
-    if (!canUseArtistActions) {
-      return;
-    }
-
+    if (!canUseArtistActions) return;
     localStorage.setItem("selectedArtist", JSON.stringify({ ...artist, id: artistId }));
-
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    if (!isClient) {
-      navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(`/create-tattoo-request/${artistId}`)}`);
-      return;
-    }
-
+    if (!isLoggedIn) return navigate("/login");
+    if (!isClient) return navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(`/create-tattoo-request/${artistId}`)}`);
     navigate(`/create-tattoo-request/${artistId}`);
   }
 
+  function handleOpenPortfolio() {
+    localStorage.setItem("selectedPortfolioArtist", JSON.stringify({ ...artist, id: artistId }));
+    navigate(`/artists/${artistId}/portfolio`);
+  }
+
   return (
-    <article className="card artist-card">
-      <div className="card-head artist-card-head">
-        <div className="artist-title-row">
+    <>
+      <article className="artist-card-v2 artist-card-profile-first">
+        <div className="artist-card-profile-head">
+          <div className="artist-card-floating-actions">
+            {artist.isVerified && <span className="verified-badge">✓ Verified</span>}
+            {showFavoriteButton && (
+              <button
+                className={`heart-button ${isFavorite ? "heart-active" : ""}`}
+                type="button"
+                onClick={() => onToggleFavorite?.(artist, index)}
+                aria-label={isFavorite ? "Remove from saved artists" : "Save artist"}
+              >
+                {isFavorite ? "♥" : "♡"}
+              </button>
+            )}
+          </div>
+
           <UserAvatar
             firstName={artist.firstName}
             lastName={artist.lastName}
             email={artist.email}
             imageUrl={artist.profileImageUrl}
-            size="medium"
+            size="xlarge"
+            className="artist-card-main-avatar"
           />
-          <div>
-            <h2>{artist.studioName}</h2>
-          <p className="subtitle inline-subtitle">
-              {artist.firstName} {artist.lastName}
-            </p>
+
+          <div className="artist-card-centered-identity">
+            <h2>{artist.firstName} {artist.lastName}</h2>
+            <p>{artist.studioName || "Independent tattoo artist"}</p>
           </div>
         </div>
 
-        <div className="card-badges">
-          {artist.isVerified && <span className="status-pill status-completed">Verified</span>}
-          {showFavoriteButton && (
-            <button
-              className={`heart-button ${isFavorite ? "heart-active" : ""}`}
-              type="button"
-              disabled={!canUseArtistActions}
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-              onClick={() => onToggleFavorite?.(artist, index)}
-            >
-              {isFavorite ? "♥" : "♡"}
-            </button>
-          )}
-        </div>
-      </div>
+        <div className="artist-card-body">
+          <div className="artist-meta-row artist-meta-row-centered">
+            <span className="rating-chip">★ {artist.averageRating || "New"}</span>
+            <span>{artist.reviewCount || 0} reviews</span>
+            {(artist.studioCity || artist.studioCountry) && (
+              <span>{[artist.studioCity, artist.studioCountry].filter(Boolean).join(", ")}</span>
+            )}
+          </div>
 
-      <div className="rating-row">
-        <span>⭐ {artist.averageRating || 0}</span>
-        <span>{artist.reviewCount || 0} reviews</span>
-      </div>
+          <p className="artist-description artist-description-centered">
+            {artist.description || "Tattoo artist profile and portfolio."}
+          </p>
 
-      <p className="muted">{artist.description}</p>
+          <div className="artist-service-chips artist-service-chips-centered">
+            {artist.offersOnlineConsultation && <span>Online consultation</span>}
+            <span>{artist.consultationDurationMinutes || 30} min consultation</span>
+            <span>{artist.requiresDeposit ? `${artist.depositAmount} BGN deposit` : "No deposit"}</span>
+          </div>
 
-      <div className="info-list">
-        <p><span>Address:</span> {artist.studioAddress}</p>
-        {(artist.studioCity || artist.studioCountry) && (
-          <p><span>Location:</span> {[artist.studioCity, artist.studioCountry].filter(Boolean).join(", ")}</p>
-        )}
-        <p><span>Phone:</span> {artist.phoneNumber}</p>
-        <p><span>Online consultation:</span> {artist.offersOnlineConsultation ? "Yes" : "No"}</p>
-        <p><span>Deposit:</span> {artist.requiresDeposit ? `${artist.depositAmount} BGN` : "Not required"}</p>
-        <p><span>Consultation duration:</span> {artist.consultationDurationMinutes} minutes</p>
-      </div>
-
-      {artist.requirements?.length > 0 && (
-        <div className="section">
-          <h3>Requirements</h3>
-          <ul className="muted">
-            {artist.requirements.map((requirement, requirementIndex) => (
-              <li key={requirementIndex}>{requirement.description}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {artist.schedules?.length > 0 && (
-        <div className="section">
-          <h3>Schedule</h3>
-          <div className="small-list">
-            {artist.schedules.map((schedule, scheduleIndex) => (
-              <div className="small-list-row" key={scheduleIndex}>
-                <span>{getDayName(schedule.dayOfWeek)}</span>
-                <span>{formatTime(schedule.startTime)} - {formatTime(schedule.endTime)}</span>
-                <span className="status-pill">{getScheduleTypeName(schedule.scheduleType)}</span>
+          <section className="artist-mini-portfolio" aria-label="Portfolio preview">
+            <div className="artist-mini-portfolio-head">
+              <div>
+                <span className="subtitle">Portfolio</span>
+                <strong>{portfolio.length} {portfolio.length === 1 ? "image" : "images"}</strong>
               </div>
-            ))}
+              <button className="artist-mini-portfolio-link" type="button" onClick={handleOpenPortfolio}>
+                View all <span>→</span>
+              </button>
+            </div>
+
+            <div className="artist-mini-portfolio-grid">
+              {previewImages.length > 0 ? (
+                previewImages.map((image, imageIndex) => {
+                  const imageUrl = getPortfolioImageUrl(image);
+                  return (
+                    <button
+                      className="artist-mini-portfolio-tile"
+                      type="button"
+                      key={`${imageUrl}-${imageIndex}`}
+                      onClick={() => setPreviewImage(imageUrl)}
+                      aria-label={`Open portfolio image ${imageIndex + 1}`}
+                    >
+                      <img src={imageUrl} alt={`${artist.studioName || artist.firstName} portfolio ${imageIndex + 1}`} />
+                      <span className="artist-mini-portfolio-zoom">↗</span>
+                    </button>
+                  );
+                })
+              ) : (
+                <button className="artist-mini-portfolio-empty" type="button" onClick={handleOpenPortfolio}>
+                  <span>IR</span>
+                  <small>Portfolio coming soon</small>
+                </button>
+              )}
+            </div>
+          </section>
+
+          <div className="artist-card-actions">
+            <button className="secondary-button artist-portfolio-button" type="button" onClick={handleOpenPortfolio}>
+              View portfolio <span>{portfolio.length}</span>
+            </button>
+            <button className="primary-button" type="button" onClick={handleCreateRequest} disabled={!canUseArtistActions}>
+              Start tattoo request <span>→</span>
+            </button>
           </div>
         </div>
-      )}
+      </article>
 
-      {artist.portfolioImages?.length > 0 && (
-        <div className="section">
-          <h3>Portfolio</h3>
-          <div className="image-grid">
-            {artist.portfolioImages.slice(0, 4).map((image, imageIndex) => (
-              <img key={imageIndex} src={getImageUrl(image.imageUrl)} alt="Portfolio" />
-            ))}
-          </div>
-        </div>
-      )}
-
-      <button className="primary-button full-button" onClick={handleCreateRequest} disabled={!canUseArtistActions}>
-        Create Tattoo Request
-      </button>
-    </article>
+      <ImageLightbox imageUrl={previewImage} alt={`${artist.studioName || artist.firstName} portfolio`} onClose={() => setPreviewImage(null)} />
+    </>
   );
 }
 

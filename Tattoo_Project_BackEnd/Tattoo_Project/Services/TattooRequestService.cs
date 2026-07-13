@@ -390,11 +390,12 @@ namespace Tattoo_Project.Services
                 {
                     var cursor = day.Add(schedule.StartTime.ToTimeSpan());
                     var scheduleEnd = day.Add(schedule.EndTime.ToTimeSpan());
-                    var step = TimeSpan.FromMinutes(durationMinutes);
+                    var bookingDuration = TimeSpan.FromMinutes(durationMinutes);
+                    var slotIncrement = TimeSpan.FromMinutes(30);
 
-                    while (cursor.Add(step) <= scheduleEnd)
+                    while (cursor.Add(bookingDuration) <= scheduleEnd)
                     {
-                        var end = cursor.Add(step);
+                        var end = cursor.Add(bookingDuration);
 
                         if (cursor > DateTime.Now && !await HasBookingConflictAsync(tattooRequest.TattooArtistId, cursor, end))
                         {
@@ -406,7 +407,7 @@ namespace Tattoo_Project.Services
                             });
                         }
 
-                        cursor = cursor.Add(step);
+                        cursor = cursor.Add(slotIncrement);
                     }
                 }
 
@@ -570,6 +571,7 @@ namespace Tattoo_Project.Services
                 CreatedOn = tattooRequest.CreatedOn,
                 ClientId = tattooRequest.ClientId,
                 TattooArtistId = tattooRequest.TattooArtistId,
+                RemainingSessionsToBook = tattooRequest.RemainingSessionsToBook,
                 ClientName = tattooRequest.Client == null
                     ? null
                     : $"{tattooRequest.Client.FirstName} {tattooRequest.Client.LastName}",

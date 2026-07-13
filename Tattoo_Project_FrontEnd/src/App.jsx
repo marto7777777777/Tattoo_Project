@@ -23,6 +23,7 @@ import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
 import ArtistRequestsPage from "./pages/ArtistRequestsPage";
 import ArtistSchedulePage from "./pages/ArtistSchedulePage";
 import ProfileSectionPage from "./pages/ProfileSectionPage";
+import ArtistPortfolioPage from "./pages/ArtistPortfolioPage";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
 
         <Route path="/explore" element={<ArtistsPage />} />
         <Route path="/artists" element={<Navigate to="/explore" replace />} />
+        <Route path="/artists/:artistId/portfolio" element={<ArtistPortfolioPage />} />
 
         <Route path="/create-tattoo-request/:artistId?" element={<ProtectedRoute roles={["Client"]}><CreateTattooRequestPage /></ProtectedRoute>} />
         <Route path="/bookings" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />

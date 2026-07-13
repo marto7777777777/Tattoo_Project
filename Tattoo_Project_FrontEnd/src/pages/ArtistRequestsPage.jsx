@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createArtistResponse, rejectTattooRequest } from "../api/artistResponseApi";
 import { completeConsultation, rejectConsultation } from "../api/consultationApi";
 import { getMyArtistTattooRequests } from "../api/tattooRequestApi";
@@ -75,6 +75,12 @@ function getUpcomingConsultation(request) {
   return request.consultation;
 }
 
+function canCompleteTattoo(request) {
+  const sessions = request.tattooSessions || [];
+  if (!sessions.length || (request.remainingSessionsToBook ?? 0) > 0) return false;
+  return sessions.every((session) => new Date(session.endTime) <= new Date());
+}
+
 function getUpcomingTattooSession(request) {
   if (!request.tattooSessions?.length) return null;
 
@@ -105,6 +111,7 @@ function getFilterCount(requests, filter) {
 
 function ArtistRequestsPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -112,6 +119,7 @@ function ArtistRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [responseForm, setResponseForm] = useState({
     estimatedPrice: "",
@@ -183,6 +191,11 @@ function ArtistRequestsPage() {
     setExtraSessions([createEmptySession()]);
   }
 
+  function openRequestAction(request, action) {
+    openRequest(request);
+    setActiveAction(action);
+  }
+
   function closeRequest() {
     setSelectedRequest(null);
     setActiveAction("");
@@ -205,6 +218,22 @@ function ArtistRequestsPage() {
       priceForSession: sessionList.map((session) => Number(session.price)),
       durationHoursForSession: sessionList.map((session) => Number(session.durationHours)),
     };
+  }
+
+  async function completeTattooFromCard(request) {
+    setError("");
+    try {
+      const response = await completeTattoo(request.id);
+      const data = await readResponse(response);
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+      setSuccess("Tattoo project completed successfully.");
+      await loadRequests();
+    } catch {
+      setError("Server connection failed. Please try again.");
+    }
   }
 
   async function runAction(action) {
@@ -299,15 +328,19 @@ function ArtistRequestsPage() {
       );
     }
 
-    if (request.status === STATUS.CONSULTATION_COMPLETED || request.status === STATUS.TATTOO_BOOKED || request.status === STATUS.IN_PROGRESS) {
+    if ([STATUS.CONSULTATION_COMPLETED, STATUS.TATTOO_BOOKED, STATUS.IN_PROGRESS].includes(request.status)) {
+      const readyToComplete = canCompleteTattoo(request);
       return (
-        <div className="action-row">
+        <div className="action-row request-action-cluster">
           <button className="secondary-button" type="button" onClick={() => setActiveAction("add-sessions")}>
             Add more sessions
           </button>
-          <button className="primary-button" type="button" onClick={() => runAction("complete-tattoo")}>
-            Complete tattoo
-          </button>
+          {readyToComplete && (
+            <button className="primary-button" type="button" onClick={() => runAction("complete-tattoo")}>
+              Complete tattoo
+            </button>
+          )}
+          {!readyToComplete && <span className="action-hint">Complete tattoo becomes available after all booked sessions have ended.</span>}
         </div>
       );
     }
@@ -373,7 +406,8 @@ function ArtistRequestsPage() {
 
         <div className="grid-2">
           {filteredRequests.map((request) => (
-            <article className="card artist-card" key={request.id}>
+            <article className="card artist-request-card" key={request.id}>
+              <div className="artist-request-content">
               <div className="card-head">
                 <div>
                   <p className="subtitle inline-subtitle">{getWorkflowStep(request)}</p>
@@ -392,13 +426,37 @@ function ArtistRequestsPage() {
               </div>
               {renderRequestTiming(request)}
 
-              <button className="primary-button" type="button" onClick={() => openRequest(request)}>
-                Open request
+              <div className="artist-request-card-actions">
+                {request.consultation && request.status === STATUS.WAITING_FOR_CONSULTATION && (
+                  <button className="primary-button" type="button" onClick={() => navigate(`/complete-consultation/${request.id}`)}>Complete consultation</button>
+                )}
+                {[STATUS.CONSULTATION_COMPLETED, STATUS.TATTOO_BOOKED, STATUS.IN_PROGRESS].includes(request.status) && (
+                  <button className="secondary-button" type="button" onClick={() => navigate(`/add-more-sessions/${request.id}`)}>Add sessions</button>
+                )}
+                {canCompleteTattoo(request) && (
+                  <button className="primary-button" type="button" onClick={() => navigate(`/complete-tattoo/${request.id}`)}>Complete tattoo</button>
+                )}
+                <button className="secondary-button" type="button" onClick={() => openRequest(request)}>Open request</button>
+              </div>
+              </div>
+              <button className="artist-request-preview" type="button" onClick={() => request.images?.[0]?.imageUrl && setPreviewImage(getImageUrl(request.images[0].imageUrl))} aria-label="Open reference image">
+                {request.images?.[0]?.imageUrl ? (
+                  <img src={getImageUrl(request.images[0].imageUrl)} alt={`${getRequestTitle(request)} reference`} />
+                ) : (
+                  <span className="artist-request-placeholder"><span>IR</span><small>No reference image</small></span>
+                )}
               </button>
             </article>
           ))}
         </div>
       </section>
+
+      {previewImage && (
+        <div className="modal-backdrop image-lightbox" onClick={() => setPreviewImage(null)}>
+          <button className="lightbox-close" type="button" onClick={() => setPreviewImage(null)}>×</button>
+          <img src={previewImage} alt="Tattoo reference enlarged" onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
 
       {selectedRequest && (
         <div className="modal-backdrop" onClick={closeRequest}>
@@ -420,36 +478,64 @@ function ArtistRequestsPage() {
               <RequestWorkflowTimeline request={selectedRequest} />
             </div>
 
-            <div className="section">
-              <h3>Request details</h3>
-              <p className="muted">{selectedRequest.description}</p>
-              <div className="info-list">
-                <p><span>Placement:</span> {selectedRequest.placement}</p>
-                <p><span>Style:</span> {selectedRequest.tattooStyle || "Not provided"}</p>
-                <p><span>Created:</span> {formatDate(selectedRequest.createdOn)}</p>
-              </div>
-              {renderRequestTiming(selectedRequest)}
-            </div>
+            <div className="request-detail-overview-grid">
+              <section className="request-detail-section request-detail-summary-card">
+                <div className="request-detail-section-head">
+                  <div>
+                    <p className="request-detail-kicker">Project brief</p>
+                    <h3>Request details</h3>
+                  </div>
+                </div>
+                <p className="request-detail-description">{selectedRequest.description}</p>
+                <div className="request-detail-stat-grid">
+                  <div><span>Placement</span><strong>{selectedRequest.placement}</strong></div>
+                  <div><span>Style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
+                  <div><span>Created</span><strong>{formatDate(selectedRequest.createdOn)}</strong></div>
+                </div>
+                <div className="request-detail-timing">{renderRequestTiming(selectedRequest)}</div>
+              </section>
 
-            <div className="section highlighted">
-              <h3>Client contact</h3>
-              <div className="info-list">
-                <p><span>Name:</span> {selectedRequest.clientName || "Not provided"}</p>
-                <p><span>Email:</span> {selectedRequest.clientEmail || "Not provided"}</p>
-                <p><span>Phone:</span> {selectedRequest.clientPhoneNumber || "Not provided"}</p>
-                <p><span>Location:</span> {[selectedRequest.clientCity, selectedRequest.clientCountry].filter(Boolean).join(", ") || "Not provided"}</p>
-              </div>
+              <section className="request-detail-section request-detail-client-card">
+                <div className="request-detail-section-head">
+                  <div>
+                    <p className="request-detail-kicker">Client</p>
+                    <h3>Contact information</h3>
+                  </div>
+                </div>
+                <div className="request-contact-grid">
+                  <div><span>Name</span><strong>{selectedRequest.clientName || "Not provided"}</strong></div>
+                  <div><span>Email</span><strong>{selectedRequest.clientEmail || "Not provided"}</strong></div>
+                  <div><span>Phone</span><strong>{selectedRequest.clientPhoneNumber || "Not provided"}</strong></div>
+                  <div><span>Location</span><strong>{[selectedRequest.clientCity, selectedRequest.clientCountry].filter(Boolean).join(", ") || "Not provided"}</strong></div>
+                </div>
+              </section>
             </div>
 
             {selectedRequest.images?.length > 0 && (
-              <div className="section">
-                <h3>Reference images</h3>
-                <div className="image-grid">
+              <section className="request-detail-section request-reference-section">
+                <div className="request-detail-section-head">
+                  <div>
+                    <p className="request-detail-kicker">Visual direction</p>
+                    <h3>Reference images</h3>
+                  </div>
+                  <span className="request-image-count">{selectedRequest.images.length} image{selectedRequest.images.length === 1 ? "" : "s"}</span>
+                </div>
+                <p className="request-detail-helper">Click an image to inspect it in full size.</p>
+                <div className="request-reference-gallery">
                   {selectedRequest.images.map((image, index) => (
-                    <img key={index} src={getImageUrl(image.imageUrl)} alt="Tattoo reference" />
+                    <button
+                      className="request-reference-button"
+                      type="button"
+                      key={index}
+                      onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}
+                      aria-label={`Open reference image ${index + 1}`}
+                    >
+                      <img src={getImageUrl(image.imageUrl)} alt={`Tattoo reference ${index + 1}`} />
+                      <span className="request-reference-zoom">View full size</span>
+                    </button>
                   ))}
                 </div>
-              </div>
+              </section>
             )}
 
             {selectedRequest.artistResponse && (
@@ -490,10 +576,15 @@ function ArtistRequestsPage() {
               </div>
             )}
 
-            <div className="section">
-              <h3>Available actions</h3>
-              {!activeAction && renderActionButtons(selectedRequest)}
-            </div>
+            <section className="request-detail-section request-actions-section">
+              <div className="request-detail-section-head">
+                <div>
+                  <p className="request-detail-kicker">Workflow</p>
+                  <h3>Available actions</h3>
+                </div>
+              </div>
+              <div className="request-detail-action-row">{!activeAction && renderActionButtons(selectedRequest)}</div>
+            </section>
 
             {activeAction === "response" && (
               <div className="section action-panel">

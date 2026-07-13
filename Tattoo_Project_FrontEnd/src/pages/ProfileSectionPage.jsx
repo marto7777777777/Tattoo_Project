@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, NavLink, useParams } from "react-router-dom";
+import { Link, Navigate, NavLink, useParams } from "react-router-dom";
 import {
   addPortfolioImage,
   addRequirement,
@@ -19,12 +19,30 @@ import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../utils/images";
 
 const sectionTitles = {
-  user: "User",
-  contact: "Contact",
-  studio: "Studio Information",
-  consultation: "Consultation Settings",
-  deposit: "Deposit Settings",
-  portfolio: "Portfolio",
+  user: "Account & identity",
+  contact: "Contact information",
+  studio: "Studio profile",
+  consultation: "Consultation settings",
+  deposit: "Deposit settings",
+  portfolio: "Portfolio manager",
+};
+
+const sectionDescriptions = {
+  user: "Manage your name, email, profile photo and account password.",
+  contact: "Keep the phone number and location clients use to reach you up to date.",
+  studio: "Edit how your studio appears to clients, including requirements and address.",
+  consultation: "Control consultation duration and whether online consultations are available.",
+  deposit: "Choose whether projects require a deposit and set the amount.",
+  portfolio: "Upload and manage the work clients see on your artist profile.",
+};
+
+const sectionIcons = {
+  user: "◉",
+  contact: "✦",
+  studio: "⌂",
+  consultation: "◷",
+  deposit: "◇",
+  portfolio: "▦",
 };
 
 function ProfileSectionPage() {
@@ -208,61 +226,85 @@ function ProfileSectionPage() {
   }
 
   if (loading) {
-    return <main className="page-container"><p className="muted">Loading profile...</p></main>;
+    return <main className="page-shell"><div className="page-container"><p className="muted">Loading profile...</p></div></main>;
   }
 
   if (!profile) {
-    return <main className="page-container"><p className="error">{error || "Profile could not be loaded."}</p></main>;
+    return <main className="page-shell"><div className="page-container"><p className="error">{error || "Profile could not be loaded."}</p></div></main>;
   }
 
   const fields = getFieldsForSection(section, profile);
 
   return (
-    <main className="page-container profile-page">
-      <section className="profile-header-card card">
-        <label className="profile-main-avatar-upload">
-          <input
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={handleProfileImageChange}
-          />
-
-          <div className="profile-main-avatar-wrapper">
-            <UserAvatar
-              firstName={profile.firstName}
-              lastName={profile.lastName}
-              email={profile.email}
-              imageUrl={profile.profileImageUrl}
-              size="xlarge"
+    <main className="page-shell profile-page-shell">
+      <div className="page-container profile-page">
+      <section className="profile-settings-hero card">
+        <div className="profile-identity-block">
+          <label className="profile-main-avatar-upload" title="Change profile picture">
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleProfileImageChange}
             />
 
-            <div className="profile-avatar-edit-overlay">
-              Edit
+            <div className="profile-main-avatar-wrapper">
+              <UserAvatar
+                firstName={profile.firstName}
+                lastName={profile.lastName}
+                email={profile.email}
+                imageUrl={profile.profileImageUrl}
+                size="xlarge"
+              />
+              <div className="profile-avatar-edit-overlay">Change photo</div>
+            </div>
+          </label>
+
+          <div className="profile-identity-copy">
+            <p className="subtitle">Profile settings</p>
+            <h1>{profile.firstName} {profile.lastName}</h1>
+            <p>{profile.email}</p>
+            <div className="profile-role-pills">
+              <span>Client profile</span>
+              {isArtist && <span>Artist profile</span>}
             </div>
           </div>
-        </label>
+        </div>
 
-        <div>
-          <p className="subtitle">Profile</p>
-          <h1>{profile.firstName} {profile.lastName}</h1>
+        <div className="profile-settings-summary">
+          <div><strong>{allowedSections.length}</strong><span>Settings sections</span></div>
+          <div><strong>{profile.artist?.portfolioImages?.length || 0}</strong><span>Portfolio images</span></div>
+          <div><strong>{profile.artist?.requirements?.length || 0}</strong><span>Studio requirements</span></div>
         </div>
       </section>
 
-      <div className="profile-layout">
-        <aside className="card profile-side-nav">
-          <NavLink to="/profile/user">User</NavLink>
-          <NavLink to="/profile/contact">Contact</NavLink>
-          {isArtist && <NavLink to="/profile/studio">Studio Information</NavLink>}
-          {isArtist && <NavLink to="/profile/consultation">Consultation Settings</NavLink>}
-          {isArtist && <NavLink to="/profile/deposit">Deposit Settings</NavLink>}
-          {isArtist && <NavLink to="/profile/portfolio">Portfolio</NavLink>}
+      <div className="profile-layout profile-settings-layout">
+        <aside className="card profile-side-nav profile-settings-nav">
+          <div className="settings-nav-heading">
+            <span>Settings</span>
+            <small>Edit each area separately</small>
+          </div>
+          {allowedSections.map((item) => (
+            <NavLink key={item} to={`/profile/${item}`}>
+              <span className="settings-nav-icon">{sectionIcons[item]}</span>
+              <span><strong>{sectionTitles[item]}</strong><small>{sectionDescriptions[item]}</small></span>
+            </NavLink>
+          ))}
+          {isArtist && (
+            <Link className="profile-schedule-link" to="/my-studio/calendar">
+              <span className="settings-nav-icon">▤</span>
+              <span><strong>Working schedule</strong><small>Edit working days, hours and time off.</small></span>
+            </Link>
+          )}
         </aside>
 
-        <section className="card profile-section-card">
-          <div className="card-head">
+        <section className="card profile-section-card profile-settings-content">
+          <div className="profile-section-heading">
+            <span className="profile-section-icon">{sectionIcons[section]}</span>
             <div>
+              <p className="subtitle">Settings section</p>
               <h2>{sectionTitles[section]}</h2>
+              <p>{sectionDescriptions[section]}</p>
             </div>
           </div>
 
@@ -369,18 +411,18 @@ function ProfileSectionPage() {
 
           {section === "portfolio" && (
             <div className="section">
-              <label className="portfolio-upload-tile">
-                <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} />
-                <span>＋</span>
-                <strong>Add portfolio photos</strong>
-                <small>JPG, PNG or WEBP up to 5MB each</small>
-              </label>
-
               <div className="portfolio-manage-grid">
+                <label className="portfolio-upload-card" title="Add portfolio images">
+                  <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} />
+                  <span className="portfolio-upload-card-icon" aria-hidden="true">＋</span>
+                  <strong>Add image</strong>
+                  <small>JPG, PNG or WEBP</small>
+                </label>
+
                 {(profile.artist?.portfolioImages || []).map((image) => (
                   <div className="portfolio-manage-card" key={image.id}>
                     <img src={getImageUrl(image.imageUrl)} alt="Portfolio" />
-                    <button className="danger-button compact-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>
+                    <button className="portfolio-delete-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>
                       Delete
                     </button>
                   </div>
@@ -392,6 +434,7 @@ function ProfileSectionPage() {
           {error && <p className="error">{error}</p>}
           {success && <p className="success">{success}</p>}
         </section>
+      </div>
       </div>
     </main>
   );

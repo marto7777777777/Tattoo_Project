@@ -22,11 +22,21 @@ function isSessionWorkflow(request) {
   return [STATUS.CONSULTATION_COMPLETED, STATUS.TATTOO_BOOKED, STATUS.IN_PROGRESS].includes(request.status);
 }
 
+function getRemainingSessions(request) {
+  const value = request?.remainingSessionsToBook ?? request?.RemainingSessionsToBook;
+  if (value === null || value === undefined || value === "") return null;
+
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function MyTattooRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [error, setError] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
+  const [viewMode, setViewMode] = useState("active");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => { loadRequests(); }, []);
@@ -39,7 +49,12 @@ function MyTattooRequestsPage() {
         setError(typeof data === "string" ? data : JSON.stringify(data));
         return;
       }
-      setRequests(data || []);
+      setRequests([...(data || [])].sort((a, b) => {
+        const statusA = typeof a.status === "number" ? a.status : 0;
+        const statusB = typeof b.status === "number" ? b.status : 0;
+        if (statusA !== statusB) return statusB - statusA;
+        return new Date(b.createdOn || 0) - new Date(a.createdOn || 0);
+      }));
     } catch {
       setError("Server connection failed. Please try again.");
     } finally {
@@ -55,14 +70,14 @@ function MyTattooRequestsPage() {
   function renderNextAction(request) {
     const id = getEntityId(request);
     const isCompleted = request.status === STATUS.COMPLETED || request.status === "Completed";
-    const remaining = request.remainingSessionsToBook;
+    const remaining = getRemainingSessions(request);
 
     if (canBookConsultation(request)) {
       return <Link className="primary-button" to={`/book-consultation/${id}`}>Book consultation</Link>;
     }
 
     if (isSessionWorkflow(request)) {
-      if (remaining == null || remaining > 0) {
+      if (remaining != null && remaining > 0) {
         return <Link className="primary-button" to={`/book-session/${id}`}>Book tattoo session</Link>;
       }
 
@@ -73,7 +88,7 @@ function MyTattooRequestsPage() {
           disabled
           title="All planned tattoo sessions have already been booked."
         >
-          No sessions available
+          No more sessions
         </button>
       );
     }
@@ -98,8 +113,13 @@ function MyTattooRequestsPage() {
         {error && <p className="error">{error}</p>}
         {!isLoading && !error && requests.length === 0 && <p className="message">You do not have any bookings yet.</p>}
 
+        <div className="filter-tabs client-project-tabs">
+          <button type="button" className={`filter-tab ${viewMode === "active" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("active")}>Active projects <span>{requests.filter((r) => r.status !== STATUS.COMPLETED && r.status !== "Completed").length}</span></button>
+          <button type="button" className={`filter-tab ${viewMode === "completed" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("completed")}>Completed tattoos <span>{requests.filter((r) => r.status === STATUS.COMPLETED || r.status === "Completed").length}</span></button>
+        </div>
+
         <div className="request-card-list">
-          {requests.map((request, index) => (
+          {requests.filter((request) => viewMode === "completed" ? (request.status === STATUS.COMPLETED || request.status === "Completed") : (request.status !== STATUS.COMPLETED && request.status !== "Completed")).map((request, index) => (
             <article className="card structured-request-card" key={getEntityId(request, index)}>
               <div className="request-card-main">
                 <div className="card-head">
@@ -123,6 +143,13 @@ function MyTattooRequestsPage() {
           ))}
         </div>
       </section>
+
+      {previewImage && (
+        <div className="modal-backdrop image-lightbox" onClick={() => setPreviewImage(null)}>
+          <button className="lightbox-close" type="button" onClick={() => setPreviewImage(null)}>×</button>
+          <img src={previewImage} alt="Tattoo reference enlarged" onClick={(event) => event.stopPropagation()} />
+        </div>
+      )}
 
       {selectedRequest && (
         <div className="modal-backdrop" onClick={() => setSelectedRequest(null)}>
@@ -204,9 +231,9 @@ function MyTattooRequestsPage() {
                 {selectedRequest.images?.length > 0 ? (
                   <div className="image-grid request-image-grid">
                     {selectedRequest.images.map((image, index) => (
-                      <a href={getImageUrl(image.imageUrl)} target="_blank" rel="noreferrer" key={index}>
+                      <button className="request-detail-image-button" type="button" key={index} onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}>
                         <img src={getImageUrl(image.imageUrl)} alt={`Reference ${index + 1}`} />
-                      </a>
+                      </button>
                     ))}
                   </div>
                 ) : <p className="message">No reference images were uploaded.</p>}
