@@ -121,10 +121,7 @@ function ArtistCard({ artist, index, isFavorite = false, showFavoriteButton = fa
             </div>
           </section>
 
-          <div className="artist-card-actions">
-            <button className="secondary-button artist-portfolio-button" type="button" onClick={handleOpenPortfolio}>
-              View portfolio <span>{portfolio.length}</span>
-            </button>
+          <div className="artist-card-actions artist-card-actions-single">
             <button className="primary-button" type="button" onClick={handleCreateRequest} disabled={!canUseArtistActions}>
               Start tattoo request <span>→</span>
             </button>

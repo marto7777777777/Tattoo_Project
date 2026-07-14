@@ -271,10 +271,14 @@ function ProfileSectionPage() {
           </div>
         </div>
 
-        <div className="profile-settings-summary">
+        <div className={`profile-settings-summary ${!isArtist ? "profile-settings-summary-client" : ""}`}>
           <div><strong>{allowedSections.length}</strong><span>Settings sections</span></div>
-          <div><strong>{profile.artist?.portfolioImages?.length || 0}</strong><span>Portfolio images</span></div>
-          <div><strong>{profile.artist?.requirements?.length || 0}</strong><span>Studio requirements</span></div>
+          {isArtist && (
+            <>
+              <div><strong>{profile.artist?.portfolioImages?.length || 0}</strong><span>Portfolio images</span></div>
+              <div><strong>{profile.artist?.requirements?.length || 0}</strong><span>Studio requirements</span></div>
+            </>
+          )}
         </div>
       </section>
 

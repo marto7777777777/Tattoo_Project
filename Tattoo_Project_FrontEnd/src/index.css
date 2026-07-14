@@ -734,3 +734,14 @@
   .artist-card-profile-first .artist-card-main-avatar{width:118px;height:118px;flex-basis:118px}
   .artist-mini-portfolio-tile{width:78px;height:78px;flex-basis:78px}
 }
+
+
+/* Final profile/explore cleanup */
+.artist-card-actions-single {
+  grid-template-columns: 1fr !important;
+}
+
+.profile-settings-summary-client {
+  grid-template-columns: minmax(180px, 1fr) !important;
+  max-width: 280px;
+}
