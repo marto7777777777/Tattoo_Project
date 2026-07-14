@@ -40,6 +40,8 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+            builder.Services.AddScoped<IAiTattooService, AiTattooService>();
+            builder.Services.AddHttpClient();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(
@@ -99,9 +101,9 @@ namespace Tattoo_Project
 
             app.UseHttpsRedirection();
 
-            app.UseStaticFiles();
-
             app.UseCors("ReactApp");
+
+            app.UseStaticFiles();
 
             app.UseAuthentication();
 

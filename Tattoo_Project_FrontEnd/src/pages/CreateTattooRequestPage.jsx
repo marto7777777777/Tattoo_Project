@@ -1,7 +1,8 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTattooRequestWithImages } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
+import { getImageUrl } from "../utils/images";
 
 import outerForearmImage from "../assets/body-placements/outer-forearm.jpeg";
 import forearmImage from "../assets/body-placements/forearm.jpeg";
@@ -130,10 +131,25 @@ function CreateTattooRequestPage() {
   const styleTrackRef = useRef(null);
   const storedArtist = JSON.parse(localStorage.getItem("selectedArtist") || "null");
   const artistId = params.artistId || storedArtist?.id || storedArtist?.tattooArtistId || "";
-  const [form, setForm] = useState({ description: "", placement: "", tattooStyle: "" });
+  const aiReference = JSON.parse(localStorage.getItem("aiTattooReference") || "null");
+  const [form, setForm] = useState({ description: aiReference?.description || "", placement: aiReference?.placement || "", tattooStyle: aiReference?.tattooStyle || "" });
   const [imageFiles, setImageFiles] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    if (!aiReference?.imageUrl) return;
+    let cancelled = false;
+    fetch(getImageUrl(aiReference.imageUrl))
+      .then((response) => response.blob())
+      .then((blob) => {
+        if (cancelled) return;
+        const extension = blob.type.includes("png") ? "png" : "jpg";
+        setImageFiles((current) => current.length ? current : [new File([blob], `ai-tattoo-reference.${extension}`, { type: blob.type || "image/png" })]);
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
 
   const previews = useMemo(
     () => imageFiles.map((file) => ({ file, url: URL.createObjectURL(file) })),
@@ -181,6 +197,7 @@ function CreateTattooRequestPage() {
         return;
       }
 
+      localStorage.removeItem("aiTattooReference");
       setSuccess("Tattoo request created successfully.");
       setTimeout(() => navigate("/bookings"), 800);
     } catch {

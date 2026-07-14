@@ -8,6 +8,7 @@ import "../styles/navbar.css";
 const Icon = ({ name }) => {
   const paths = {
     home: <><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-7h6v7"/></>,
+    ai: <><path d="M12 3 9.8 8.2 4 10l5.8 1.8L12 17l2.2-5.2L20 10l-5.8-1.8L12 3Z"/><path d="m5 17-.9 2.1L2 20l2.1.9L5 23l.9-2.1L8 20l-2.1-.9L5 17Z"/></>,
     explore: <><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.2 4.8-4.8 2.2 2.2-4.8 4.8-2.2Z"/></>,
     bookings: <><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></>,
     heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>,
@@ -68,6 +69,7 @@ function Navbar() {
           <p className="nav-section-label">Workspace</p>
           {navItem("/", "home", "Overview")}
           {navItem("/explore", "explore", "Discover artists")}
+          {isLoggedIn && navItem("/ai-studio", "ai", "AI Tattoo Studio")}
           {isClient && navItem("/bookings", "bookings", "My bookings")}
           {isClient && navItem("/favorites", "heart", "Saved artists")}
           {isArtist && navItem("/my-studio", "studio", "My studio")}
@@ -115,6 +117,7 @@ function Navbar() {
       <nav className="mobile-bottom-nav">
         {navItem("/", "home", "Home")}
         {navItem("/explore", "explore", "Explore")}
+        {isLoggedIn && navItem("/ai-studio", "ai", "AI")}
         {isClient && navItem("/bookings", "bookings", "Bookings")}
         {isArtist ? navItem("/my-studio", "studio", "Studio") : isClient && navItem("/favorites", "heart", "Saved")}
       </nav>
