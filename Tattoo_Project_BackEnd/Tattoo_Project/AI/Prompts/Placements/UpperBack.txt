@@ -1,0 +1,186 @@
+UPPER BACK TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are designing a tattoo specifically intended for the UPPER BACK.
+
+Do NOT generate a back.
+
+Create one isolated tattoo artwork optimized for the upper back.
+
+The tattoo should immediately communicate that it belongs between the shoulders.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The upper back naturally favors broad and balanced compositions.
+
+Width is more important than height.
+
+Symmetry is encouraged but not mandatory.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The upper back is wide and almost flat.
+
+The shoulder blades create a natural horizontal expansion.
+
+The composition should feel stable.
+
+Avoid tall narrow layouts.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes
+
+• Wide shield
+
+• Broad wings
+
+• Horizontal crest
+
+• Ornamental frame
+
+Avoid
+
+• Tall columns
+
+• Long spears
+
+• Narrow forearm layouts
+
+• Square posters
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+1.6 : 1
+
+Acceptable
+
+1.4 : 1
+
+to
+
+1.9 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+The eye should move from the center toward both shoulders.
+
+Maintain strong horizontal balance.
+
+Avoid empty corners.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Eagle
+
+✓ Phoenix
+
+✓ Oni Mask
+
+✓ Dragon Head
+
+✓ Mandala
+
+✓ Angel Wings
+
+✓ Sacred Geometry
+
+✓ Wolf Portrait
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Long swords
+
+✗ Vertical snakes
+
+✗ Narrow floral stems
+
+✗ Wrist-style tattoos
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Powerful
+
+Balanced
+
+Confident
+
+Dominant
+
+Heroic
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail belongs near the center.
+
+Outer sections should simplify naturally.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• square layouts
+
+• body mockups
+
+• cropped wings
+
+• skin
+
+• poster compositions
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire tattoo visible.
+
+Neutral background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Wide composition
+
+✓ Balanced shoulders
+
+✓ Strong center
+
+✓ No body parts
+
+✓ Professional tattoo composition
+
+END OF GUIDE

@@ -1,0 +1,156 @@
+FACE TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Design an isolated tattoo specifically intended for FACE placement.
+
+Never generate a human face.
+
+Generate only the tattoo artwork.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+Face tattoos must remain minimal.
+
+Readability is more important than complexity.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The available area is extremely limited.
+
+The tattoo should remain compact.
+
+Fine details should be minimized.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred
+
+• Small ornament
+
+• Symbol
+
+• Tiny botanical
+
+• Fine line
+
+Avoid
+
+• Large portraits
+
+• Dragons
+
+• Sleeves
+
+• Large geometric compositions
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Flexible depending on placement.
+
+Overall composition must remain compact.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Small symbols
+
+✓ Tiny stars
+
+✓ Crescent moon
+
+✓ Fine lettering
+
+✓ Small cross
+
+✓ Lightning
+
+✓ Spider
+
+✓ Rose
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Giant skulls
+
+✗ Full dragons
+
+✗ Battle scenes
+
+✗ Large mandalas
+
+✗ Full realism portraits
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Minimal
+
+Clean
+
+Elegant
+
+Bold
+
+Modern
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• create oversized artwork
+
+• generate faces
+
+• create body mockups
+
+• overcrowd the composition
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo.
+
+Neutral background.
+
+Entire artwork visible.
+
+No face.
+
+No skin.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Compact
+
+✓ Readable
+
+✓ Minimal
+
+✓ Entire tattoo visible
+
+✓ No body
+
+✓ Professional tattoo design

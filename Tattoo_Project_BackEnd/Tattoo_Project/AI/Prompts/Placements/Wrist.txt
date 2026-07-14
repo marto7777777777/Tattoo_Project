@@ -1,0 +1,288 @@
+WRIST TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are currently designing a tattoo specifically intended for the human wrist.
+
+Do NOT generate a wrist.
+
+Do NOT generate a hand.
+
+Do NOT generate skin.
+
+Your task is to create an isolated tattoo artwork whose proportions, simplicity and readability naturally fit the limited space of the wrist.
+
+The final design should immediately feel like it belongs on a wrist without requiring a body mockup.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The wrist is one of the smallest tattoo placements.
+
+Readability is more important than detail.
+
+Simplicity is more important than complexity.
+
+Clean composition is more important than decoration.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The wrist is narrow.
+
+The available tattoo area is short.
+
+The cylindrical shape becomes tighter than the forearm.
+
+There is little room for excessive detail.
+
+The tattoo should remain recognizable even when viewed from several meters away.
+
+Never design the tattoo as if it were intended for the forearm.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes:
+
+• Slim ribbon
+
+• Vertical ornament
+
+• Small oval
+
+• Minimal spear
+
+• Compact botanical composition
+
+Avoid:
+
+• Large rectangles
+
+• Squares
+
+• Wide horizontal layouts
+
+• Dense circular badges
+
+• Large symmetrical back-piece style compositions
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred ratio
+
+2.8 : 1
+
+Acceptable range
+
+2.5 : 1
+
+to
+
+3.2 : 1
+
+The composition should remain clearly vertical and compact.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should remain simple.
+
+The eye should travel naturally from top to bottom.
+
+Avoid unnecessary complexity.
+
+Avoid several competing focal points.
+
+Create one clean visual movement.
+
+==================================================
+PRIMARY FOCAL POINT
+==================================================
+
+Use one dominant subject only.
+
+The focal point should remain centered.
+
+Avoid oversized decorative frames.
+
+Avoid multiple unrelated subjects.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Supporting elements should remain minimal.
+
+Suitable examples:
+
+• Small leaves
+
+• Fine ornamental lines
+
+• Tiny flowers
+
+• Smoke accents
+
+• Thin geometric elements
+
+Never allow secondary elements to become visually dominant.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Negative space is essential.
+
+Allow empty areas to improve readability.
+
+Avoid filling every gap.
+
+The silhouette should remain clean.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Low to medium detail.
+
+Avoid tiny textures.
+
+Avoid excessive realism.
+
+Avoid heavy black masses.
+
+Every detail must remain tattooable.
+
+==================================================
+SUBJECT SCALING
+==================================================
+
+Small flowers should remain proportional.
+
+Minimal snakes should wrap vertically.
+
+Symbols should remain centered.
+
+Lettering should stay readable.
+
+Animals should be simplified if necessary.
+
+Never overcrowd the available space.
+
+==================================================
+EDGE TREATMENT
+==================================================
+
+Top and bottom should taper naturally.
+
+Avoid abrupt endings.
+
+Maintain elegant transitions.
+
+==================================================
+PROFESSIONAL TATTOO PRINCIPLES
+==================================================
+
+Design as if the tattoo will be applied tomorrow.
+
+Prioritize longevity.
+
+Prioritize readability.
+
+Prioritize clean execution.
+
+Avoid decorative excess.
+
+Every line should serve a purpose.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create:
+
+• Overly detailed tattoos
+
+• Tiny unreadable textures
+
+• Multiple focal points
+
+• Wide layouts
+
+• Human hands
+
+• Wrist mockups
+
+• Skin
+
+• Poster compositions
+
+• Cropped artwork
+
+• Decorative overload
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only:
+
+One isolated tattoo artwork.
+
+Entire tattoo visible.
+
+Neutral or white background.
+
+No wrist.
+
+No hand.
+
+No body.
+
+No clothing.
+
+No text.
+
+No watermark.
+
+No logo.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Correct wrist proportions
+
+✓ Compact composition
+
+✓ Strong readability
+
+✓ Clean silhouette
+
+✓ Single focal point
+
+✓ Balanced negative space
+
+✓ Entire tattoo visible
+
+✓ No cropped elements
+
+✓ No body parts
+
+✓ No mockups
+
+✓ Professional wrist tattoo composition
+
+✓ Suitable for long-term tattoo execution
+
+END OF GUIDE

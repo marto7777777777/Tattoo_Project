@@ -1,0 +1,1 @@
+Resize only the named subject or element. Rebalance adjacent spacing as needed, while preserving the overall concept, orientation, and placement-compatible silhouette.

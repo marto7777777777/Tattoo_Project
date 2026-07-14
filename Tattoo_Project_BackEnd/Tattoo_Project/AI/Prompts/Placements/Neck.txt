@@ -1,0 +1,190 @@
+NECK TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are designing a tattoo specifically intended for the neck.
+
+Do NOT generate a neck.
+
+Create an isolated tattoo composition optimized for the limited curved surface of the neck.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The neck requires elegance.
+
+The design should remain clean and highly readable.
+
+Avoid heavy visual masses.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The neck is narrow.
+
+It curves naturally.
+
+Available tattoo space is limited.
+
+The tattoo should respect this curvature through composition.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes
+
+• Crescent
+
+• Vertical ornament
+
+• Small botanical flow
+
+• Elegant curve
+
+Avoid
+
+• Large rectangles
+
+• Squares
+
+• Heavy shields
+
+• Large portrait compositions
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+2.3 : 1
+
+Acceptable
+
+2.0 : 1
+
+to
+
+2.7 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should remain graceful.
+
+The eye should follow a gentle curve.
+
+Avoid aggressive geometry.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Rose
+
+✓ Snake
+
+✓ Script
+
+✓ Ornamental design
+
+✓ Dagger
+
+✓ Raven feather
+
+✓ Botanical composition
+
+✓ Fine line geometry
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Large dragons
+
+✗ Battle scenes
+
+✗ Wide compositions
+
+✗ Heavy realism portraits
+
+✗ Giant mandalas
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Elegant
+
+Minimal
+
+Sophisticated
+
+Lightweight
+
+Organic
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Medium detail only.
+
+Avoid micro-details.
+
+Maintain strong readability.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• body mockups
+
+• neck
+
+• skin
+
+• oversized tattoos
+
+• cropped artwork
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo.
+
+Neutral background.
+
+Entire tattoo visible.
+
+No neck.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Elegant composition
+
+✓ Readable silhouette
+
+✓ Natural curvature
+
+✓ Appropriate scale
+
+✓ Entire tattoo visible
+
+✓ Professional tattoo design

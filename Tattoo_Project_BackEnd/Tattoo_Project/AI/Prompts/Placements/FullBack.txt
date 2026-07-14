@@ -1,0 +1,328 @@
+FULL BACK TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are currently designing a tattoo specifically intended for the FULL BACK.
+
+Your task is NOT to generate a human back.
+
+Your task is to create an isolated tattoo composition that naturally follows the proportions, movement and visual balance of the human back.
+
+The final artwork should immediately feel like it was designed specifically for the back.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+Back anatomy has higher priority than generic tattoo composition rules.
+
+The composition must always respect the natural widening of the shoulders and the gradual narrowing toward the waist.
+
+Never optimize the artwork as if it were a poster.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The back is the largest tattoo placement on the human body.
+
+The shoulders provide the greatest usable width.
+
+The torso gradually narrows toward the waist.
+
+The center line of the spine acts as the natural visual axis.
+
+Large tattoo compositions should follow this anatomical flow.
+
+Never maintain identical width from top to bottom.
+
+Never create a perfect rectangle.
+
+Never create a square layout.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes:
+
+• Shield
+
+• Tapered diamond
+
+• Cathedral
+
+• Vertical crest
+
+• Wide upper triangle with soft taper
+
+Avoid:
+
+• Rectangle
+
+• Perfect square
+
+• Landscape poster
+
+• Equal-width column
+
+• Circular badge
+
+The tattoo should always appear wider at the top than at the bottom.
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred ratio:
+
+Height : Width
+
+1.3 : 1
+
+Acceptable range:
+
+1.2 : 1
+
+to
+
+1.5 : 1
+
+The tattoo should feel large, dominant and vertically structured.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+The viewer's eye should begin near the upper center.
+
+The composition should naturally travel downward.
+
+Visual movement should remain continuous.
+
+Avoid abrupt visual interruptions.
+
+Never split the tattoo into unrelated sections.
+
+==================================================
+PRIMARY FOCAL POINT
+==================================================
+
+Place the dominant focal point within the upper third.
+
+Examples:
+
+• Dragon head
+
+• Tiger face
+
+• Samurai
+
+• Skull
+
+• Phoenix
+
+• Oni mask
+
+Supporting elements should guide the eye downward.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Use secondary elements to reinforce movement.
+
+Examples:
+
+• Smoke
+
+• Clouds
+
+• Waves
+
+• Wind bars
+
+• Flowers
+
+• Snakes
+
+• Ornamental geometry
+
+These elements should connect the complete composition.
+
+Never let them overpower the main subject.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Maintain readable separation between major forms.
+
+Avoid filling every available space.
+
+Allow breathing room around the silhouette.
+
+Negative space should improve readability rather than create empty gaps.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+The upper half should contain the highest level of detail.
+
+Reduce detail gradually toward the lower back.
+
+Large decorative masses should become lighter toward the bottom.
+
+==================================================
+WEIGHT DISTRIBUTION
+==================================================
+
+Visual weight should remain strongest across the shoulders.
+
+The composition should naturally become lighter toward the waist.
+
+Avoid placing the heaviest element at the bottom.
+
+The tattoo should feel stable and balanced.
+
+==================================================
+SUBJECT SCALING
+==================================================
+
+Large animals should dominate the upper half.
+
+Portraits should remain centered.
+
+Wings should naturally expand toward the shoulders.
+
+Dragons should travel vertically.
+
+Snakes should create flowing movement.
+
+Floral compositions should frame rather than dominate.
+
+==================================================
+EDGE TREATMENT
+==================================================
+
+The upper silhouette may expand broadly.
+
+The lower silhouette should taper naturally.
+
+Avoid flat horizontal endings.
+
+Decorative elements should soften the overall outline.
+
+==================================================
+PROFESSIONAL TATTOO PRINCIPLES
+==================================================
+
+The design should immediately communicate that it belongs on a full back.
+
+Maintain a strong central axis.
+
+Maintain readable silhouettes.
+
+Avoid visual clutter.
+
+Avoid unnecessary filler.
+
+Every element should improve the composition.
+
+Design the artwork as though it will become a lifetime tattoo.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create:
+
+• Square layouts
+
+• Equal-width compositions
+
+• Poster-like artwork
+
+• Human backs
+
+• Skin
+
+• Mockups
+
+• Cropped wings
+
+• Cropped dragons
+
+• Cropped flowers
+
+• Empty lower sections
+
+• Decorative overload
+
+• Multiple disconnected compositions
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only:
+
+One isolated tattoo artwork.
+
+Entire composition visible.
+
+Neutral or white background.
+
+No human body.
+
+No back.
+
+No skin.
+
+No clothing.
+
+No tattoo studio.
+
+No text.
+
+No watermark.
+
+No logo.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Correct full back proportions
+
+✓ Wider shoulders than waist
+
+✓ Strong vertical composition
+
+✓ Central visual axis
+
+✓ Powerful upper focal point
+
+✓ Natural downward flow
+
+✓ Balanced weight distribution
+
+✓ Secondary elements reinforce movement
+
+✓ Entire tattoo visible
+
+✓ No cropped elements
+
+✓ No body parts
+
+✓ No mockups
+
+✓ Professional full back composition
+
+✓ Ready for tattoo execution
+
+END OF GUIDE

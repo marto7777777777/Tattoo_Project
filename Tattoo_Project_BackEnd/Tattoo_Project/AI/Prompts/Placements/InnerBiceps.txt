@@ -1,0 +1,135 @@
+PURPOSE
+
+Design an isolated tattoo specifically intended for the INNER BICEPS.
+
+Never generate an arm.
+
+The tattoo should naturally fit the soft vertical anatomy of the inner biceps.
+
+The composition should appear elegant and slightly more intimate than outer arm tattoos.
+
+==================================================
+
+PLACEMENT PRIORITY
+
+Favor vertical flow.
+
+Favor elegant movement.
+
+Avoid heavy symmetrical blocks.
+
+==================================================
+
+ANATOMICAL ANALYSIS
+
+The inner biceps is long but relatively narrow.
+
+The available space is softer and flatter than the outer arm.
+
+The upper portion is slightly wider.
+
+The lower portion gradually narrows.
+
+==================================================
+
+OVERALL SHAPE
+
+Preferred
+
+• Vertical leaf
+
+• Botanical flow
+
+• Soft spear
+
+• Elegant ribbon
+
+Avoid
+
+• Squares
+
+• Wide shields
+
+• Circular badges
+
+==================================================
+
+ASPECT RATIO
+
+Preferred
+
+2.9 : 1
+
+==================================================
+
+BEST SUBJECTS
+
+✓ Snake
+
+✓ Rose stem
+
+✓ Orchid
+
+✓ Sword
+
+✓ Fine Line
+
+✓ Lettering
+
+✓ Feather
+
+✓ Botanical
+
+==================================================
+
+AVOID
+
+✗ Giant portraits
+
+✗ Wide dragons
+
+✗ Landscape scenes
+
+✗ Large mandalas
+
+==================================================
+
+VISUAL MOOD
+
+Elegant
+
+Organic
+
+Soft
+
+Flowing
+
+Minimal
+
+==================================================
+
+COMMON AI MISTAKES
+
+Never
+
+• draw the arm
+
+• create equal width
+
+• overcrowd
+
+• create mockups
+
+==================================================
+
+FINAL CHECKLIST
+
+✓ Long composition
+
+✓ Elegant taper
+
+✓ One focal point
+
+✓ Entire tattoo visible
+
+✓ No body

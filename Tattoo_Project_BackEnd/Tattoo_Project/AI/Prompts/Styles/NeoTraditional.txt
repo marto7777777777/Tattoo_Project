@@ -1,0 +1,184 @@
+NEO TRADITIONAL TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Neo Traditional tattoo artwork.
+
+Combine classic tattoo foundations with modern illustration.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Neo Traditional expands upon Traditional tattooing.
+
+Maintain bold outlines.
+
+Allow richer colors.
+
+Allow greater detail.
+
+Maintain tattoo readability above all.
+
+==================================================
+LINE WORK
+==================================================
+
+Bold outlines.
+
+Refined internal details.
+
+Consistent line hierarchy.
+
+==================================================
+SHADING
+==================================================
+
+Smooth gradients.
+
+Readable shadows.
+
+Rich depth.
+
+Avoid realism rendering.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Deep reds
+
+Orange
+
+Gold
+
+Purple
+
+Emerald
+
+Teal
+
+Rich blue
+
+Black
+
+Highly saturated colors.
+
+==================================================
+COMPOSITION
+==================================================
+
+Decorative.
+
+Elegant.
+
+Balanced.
+
+Allow ornamental framing.
+
+Keep one dominant focal point.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Fox
+
+✓ Wolf
+
+✓ Raven
+
+✓ Owl
+
+✓ Rose
+
+✓ Peony
+
+✓ Skull
+
+✓ Woman Portrait
+
+✓ Moth
+
+✓ Beetle
+
+✓ Snake
+
+✓ Dagger
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Photo realism
+
+Tiny lettering
+
+Micro tattoos
+
+Flat minimalist symbols
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Decorative
+
+Elegant
+
+Rich
+
+Bold
+
+Artistic
+
+Expressive
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• weak outlines
+
+• muddy colors
+
+• flat shading
+
+• realism rendering
+
+• poor composition
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+No mockup.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Bold outline
+
+✓ Rich colors
+
+✓ Decorative composition
+
+✓ Strong focal point
+
+✓ Tattoo ready
+
+END OF GUIDE

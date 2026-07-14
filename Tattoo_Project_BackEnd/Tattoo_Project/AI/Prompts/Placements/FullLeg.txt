@@ -1,0 +1,192 @@
+FULL LEG TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are designing a tattoo specifically intended for the FULL LEG.
+
+Do NOT generate a leg.
+
+Create one isolated tattoo artwork that naturally follows the proportions of the complete leg.
+
+The tattoo should immediately appear designed for a full leg sleeve.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The leg is a continuous vertical canvas.
+
+The tattoo should tell one visual story.
+
+Avoid disconnected compositions.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The thigh provides the largest width.
+
+The knee acts as a transition.
+
+The calf becomes narrower.
+
+The ankle is the narrowest point.
+
+The tattoo should visually follow this progression.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes
+
+• Long shield
+
+• Vertical sleeve
+
+• Flowing column
+
+• Organic spear
+
+Avoid
+
+• Square layouts
+
+• Landscape layouts
+
+• Independent floating tattoos
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+4.5 : 1
+
+Acceptable
+
+4.0 : 1
+
+to
+
+5.2 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should travel continuously from the thigh toward the ankle.
+
+Every major subject should naturally connect.
+
+Avoid abrupt visual breaks.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Japanese sleeve
+
+✓ Dragon
+
+✓ Snake
+
+✓ Tiger
+
+✓ Samurai
+
+✓ Phoenix
+
+✓ Koi
+
+✓ Floral sleeve
+
+✓ Ornamental sleeve
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Tiny isolated symbols
+
+✗ Landscape scenes
+
+✗ Circular compositions
+
+✗ Large horizontal subjects
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Epic
+
+Dynamic
+
+Powerful
+
+Flowing
+
+Confident
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail around the thigh.
+
+Medium detail through the calf.
+
+Simpler transitions near the ankle.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• disconnected tattoos
+
+• square layouts
+
+• body mockups
+
+• cropped compositions
+
+• equal width sleeves
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire sleeve visible.
+
+Neutral background.
+
+No leg.
+
+No skin.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Continuous composition
+
+✓ Natural taper
+
+✓ Readable flow
+
+✓ Sleeve appearance
+
+✓ Entire tattoo visible
+
+✓ Professional execution

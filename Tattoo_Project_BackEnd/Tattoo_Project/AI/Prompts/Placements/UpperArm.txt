@@ -1,0 +1,298 @@
+UPPER ARM TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are currently designing a tattoo specifically intended for the upper arm.
+
+The objective is NOT to draw an arm.
+
+The objective is to create a tattoo composition that naturally follows the proportions, curvature and visual weight of the upper arm while being presented as an isolated tattoo artwork.
+
+The finished design should immediately feel like it belongs on the upper arm without requiring a body mockup.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+Upper arm rules always override generic composition rules.
+
+The design must first satisfy the anatomical proportions of the upper arm.
+
+Decoration must never compromise composition.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The upper arm is broader than the forearm.
+
+Unlike the forearm, the upper arm is much more rounded.
+
+It provides a wider tattoo surface.
+
+The outer contour forms a soft oval rather than a narrow cylinder.
+
+Designs should feel naturally wrapped around a rounded volume.
+
+The shoulder provides the widest visual area.
+
+The lower edge gradually transitions toward the elbow.
+
+Never create a narrow forearm-style tattoo.
+
+Never create a flat rectangular composition.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes:
+
+• Rounded shield
+
+• Oval
+
+• Vertical oval
+
+• Soft diamond
+
+• Circular composition with downward flow
+
+Avoid:
+
+• Long spear shapes
+
+• Very narrow columns
+
+• Wide landscape rectangles
+
+• Perfect circles
+
+• Box-shaped compositions
+
+The silhouette should feel balanced and rounded.
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred ratio
+
+2.2 : 1
+
+Acceptable range
+
+1.8 : 1
+
+to
+
+2.5 : 1
+
+The tattoo should appear taller than wide but significantly fuller than a forearm composition.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+The eye should first reach the center of the tattoo.
+
+Movement should naturally expand around the focal point.
+
+Flow should remain soft and organic.
+
+Avoid rigid vertical movement.
+
+Avoid strong diagonal imbalance.
+
+==================================================
+FOCAL POINT
+==================================================
+
+The main subject should occupy the central third.
+
+Allow the composition to expand evenly around it.
+
+Avoid placing the focal point too close to the bottom edge.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Supporting elements should gently wrap around the main subject.
+
+Suitable elements include:
+
+• Flowers
+
+• Leaves
+
+• Smoke
+
+• Clouds
+
+• Geometry
+
+• Decorative ornaments
+
+These elements should create rounded movement.
+
+They should never overpower the primary subject.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Maintain clear separation between the tattoo and the canvas edges.
+
+Leave breathing room around the silhouette.
+
+Avoid excessive empty areas inside the design.
+
+Use negative space to improve readability.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail should remain near the focal point.
+
+Gradually reduce detail toward the outer edges.
+
+Avoid placing excessive micro-details near the borders.
+
+==================================================
+SUBJECT SCALING
+==================================================
+
+Portraits should remain centered.
+
+Animal heads work best in the upper-middle area.
+
+Floral designs should frame the subject.
+
+Mandalas may occupy the center.
+
+Skulls should remain proportionally dominant.
+
+Dragons should wrap around the composition rather than extending into long vertical layouts.
+
+==================================================
+EDGE TREATMENT
+==================================================
+
+Top and bottom edges should transition naturally.
+
+Avoid sharp rectangular endings.
+
+Allow decorative elements to soften the outer silhouette.
+
+The tattoo should appear designed for a rounded body surface.
+
+==================================================
+PROFESSIONAL TATTOO PRINCIPLES
+==================================================
+
+Design the composition as if it will be tattooed directly onto the upper arm.
+
+Maintain clean silhouettes.
+
+Maintain visual balance.
+
+Avoid unnecessary decorative clutter.
+
+Every secondary element should improve the composition.
+
+The tattoo should remain readable from several meters away.
+
+The composition should immediately communicate its main subject.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create:
+
+• Forearm-shaped tattoos
+
+• Extremely long narrow layouts
+
+• Perfect circles
+
+• Perfect rectangles
+
+• Landscape posters
+
+• Cropped compositions
+
+• Visible shoulders
+
+• Visible arms
+
+• Skin
+
+• Mockups
+
+• Decorative overload
+
+• Multiple disconnected subjects
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only:
+
+One isolated tattoo artwork.
+
+Neutral or white background.
+
+Entire tattoo visible.
+
+No human body.
+
+No arm.
+
+No shoulder.
+
+No clothing.
+
+No tattoo studio.
+
+No text.
+
+No logo.
+
+No watermark.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Correct upper arm proportions
+
+✓ Rounded silhouette
+
+✓ Balanced composition
+
+✓ Strong central focal point
+
+✓ Secondary elements support the subject
+
+✓ Readable negative space
+
+✓ Entire tattoo visible
+
+✓ No cropped elements
+
+✓ No body parts
+
+✓ No mockups
+
+✓ Professional tattoo composition
+
+✓ Ready for tattoo application
+
+END OF GUIDE

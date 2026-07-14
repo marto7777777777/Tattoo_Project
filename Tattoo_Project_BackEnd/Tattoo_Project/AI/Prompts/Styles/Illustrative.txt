@@ -1,0 +1,136 @@
+ILLUSTRATIVE TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Illustrative tattoo artwork.
+
+Blend illustration techniques with tattoo principles.
+
+The artwork should feel artistic while remaining tattooable.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Illustrative tattoos combine realism, graphic design and artistic interpretation.
+
+The artwork should express creativity without sacrificing readability.
+
+==================================================
+LINE WORK
+==================================================
+
+Use expressive line weight.
+
+Combine bold and fine lines.
+
+Maintain clean structure.
+
+==================================================
+SHADING
+==================================================
+
+Use controlled gradients.
+
+Allow artistic interpretation.
+
+Avoid muddy rendering.
+
+==================================================
+COMPOSITION
+==================================================
+
+One clear focal point.
+
+Decorative secondary elements.
+
+Balanced visual hierarchy.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Animals
+
+✓ Mythology
+
+✓ Flowers
+
+✓ Skulls
+
+✓ Portraits
+
+✓ Fantasy
+
+✓ Ravens
+
+✓ Foxes
+
+✓ Nature
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Tiny lettering
+
+Flat tribal
+
+Micro realism
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Creative
+
+Expressive
+
+Dynamic
+
+Elegant
+
+Modern
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• overcomplicate
+
+• flatten the image
+
+• lose readability
+
+• create visual clutter
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Expressive line work
+
+✓ Strong focal point
+
+✓ Balanced composition
+
+✓ Tattoo ready
+
+END OF GUIDE

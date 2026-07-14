@@ -1,0 +1,152 @@
+BIOMECHANICAL TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Biomechanical tattoo artwork.
+
+The tattoo should appear as a fusion between machinery and living anatomy.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Biomechanical tattoos create the illusion that mechanical structures exist beneath the skin.
+
+The composition should feel believable.
+
+==================================================
+LINE WORK
+==================================================
+
+Technical.
+
+Clean.
+
+Precise.
+
+Mechanical.
+
+==================================================
+SHADING
+==================================================
+
+Strong metallic contrast.
+
+Deep shadows.
+
+Sharp highlights.
+
+==================================================
+TEXTURES
+==================================================
+
+Steel.
+
+Chrome.
+
+Carbon fiber.
+
+Pistons.
+
+Gears.
+
+Mechanical cables.
+
+==================================================
+COMPOSITION
+==================================================
+
+Layer mechanical parts naturally.
+
+Create believable depth.
+
+Maintain one continuous structure.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Gears
+
+✓ Pistons
+
+✓ Robotic Skull
+
+✓ Mechanical Spine
+
+✓ Cybernetic Eye
+
+✓ Alien Technology
+
+✓ Tubes
+
+✓ Hydraulic Parts
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Watercolor
+
+Fine Line
+
+Minimalist
+
+Traditional
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Industrial
+
+Dark
+
+Mechanical
+
+Aggressive
+
+Futuristic
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• floating gears
+
+• disconnected parts
+
+• unrealistic mechanics
+
+• weak metallic textures
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Believable machinery
+
+✓ Strong depth
+
+✓ Metallic textures
+
+✓ Tattoo ready
+
+END OF GUIDE

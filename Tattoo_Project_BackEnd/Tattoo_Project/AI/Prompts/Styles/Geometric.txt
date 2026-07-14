@@ -1,0 +1,140 @@
+GEOMETRIC TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Geometric tattoo artwork.
+
+Every geometric element should feel mathematically balanced.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Geometry is built on precision.
+
+Every line should have purpose.
+
+Every angle should feel intentional.
+
+Symmetry should remain consistent unless asymmetry is requested.
+
+==================================================
+LINE WORK
+==================================================
+
+Perfectly clean.
+
+Sharp.
+
+Consistent thickness.
+
+==================================================
+SHADING
+==================================================
+
+Minimal.
+
+Use dot shading when appropriate.
+
+Avoid realism shading.
+
+==================================================
+COMPOSITION
+==================================================
+
+Maintain symmetry.
+
+Maintain visual rhythm.
+
+Avoid random shapes.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Mandala
+
+✓ Sacred Geometry
+
+✓ Wolf
+
+✓ Lion
+
+✓ Compass
+
+✓ Eye
+
+✓ Flower of Life
+
+✓ Metatron's Cube
+
+✓ Mountains
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Messy watercolor
+
+Traditional flash
+
+Chaotic compositions
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Precise
+
+Modern
+
+Balanced
+
+Minimal
+
+Clean
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• uneven symmetry
+
+• crooked lines
+
+• random polygons
+
+• inconsistent spacing
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Perfect symmetry
+
+✓ Clean geometry
+
+✓ Balanced composition
+
+✓ Tattooable
+
+✓ Professional geometric style
+
+END OF GUIDE

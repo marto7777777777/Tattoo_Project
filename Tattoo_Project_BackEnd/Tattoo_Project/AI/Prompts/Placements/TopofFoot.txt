@@ -1,0 +1,131 @@
+PURPOSE
+
+Design an isolated tattoo specifically intended for the TOP OF THE FOOT.
+
+Never generate a foot.
+
+Create a tattoo that naturally follows the narrow shape of the foot.
+
+==================================================
+
+PLACEMENT PRIORITY
+
+Readability is essential.
+
+Avoid excessive detail.
+
+Maintain elegant flow.
+
+==================================================
+
+ANATOMICAL ANALYSIS
+
+The top of the foot is narrow.
+
+The ankle is wider.
+
+The toes create a natural taper.
+
+The composition should follow this direction.
+
+==================================================
+
+OVERALL SHAPE
+
+Preferred
+
+• Leaf
+
+• Vine
+
+• Dagger
+
+• Feather
+
+• Floral stem
+
+Avoid
+
+• Squares
+
+• Shields
+
+• Posters
+
+==================================================
+
+ASPECT RATIO
+
+Preferred
+
+3 : 1
+
+==================================================
+
+BEST SUBJECTS
+
+✓ Flowers
+
+✓ Feather
+
+✓ Snake
+
+✓ Butterfly
+
+✓ Fine Line
+
+✓ Botanical
+
+✓ Script
+
+==================================================
+
+AVOID
+
+✗ Giant skulls
+
+✗ Dragons
+
+✗ Battle scenes
+
+✗ Heavy Japanese sleeves
+
+==================================================
+
+VISUAL MOOD
+
+Elegant
+
+Light
+
+Organic
+
+Graceful
+
+==================================================
+
+COMMON AI MISTAKES
+
+Never
+
+• draw feet
+
+• create body mockups
+
+• overcrowd
+
+• create heavy black masses
+
+==================================================
+
+FINAL CHECKLIST
+
+✓ Elegant flow
+
+✓ Readable silhouette
+
+✓ Natural taper
+
+✓ Entire tattoo visible
+
+✓ Professional tattoo composition

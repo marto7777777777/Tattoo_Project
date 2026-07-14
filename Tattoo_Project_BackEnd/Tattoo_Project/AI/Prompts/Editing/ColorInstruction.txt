@@ -1,0 +1,1 @@
+Change color only where requested. Preserve shading, value hierarchy, contrast, and all colors not named by the client.

@@ -1,0 +1,182 @@
+WATERCOLOR TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Watercolor tattoo artwork.
+
+Do NOT create a digital painting.
+
+Do NOT create random paint splashes.
+
+Create tattoo artwork that combines elegant line work with controlled watercolor effects.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Watercolor tattoos imitate watercolor painting while remaining tattooable.
+
+Color should enhance the subject.
+
+Color should never replace composition.
+
+The tattoo should remain readable even without the watercolor effects.
+
+==================================================
+LINE WORK
+==================================================
+
+Use clean Fine Line or medium-weight outlines.
+
+The structure of the tattoo must always exist before color is added.
+
+Avoid thick Traditional outlines unless requested.
+
+==================================================
+SHADING
+==================================================
+
+Minimal black shading.
+
+Most depth should come from color transitions.
+
+Avoid muddy gradients.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Use vibrant but harmonious colors.
+
+Preferred:
+
+Blue
+
+Purple
+
+Turquoise
+
+Pink
+
+Magenta
+
+Orange
+
+Yellow
+
+Soft Green
+
+Blend colors naturally.
+
+Never create random rainbow splashes.
+
+==================================================
+COMPOSITION
+==================================================
+
+Build the tattoo first.
+
+Add watercolor afterward.
+
+Paint effects should follow the movement of the composition.
+
+Never let paint become the main subject.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Flowers
+
+✓ Butterflies
+
+✓ Birds
+
+✓ Wolf
+
+✓ Fox
+
+✓ Feather
+
+✓ Tree
+
+✓ Compass
+
+✓ Moon
+
+✓ Hummingbird
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Heavy Blackwork
+
+Traditional flash
+
+Biomechanical
+
+Large Tribal
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Elegant
+
+Artistic
+
+Creative
+
+Light
+
+Organic
+
+Fluid
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• random paint splashes
+
+• muddy colors
+
+• over-saturated artwork
+
+• weak line structure
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+No mockup.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Strong line structure
+
+✓ Controlled watercolor
+
+✓ Harmonious colors
+
+✓ Tattooable
+
+✓ Professional watercolor style
+
+END OF GUIDE

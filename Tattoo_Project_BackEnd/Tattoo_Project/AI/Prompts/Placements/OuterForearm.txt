@@ -1,0 +1,188 @@
+OUTER FOREARM TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Design an isolated tattoo specifically intended for the OUTER FOREARM.
+
+Do NOT generate a human arm.
+
+Generate only the tattoo artwork.
+
+The tattoo should naturally follow the proportions of the outer forearm and immediately appear designed for this placement.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The outer forearm favors long, highly visible compositions.
+
+Readability from a distance is essential.
+
+Maintain one continuous visual flow.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The outer forearm is one of the most visible tattoo placements.
+
+The elbow area provides the greatest width.
+
+The wrist gradually narrows.
+
+The tattoo should visibly taper from top to bottom.
+
+Never maintain identical width.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred
+
+• Spear
+
+• Blade
+
+• Vertical shield
+
+• Organic column
+
+• Decorative ribbon
+
+Avoid
+
+• Square layouts
+
+• Landscape compositions
+
+• Circular badges
+
+• Equal-width rectangles
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+3 : 1
+
+Acceptable
+
+2.7 : 1
+
+to
+
+3.5 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should remain vertical.
+
+Guide the eye from elbow toward wrist.
+
+Avoid disconnected sections.
+
+Maintain one continuous silhouette.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Wolf
+
+✓ Tiger
+
+✓ Dragon
+
+✓ Snake
+
+✓ Sword
+
+✓ Dagger
+
+✓ Skull
+
+✓ Raven
+
+✓ Botanical compositions
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Wide landscapes
+
+✗ Large mandalas
+
+✗ Horizontal weapons
+
+✗ Oversized portraits
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Strong
+
+Dynamic
+
+Bold
+
+Readable
+
+Confident
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• body mockups
+
+• visible arms
+
+• cropped artwork
+
+• square layouts
+
+• oversized lower sections
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire tattoo visible.
+
+Neutral background.
+
+No arm.
+
+No skin.
+
+No mockups.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Long composition
+
+✓ Strong taper
+
+✓ Vertical flow
+
+✓ Entire tattoo visible
+
+✓ Professional forearm composition

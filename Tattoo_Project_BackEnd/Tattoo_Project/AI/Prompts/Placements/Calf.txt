@@ -1,0 +1,198 @@
+CALF TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are designing a tattoo specifically intended for the calf.
+
+Do NOT generate a leg.
+
+Create an isolated tattoo composition optimized for the muscular shape of the calf.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The calf supports bold vertical compositions.
+
+The design should feel powerful.
+
+Avoid delicate layouts that disappear visually.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The calf is widest in the upper third.
+
+It gradually narrows toward the ankle.
+
+The tattoo should visually follow this taper.
+
+The upper section should carry more visual weight.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes
+
+• Vertical shield
+
+• Spear
+
+• Tapered column
+
+• Aggressive blade
+
+• Dynamic ornamental frame
+
+Avoid
+
+• Squares
+
+• Landscape layouts
+
+• Equal-width columns
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+2.7 : 1
+
+Acceptable
+
+2.4 : 1
+
+to
+
+3.1 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should remain strongly vertical.
+
+The eye should travel downward.
+
+Maintain one continuous silhouette.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Wolf
+
+✓ Tiger
+
+✓ Dragon
+
+✓ Oni
+
+✓ Samurai
+
+✓ Skull
+
+✓ Sword
+
+✓ Snake
+
+✓ Panther
+
+✓ Eagle
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Wide flowers
+
+✗ Large landscapes
+
+✗ Horizontal scripts
+
+✗ Broad mandalas
+
+✗ Wide ornamental frames
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Powerful
+
+Aggressive
+
+Dynamic
+
+Bold
+
+Strong
+
+Confident
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail belongs near the upper calf.
+
+Gradually simplify toward the ankle.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• equal width
+
+• square layouts
+
+• body mockups
+
+• skin
+
+• cropped designs
+
+• oversized lower sections
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo.
+
+Entire artwork visible.
+
+Neutral background.
+
+No leg.
+
+No skin.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Upper section wider
+
+✓ Natural taper
+
+✓ Powerful silhouette
+
+✓ Strong vertical flow
+
+✓ Entire tattoo visible
+
+✓ No body parts
+
+✓ Professional tattoo composition

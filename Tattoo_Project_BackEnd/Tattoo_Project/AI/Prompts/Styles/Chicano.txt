@@ -1,0 +1,162 @@
+CHICANO TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create authentic Chicano tattoo artwork.
+
+Do NOT create graffiti.
+
+Do NOT create street art.
+
+Create elegant black and gray tattoo artwork inspired by classic Chicano tattoo culture.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Chicano tattoos tell stories.
+
+Emotion is more important than decoration.
+
+Every composition should feel dramatic, meaningful and timeless.
+
+==================================================
+LINE WORK
+==================================================
+
+Clean medium-weight outlines.
+
+Refined details.
+
+Avoid thick Traditional outlines.
+
+==================================================
+SHADING
+==================================================
+
+Smooth Black & Gray.
+
+Soft transitions.
+
+High realism without excessive texture.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Black.
+
+Gray.
+
+White highlights only.
+
+No bright colors.
+
+==================================================
+COMPOSITION
+==================================================
+
+Strong central subject.
+
+Elegant framing.
+
+Smoke, roses and filigree should support the composition.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Praying Hands
+
+✓ Virgin Mary
+
+✓ Jesus Christ
+
+✓ Clown Girl
+
+✓ Sugar Skull
+
+✓ Roses
+
+✓ Money
+
+✓ Clock
+
+✓ Dove
+
+✓ Lettering
+
+✓ Lowrider
+
+✓ Religious Symbols
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Japanese
+
+Watercolor
+
+Tribal
+
+Cute characters
+
+Pastel artwork
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Emotional
+
+Elegant
+
+Dramatic
+
+Classic
+
+Respectful
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• use bright colors
+
+• over sharpen
+
+• muddy gray
+
+• cartoon faces
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Black & Gray
+
+✓ Dramatic
+
+✓ Elegant
+
+✓ Tattoo ready
+
+END OF GUIDE

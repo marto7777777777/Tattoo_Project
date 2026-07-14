@@ -1,0 +1,196 @@
+FULL CHEST TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Design an isolated tattoo specifically intended for the FULL CHEST.
+
+Do NOT generate a torso.
+
+Generate only the tattoo artwork.
+
+The tattoo should naturally occupy the entire chest while remaining balanced and symmetrical.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The chest favors wide horizontal compositions.
+
+The design should feel powerful, centered and stable.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The shoulders provide the greatest width.
+
+The sternum forms the central axis.
+
+The composition should expand naturally toward both shoulders.
+
+Avoid narrow vertical layouts.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred
+
+• Wings
+
+• Broad shield
+
+• Crest
+
+• Ornamental frame
+
+• Symmetrical floral composition
+
+Avoid
+
+• Tall columns
+
+• Squares
+
+• Poster layouts
+
+• Equal-width rectangles
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+1.7 : 1
+
+Acceptable
+
+1.5 : 1
+
+to
+
+2.0 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+The eye should first reach the center.
+
+Movement should then expand evenly toward both sides.
+
+Maintain strong visual balance.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Eagle
+
+✓ Phoenix
+
+✓ Dragon
+
+✓ Lion
+
+✓ Wolf
+
+✓ Angel wings
+
+✓ Sacred geometry
+
+✓ Ornamental designs
+
+✓ Floral compositions
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Tall sleeve layouts
+
+✗ Long narrow swords
+
+✗ Wrist-style tattoos
+
+✗ Landscape scenes
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Powerful
+
+Balanced
+
+Heroic
+
+Dominant
+
+Elegant
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail belongs in the center.
+
+Gradually simplify toward the shoulders.
+
+Maintain clean readability.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• torso mockups
+
+• cropped wings
+
+• one-sided compositions
+
+• square layouts
+
+• decorative overload
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire tattoo visible.
+
+Neutral background.
+
+No torso.
+
+No skin.
+
+No body.
+
+No text.
+
+No watermark.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Wide composition
+
+✓ Strong center
+
+✓ Symmetrical balance
+
+✓ Entire tattoo visible
+
+✓ Professional chest tattoo composition

@@ -1,0 +1,184 @@
+FRONT THIGH TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are designing a tattoo specifically intended for the FRONT THIGH.
+
+Do NOT generate a leg.
+
+Create an isolated tattoo optimized for the broad vertical surface of the thigh.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+The thigh supports large detailed artwork.
+
+The composition should appear powerful but elegant.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The thigh provides one of the largest tattoo areas.
+
+It is broad at the top.
+
+Gradually narrows toward the knee.
+
+The tattoo should visually follow this transition.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes
+
+• Tall shield
+
+• Vertical diamond
+
+• Ornamental frame
+
+• Strong column
+
+Avoid
+
+• Wide landscape layouts
+
+• Equal-width rectangles
+
+• Circular badges
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred
+
+2.5 : 1
+
+Acceptable
+
+2.2 : 1
+
+to
+
+2.9 : 1
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should travel vertically.
+
+The eye should naturally move downward.
+
+The silhouette should gently taper.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Tiger
+
+✓ Wolf
+
+✓ Dragon
+
+✓ Samurai
+
+✓ Geisha
+
+✓ Skull
+
+✓ Large flowers
+
+✓ Mythological creatures
+
+✓ Sacred geometry
+
+==================================================
+POOR CHOICES
+==================================================
+
+Avoid
+
+✗ Small symbols
+
+✗ Tiny lettering
+
+✗ Landscape scenes
+
+✗ Broad mandalas
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Bold
+
+Confident
+
+Strong
+
+Dynamic
+
+Elegant
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail belongs near the upper half.
+
+Reduce complexity toward the knee.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create
+
+• square layouts
+
+• body mockups
+
+• skin
+
+• oversized lower sections
+
+• cropped artwork
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire tattoo visible.
+
+Neutral background.
+
+No leg.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Broad upper section
+
+✓ Natural taper
+
+✓ Strong vertical flow
+
+✓ Entire tattoo visible
+
+✓ Professional tattoo composition
+
+END OF GUIDE

@@ -1,0 +1,300 @@
+FOREARM TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+This document defines the composition principles for tattoos specifically designed for the forearm.
+
+The objective is NOT to draw a forearm.
+
+The objective is to create a tattoo that naturally fits the proportions and flow of a human forearm while being presented as an isolated artwork.
+
+The final image must always look like a tattoo designed for this placement from the beginning.
+
+==================================================
+PLACEMENT PRIORITY
+==================================================
+
+Placement rules have higher priority than generic composition rules.
+
+If a generic composition rule conflicts with this guide, always follow this guide.
+
+Never sacrifice placement proportions for decorative elements.
+
+==================================================
+ANATOMICAL ANALYSIS
+==================================================
+
+The forearm is a long cylindrical body area.
+
+The elbow area provides the greatest available width.
+
+The wrist is significantly narrower.
+
+The tattoo should visually reflect this gradual change in width.
+
+Never create equal width from top to bottom.
+
+The design should feel comfortable when imagined wrapping around a cylindrical surface.
+
+The tattoo must visually belong to the forearm without showing the arm itself.
+
+==================================================
+OVERALL SHAPE
+==================================================
+
+Preferred silhouettes:
+
+• Vertical spear
+• Tapered column
+• Organic blade
+• Elongated diamond
+• Flowing ornamental strip
+
+Avoid:
+
+• Square
+• Circle
+• Perfect rectangle
+• Landscape composition
+• Equal width column
+
+The upper portion should feel stronger and slightly wider.
+
+The lower portion should gradually narrow.
+
+==================================================
+ASPECT RATIO
+==================================================
+
+Preferred ratio:
+
+Height : Width
+
+3 : 1
+
+Acceptable range:
+
+2.6 : 1
+
+to
+
+3.5 : 1
+
+The tattoo should always appear taller than it is wide.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+The eye should naturally travel from top to bottom.
+
+Every secondary element should reinforce this movement.
+
+Avoid abrupt direction changes.
+
+Avoid creating disconnected visual islands.
+
+Create one continuous readable composition.
+
+==================================================
+FOCAL POINT
+==================================================
+
+Place the main focal point approximately within the upper third of the composition.
+
+Do not place the largest visual mass directly above the wrist.
+
+The focal point should immediately attract attention.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Flowers
+
+Smoke
+
+Leaves
+
+Geometry
+
+Chains
+
+Clouds
+
+Decorative ornaments
+
+should support the main subject.
+
+Never overpower the primary subject.
+
+Secondary elements should help create vertical movement.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Preserve clean breathing room around the silhouette.
+
+Do not allow decorative elements to touch the canvas edges.
+
+Use negative space to separate major forms.
+
+Avoid filling every empty area.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Highest detail:
+
+Upper center.
+
+Medium detail:
+
+Middle section.
+
+Lowest detail:
+
+Lower end.
+
+The tattoo should become visually lighter toward the wrist.
+
+==================================================
+EDGE TREATMENT
+==================================================
+
+The upper edge may end boldly.
+
+The lower edge should finish naturally.
+
+Avoid blunt horizontal endings.
+
+Create elegant transitions.
+
+==================================================
+SUBJECT SCALING
+==================================================
+
+Animals should remain vertically oriented.
+
+Portraits should occupy the upper half.
+
+Flowers should frame, not dominate.
+
+Weapons should follow the vertical axis.
+
+Snakes should naturally wrap along the composition.
+
+Dragons should flow vertically.
+
+==================================================
+PROFESSIONAL TATTOO PRINCIPLES
+==================================================
+
+Design the tattoo as if it will be tattooed tomorrow.
+
+Maintain readability.
+
+Maintain balance.
+
+Maintain clean silhouettes.
+
+Avoid unnecessary complexity.
+
+Avoid meaningless filler.
+
+Every line should have purpose.
+
+Every decorative element should improve composition.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never create:
+
+• square layouts
+
+• landscape layouts
+
+• body mockups
+
+• visible arms
+
+• cropped designs
+
+• oversized lower sections
+
+• equal width silhouettes
+
+• multiple disconnected subjects
+
+• decorative clutter
+
+• poster compositions
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate:
+
+One isolated tattoo artwork.
+
+White or neutral background.
+
+Entire tattoo visible.
+
+No body.
+
+No skin.
+
+No arm.
+
+No tattoo mockup.
+
+No text.
+
+No watermark.
+
+No logo.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Correct forearm proportions
+
+✓ Clearly vertical
+
+✓ Tapered silhouette
+
+✓ Strong upper focal point
+
+✓ Smooth downward flow
+
+✓ Balanced composition
+
+✓ Secondary elements support the subject
+
+✓ Negative space preserved
+
+✓ Entire tattoo visible
+
+✓ No cropped elements
+
+✓ No body parts
+
+✓ No mockups
+
+✓ No text
+
+✓ Professional tattoo composition
+
+✓ Ready to present to a tattoo artist
+
+END OF GUIDE

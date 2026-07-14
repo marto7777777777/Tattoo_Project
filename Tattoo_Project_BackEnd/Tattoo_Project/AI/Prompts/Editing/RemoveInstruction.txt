@@ -1,0 +1,1 @@
+When removing an element, remove only the named content. Reconstruct the surrounding artwork cleanly without holes, smears, duplicated fragments, or unrelated redesign.

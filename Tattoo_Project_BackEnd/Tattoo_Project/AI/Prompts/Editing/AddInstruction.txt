@@ -1,0 +1,1 @@
+When adding an element, keep all approved elements unless removal is explicitly requested. Integrate the new element naturally into the existing hierarchy and rebalance only the nearby area required for a coherent composition.

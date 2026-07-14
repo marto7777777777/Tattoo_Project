@@ -1,0 +1,150 @@
+PORTRAIT TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional portrait tattoo artwork.
+
+The portrait should be tattooable while preserving realistic proportions and emotional expression.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Portrait tattoos focus on expression.
+
+The eyes are the emotional center.
+
+Every facial feature should remain anatomically correct.
+
+==================================================
+LINE WORK
+==================================================
+
+Minimal outlines.
+
+Allow shading to define forms.
+
+==================================================
+SHADING
+==================================================
+
+Smooth Black & Gray transitions.
+
+Strong contrast.
+
+Natural highlights.
+
+==================================================
+TEXTURES
+==================================================
+
+Realistic skin.
+
+Hair.
+
+Beards.
+
+Wrinkles.
+
+Eyes.
+
+Clothing.
+
+Jewelry.
+
+==================================================
+COMPOSITION
+==================================================
+
+Keep the portrait dominant.
+
+Background elements should remain secondary.
+
+Avoid distracting details.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Human Portrait
+
+✓ Religious Portrait
+
+✓ Warrior
+
+✓ Viking
+
+✓ Woman
+
+✓ Old Man
+
+✓ Child
+
+✓ Angel
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Tiny portraits
+
+Heavy abstraction
+
+Random geometry
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Emotional
+
+Respectful
+
+Realistic
+
+Elegant
+
+Timeless
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• asymmetrical faces
+
+• unrealistic eyes
+
+• plastic skin
+
+• muddy shading
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Realistic anatomy
+
+✓ Strong expression
+
+✓ High contrast
+
+✓ Tattoo ready
+
+END OF GUIDE

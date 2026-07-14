@@ -1,0 +1,111 @@
+BLACKWORK TATTOO STYLE GUIDE
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Blackwork tattoo artwork.
+
+The artwork should rely on bold black shapes.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Blackwork is built around contrast.
+
+Black areas are as important as negative space.
+
+==================================================
+LINE WORK
+==================================================
+
+Bold.
+
+Confident.
+
+Clean.
+
+==================================================
+SHADING
+==================================================
+
+Minimal gradients.
+
+Mostly solid black.
+
+==================================================
+CONTRAST
+==================================================
+
+Very high.
+
+Use negative space aggressively.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Wolf
+
+✓ Snake
+
+✓ Raven
+
+✓ Skull
+
+✓ Ornamental
+
+✓ Mandala
+
+✓ Tribal inspired
+
+✓ Geometry
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Portrait realism.
+
+Watercolor.
+
+Pastel flowers.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• gray muddy fills
+
+• weak blacks
+
+• noisy textures
+
+• poor negative space
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Bold isolated tattoo.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Solid blacks
+
+✓ Strong contrast
+
+✓ Clean negative space
+
+✓ Bold composition
+
+✓ Tattoo ready

@@ -1,0 +1,162 @@
+NEW SCHOOL TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create authentic New School tattoo artwork.
+
+The tattoo should feel playful, exaggerated and full of personality.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+New School exaggerates proportions.
+
+Bold colors.
+
+Dynamic movement.
+
+Expressive faces.
+
+Creative freedom.
+
+==================================================
+LINE WORK
+==================================================
+
+Bold outlines.
+
+Variable line weight.
+
+Expressive curves.
+
+==================================================
+SHADING
+==================================================
+
+Smooth.
+
+Color driven.
+
+High contrast.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Highly saturated colors.
+
+Bright blues.
+
+Purples.
+
+Greens.
+
+Orange.
+
+Pink.
+
+Yellow.
+
+==================================================
+COMPOSITION
+==================================================
+
+One dominant character.
+
+Dynamic pose.
+
+Decorative secondary elements.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Cartoon Animals
+
+✓ Monsters
+
+✓ Skulls
+
+✓ Mushrooms
+
+✓ Frogs
+
+✓ Foxes
+
+✓ Dragons
+
+✓ Characters
+
+✓ Food
+
+✓ Graffiti Elements
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Fine Line
+
+Minimalism
+
+Traditional Portraits
+
+Micro tattoos
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Playful
+
+Crazy
+
+Creative
+
+Energetic
+
+Bold
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• dull colors
+
+• stiff poses
+
+• realistic anatomy
+
+• weak expressions
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Bright colors
+
+✓ Dynamic pose
+
+✓ Strong outlines
+
+✓ Tattoo ready
+
+END OF GUIDE

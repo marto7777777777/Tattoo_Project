@@ -1,0 +1,128 @@
+LETTERING TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional tattoo lettering.
+
+The lettering must be tattooable, elegant and readable.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Readability is the highest priority.
+
+Beautiful typography should never sacrifice legibility.
+
+Every letter must feel intentional.
+
+==================================================
+LINE WORK
+==================================================
+
+Clean.
+
+Consistent.
+
+Balanced spacing.
+
+Avoid distorted characters.
+
+==================================================
+SHADING
+==================================================
+
+Minimal unless specifically requested.
+
+==================================================
+COMPOSITION
+==================================================
+
+Letter spacing should remain even.
+
+Curved lettering should feel natural.
+
+Avoid awkward stretching.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Quotes
+
+✓ Names
+
+✓ Dates
+
+✓ Roman numerals
+
+✓ Bible verses
+
+✓ Single words
+
+✓ Coordinates
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Overly decorative fonts
+
+Unreadable scripts
+
+Tiny paragraphs
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Elegant
+
+Meaningful
+
+Minimal
+
+Classic
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• unreadable text
+
+• inconsistent spacing
+
+• distorted letters
+
+• excessive decoration
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Readable
+
+✓ Balanced spacing
+
+✓ Tattooable
+
+✓ Professional lettering
+
+END OF GUIDE

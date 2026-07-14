@@ -1,0 +1,160 @@
+REALISM TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create a professional realism tattoo specifically designed for tattooing.
+
+Do NOT create a digital painting.
+
+Do NOT create a photograph.
+
+Do NOT create concept art.
+
+Create artwork that can realistically become a tattoo.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Realism reproduces reality through light, shadow and texture.
+
+The illusion of depth should come from shading rather than outlines.
+
+The final artwork should feel believable while remaining tattooable.
+
+==================================================
+LINE WORK
+==================================================
+
+Use minimal outlines.
+
+Allow values and shadows to define form.
+
+Avoid cartoon outlines.
+
+Avoid thick contour lines.
+
+==================================================
+SHADING
+==================================================
+
+Use smooth gradients.
+
+Create soft transitions.
+
+Maintain clean blacks.
+
+Avoid muddy gray areas.
+
+==================================================
+CONTRAST
+==================================================
+
+Strong blacks.
+
+Bright highlights.
+
+Readable midtones.
+
+Never flatten the image.
+
+==================================================
+TEXTURES
+==================================================
+
+Create convincing fur.
+
+Natural feathers.
+
+Realistic stone.
+
+Natural wood grain.
+
+Reflective metal.
+
+Realistic flowers.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Wolf
+
+✓ Lion
+
+✓ Tiger
+
+✓ Owl
+
+✓ Raven
+
+✓ Rose
+
+✓ Clock
+
+✓ Compass
+
+✓ Skull
+
+✓ Portrait
+
+✓ Eagle
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Tiny lettering
+
+Micro tattoos
+
+Large abstract geometry
+
+Heavy tribal patterns
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• plastic textures
+
+• muddy blacks
+
+• over sharpen
+
+• cartoon anatomy
+
+• unrealistic eyes
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No skin.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Realistic
+
+✓ Tattooable
+
+✓ High contrast
+
+✓ Natural textures
+
+✓ Professional realism

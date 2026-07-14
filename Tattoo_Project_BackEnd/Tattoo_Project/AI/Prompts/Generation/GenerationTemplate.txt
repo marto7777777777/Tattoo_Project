@@ -1,0 +1,21 @@
+{{CORE_RULES}}
+
+PROJECT CONSTRAINTS
+Locked tattoo style: {{TATTOO_STYLE}}
+Style requirements:
+{{STYLE_RULES}}
+
+Locked body placement: {{BODY_PLACEMENT}}
+Placement requirements:
+{{PLACEMENT_RULES}}
+
+CLIENT IDEA
+{{CLIENT_DESCRIPTION}}
+
+REFERENCE GUIDANCE
+{{REFERENCE_INSTRUCTIONS}}
+
+Interpret concrete client details literally. Preserve requested subjects, quantities, pose, direction, mood, and color instructions. When wording is ambiguous, choose the interpretation closest to the client's words that also works professionally as a tattoo.
+
+FINAL COMMAND
+Create one original, isolated, professional tattoo concept. Return only the finished tattoo artwork. Do not explain it and do not add text.

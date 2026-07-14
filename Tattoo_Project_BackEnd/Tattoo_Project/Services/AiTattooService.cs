@@ -4,6 +4,8 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
+using Tattoo_Project.AI.Builders;
+using Tattoo_Project.AI.Models;
 using Tattoo_Project.DTOs.AiTattooDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
@@ -11,7 +13,7 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services;
 
-public class AiTattooService(TattooDbContext context, IWebHostEnvironment environment, IConfiguration configuration, IHttpClientFactory httpClientFactory) : IAiTattooService
+public class AiTattooService(TattooDbContext context, IWebHostEnvironment environment, IConfiguration configuration, IHttpClientFactory httpClientFactory, IAiTattooPromptBuilder promptBuilder) : IAiTattooService
 {
     private const int FreeEditLimit = 2;
     private readonly string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
@@ -32,7 +34,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         if(project==null)return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
         if(project.Versions.Count>0)return ResultService<AiTattooProjectDto>.Fail("This project already has an initial version.");
         if(!CanEdit(project))return ResultService<AiTattooProjectDto>.Fail("Unlock this project before generating its first version.");
-        var result=project.InitialReferenceImageUrl==null?await GenerateImageAsync(BuildInitialPrompt(project)):await EditImageAsync(ToPhysicalPath(project.InitialReferenceImageUrl),BuildInitialPrompt(project));
+        var result=project.InitialReferenceImageUrl==null?await GenerateImageAsync(await BuildInitialPromptAsync(project)):await EditImageAsync(ToPhysicalPath(project.InitialReferenceImageUrl),await BuildInitialPromptAsync(project));
         if(!result.Success)return ResultService<AiTattooProjectDto>.Fail(result.ErrorMessage!);
         project.Versions.Add(new AiTattooVersion{VersionNumber=1,Prompt=project.InitialDescription,ImageUrl=result.Data!,CreatedAt=DateTime.UtcNow});project.UpdatedAt=DateTime.UtcNow;await context.SaveChangesAsync();return ResultService<AiTattooProjectDto>.Ok(Map(project));
     }
@@ -71,8 +73,8 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         await context.SaveChangesAsync();
 
         var generation = referenceUrl == null
-            ? await GenerateImageAsync(BuildInitialPrompt(project))
-            : await EditImageAsync(ToPhysicalPath(referenceUrl), BuildInitialPrompt(project));
+            ? await GenerateImageAsync(await BuildInitialPromptAsync(project))
+            : await EditImageAsync(ToPhysicalPath(referenceUrl), await BuildInitialPromptAsync(project));
         if (!generation.Success)
         {
             context.AiTattooProjects.Remove(project);
@@ -107,7 +109,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         var source = dto.BaseVersionId.HasValue ? project.Versions.FirstOrDefault(x => x.Id == dto.BaseVersionId) : project.Versions.OrderByDescending(x => x.VersionNumber).FirstOrDefault();
         if (source == null) return ResultService<AiTattooProjectDto>.Fail("A source version was not found.");
 
-        var prompt = BuildEditPrompt(project, dto.Instruction.Trim());
+        var prompt = await BuildEditPromptAsync(project, dto.Instruction.Trim());
         var result = await EditImageAsync(ToPhysicalPath(source.ImageUrl), prompt);
         if (!result.Success) return ResultService<AiTattooProjectDto>.Fail(result.ErrorMessage!);
 
@@ -166,40 +168,23 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
 
     private bool CanEdit(AiTattooProject p) => p.EditingAccessUntil > DateTime.UtcNow || (p.IsFreeProject && p.FreeEditsUsed < FreeEditLimit);
     private AiTattooProjectDto Map(AiTattooProject p) => new() { Id=p.Id,Title=p.Title,TattooStyle=p.TattooStyle,Placement=p.Placement,InitialDescription=p.InitialDescription,IsFreeProject=p.IsFreeProject,FreeEditsUsed=p.FreeEditsUsed,FreeEditsRemaining=Math.Max(0,FreeEditLimit-p.FreeEditsUsed),EditingAccessUntil=p.EditingAccessUntil,CanEdit=CanEdit(p),NeedsPayment=!CanEdit(p),CreatedAt=p.CreatedAt,Versions=p.Versions.OrderBy(x=>x.VersionNumber).Select(x=>new AiTattooVersionDto{Id=x.Id,VersionNumber=x.VersionNumber,Prompt=x.Prompt,ImageUrl=x.ImageUrl,CreatedAt=x.CreatedAt}).ToList() };
-    private string BuildInitialPrompt(AiTattooProject p) => $"""
-Create a professional, isolated tattoo artwork concept only.
+    private Task<string> BuildInitialPromptAsync(AiTattooProject project) =>
+        promptBuilder.BuildGenerationPromptAsync(new AiTattooPromptContext
+        {
+            TattooStyle = project.TattooStyle,
+            Placement = project.Placement,
+            ClientDescription = project.InitialDescription,
+            HasReferenceImage = !string.IsNullOrWhiteSpace(project.InitialReferenceImageUrl)
+        });
 
-STRICT OUTPUT RULES:
-- Show ONLY the tattoo design itself, centered and fully visible.
-- Use a clean plain white or very light neutral background.
-- Do NOT show a person, arm, hand, leg, torso, back, chest, skin, body part, mannequin, tattoo mockup, studio, tattoo artist, tattoo machine, frame, paper texture, wall, clothing, text, lettering not requested by the user, logo, signature or watermark.
-- The selected body placement is compositional guidance only. NEVER draw the body part itself.
-- Keep generous empty space around the complete design; do not crop any part of the tattoo.
-- Produce a clear tattoo-reference illustration with strong readable shapes, practical line work and no unusably tiny details.
-
-LOCKED TATTOO STYLE: {p.TattooStyle}
-LOCKED BODY PLACEMENT FOR COMPOSITION ONLY: {p.Placement}
-USER CONCEPT: {p.InitialDescription}
-
-Adapt the proportions and flow so a tattoo artist could later place this design on the selected area, but output the isolated artwork only.
-""";
-
-    private string BuildEditPrompt(AiTattooProject p,string instruction) => $"""
-Edit the supplied image as the SAME tattoo project. Preserve the recognizable main concept and overall composition unless the requested change specifically adjusts them.
-
-STRICT OUTPUT RULES:
-- Return ONLY the isolated tattoo artwork, centered and fully visible, on a clean plain white or very light neutral background.
-- Remove and never add any person, arm, hand, leg, torso, back, chest, skin, body part, mannequin, tattoo mockup, studio, tattoo artist, tattoo machine, frame, paper texture, text, logo, signature or watermark.
-- The locked placement is composition guidance only. NEVER render the body part.
-- Do not crop the design. Keep clear empty margin around it.
-- Preserve tattoo readability and practical line/detail scale.
-
-LOCKED STYLE: {p.TattooStyle}
-LOCKED PLACEMENT FOR COMPOSITION ONLY: {p.Placement}
-REQUESTED CHANGE: {instruction}
-
-Apply only the requested refinement while keeping this visibly the same tattoo project.
-""";
+    private Task<string> BuildEditPromptAsync(AiTattooProject project, string instruction) =>
+        promptBuilder.BuildEditPromptAsync(new AiTattooEditContext
+        {
+            TattooStyle = project.TattooStyle,
+            Placement = project.Placement,
+            InitialDescription = project.InitialDescription,
+            EditInstruction = instruction
+        });
 
     private async Task<ResultService<string>> GenerateImageAsync(string prompt)
     {

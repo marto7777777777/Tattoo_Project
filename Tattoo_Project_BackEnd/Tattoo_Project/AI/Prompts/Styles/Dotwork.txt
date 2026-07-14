@@ -1,0 +1,134 @@
+DOTWORK TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Dotwork tattoo artwork.
+
+The entire tattoo should rely on controlled dot density instead of smooth gradients.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Depth should be created through thousands of precisely placed dots.
+
+Never imitate realism shading.
+
+Maintain clean spacing.
+
+==================================================
+LINE WORK
+==================================================
+
+Thin clean outlines.
+
+Minimal heavy contours.
+
+==================================================
+SHADING
+==================================================
+
+Only dot shading.
+
+Use different dot density.
+
+Never use blurry gradients.
+
+==================================================
+COMPOSITION
+==================================================
+
+Maintain symmetry.
+
+Maintain rhythm.
+
+Allow negative space to breathe.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Mandala
+
+✓ Sacred Geometry
+
+✓ Moon
+
+✓ Skull
+
+✓ Snake
+
+✓ Compass
+
+✓ Flowers
+
+✓ Ornamental
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Watercolor
+
+Heavy realism
+
+Trash Polka
+
+Biomechanical
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Precise
+
+Calm
+
+Elegant
+
+Mathematical
+
+Balanced
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• blurry shading
+
+• random dots
+
+• uneven density
+
+• muddy gradients
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Clean dot density
+
+✓ Readable contrast
+
+✓ Balanced composition
+
+✓ Tattoo ready
+
+END OF GUIDE

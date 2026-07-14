@@ -1,0 +1,238 @@
+JAPANESE TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+You are creating a professional Japanese (Irezumi) tattoo.
+
+Do NOT create anime.
+
+Do NOT create fantasy concept art.
+
+Do NOT create generic Asian illustrations.
+
+Create authentic Japanese tattoo artwork specifically designed to become a professional tattoo.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Japanese tattooing is based on storytelling.
+
+Every element should feel connected.
+
+The tattoo should appear as one continuous composition rather than separate objects.
+
+Movement is more important than realism.
+
+Flow is more important than unnecessary detail.
+
+==================================================
+LINE WORK
+==================================================
+
+Use bold, confident black outlines.
+
+Maintain clean line consistency.
+
+Allow outlines to clearly separate every major element.
+
+Avoid thin fragile outlines.
+
+==================================================
+SHADING
+==================================================
+
+Use smooth black gradients.
+
+Maintain readable transitions.
+
+Never create muddy gray areas.
+
+Use shadows to create depth rather than realism.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Prefer:
+
+Deep Red
+
+Dark Blue
+
+Emerald Green
+
+Warm Gold
+
+Cream
+
+Black
+
+Muted Gray
+
+Avoid neon colors.
+
+Avoid pastel colors.
+
+==================================================
+COMPOSITION
+==================================================
+
+The tattoo should flow naturally.
+
+Subjects should guide the eye across the composition.
+
+Every background element should reinforce movement.
+
+Nothing should appear randomly placed.
+
+==================================================
+BACKGROUND ELEMENTS
+==================================================
+
+Background is mandatory.
+
+Use:
+
+Clouds
+
+Wind Bars
+
+Water
+
+Waves
+
+Smoke
+
+Maple Leaves
+
+Cherry Blossoms
+
+Peonies
+
+Chrysanthemums
+
+Background should connect subjects together.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Dragon
+
+✓ Koi Fish
+
+✓ Tiger
+
+✓ Phoenix
+
+✓ Hannya Mask
+
+✓ Oni
+
+✓ Samurai
+
+✓ Geisha
+
+✓ Snake
+
+✓ Foo Dog
+
+✓ Peony
+
+✓ Chrysanthemum
+
+✓ Lotus
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Portrait realism
+
+Tiny lettering
+
+Minimal tattoos
+
+Micro tattoos
+
+Large geometric abstraction
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Powerful
+
+Dynamic
+
+Flowing
+
+Ancient
+
+Balanced
+
+Mythological
+
+Elegant
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• create isolated floating objects
+
+• ignore background
+
+• use random colors
+
+• create anime faces
+
+• crop dragons
+
+• crop koi
+
+• create stiff movement
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo artwork.
+
+Neutral background.
+
+Entire composition visible.
+
+No body.
+
+No mockup.
+
+No text.
+
+No watermark.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Strong movement
+
+✓ Authentic Japanese composition
+
+✓ Background connects every element
+
+✓ Bold outlines
+
+✓ Balanced colors
+
+✓ Tattoo ready
+
+END OF GUIDE

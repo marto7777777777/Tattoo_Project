@@ -1,0 +1,21 @@
+You are editing the supplied image as the same existing InkRoute tattoo project.
+
+{{CORE_RULES}}
+
+LOCKED PROJECT CONSTRAINTS
+Tattoo style: {{TATTOO_STYLE}}
+{{STYLE_RULES}}
+
+Body placement: {{BODY_PLACEMENT}}
+{{PLACEMENT_RULES}}
+
+Original project concept:
+{{INITIAL_DESCRIPTION}}
+
+Client's requested change:
+{{EDIT_REQUEST}}
+
+Operation-specific rules:
+{{EDIT_OPERATION_RULES}}
+
+Preserve everything the client did not explicitly request to change: main subject identity, approved elements, overall orientation, placement-compatible proportions, style language, color direction, and clean isolated presentation. Do not restart from scratch or produce an unrelated alternative. Apply the smallest controlled change that fully satisfies the request. Return only the updated isolated tattoo artwork.

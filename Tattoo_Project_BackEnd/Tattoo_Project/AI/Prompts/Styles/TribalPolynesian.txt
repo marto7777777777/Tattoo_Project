@@ -1,0 +1,160 @@
+TRIBAL TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create authentic Tribal tattoo artwork.
+
+Do NOT create random black shapes.
+
+Do NOT create abstract digital art.
+
+Create bold tattoo compositions inspired by authentic tribal traditions while remaining clean, balanced and tattooable.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Tribal tattoos rely on movement, rhythm and bold contrast.
+
+Every black shape should have purpose.
+
+Negative space is equally important as solid black.
+
+The design should naturally flow with the body.
+
+==================================================
+LINE WORK
+==================================================
+
+Use bold confident outlines.
+
+Transitions between shapes should be smooth.
+
+Avoid thin inconsistent lines.
+
+==================================================
+BLACK MASSES
+==================================================
+
+Use large solid black areas.
+
+Maintain clean edges.
+
+Avoid muddy transitions.
+
+Never create noisy textures.
+
+==================================================
+COMPOSITION
+==================================================
+
+The composition should feel continuous.
+
+Every element should connect naturally.
+
+Avoid isolated floating shapes.
+
+==================================================
+VISUAL RHYTHM
+==================================================
+
+Alternate black masses and negative space.
+
+Maintain visual balance.
+
+Allow the eye to travel naturally.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Polynesian Patterns
+
+✓ Maori Inspired Designs
+
+✓ Spear Elements
+
+✓ Shark Teeth
+
+✓ Waves
+
+✓ Sun Symbols
+
+✓ Animal Inspired Tribal
+
+✓ Abstract Flow
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Portrait realism
+
+Watercolor
+
+Fine Line
+
+Micro tattoos
+
+Random geometry
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Powerful
+
+Bold
+
+Ancient
+
+Warrior
+
+Confident
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• random black blobs
+
+• disconnected shapes
+
+• muddy fills
+
+• weak contrast
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+White background.
+
+No body.
+
+No mockup.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Strong black shapes
+
+✓ Clean negative space
+
+✓ Continuous flow
+
+✓ Bold tribal appearance
+
+✓ Tattoo ready
+
+END OF GUIDE

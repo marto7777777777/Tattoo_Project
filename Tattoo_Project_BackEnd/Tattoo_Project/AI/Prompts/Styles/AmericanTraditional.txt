@@ -1,0 +1,170 @@
+TRADITIONAL TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create authentic American Traditional tattoo artwork.
+
+The artwork should immediately communicate classic tattoo aesthetics.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+American Traditional values simplicity.
+
+Strong outlines.
+
+Solid colors.
+
+Maximum readability.
+
+The tattoo should remain recognizable even after decades.
+
+==================================================
+LINE WORK
+==================================================
+
+Extremely bold black outlines.
+
+Consistent thickness.
+
+No sketch lines.
+
+==================================================
+SHADING
+==================================================
+
+Minimal.
+
+Simple black shading.
+
+Avoid smooth realism.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Red
+
+Yellow
+
+Green
+
+Blue
+
+Black
+
+Minimal skin breaks.
+
+Avoid gradients.
+
+==================================================
+COMPOSITION
+==================================================
+
+One clear focal point.
+
+Simple secondary elements.
+
+Avoid unnecessary complexity.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Eagle
+
+✓ Panther
+
+✓ Snake
+
+✓ Rose
+
+✓ Skull
+
+✓ Dagger
+
+✓ Anchor
+
+✓ Ship
+
+✓ Swallow
+
+✓ Heart
+
+✓ Lady Head
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Photo realism
+
+Hyper realism
+
+Tiny details
+
+Complex textures
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Bold
+
+Classic
+
+Iconic
+
+Confident
+
+Timeless
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• thin outlines
+
+• muddy colors
+
+• realism shading
+
+• excessive detail
+
+• weak contrast
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate isolated tattoo artwork.
+
+White background.
+
+No body.
+
+No mockup.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Bold outline
+
+✓ Limited palette
+
+✓ High contrast
+
+✓ Simple composition
+
+✓ Classic tattoo style
+
+END OF GUIDE

@@ -1,0 +1,148 @@
+MINIMALIST TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create professional Minimalist tattoo artwork.
+
+Every line should have purpose.
+
+Remove everything unnecessary.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Minimalism communicates more using less.
+
+Simplicity creates elegance.
+
+The tattoo should remain recognizable with the fewest possible elements.
+
+==================================================
+LINE WORK
+==================================================
+
+Ultra clean.
+
+Thin.
+
+Consistent.
+
+No unnecessary details.
+
+==================================================
+SHADING
+==================================================
+
+Very limited.
+
+Often none.
+
+Use only when it improves readability.
+
+==================================================
+COMPOSITION
+==================================================
+
+One clear subject.
+
+Large negative space.
+
+Balanced proportions.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Moon
+
+✓ Sun
+
+✓ Stars
+
+✓ Mountains
+
+✓ Flowers
+
+✓ Snake
+
+✓ Birds
+
+✓ Waves
+
+✓ Coordinates
+
+✓ Symbols
+
+✓ Single words
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Biomechanical
+
+Japanese sleeve
+
+Portrait realism
+
+Large battle scenes
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Elegant
+
+Modern
+
+Clean
+
+Sophisticated
+
+Light
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• overcrowd the tattoo
+
+• unnecessary shading
+
+• excessive textures
+
+• decorative clutter
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Minimal
+
+✓ Clean
+
+✓ Readable
+
+✓ Balanced
+
+✓ Tattoo ready
+
+END OF GUIDE

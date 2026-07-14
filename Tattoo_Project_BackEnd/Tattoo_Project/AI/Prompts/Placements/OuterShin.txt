@@ -1,0 +1,117 @@
+PURPOSE
+
+Design a tattoo specifically intended for the OUTER SHIN.
+
+Never generate a leg.
+
+Create a strong vertical tattoo composition.
+
+==================================================
+
+PLACEMENT PRIORITY
+
+The shin favors bold readable artwork.
+
+The tattoo should feel aggressive and powerful.
+
+==================================================
+
+ANATOMICAL ANALYSIS
+
+The shin is long.
+
+Relatively narrow.
+
+Slightly wider near the knee.
+
+Gradually narrows toward the ankle.
+
+==================================================
+
+OVERALL SHAPE
+
+Preferred
+
+• Blade
+
+• Spear
+
+• Shield
+
+• Vertical ornament
+
+Avoid
+
+• Landscape
+
+• Square
+
+• Circular badge
+
+==================================================
+
+ASPECT RATIO
+
+Preferred
+
+3 : 1
+
+==================================================
+
+BEST SUBJECTS
+
+✓ Sword
+
+✓ Snake
+
+✓ Dragon
+
+✓ Skull
+
+✓ Wolf
+
+✓ Panther
+
+✓ Tiger
+
+✓ Dagger
+
+==================================================
+
+VISUAL MOOD
+
+Strong
+
+Aggressive
+
+Sharp
+
+Dominant
+
+==================================================
+
+COMMON AI MISTAKES
+
+Never
+
+• create body mockups
+
+• draw legs
+
+• crop lower section
+
+• create equal width
+
+==================================================
+
+FINAL CHECKLIST
+
+✓ Strong vertical flow
+
+✓ Upper wider
+
+✓ Natural taper
+
+✓ Powerful silhouette
+
+✓ Entire tattoo visible

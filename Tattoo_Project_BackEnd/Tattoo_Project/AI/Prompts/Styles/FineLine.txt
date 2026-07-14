@@ -1,0 +1,125 @@
+FINELINE TATTOO STYLE GUIDE
+
+==================================================
+PURPOSE
+==================================================
+
+Create elegant Fine Line tattoo artwork.
+
+Every line should feel intentional.
+
+Precision is more important than detail.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Fine Line tattoos rely on extremely clean thin lines.
+
+Elegance comes from simplicity.
+
+Avoid visual clutter.
+
+==================================================
+LINE WORK
+==================================================
+
+Ultra thin lines.
+
+Consistent thickness.
+
+Clean intersections.
+
+Avoid heavy outlines.
+
+==================================================
+SHADING
+==================================================
+
+Minimal.
+
+Soft.
+
+Mostly created through line density.
+
+==================================================
+CONTRAST
+==================================================
+
+Light.
+
+Elegant.
+
+Readable.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Flowers
+
+✓ Leaves
+
+✓ Botanical
+
+✓ Butterflies
+
+✓ Moon
+
+✓ Script
+
+✓ Feathers
+
+✓ Snake
+
+✓ Stars
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Large realistic portraits.
+
+Biomechanical.
+
+Heavy blackwork.
+
+Trash Polka.
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• thick outlines
+
+• heavy black fills
+
+• visual clutter
+
+• overlapping lines
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Elegant isolated tattoo.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Thin lines
+
+✓ Clean
+
+✓ Elegant
+
+✓ Readable
+
+✓ Tattooable

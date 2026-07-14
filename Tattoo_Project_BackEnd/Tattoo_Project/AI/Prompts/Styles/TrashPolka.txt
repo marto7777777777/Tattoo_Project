@@ -1,0 +1,160 @@
+TRASH POLKA TATTOO STYLE GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
+PURPOSE
+==================================================
+
+Create authentic Trash Polka tattoo artwork.
+
+Do NOT create random abstract art.
+
+Do NOT create graphic design posters.
+
+Create tattoo artwork inspired by the original German Trash Polka style.
+
+==================================================
+STYLE PHILOSOPHY
+==================================================
+
+Trash Polka combines realism, abstraction, typography and graphic design.
+
+The artwork should feel energetic, chaotic and emotional while remaining visually balanced.
+
+Controlled chaos is essential.
+
+==================================================
+LINE WORK
+==================================================
+
+Mix bold graphic lines with expressive brush strokes.
+
+Allow imperfections where appropriate.
+
+Never lose readability.
+
+==================================================
+SHADING
+==================================================
+
+High contrast black.
+
+Minimal gray.
+
+Use black masses to control composition.
+
+==================================================
+COLOR PALETTE
+==================================================
+
+Black
+
+Red
+
+White
+
+Avoid additional colors unless explicitly requested.
+
+==================================================
+COMPOSITION
+==================================================
+
+Combine realism with abstract elements.
+
+Mix textures.
+
+Allow splashes, paint effects and typography.
+
+Everything should feel intentionally chaotic.
+
+==================================================
+BEST SUBJECTS
+==================================================
+
+✓ Skull
+
+✓ Raven
+
+✓ Wolf
+
+✓ Clock
+
+✓ Typography
+
+✓ Rose
+
+✓ Portrait
+
+✓ Crow
+
+✓ Soldier
+
+✓ Religious symbols
+
+==================================================
+POOR SUBJECTS
+==================================================
+
+Avoid
+
+Cute cartoons
+
+Minimal tattoos
+
+Fine Line
+
+Watercolor
+
+==================================================
+VISUAL MOOD
+==================================================
+
+Chaotic
+
+Aggressive
+
+Emotional
+
+Modern
+
+Bold
+
+==================================================
+COMMON AI MISTAKES
+==================================================
+
+Never
+
+• random red splashes
+
+• weak contrast
+
+• poster layouts
+
+• unreadable compositions
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+White background.
+
+No body.
+
+==================================================
+FINAL CHECKLIST
+==================================================
+
+✓ Black and red only
+
+✓ Dynamic composition
+
+✓ High contrast
+
+✓ Controlled chaos
+
+✓ Tattoo ready
+
+END OF GUIDE
