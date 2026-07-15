@@ -1,21 +1,142 @@
-You are editing the supplied image as the same existing InkRoute tattoo project.
+You are editing the supplied image as the same existing
+InkRoute tattoo project.
+
+==================================================
+CORE TATTOO DESIGN RULES
+==================================================
 
 {{CORE_RULES}}
 
-LOCKED PROJECT CONSTRAINTS
-Tattoo style: {{TATTOO_STYLE}}
+==================================================
+LOCKED PROJECT STYLE
+==================================================
+
+Tattoo style:
+
+{{TATTOO_STYLE}}
+
 {{STYLE_RULES}}
 
-Body placement: {{BODY_PLACEMENT}}
+Do not change the selected tattoo style.
+
+==================================================
+LOCKED BODY PLACEMENT
+==================================================
+
+Body placement:
+
+{{BODY_PLACEMENT}}
+
 {{PLACEMENT_RULES}}
 
-Original project concept:
+Do not change the selected body placement.
+
+Maintain its proportions, orientation, silhouette, taper
+and visual flow.
+
+Never draw the body placement itself.
+
+==================================================
+ANATOMY AND STRUCTURAL INTEGRITY
+==================================================
+
+{{ANATOMY_RULES}}
+
+==================================================
+PROFESSIONAL TATTOO COMPOSITION
+==================================================
+
+{{PROFESSIONAL_COMPOSITION_RULES}}
+
+==================================================
+ORIGINAL PROJECT CONCEPT
+==================================================
+
 {{INITIAL_DESCRIPTION}}
 
-Client's requested change:
+==================================================
+CLIENT'S REQUESTED CHANGE
+==================================================
+
 {{EDIT_REQUEST}}
 
-Operation-specific rules:
+==================================================
+OPERATION-SPECIFIC RULES
+==================================================
+
 {{EDIT_OPERATION_RULES}}
 
-Preserve everything the client did not explicitly request to change: main subject identity, approved elements, overall orientation, placement-compatible proportions, style language, color direction, and clean isolated presentation. Do not restart from scratch or produce an unrelated alternative. Apply the smallest controlled change that fully satisfies the request. Return only the updated isolated tattoo artwork.
+==================================================
+CONTROLLED EDIT REQUIREMENTS
+==================================================
+
+The supplied image is the current approved project version.
+
+Preserve everything that the client did not explicitly request
+to change.
+
+Preserve:
+
+- the identity of the main subject;
+- all approved subjects;
+- the number of approved elements;
+- the locked tattoo style;
+- the locked body placement;
+- the placement-compatible proportions;
+- the overall orientation;
+- the established visual flow;
+- the primary focal point;
+- the approved color direction;
+- the general silhouette;
+- the negative-space structure;
+- the clean isolated presentation.
+
+Apply the smallest controlled visual change that fully satisfies
+the client's instruction.
+
+Do not restart the tattoo from the beginning.
+
+Do not create an unrelated alternative.
+
+Do not silently remove approved elements.
+
+Do not duplicate subjects.
+
+Do not damage or disconnect anatomy.
+
+Do not introduce a complete landscape or illustrated scene unless
+the client explicitly requests it.
+
+Do not add a human body, skin, body mockup, studio, equipment,
+text, signature, logo or watermark.
+
+Keep the complete tattoo visible.
+
+==================================================
+FINAL SELF-CHECK
+==================================================
+
+Before returning the edited image, silently verify:
+
+- Is the requested change clearly visible?
+- Did unrelated approved content remain intact?
+- Is the tattoo style unchanged?
+- Is the placement composition unchanged?
+- Is the anatomy coherent?
+- Is the focal point still clear?
+- Is the tattoo readable?
+- Is the full design visible?
+- Was no body part or mockup added?
+- Does this still look like the same tattoo project?
+
+If any answer is no, correct the result before finishing.
+
+==================================================
+FINAL COMMAND
+==================================================
+
+Return only the updated isolated tattoo artwork.
+
+Do not explain the edit.
+
+Do not add text or labels.

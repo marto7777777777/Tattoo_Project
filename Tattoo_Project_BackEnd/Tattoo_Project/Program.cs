@@ -6,6 +6,7 @@ using Tattoo_Project.Services;
 using Tattoo_Project.Services.Interfaces;
 using Tattoo_Project.AI.Builders;
 using Tattoo_Project.AI.Providers;
+using Tattoo_Project.AI.Planning;
 using Microsoft.AspNetCore.Identity;
 using Tattoo_Project.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -45,6 +46,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IAiTattooService, AiTattooService>();
             builder.Services.AddSingleton<IPromptFileProvider, PromptFileProvider>();
             builder.Services.AddScoped<IAiTattooPromptBuilder, AiTattooPromptBuilder>();
+            builder.Services.AddScoped<IAiTattooPlanner, AiTattooPlanner>();
             builder.Services.AddHttpClient();
 
             builder.Services.AddDbContext<TattooDbContext>(options => 

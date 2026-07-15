@@ -1,21 +1,141 @@
+==================================================
+CORE TATTOO DESIGN RULES
+==================================================
+
 {{CORE_RULES}}
 
-PROJECT CONSTRAINTS
-Locked tattoo style: {{TATTOO_STYLE}}
-Style requirements:
+==================================================
+LOCKED TATTOO STYLE
+==================================================
+
+Selected tattoo style:
+
+{{TATTOO_STYLE}}
+
+The selected style is a locked project constraint.
+
+Apply the following style-specific rules:
+
 {{STYLE_RULES}}
 
-Locked body placement: {{BODY_PLACEMENT}}
-Placement requirements:
+==================================================
+LOCKED BODY PLACEMENT
+==================================================
+
+Selected body placement:
+
+{{BODY_PLACEMENT}}
+
+The selected placement is a locked project constraint.
+
+Use the placement only to control the tattoo's proportions,
+orientation, taper, flow, silhouette and detail distribution.
+
+Never draw the body placement itself.
+
+Apply the following placement-specific rules:
+
 {{PLACEMENT_RULES}}
 
+==================================================
+ANATOMY AND STRUCTURAL INTEGRITY
+==================================================
+
+{{ANATOMY_RULES}}
+
+==================================================
+PROFESSIONAL TATTOO COMPOSITION
+==================================================
+
+{{PROFESSIONAL_COMPOSITION_RULES}}
+
+==================================================
 CLIENT IDEA
+==================================================
+
 {{CLIENT_DESCRIPTION}}
 
-REFERENCE GUIDANCE
+The client's description controls:
+
+- the requested subjects;
+- the requested number of elements;
+- the requested pose;
+- the requested direction;
+- the requested expression;
+- the requested mood;
+- the requested colors;
+- the relationship between subjects;
+- requested supporting elements;
+- explicitly forbidden elements.
+
+Interpret concrete instructions literally.
+
+Do not replace the client's concept with a generic or more
+popular tattoo idea.
+
+When wording is ambiguous, choose the interpretation that:
+
+1. remains closest to the client's words;
+2. respects the locked tattoo style;
+3. fits the locked body placement;
+4. produces a professional tattoo composition;
+5. introduces the fewest unnecessary assumptions.
+
+==================================================
+REFERENCE IMAGE GUIDANCE
+==================================================
+
 {{REFERENCE_INSTRUCTIONS}}
 
-Interpret concrete client details literally. Preserve requested subjects, quantities, pose, direction, mood, and color instructions. When wording is ambiguous, choose the interpretation closest to the client's words that also works professionally as a tattoo.
+==================================================
+FINAL DESIGN PROCESS
+==================================================
 
+Before rendering fine detail, silently establish:
+
+1. the main subject;
+2. the dominant focal point;
+3. the overall silhouette;
+4. the placement-compatible proportions;
+5. the main direction of movement;
+6. the supporting elements;
+7. the negative-space structure;
+8. the hierarchy of detail;
+9. the strongest black and light areas;
+10. the clean outer edge of the tattoo.
+
+Only after the composition is correct should fine detail be added.
+
+==================================================
 FINAL COMMAND
-Create one original, isolated, professional tattoo concept. Return only the finished tattoo artwork. Do not explain it and do not add text.
+==================================================
+
+Create one original, isolated, professional tattoo concept.
+
+Return only the finished tattoo artwork.
+
+Do not explain the result.
+
+Do not display planning notes.
+
+Do not add a title.
+
+Do not add labels.
+
+Do not add typography unless it was explicitly requested
+as part of the tattoo.
+
+Do not show a human body.
+
+Do not show skin.
+
+Do not show a body-placement mockup.
+
+Do not show a tattoo studio.
+
+Do not show tattoo equipment.
+
+Do not add a watermark or signature.
+
+The complete tattoo must be visible and surrounded by clean
+neutral negative space.

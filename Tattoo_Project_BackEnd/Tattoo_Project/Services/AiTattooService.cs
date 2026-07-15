@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.AI.Builders;
 using Tattoo_Project.AI.Models;
+using Tattoo_Project.AI.Planning;
 using Tattoo_Project.DTOs.AiTattooDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
@@ -13,7 +14,7 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services;
 
-public class AiTattooService(TattooDbContext context, IWebHostEnvironment environment, IConfiguration configuration, IHttpClientFactory httpClientFactory, IAiTattooPromptBuilder promptBuilder) : IAiTattooService
+public class AiTattooService(TattooDbContext context, IWebHostEnvironment environment, IConfiguration configuration, IHttpClientFactory httpClientFactory, IAiTattooPromptBuilder promptBuilder, IAiTattooPlanner tattooPlanner) : IAiTattooService
 {
     private const int FreeEditLimit = 2;
     private readonly string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
@@ -168,36 +169,48 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
 
     private bool CanEdit(AiTattooProject p) => p.EditingAccessUntil > DateTime.UtcNow || (p.IsFreeProject && p.FreeEditsUsed < FreeEditLimit);
     private AiTattooProjectDto Map(AiTattooProject p) => new() { Id=p.Id,Title=p.Title,TattooStyle=p.TattooStyle,Placement=p.Placement,InitialDescription=p.InitialDescription,IsFreeProject=p.IsFreeProject,FreeEditsUsed=p.FreeEditsUsed,FreeEditsRemaining=Math.Max(0,FreeEditLimit-p.FreeEditsUsed),EditingAccessUntil=p.EditingAccessUntil,CanEdit=CanEdit(p),NeedsPayment=!CanEdit(p),CreatedAt=p.CreatedAt,Versions=p.Versions.OrderBy(x=>x.VersionNumber).Select(x=>new AiTattooVersionDto{Id=x.Id,VersionNumber=x.VersionNumber,Prompt=x.Prompt,ImageUrl=x.ImageUrl,CreatedAt=x.CreatedAt}).ToList() };
-    private Task<string> BuildInitialPromptAsync(AiTattooProject project) =>
-        promptBuilder.BuildGenerationPromptAsync(new AiTattooPromptContext
-        {
-            TattooStyle = project.TattooStyle,
-            Placement = project.Placement,
-            ClientDescription = project.InitialDescription,
-            HasReferenceImage = !string.IsNullOrWhiteSpace(project.InitialReferenceImageUrl)
-        });
+    private async Task<string> BuildInitialPromptAsync(AiTattooProject project)
+    {
+        var planningContext = await promptBuilder.BuildGenerationPromptAsync(
+            new AiTattooPromptContext
+            {
+                TattooStyle = project.TattooStyle,
+                Placement = project.Placement,
+                ClientDescription = project.InitialDescription,
+                HasReferenceImage = !string.IsNullOrWhiteSpace(project.InitialReferenceImageUrl)
+            });
 
-    private Task<string> BuildEditPromptAsync(AiTattooProject project, string instruction) =>
-        promptBuilder.BuildEditPromptAsync(new AiTattooEditContext
-        {
-            TattooStyle = project.TattooStyle,
-            Placement = project.Placement,
-            InitialDescription = project.InitialDescription,
-            EditInstruction = instruction
-        });
+        return await tattooPlanner.CreateGenerationPromptAsync(planningContext);
+    }
+
+    private async Task<string> BuildEditPromptAsync(
+        AiTattooProject project,
+        string instruction)
+    {
+        var planningContext = await promptBuilder.BuildEditPromptAsync(
+            new AiTattooEditContext
+            {
+                TattooStyle = project.TattooStyle,
+                Placement = project.Placement,
+                InitialDescription = project.InitialDescription,
+                EditInstruction = instruction
+            });
+
+        return await tattooPlanner.CreateEditPromptAsync(planningContext);
+    }
 
     private async Task<ResultService<string>> GenerateImageAsync(string prompt)
     {
         var key=configuration["OpenAI:ApiKey"]; if(string.IsNullOrWhiteSpace(key)) return ResultService<string>.Fail("OpenAI is not configured.");
         using var req=new HttpRequestMessage(HttpMethod.Post,"https://api.openai.com/v1/images/generations"); req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",key);
-        req.Content=new StringContent(JsonSerializer.Serialize(new { model=configuration["OpenAI:ImageModel"]??"gpt-image-1.5", prompt, size="1024x1024", quality="medium", output_format="png"}),Encoding.UTF8,"application/json");
+        req.Content=new StringContent(JsonSerializer.Serialize(new { model=configuration["OpenAI:ImageModel"]??"gpt-image-2", prompt, size="1024x1024", quality="medium", output_format="png"}),Encoding.UTF8,"application/json");
         return await SendOpenAiImageRequest(req);
     }
     private async Task<ResultService<string>> EditImageAsync(string physicalPath,string prompt)
     {
         var key=configuration["OpenAI:ApiKey"]; if(string.IsNullOrWhiteSpace(key)) return ResultService<string>.Fail("OpenAI is not configured."); if(!File.Exists(physicalPath)) return ResultService<string>.Fail("Source image file was not found.");
         using var req=new HttpRequestMessage(HttpMethod.Post,"https://api.openai.com/v1/images/edits"); req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",key);
-        using var form=new MultipartFormDataContent(); form.Add(new StringContent(configuration["OpenAI:ImageModel"]??"gpt-image-1.5"),"model"); form.Add(new StringContent(prompt),"prompt"); form.Add(new StringContent("1024x1024"),"size"); form.Add(new StringContent("medium"),"quality"); form.Add(new StringContent("png"),"output_format");
+        using var form=new MultipartFormDataContent(); form.Add(new StringContent(configuration["OpenAI:ImageModel"]??"gpt-image-2"),"model"); form.Add(new StringContent(prompt),"prompt"); form.Add(new StringContent("1024x1024"),"size"); form.Add(new StringContent("medium"),"quality"); form.Add(new StringContent("png"),"output_format");
         var bytes=await File.ReadAllBytesAsync(physicalPath); var image=new ByteArrayContent(bytes); image.Headers.ContentType=new MediaTypeHeaderValue("image/png"); form.Add(image,"image",Path.GetFileName(physicalPath)); req.Content=form;
         return await SendOpenAiImageRequest(req);
     }
