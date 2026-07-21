@@ -75,6 +75,35 @@ namespace Tattoo_Project.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AiTattooProjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(140)", maxLength: 140, nullable: false),
+                    TattooStyle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Placement = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    InitialDescription = table.Column<string>(type: "nvarchar(3000)", maxLength: 3000, nullable: false),
+                    InitialReferenceImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsFreeProject = table.Column<bool>(type: "bit", nullable: false),
+                    FreeEditsUsed = table.Column<int>(type: "int", nullable: false),
+                    EditingAccessUntil = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiTattooProjects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AiTattooProjects_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -241,6 +270,63 @@ namespace Tattoo_Project.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AiProjectPayments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AiTattooProjectId = table.Column<int>(type: "int", nullable: false),
+                    StripeCheckoutSessionId = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    StripePaymentIntentId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AmountInMinorUnits = table.Column<long>(type: "bigint", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AccessGrantedUntil = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiProjectPayments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AiProjectPayments_AiTattooProjects_AiTattooProjectId",
+                        column: x => x.AiTattooProjectId,
+                        principalTable: "AiTattooProjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AiTattooVersions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AiTattooProjectId = table.Column<int>(type: "int", nullable: false),
+                    VersionNumber = table.Column<int>(type: "int", nullable: false),
+                    Prompt = table.Column<string>(type: "nvarchar(3000)", maxLength: 3000, nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ParentVersionId = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AiTattooVersions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AiTattooVersions_AiTattooProjects_AiTattooProjectId",
+                        column: x => x.AiTattooProjectId,
+                        principalTable: "AiTattooProjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AiTattooVersions_AiTattooVersions_ParentVersionId",
+                        column: x => x.ParentVersionId,
+                        principalTable: "AiTattooVersions",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -515,6 +601,35 @@ namespace Tattoo_Project.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AiProjectPayments_AiTattooProjectId",
+                table: "AiProjectPayments",
+                column: "AiTattooProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiProjectPayments_StripeCheckoutSessionId",
+                table: "AiProjectPayments",
+                column: "StripeCheckoutSessionId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiTattooProjects_UserId_IsFreeProject",
+                table: "AiTattooProjects",
+                columns: new[] { "UserId", "IsFreeProject" },
+                unique: true,
+                filter: "[IsFreeProject] = 1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiTattooVersions_AiTattooProjectId_VersionNumber",
+                table: "AiTattooVersions",
+                columns: new[] { "AiTattooProjectId", "VersionNumber" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AiTattooVersions_ParentVersionId",
+                table: "AiTattooVersions",
+                column: "ParentVersionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ArtistRequirement_TattooArtistId",
                 table: "ArtistRequirement",
                 column: "TattooArtistId");
@@ -654,6 +769,12 @@ namespace Tattoo_Project.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AiProjectPayments");
+
+            migrationBuilder.DropTable(
+                name: "AiTattooVersions");
+
+            migrationBuilder.DropTable(
                 name: "ArtistRequirement");
 
             migrationBuilder.DropTable(
@@ -700,6 +821,9 @@ namespace Tattoo_Project.Migrations
 
             migrationBuilder.DropTable(
                 name: "TattooSessions");
+
+            migrationBuilder.DropTable(
+                name: "AiTattooProjects");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

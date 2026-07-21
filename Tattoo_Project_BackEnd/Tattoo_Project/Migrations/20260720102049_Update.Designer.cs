@@ -12,7 +12,7 @@ using Tattoo_Project.Data;
 namespace Tattoo_Project.Migrations
 {
     [DbContext(typeof(TattooDbContext))]
-    [Migration("20260711104439_Update")]
+    [Migration("20260720102049_Update")]
     partial class Update
     {
         /// <inheritdoc />
@@ -156,6 +156,160 @@ namespace Tattoo_Project.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectPayment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("AccessGrantedUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AiTattooProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<long>("AmountInMinorUnits")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("StripeCheckoutSessionId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AiTattooProjectId");
+
+                    b.HasIndex("StripeCheckoutSessionId")
+                        .IsUnique();
+
+                    b.ToTable("AiProjectPayments");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiTattooProject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("EditingAccessUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("FreeEditsUsed")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InitialDescription")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<string>("InitialReferenceImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsFreeProject")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Placement")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TattooStyle")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(140)
+                        .HasColumnType("nvarchar(140)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "IsFreeProject")
+                        .IsUnique()
+                        .HasFilter("[IsFreeProject] = 1");
+
+                    b.ToTable("AiTattooProjects");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiTattooVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AiTattooProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("ParentVersionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Prompt")
+                        .IsRequired()
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentVersionId");
+
+                    b.HasIndex("AiTattooProjectId", "VersionNumber")
+                        .IsUnique();
+
+                    b.ToTable("AiTattooVersions");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.ApplicationUser", b =>
@@ -791,6 +945,46 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectPayment", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
+                        .WithMany("Payments")
+                        .HasForeignKey("AiTattooProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AiTattooProject");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiTattooProject", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiTattooVersion", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
+                        .WithMany("Versions")
+                        .HasForeignKey("AiTattooProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tattoo_Project.Models.AiTattooVersion", "ParentVersion")
+                        .WithMany()
+                        .HasForeignKey("ParentVersionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("AiTattooProject");
+
+                    b.Navigation("ParentVersion");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.ArtistRequirement", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
@@ -975,6 +1169,13 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
 
                     b.Navigation("TattooRequest");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiTattooProject", b =>
+                {
+                    b.Navigation("Payments");
+
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>

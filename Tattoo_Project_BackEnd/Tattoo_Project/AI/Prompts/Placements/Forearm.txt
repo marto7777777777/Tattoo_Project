@@ -9,9 +9,9 @@ This document defines the composition principles for tattoos specifically design
 
 The objective is NOT to draw a forearm.
 
-The objective is to create a tattoo that naturally fits the proportions and flow of a human forearm while being presented as an isolated artwork.
+The objective is to create a tattoo that naturally fits the proportions, usable width and vertical flow of a human forearm while being presented as isolated artwork.
 
-The final image must always look like a tattoo designed for this placement from the beginning.
+The final image must always look like a tattoo designed specifically for the forearm from the beginning.
 
 ==================================================
 PLACEMENT PRIORITY
@@ -21,7 +21,7 @@ Placement rules have higher priority than generic composition rules.
 
 If a generic composition rule conflicts with this guide, always follow this guide.
 
-Never sacrifice placement proportions for decorative elements.
+Never sacrifice natural forearm proportions or tattoo readability for decorative composition.
 
 ==================================================
 ANATOMICAL ANALYSIS
@@ -29,15 +29,17 @@ ANATOMICAL ANALYSIS
 
 The forearm is a long cylindrical body area.
 
-The elbow area provides the greatest available width.
+The available tattoo area is generally broader toward the upper forearm and moderately narrower toward the wrist.
 
-The wrist is significantly narrower.
+The design should acknowledge this anatomical change in width without exaggerating it.
 
-The tattoo should visually reflect this gradual change in width.
+The transition from upper forearm to wrist must be gradual and subtle.
 
-Never create equal width from top to bottom.
+Do NOT interpret the narrower wrist as a requirement for the artwork to converge into a sharp point.
 
-The design should feel comfortable when imagined wrapping around a cylindrical surface.
+The central portion of the design should maintain enough visual width and mass to feel substantial.
+
+The tattoo should feel comfortable when imagined following or partially wrapping around a cylindrical surface.
 
 The tattoo must visually belong to the forearm without showing the arm itself.
 
@@ -45,25 +47,45 @@ The tattoo must visually belong to the forearm without showing the arm itself.
 OVERALL SHAPE
 ==================================================
 
+The preferred silhouette is an elongated vertical composition with natural anatomical narrowing.
+
+The upper portion may be moderately wider and visually stronger.
+
+The middle should retain substantial readable width rather than continuously collapsing inward.
+
+The lower portion may become moderately narrower toward the wrist, but must preserve enough width to remain visually balanced.
+
+The narrowing must be subtle, organic and anatomically believable.
+
+The design must NOT terminate as a spear point, needle, sharp triangle or excessively thin tail unless the requested subject naturally requires that shape.
+
 Preferred silhouettes:
 
-• Vertical spear
-• Tapered column
-• Organic blade
-• Elongated diamond
-• Flowing ornamental strip
+• Elongated vertical composition
+• Soft tapered column
+• Organic vertical flow
+• Gently narrowing composition
+• Balanced elongated silhouette
+• Natural forearm-shaped composition
 
 Avoid:
 
-• Square
-• Circle
-• Perfect rectangle
-• Landscape composition
-• Equal width column
+• Sharp spear silhouettes
+• Needle-like endings
+• Extreme triangular taper
+• Long pointed bottom tips
+• Excessively thin lower sections
+• Artificial blade shapes
+• Strong diamond silhouettes
+• Square compositions
+• Circular compositions
+• Perfect rectangles
+• Landscape compositions
+• Completely equal width from top to bottom
 
-The upper portion should feel stronger and slightly wider.
+The difference between upper and lower width should remain controlled.
 
-The lower portion should gradually narrow.
+Forearm anatomy should influence the silhouette without becoming an exaggerated geometric shape.
 
 ==================================================
 ASPECT RATIO
@@ -73,45 +95,57 @@ Preferred ratio:
 
 Height : Width
 
-3 : 1
+Approximately 2.5 : 1 to 3 : 1
 
 Acceptable range:
 
-2.6 : 1
+2.3 : 1
 
 to
 
-3.5 : 1
+3.2 : 1
 
-The tattoo should always appear taller than it is wide.
+The tattoo should clearly appear taller than it is wide.
+
+Do not achieve the vertical ratio by making the lower section unnaturally thin.
+
+Maintain useful visual width through the middle and lower portions of the composition.
 
 ==================================================
 VISUAL FLOW
 ==================================================
 
-The eye should naturally travel from top to bottom.
+The eye should naturally travel vertically through the composition.
 
-Every secondary element should reinforce this movement.
+The design may use subtle curves, overlapping forms and directional changes to create organic movement.
+
+Secondary elements should reinforce the overall vertical flow without forcing every element into a straight central line.
 
 Avoid abrupt direction changes.
 
-Avoid creating disconnected visual islands.
+Avoid disconnected visual islands.
 
-Create one continuous readable composition.
+Avoid artificial symmetry when the subject benefits from organic movement.
+
+Create one continuous, readable composition.
 
 ==================================================
 FOCAL POINT
 ==================================================
 
-Place the main focal point approximately within the upper third of the composition.
+The primary focal point should normally occupy the upper third or upper-middle region of the composition.
+
+It should receive the strongest visual emphasis and highest concentration of important detail.
 
 Do not place the largest visual mass directly above the wrist.
 
-The focal point should immediately attract attention.
+For portraits and large animal heads, allow sufficient width around the focal subject so it does not appear compressed.
 
 ==================================================
 SECONDARY ELEMENTS
 ==================================================
+
+Supporting elements may include:
 
 Flowers
 
@@ -127,23 +161,33 @@ Clouds
 
 Decorative ornaments
 
-should support the main subject.
+or other elements appropriate to the selected tattoo style and client request.
 
-Never overpower the primary subject.
+They should support the primary subject and help connect the composition vertically.
 
-Secondary elements should help create vertical movement.
+They may gradually become smaller or simpler toward the wrist, but should not be repeatedly reduced until the entire design collapses into a single narrow point.
+
+Supporting elements should create transitions, balance and movement.
+
+Never allow them to overpower the primary subject.
+
+Never add major unrelated subjects simply to fill space.
 
 ==================================================
 NEGATIVE SPACE
 ==================================================
 
-Preserve clean breathing room around the silhouette.
+Preserve clean breathing room around major forms.
 
-Do not allow decorative elements to touch the canvas edges.
+Use negative space to separate important elements and maintain readability.
 
-Use negative space to separate major forms.
+Do not fill every available area.
 
-Avoid filling every empty area.
+Negative space may participate in the outer silhouette and help create a natural lower transition.
+
+Do not force physical objects, stems, lines or ornaments to continue downward merely to create additional length.
+
+The lower composition may finish through controlled negative space rather than through a pointed object.
 
 ==================================================
 DETAIL DENSITY
@@ -151,65 +195,102 @@ DETAIL DENSITY
 
 Highest detail:
 
-Upper center.
+Primary focal area.
 
 Medium detail:
 
-Middle section.
+Supporting middle areas.
 
-Lowest detail:
+Controlled and simplified detail:
 
-Lower end.
+Lower section toward the wrist.
 
-The tattoo should become visually lighter toward the wrist.
+Lower detail does NOT mean dramatically reducing the physical width of the composition.
+
+Simplify internal information before reducing the overall silhouette.
+
+The tattoo should become visually lighter toward the wrist through reduced detail, softer transitions and increased negative space rather than extreme geometric tapering.
 
 ==================================================
 EDGE TREATMENT
 ==================================================
 
-The upper edge may end boldly.
+The upper edge may end boldly or with a naturally shaped contour appropriate to the subject.
 
-The lower edge should finish naturally.
+Side edges should remain organic and follow the movement of the composition.
 
-Avoid blunt horizontal endings.
+The lower edge should finish naturally and softly.
 
-Create elegant transitions.
+Good lower endings may use:
+
+• Leaves
+• Flower petals
+• Hair
+• Smoke
+• Shadows
+• Organic shapes
+• Partial supporting elements
+• Controlled negative-space fade
+• Soft asymmetrical transitions
+
+Avoid blunt horizontal endings when they do not suit the composition.
+
+Also avoid:
+
+• Sharp pointed endings
+• Needle-like tips
+• Single long stems used only to extend the design
+• Artificial spear endings
+• Excessively narrow tails
+• Forced triangular convergence
+
+A natural open ending is preferable to an artificial pointed ending.
 
 ==================================================
 SUBJECT SCALING
 ==================================================
 
-Animals should remain vertically oriented.
+Animals should use a vertically readable composition while preserving natural anatomy.
 
-Portraits should occupy the upper half.
+Portraits should normally occupy the upper portion or upper half and retain enough surrounding width to remain visually strong.
 
-Flowers should frame, not dominate.
+Flowers should frame, connect or support rather than dominate unless flowers are the requested primary subject.
 
-Weapons should follow the vertical axis.
+Weapons may follow the vertical axis when appropriate to the requested concept.
 
-Snakes should naturally wrap along the composition.
+Snakes may create controlled vertical movement or wrapping flow.
 
-Dragons should flow vertically.
+Dragons should use elongated movement without being forced into an unnaturally narrow silhouette.
+
+Long hair, smoke, leaves and ornamental elements may help transition through the composition but should not automatically create a pointed lower tip.
 
 ==================================================
 PROFESSIONAL TATTOO PRINCIPLES
 ==================================================
 
-Design the tattoo as if it will be tattooed tomorrow.
+Design the tattoo as if it will be tattooed on a real forearm.
 
 Maintain readability.
 
-Maintain balance.
+Maintain visual balance.
 
-Maintain clean silhouettes.
+Maintain a strong but natural silhouette.
+
+Maintain enough usable width through the central composition.
+
+Respect the narrower wrist without exaggerating it.
+
+Use negative space intelligently.
 
 Avoid unnecessary complexity.
 
 Avoid meaningless filler.
 
-Every line should have purpose.
+Avoid forcing decorative elements into empty areas only to preserve a predetermined geometric shape.
 
-Every decorative element should improve composition.
+Every major element should have a compositional purpose.
+
+Every supporting element should improve flow, hierarchy or readability.
 
 ==================================================
 COMMON AI MISTAKES
@@ -217,25 +298,25 @@ COMMON AI MISTAKES
 
 Never create:
 
-• square layouts
-
-• landscape layouts
-
-• body mockups
-
-• visible arms
-
-• cropped designs
-
-• oversized lower sections
-
-• equal width silhouettes
-
-• multiple disconnected subjects
-
-• decorative clutter
-
-• poster compositions
+• Square layouts
+• Landscape layouts
+• Body mockups
+• Visible arms
+• Visible skin
+• Cropped designs
+• Extremely wide lower sections
+• Extremely narrow lower sections
+• Spear-shaped compositions
+• Needle-like bottom endings
+• Long pointed tails
+• Artificial triangular tapering
+• Strong elongated diamond silhouettes
+• Single stems extending downward only to create length
+• Completely equal-width rigid columns
+• Multiple disconnected subjects
+• Decorative clutter
+• Poster compositions
+• Background scenes
 
 ==================================================
 OUTPUT REQUIREMENTS
@@ -248,6 +329,8 @@ One isolated tattoo artwork.
 White or neutral background.
 
 Entire tattoo visible.
+
+Clean empty margins around the artwork.
 
 No body.
 
@@ -269,19 +352,29 @@ FINAL VALIDATION CHECKLIST
 
 ✓ Correct forearm proportions
 
-✓ Clearly vertical
+✓ Clearly vertical composition
 
-✓ Tapered silhouette
+✓ Moderate natural narrowing toward the wrist
 
-✓ Strong upper focal point
+✓ No exaggerated taper
 
-✓ Smooth downward flow
+✓ No sharp pointed lower ending
+
+✓ Sufficient visual width through the middle
+
+✓ Strong upper or upper-middle focal point
+
+✓ Smooth vertical flow
 
 ✓ Balanced composition
 
-✓ Secondary elements support the subject
+✓ Lower section becomes lighter without becoming needle-thin
+
+✓ Secondary elements support the primary subject
 
 ✓ Negative space preserved
+
+✓ Natural lower transition
 
 ✓ Entire tattoo visible
 

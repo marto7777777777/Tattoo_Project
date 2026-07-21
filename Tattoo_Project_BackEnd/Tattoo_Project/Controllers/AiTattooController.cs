@@ -29,14 +29,6 @@ public class AiTattooController(IAiTattooService service, TattooDbContext contex
         var r=await service.GetProjectAsync(id,uid); return r.Success?Ok(r.Data):NotFound(r.ErrorMessage);
     }
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
-    [HttpPost("paid-draft")]
-    [RequestSizeLimit(12_000_000)]
-    public async Task<IActionResult> CreatePaidDraft([FromForm] CreateAiTattooProjectDto dto)
-    {
-        var uid=User.FindFirstValue(ClaimTypes.NameIdentifier); if(uid==null)return Unauthorized();
-        var r=await service.CreatePaidDraftAsync(dto,uid); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
-    }
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpPost("{id:int}/generate")]
     public async Task<IActionResult> Generate(int id)
     {
@@ -117,18 +109,6 @@ public class AiTattooController(IAiTattooService service, TattooDbContext contex
         return PhysicalFile(fullPath, contentType, downloadName, enableRangeProcessing: true);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
-    [HttpPost("{id:int}/checkout")]
-    public async Task<IActionResult> Checkout(int id)
-    {
-        var uid=User.FindFirstValue(ClaimTypes.NameIdentifier); if(uid==null)return Unauthorized();
-        var r=await service.CreateCheckoutAsync(id,uid); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
-    }
-    [AllowAnonymous]
-    [HttpPost("stripe-webhook")]
-    public async Task<IActionResult> StripeWebhook()
-    {
-        using var reader=new StreamReader(Request.Body); var payload=await reader.ReadToEndAsync(); var signature=Request.Headers["Stripe-Signature"].ToString();
-        var r=await service.ProcessStripeWebhookAsync(payload,signature); return r.Success?Ok():BadRequest(r.ErrorMessage);
-    }
+    // Stripe service logic is intentionally kept in AiTattooService for later reactivation.
+    // Payment endpoints are not exposed while the AI Studio is in free-only mode.
 }

@@ -31,25 +31,30 @@ public sealed class AiTattooPlanner(
         CancellationToken cancellationToken = default)
     {
         return CreatePromptAsync(
-            "Create the final concise prompt for EDITING the supplied current tattoo image. Preserve approved content and describe only the controlled changes required.",
+            "Create the final concise prompt for EDITING the supplied current tattoo image. " +
+            "Preserve approved content and describe only the controlled changes required.",
             planningContext,
             cancellationToken);
     }
 
     private async Task<string> CreatePromptAsync(
-    string task,
-    string planningContext,
-    CancellationToken cancellationToken)
+        string task,
+        string planningContext,
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(planningContext))
+        {
             throw new ArgumentException(
                 "Planning context is required.",
                 nameof(planningContext));
+        }
 
         var apiKey = configuration["OpenAI:ApiKey"];
 
         if (string.IsNullOrWhiteSpace(apiKey) ||
-            apiKey.Contains("YOUR_", StringComparison.OrdinalIgnoreCase))
+            apiKey.Contains(
+                "YOUR_",
+                StringComparison.OrdinalIgnoreCase))
         {
             throw new InvalidOperationException(
                 "OpenAI is not configured for the tattoo planner.");
@@ -74,28 +79,31 @@ public sealed class AiTattooPlanner(
                 "OpenAI:TextModel is not configured.");
         }
 
+        var maxOutputTokens =
+            configuration.GetValue<int?>(
+                "OpenAI:PlannerMaxOutputTokens") ?? 1400;
+
         var payload = new
         {
             model,
             instructions,
             input =
                 $"{task}\n\n" +
-                $"COMPLETE TATTOO PLANNING CONTEXT:\n{planningContext}",
-            max_output_tokens =
-                configuration.GetValue<int?>(
-                    "OpenAI:PlannerMaxOutputTokens") ?? 1400
+                "COMPLETE TATTOO PLANNING CONTEXT:\n" +
+                planningContext,
+            max_output_tokens = maxOutputTokens
         };
 
-        // LOG 1: показва кой модел се използва и колко е дълъг контекстът.
-        // Не логваме API ключа.
         logger.LogInformation(
             "Tattoo planner request started. " +
             "Model: {Model}. " +
             "Task: {Task}. " +
-            "Context length: {ContextLength} characters.",
+            "Context length: {ContextLength} characters. " +
+            "Maximum output tokens: {MaxOutputTokens}.",
             model,
             task,
-            planningContext.Length);
+            planningContext.Length,
+            maxOutputTokens);
 
         using var request = new HttpRequestMessage(
             HttpMethod.Post,
@@ -136,28 +144,36 @@ public sealed class AiTattooPlanner(
                 $"Tattoo planner request failed: {responseBody}");
         }
 
-        var prompt = ExtractText(responseBody);
+        var prompt = ExtractText(responseBody).Trim();
 
         if (string.IsNullOrWhiteSpace(prompt))
         {
+            logger.LogError(
+                "Tattoo planner returned an empty prompt. " +
+                "Model: {Model}. Response: {ResponseBody}",
+                model,
+                responseBody);
+
             throw new InvalidOperationException(
                 "The tattoo planner returned an empty image prompt.");
         }
 
-        prompt = prompt.Trim();
-
-        // LOG 2: показва крайния prompt, който ще отиде към image модела.
         logger.LogInformation(
-            "Tattoo planner completed. " +
+            "Tattoo planner completed successfully. " +
             "Model: {Model}. " +
-            "Final prompt length: {PromptLength} characters." +
-            "{NewLine}========== FINAL IMAGE PROMPT ==========" +
-            "{NewLine}{Prompt}" +
-            "{NewLine}========================================",
+            "Final prompt length: {PromptLength} characters.",
             model,
-            prompt.Length,
-            Environment.NewLine,
-            prompt);
+            prompt.Length);
+
+        // Показва пълния prompt в конзолата без сложни logger placeholders.
+        Console.WriteLine();
+        Console.WriteLine("========== FINAL IMAGE PROMPT ==========");
+        Console.WriteLine($"Planner model: {model}");
+        Console.WriteLine($"Prompt length: {prompt.Length} characters");
+        Console.WriteLine();
+        Console.WriteLine(prompt);
+        Console.WriteLine("========================================");
+        Console.WriteLine();
 
         return prompt;
     }
@@ -167,13 +183,17 @@ public sealed class AiTattooPlanner(
         using var document = JsonDocument.Parse(responseBody);
         var root = document.RootElement;
 
-        if (root.TryGetProperty("output_text", out var outputText) &&
+        if (root.TryGetProperty(
+                "output_text",
+                out var outputText) &&
             outputText.ValueKind == JsonValueKind.String)
         {
             return outputText.GetString() ?? string.Empty;
         }
 
-        if (!root.TryGetProperty("output", out var output) ||
+        if (!root.TryGetProperty(
+                "output",
+                out var output) ||
             output.ValueKind != JsonValueKind.Array)
         {
             return string.Empty;
@@ -183,7 +203,9 @@ public sealed class AiTattooPlanner(
 
         foreach (var item in output.EnumerateArray())
         {
-            if (!item.TryGetProperty("content", out var content) ||
+            if (!item.TryGetProperty(
+                    "content",
+                    out var content) ||
                 content.ValueKind != JsonValueKind.Array)
             {
                 continue;
@@ -191,16 +213,25 @@ public sealed class AiTattooPlanner(
 
             foreach (var contentItem in content.EnumerateArray())
             {
-                if (contentItem.TryGetProperty("text", out var text) &&
-                    text.ValueKind == JsonValueKind.String)
+                if (!contentItem.TryGetProperty(
+                        "text",
+                        out var text) ||
+                    text.ValueKind != JsonValueKind.String)
                 {
-                    var value = text.GetString();
-                    if (!string.IsNullOrWhiteSpace(value))
-                        parts.Add(value);
+                    continue;
+                }
+
+                var value = text.GetString();
+
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    parts.Add(value);
                 }
             }
         }
 
-        return string.Join(Environment.NewLine, parts);
+        return string.Join(
+            Environment.NewLine,
+            parts);
     }
 }

@@ -34,7 +34,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         var project=await context.AiTattooProjects.Include(x=>x.Versions).FirstOrDefaultAsync(x=>x.Id==id&&x.UserId==userId);
         if(project==null)return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
         if(project.Versions.Count>0)return ResultService<AiTattooProjectDto>.Fail("This project already has an initial version.");
-        if(!CanEdit(project))return ResultService<AiTattooProjectDto>.Fail("Unlock this project before generating its first version.");
+        if(!CanEdit(project))return ResultService<AiTattooProjectDto>.Fail("This project is not available for generation.");
         var result=project.InitialReferenceImageUrl==null?await GenerateImageAsync(await BuildInitialPromptAsync(project)):await EditImageAsync(ToPhysicalPath(project.InitialReferenceImageUrl),await BuildInitialPromptAsync(project));
         if(!result.Success)return ResultService<AiTattooProjectDto>.Fail(result.ErrorMessage!);
         project.Versions.Add(new AiTattooVersion{VersionNumber=1,Prompt=project.InitialDescription,ImageUrl=result.Data!,CreatedAt=DateTime.UtcNow});project.UpdatedAt=DateTime.UtcNow;await context.SaveChangesAsync();return ResultService<AiTattooProjectDto>.Ok(Map(project));
@@ -47,7 +47,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
 
         var hasFreeProject = await context.AiTattooProjects.AnyAsync(x => x.UserId == userId && x.IsFreeProject);
         if (hasFreeProject)
-            return ResultService<AiTattooProjectDto>.Fail("Your free AI project has already been used. Create a paid project from the AI Studio.");
+            return ResultService<AiTattooProjectDto>.Fail("You have already used your one free AI tattoo project.");
 
         string? referenceUrl = null;
         if (dto.ReferenceImage != null)
@@ -105,7 +105,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         var project = await context.AiTattooProjects.Include(x => x.Versions).FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
         if (project == null) return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
         if (string.IsNullOrWhiteSpace(dto.Instruction)) return ResultService<AiTattooProjectDto>.Fail("Edit instruction is required.");
-        if (!CanEdit(project)) return ResultService<AiTattooProjectDto>.Fail("This project is paused. Unlock it for 30 days to continue editing.");
+        if (!CanEdit(project)) return ResultService<AiTattooProjectDto>.Fail("The two free improvements for this project have already been used.");
 
         var source = dto.BaseVersionId.HasValue ? project.Versions.FirstOrDefault(x => x.Id == dto.BaseVersionId) : project.Versions.OrderByDescending(x => x.VersionNumber).FirstOrDefault();
         if (source == null) return ResultService<AiTattooProjectDto>.Fail("A source version was not found.");
