@@ -221,13 +221,13 @@ function AiTattooProjectPage() {
             <strong>
               {project.canEdit
                 ? "AI editing available"
-                : "Free edit limit reached"}
+                : "AI editing unavailable"}
             </strong>
 
             <small>
               {project.canEdit
                 ? `${project.freeEditsRemaining} improvements remaining`
-                : "Both free improvements have been used"}
+                : "This project cannot currently be edited"}
             </small>
           </div>
         </div>
@@ -439,11 +439,13 @@ function AiTattooProjectPage() {
                 <span>🤖</span>
 
                 <h3>
-                  Free edit limit reached
+                  AI editing is unavailable
                 </h3>
 
                 <p>
-                  This project has used both free improvements. No additional edits are available.
+                  Payment checkout has been removed
+                  while the AI Studio is under
+                  development.
                 </p>
               </div>
             )}
