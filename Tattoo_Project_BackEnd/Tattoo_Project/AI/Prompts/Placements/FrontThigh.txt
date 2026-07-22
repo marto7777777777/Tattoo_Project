@@ -19,6 +19,10 @@ The thigh supports large detailed artwork.
 
 The composition should appear powerful but elegant.
 
+Use the available width of the thigh when the requested subject benefits from a broad composition.
+
+Do not unnecessarily compress naturally broad subjects into narrow geometric silhouettes.
+
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
@@ -27,9 +31,11 @@ The thigh provides one of the largest tattoo areas.
 
 It is broad at the top.
 
-Gradually narrows toward the knee.
+It gradually becomes narrower toward the knee.
 
-The tattoo should visually follow this transition.
+The tattoo should acknowledge this anatomical transition without copying it as a fixed geometric outline.
+
+The composition should retain substantial visual width through the middle and lower sections when appropriate to the subject.
 
 ==================================================
 OVERALL SHAPE
@@ -37,13 +43,13 @@ OVERALL SHAPE
 
 Preferred silhouettes
 
-• Tall shield
+• Broad organic vertical composition
 
-• Vertical diamond
+• Naturally structured vertical composition
 
-• Ornamental frame
+• Subject-led asymmetrical composition
 
-• Strong column
+• Flowing large-scale composition
 
 Avoid
 
@@ -52,6 +58,18 @@ Avoid
 • Equal-width rectangles
 
 • Circular badges
+
+• Fixed shield silhouettes
+
+• Diamond silhouettes
+
+• Spear or blade silhouettes
+
+• Forced pointed lower endings
+
+The exact outer contour should emerge naturally from the requested subject, supporting elements and tattoo style.
+
+Do not arrange secondary elements solely to complete a predetermined geometric shape.
 
 ==================================================
 ASPECT RATIO
@@ -73,11 +91,17 @@ to
 VISUAL FLOW
 ==================================================
 
-Movement should travel vertically.
+Movement should travel primarily vertically.
 
-The eye should naturally move downward.
+The eye should naturally move through the complete composition.
 
-The silhouette should gently taper.
+Use the broad thigh surface confidently rather than making the artwork unnecessarily narrow.
+
+The silhouette may narrow gently with the thigh anatomy, but the narrowing should remain organic and subject-dependent.
+
+The lower section should retain meaningful visual structure and must not automatically converge into a centered point.
+
+Asymmetrical or staggered endings are allowed when they improve the requested composition.
 
 ==================================================
 BEST SUITED SUBJECTS
@@ -135,7 +159,13 @@ DETAIL DENSITY
 
 Highest detail belongs near the upper half.
 
-Reduce complexity toward the knee.
+Maintain enough structure and visual weight through the middle of the composition.
+
+Reduce complexity gradually toward the knee when appropriate.
+
+Reduced detail does not require reduced width.
+
+Do not create a thin lower extension only to make the artwork appear tapered.
 
 ==================================================
 COMMON AI MISTAKES
@@ -153,6 +183,28 @@ Never create
 
 • cropped artwork
 
+• predetermined shield shapes
+
+• diamond-shaped compositions
+
+• unnecessary pointed endings
+
+• narrow spear-like compositions
+
+• secondary elements arranged only to manufacture a geometric outline
+
+==================================================
+SILHOUETTE INTERPRETATION
+==================================================
+
+Anatomy defines the available proportions, flow and limits of the placement; it does not automatically define one fixed geometric silhouette.
+
+Let the requested subject and tattoo style determine the exact outer contour within those anatomical limits.
+
+Anatomical narrowing should influence the composition subtly and must not automatically create a spear, blade, needle, shield, sharp triangle or pointed tail.
+
+A naturally pointed element is acceptable when it genuinely belongs to the requested subject, but it must not be added merely to force the overall tattoo into a tapered shape.
+
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
@@ -168,12 +220,61 @@ No leg.
 No body.
 
 ==================================================
+ELONGATED PLACEMENT PROPORTION CONTROL
+==================================================
+
+This is an elongated anatomical placement. Use its available LENGTH deliberately.
+
+Do not achieve the required vertical proportion by stretching or deforming the primary subject.
+
+Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
+
+Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
+
+Do not repeatedly shrink secondary elements until they converge into one centered point.
+
+Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
+
+The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
+
+A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
+
+Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
+
+
+==================================================
+THIGH LENGTH UTILIZATION
+==================================================
+
+The front thigh is a broad surface, but the tattoo must still read as a distinctly elongated vertical composition.
+
+Use the available vertical length confidently. Do not allow the design to collapse into a compact badge, short shield, oval, or near-square arrangement simply because the thigh provides substantial width.
+
+Keep the primary subject anatomically natural and correctly proportioned. Never stretch the main subject vertically just to satisfy the placement.
+
+Build additional height through connected, subject-appropriate elements such as flowing anatomy, tails, fabric, flowers, foliage, branches, weapons, ornaments, clouds, waves, architectural forms, or other supporting structures that genuinely belong to the requested concept.
+
+Supporting elements may continue below or around the main focal point to create a complete large-scale thigh composition while retaining substantial width through the middle.
+
+Do not add arbitrary filler solely to make the tattoo longer.
+
+The final result should feel large, broad and powerful, but clearly taller than a compact badge or chest-like composition.
+
+Vertical extension must remain coherent with the requested subject, style and visual hierarchy.
+
+==================================================
 FINAL CHECKLIST
 ==================================================
 
-✓ Broad upper section
+✓ Broad use of the front-thigh area
 
-✓ Natural taper
+✓ Subject-led outer silhouette
+
+✓ Gentle anatomical adaptation
+
+✓ Substantial middle and lower structure
+
+✓ No forced central point at the bottom
 
 ✓ Strong vertical flow
 
