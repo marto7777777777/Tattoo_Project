@@ -41,6 +41,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IClientFavoriteArtistService, ClientFavoriteArtistService>();
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             builder.Services.AddScoped<IAiTattooService, AiTattooService>();
@@ -117,6 +118,8 @@ namespace Tattoo_Project
 
 
             app.MapControllers();
+
+            AdminSeedService.EnsureAdminAsync(app.Services, app.Configuration).GetAwaiter().GetResult();
 
             app.Run();
         }

@@ -45,7 +45,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [HttpGet("recommended")]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Client)]
         public async Task<IActionResult> GetRecommendedTattooArtists()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -117,7 +117,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateTattooArtistProfile(
             UpdateArtistDto dto)

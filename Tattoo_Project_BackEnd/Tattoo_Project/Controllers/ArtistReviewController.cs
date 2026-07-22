@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.ArtistReviewDTOs;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
@@ -18,7 +19,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Client")]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Client)]
         public async Task<IActionResult> CreateArtistReview(CreateArtistReviewDto dto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

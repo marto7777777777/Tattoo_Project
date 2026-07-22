@@ -5,192 +5,172 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design an isolated tattoo specifically intended for the FULL CHEST.
+Design one isolated tattoo specifically for the FULL CHEST.
 
-Do NOT generate a torso.
+Do NOT generate a torso, chest, skin or mockup.
 
-Generate only the tattoo artwork.
-
-The tattoo should naturally occupy the entire chest while remaining balanced and symmetrical.
+The composition must be designed across BOTH pectorals and connected through the sternum region.
 
 ==================================================
-PLACEMENT PRIORITY
+ANATOMICAL FOOTPRINT
 ==================================================
 
-The chest favors wide horizontal compositions.
+Do NOT treat the full chest as a rectangle, oval or horizontal banner.
 
-The design should feel powerful, centered and stable.
+Think of the placement as TWO broad pectoral fields connected around a central sternum axis.
 
-==================================================
-ANATOMICAL ANALYSIS
-==================================================
+Each side has:
 
-The shoulders provide the greatest width.
+• a broad main pectoral mass
+• a softly rounded lower contour
+• an upper contour following the chest/clavicle
+• an outer-upper contour that rises toward its shoulder
 
-The sternum forms the central axis.
+Together, both sides create a broad chest-shaped composition.
 
-The composition should expand naturally toward both shoulders.
+The outer left and right portions may rise toward the shoulders.
 
-Avoid narrow vertical layouts.
-
-==================================================
-OVERALL SHAPE
-==================================================
-
-Preferred
-
-• Wings
-
-• Broad shield
-
-• Crest
-
-• Ornamental frame
-
-• Symmetrical floral composition
-
-Avoid
-
-• Tall columns
-
-• Squares
-
-• Poster layouts
-
-• Equal-width rectangles
+The lower contour should remain broad across both pectorals rather than converging into one central point.
 
 ==================================================
-ASPECT RATIO
+STERNUM RELATIONSHIP
 ==================================================
 
-Preferred
+The sternum is the central anatomical anchor.
 
-1.7 : 1
+Important central subjects may occupy or cross this axis.
 
-Acceptable
+Supporting elements should then distribute visual weight across BOTH pectorals.
 
-1.5 : 1
+Do not stack the entire design vertically around the sternum.
 
-to
-
-2.0 : 1
+Do not leave the pectoral areas empty while concentrating everything in the center.
 
 ==================================================
-VISUAL FLOW
+TWO NIPPLE-SAFE REGIONS
 ==================================================
 
-The eye should first reach the center.
+Assume there are two nipple regions, one within each lower-central pectoral area, even though no body is shown.
 
-Movement should then expand evenly toward both sides.
+The composition must remain visually complete if either region is left untouched or minimally tattooed.
 
-Maintain strong visual balance.
+Never make either nipple-safe region essential to:
 
-==================================================
-BEST SUITED SUBJECTS
-==================================================
+• a face
+• eye
+• head
+• central symbol
+• critical anatomy
+• major structural connection
+• important outline
+• text
 
-✓ Eagle
+Prefer interruptible supporting material around these areas:
 
-✓ Phoenix
+• clouds
+• wind
+• waves
+• foliage
+• petals
+• secondary feathers
+• simple scales
+• shadow
+• texture
+• negative space
+• other non-critical forms
 
-✓ Dragon
+Do NOT visibly draw nipple circles or artificial holes.
 
-✓ Lion
-
-✓ Wolf
-
-✓ Angel wings
-
-✓ Sacred geometry
-
-✓ Ornamental designs
-
-✓ Floral compositions
-
-==================================================
-POOR CHOICES
-==================================================
-
-Avoid
-
-✗ Tall sleeve layouts
-
-✗ Long narrow swords
-
-✗ Wrist-style tattoos
-
-✗ Landscape scenes
+The adaptation must be implicit in the composition.
 
 ==================================================
-VISUAL MOOD
+PROPORTIONS AND FLOW
 ==================================================
 
-Powerful
+The full composition must be substantially wider than tall.
 
-Balanced
+Movement should establish a strong relationship with the sternum and then spread across both pectorals.
 
-Heroic
+Outer portions may rise naturally toward both shoulders.
 
-Dominant
+The lower composition should follow broad rounded pectoral flow.
 
-Elegant
-
-==================================================
-DETAIL DENSITY
-==================================================
-
-Highest detail belongs in the center.
-
-Gradually simplify toward the shoulders.
-
-Maintain clean readability.
+Do NOT progressively narrow the entire design downward.
 
 ==================================================
-COMMON AI MISTAKES
+BALANCE
 ==================================================
 
-Never create
+Maintain balanced visual weight across left and right pectorals.
 
-• torso mockups
+Perfect mirror symmetry is NOT required.
 
-• cropped wings
+Symmetrical subjects may use symmetry.
 
-• one-sided compositions
-
-• square layouts
-
-• decorative overload
+Dynamic subjects may use controlled asymmetry while still occupying both sides convincingly.
 
 ==================================================
-OUTPUT REQUIREMENTS
+SILHOUETTE
 ==================================================
 
-Generate one isolated tattoo artwork.
+The full outer contour should feel anatomically chest-shaped:
 
-Entire tattoo visible.
+• broad through both pectorals
+• softly rounded underneath
+• connected through the sternum
+• rising toward both outer shoulders
 
-Neutral background.
+Avoid:
+
+• rectangles
+• simple horizontal ovals
+• inverted triangles
+• centered shield points
+• vertical columns
+• downward hanging compositions
+• limb-like proportions
+
+==================================================
+SUBJECT DISTRIBUTION
+==================================================
+
+Use major subjects and secondary elements to occupy both pectoral fields deliberately.
+
+Wings, dragons, snakes, flowers, clouds, ornaments, animals and other forms should adapt to the chest anatomy rather than forcing the chest to adapt to them.
+
+Critical focal features should avoid the nipple-safe regions.
+
+==================================================
+OUTPUT
+==================================================
+
+One isolated tattoo artwork.
+Entire design visible.
+White or neutral background.
 
 No torso.
-
-No skin.
-
 No body.
-
+No skin.
+No nipples.
+No mockup.
 No text.
-
 No watermark.
 
 ==================================================
-FINAL CHECKLIST
+FINAL CHECK
 ==================================================
 
-✓ Wide composition
-
-✓ Strong center
-
-✓ Symmetrical balance
-
+✓ Clearly spans two pectorals
+✓ Strong sternum relationship
+✓ Broad rounded lower chest structure
+✓ Both outer sections rise toward shoulders
+✓ Two nipple-safe regions respected
+✓ No critical features depend on nipple areas
+✓ No forced downward taper
+✓ No horizontal oval
+✓ No vertical limb proportions
+✓ Balanced across chest
 ✓ Entire tattoo visible
+✓ Tattoo-artist adaptable
 
-✓ Professional chest tattoo composition
+END OF GUIDE

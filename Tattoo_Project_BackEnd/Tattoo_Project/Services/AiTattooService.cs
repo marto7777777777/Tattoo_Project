@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Tattoo_Project.Data;
 using Tattoo_Project.AI.Builders;
 using Tattoo_Project.AI.Models;
@@ -14,7 +15,14 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services;
 
-public class AiTattooService(TattooDbContext context, IWebHostEnvironment environment, IConfiguration configuration, IHttpClientFactory httpClientFactory, IAiTattooPromptBuilder promptBuilder, IAiTattooPlanner tattooPlanner) : IAiTattooService
+public class AiTattooService(
+    TattooDbContext context,
+    IWebHostEnvironment environment,
+    IConfiguration configuration,
+    IHttpClientFactory httpClientFactory,
+    IAiTattooPromptBuilder promptBuilder,
+    IAiTattooPlanner tattooPlanner,
+    UserManager<ApplicationUser> userManager) : IAiTattooService
 {
     private const int FreeEditLimit = 2;
     private readonly string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
@@ -26,18 +34,25 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         string? referenceUrl=null;
         if(dto.ReferenceImage!=null){var v=ValidateImage(dto.ReferenceImage);if(!v.Success)return ResultService<AiTattooProjectDto>.Fail(v.ErrorMessage!);referenceUrl=await SaveUploadedImageAsync(dto.ReferenceImage);}
         var project=new AiTattooProject{UserId=userId,Title=dto.Title.Trim(),TattooStyle=dto.TattooStyle.Trim(),Placement=dto.Placement.Trim(),InitialDescription=dto.Description.Trim(),InitialReferenceImageUrl=referenceUrl,IsFreeProject=false,FreeEditsUsed=FreeEditLimit,CreatedAt=DateTime.UtcNow,UpdatedAt=DateTime.UtcNow};
-        context.AiTattooProjects.Add(project);await context.SaveChangesAsync();return ResultService<AiTattooProjectDto>.Ok(Map(project));
+        context.AiTattooProjects.Add(project);
+        await context.SaveChangesAsync();
+        var isAdmin = await IsAdminAsync(userId);
+        return ResultService<AiTattooProjectDto>.Ok(Map(project, isAdmin));
     }
 
     public async Task<ResultService<AiTattooProjectDto>> GenerateInitialAsync(int id,string userId)
     {
         var project=await context.AiTattooProjects.Include(x=>x.Versions).FirstOrDefaultAsync(x=>x.Id==id&&x.UserId==userId);
         if(project==null)return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
+        var isAdmin = await IsAdminAsync(userId);
         if(project.Versions.Count>0)return ResultService<AiTattooProjectDto>.Fail("This project already has an initial version.");
-        if(!CanEdit(project))return ResultService<AiTattooProjectDto>.Fail("This project is not available for generation.");
+        if(!CanEdit(project, isAdmin))return ResultService<AiTattooProjectDto>.Fail("This project is not available for generation.");
         var result=project.InitialReferenceImageUrl==null?await GenerateImageAsync(await BuildInitialPromptAsync(project)):await EditImageAsync(ToPhysicalPath(project.InitialReferenceImageUrl),await BuildInitialPromptAsync(project));
         if(!result.Success)return ResultService<AiTattooProjectDto>.Fail(result.ErrorMessage!);
-        project.Versions.Add(new AiTattooVersion{VersionNumber=1,Prompt=project.InitialDescription,ImageUrl=result.Data!,CreatedAt=DateTime.UtcNow});project.UpdatedAt=DateTime.UtcNow;await context.SaveChangesAsync();return ResultService<AiTattooProjectDto>.Ok(Map(project));
+        project.Versions.Add(new AiTattooVersion{VersionNumber=1,Prompt=project.InitialDescription,ImageUrl=result.Data!,CreatedAt=DateTime.UtcNow});
+        project.UpdatedAt=DateTime.UtcNow;
+        await context.SaveChangesAsync();
+        return ResultService<AiTattooProjectDto>.Ok(Map(project, isAdmin));
     }
 
     public async Task<ResultService<AiTattooProjectDto>> CreateProjectAsync(CreateAiTattooProjectDto dto, string userId)
@@ -45,9 +60,13 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         if (string.IsNullOrWhiteSpace(dto.Title) || string.IsNullOrWhiteSpace(dto.TattooStyle) || string.IsNullOrWhiteSpace(dto.Placement) || string.IsNullOrWhiteSpace(dto.Description))
             return ResultService<AiTattooProjectDto>.Fail("Title, style, placement and description are required.");
 
-        var hasFreeProject = await context.AiTattooProjects.AnyAsync(x => x.UserId == userId && x.IsFreeProject);
-        if (hasFreeProject)
-            return ResultService<AiTattooProjectDto>.Fail("You have already used your one free AI tattoo project.");
+        var isAdmin = await IsAdminAsync(userId);
+        if (!isAdmin)
+        {
+            var hasFreeProject = await context.AiTattooProjects.AnyAsync(x => x.UserId == userId && x.IsFreeProject);
+            if (hasFreeProject)
+                return ResultService<AiTattooProjectDto>.Fail("You have already used your one free AI tattoo project.");
+        }
 
         string? referenceUrl = null;
         if (dto.ReferenceImage != null)
@@ -65,7 +84,7 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
             Placement = dto.Placement.Trim(),
             InitialDescription = dto.Description.Trim(),
             InitialReferenceImageUrl = referenceUrl,
-            IsFreeProject = true,
+            IsFreeProject = !isAdmin,
             FreeEditsUsed = 0,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -85,27 +104,30 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
 
         project.Versions.Add(new AiTattooVersion { VersionNumber = 1, Prompt = project.InitialDescription, ImageUrl = generation.Data!, CreatedAt = DateTime.UtcNow });
         await context.SaveChangesAsync();
-        return ResultService<AiTattooProjectDto>.Ok(Map(project));
+        return ResultService<AiTattooProjectDto>.Ok(Map(project, isAdmin));
     }
 
     public async Task<ResultService<ICollection<AiTattooProjectDto>>> GetMyProjectsAsync(string userId)
     {
+        var isAdmin = await IsAdminAsync(userId);
         var items = await context.AiTattooProjects.Include(x => x.Versions).Where(x => x.UserId == userId).OrderByDescending(x => x.UpdatedAt).ToListAsync();
-        return ResultService<ICollection<AiTattooProjectDto>>.Ok(items.Select(Map).ToList());
+        return ResultService<ICollection<AiTattooProjectDto>>.Ok(items.Select(x => Map(x, isAdmin)).ToList());
     }
 
     public async Task<ResultService<AiTattooProjectDto>> GetProjectAsync(int id, string userId)
     {
+        var isAdmin = await IsAdminAsync(userId);
         var project = await context.AiTattooProjects.Include(x => x.Versions).FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
-        return project == null ? ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.") : ResultService<AiTattooProjectDto>.Ok(Map(project));
+        return project == null ? ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.") : ResultService<AiTattooProjectDto>.Ok(Map(project, isAdmin));
     }
 
     public async Task<ResultService<AiTattooProjectDto>> EditProjectAsync(int id, EditAiTattooProjectDto dto, string userId)
     {
         var project = await context.AiTattooProjects.Include(x => x.Versions).FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
         if (project == null) return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
+        var isAdmin = await IsAdminAsync(userId);
         if (string.IsNullOrWhiteSpace(dto.Instruction)) return ResultService<AiTattooProjectDto>.Fail("Edit instruction is required.");
-        if (!CanEdit(project)) return ResultService<AiTattooProjectDto>.Fail("The two free improvements for this project have already been used.");
+        if (!CanEdit(project, isAdmin)) return ResultService<AiTattooProjectDto>.Fail("The two free improvements for this project have already been used.");
 
         var source = dto.BaseVersionId.HasValue ? project.Versions.FirstOrDefault(x => x.Id == dto.BaseVersionId) : project.Versions.OrderByDescending(x => x.VersionNumber).FirstOrDefault();
         if (source == null) return ResultService<AiTattooProjectDto>.Fail("A source version was not found.");
@@ -115,10 +137,10 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         if (!result.Success) return ResultService<AiTattooProjectDto>.Fail(result.ErrorMessage!);
 
         project.Versions.Add(new AiTattooVersion { VersionNumber = project.Versions.Max(x => x.VersionNumber) + 1, Prompt = dto.Instruction.Trim(), ImageUrl = result.Data!, ParentVersionId = source.Id, CreatedAt = DateTime.UtcNow });
-        if (!(project.EditingAccessUntil > DateTime.UtcNow)) project.FreeEditsUsed++;
+        if (!isAdmin && !(project.EditingAccessUntil > DateTime.UtcNow)) project.FreeEditsUsed++;
         project.UpdatedAt = DateTime.UtcNow;
         await context.SaveChangesAsync();
-        return ResultService<AiTattooProjectDto>.Ok(Map(project));
+        return ResultService<AiTattooProjectDto>.Ok(Map(project, isAdmin));
     }
 
     public async Task<ResultService<CheckoutSessionDto>> CreateCheckoutAsync(int projectId, string userId)
@@ -167,8 +189,38 @@ public class AiTattooService(TattooDbContext context, IWebHostEnvironment enviro
         await context.SaveChangesAsync(); return ResultService.Ok();
     }
 
-    private bool CanEdit(AiTattooProject p) => p.EditingAccessUntil > DateTime.UtcNow || (p.IsFreeProject && p.FreeEditsUsed < FreeEditLimit);
-    private AiTattooProjectDto Map(AiTattooProject p) => new() { Id=p.Id,Title=p.Title,TattooStyle=p.TattooStyle,Placement=p.Placement,InitialDescription=p.InitialDescription,IsFreeProject=p.IsFreeProject,FreeEditsUsed=p.FreeEditsUsed,FreeEditsRemaining=Math.Max(0,FreeEditLimit-p.FreeEditsUsed),EditingAccessUntil=p.EditingAccessUntil,CanEdit=CanEdit(p),NeedsPayment=!CanEdit(p),CreatedAt=p.CreatedAt,Versions=p.Versions.OrderBy(x=>x.VersionNumber).Select(x=>new AiTattooVersionDto{Id=x.Id,VersionNumber=x.VersionNumber,Prompt=x.Prompt,ImageUrl=x.ImageUrl,CreatedAt=x.CreatedAt}).ToList() };
+    private async Task<bool> IsAdminAsync(string userId)
+    {
+        var user = await userManager.FindByIdAsync(userId);
+        return user != null && await userManager.IsInRoleAsync(user, UserRoles.Admin);
+    }
+
+    private bool CanEdit(AiTattooProject p, bool isAdmin)
+        => isAdmin || p.EditingAccessUntil > DateTime.UtcNow || (p.IsFreeProject && p.FreeEditsUsed < FreeEditLimit);
+
+    private AiTattooProjectDto Map(AiTattooProject p, bool isAdmin) => new()
+    {
+        Id = p.Id,
+        Title = p.Title,
+        TattooStyle = p.TattooStyle,
+        Placement = p.Placement,
+        InitialDescription = p.InitialDescription,
+        IsFreeProject = p.IsFreeProject,
+        FreeEditsUsed = p.FreeEditsUsed,
+        FreeEditsRemaining = isAdmin ? int.MaxValue : Math.Max(0, FreeEditLimit - p.FreeEditsUsed),
+        EditingAccessUntil = p.EditingAccessUntil,
+        CanEdit = CanEdit(p, isAdmin),
+        NeedsPayment = !isAdmin && !CanEdit(p, false),
+        CreatedAt = p.CreatedAt,
+        Versions = p.Versions.OrderBy(x => x.VersionNumber).Select(x => new AiTattooVersionDto
+        {
+            Id = x.Id,
+            VersionNumber = x.VersionNumber,
+            Prompt = x.Prompt,
+            ImageUrl = x.ImageUrl,
+            CreatedAt = x.CreatedAt
+        }).ToList()
+    };
     private async Task<string> BuildInitialPromptAsync(AiTattooProject project)
     {
         var planningContext = await promptBuilder.BuildGenerationPromptAsync(

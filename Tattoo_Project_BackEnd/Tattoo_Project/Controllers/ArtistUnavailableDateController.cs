@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.ArtistUnavailableDateDTOs;
 using Tattoo_Project.Services.Interfaces;
+using Tattoo_Project.Models;
 
 namespace Tattoo_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "TattooArtist")]
+    [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
     public class ArtistUnavailableDateController : ControllerBase
     {
         private readonly IArtistUnavailableDateService artistUnavailableDateService;

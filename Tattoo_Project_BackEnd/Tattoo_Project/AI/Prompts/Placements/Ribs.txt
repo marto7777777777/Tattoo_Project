@@ -1,43 +1,14 @@
-RIBS TATTOO DESIGN GUIDE
-InkRoute AI Knowledge Base
-
-==================================================
-PURPOSE
-==================================================
-
-You are designing a tattoo specifically intended for the human ribs.
-
-Do NOT generate ribs.
-
-Do NOT generate a torso.
-
-Create an isolated tattoo artwork that naturally follows the long curved anatomy of the rib cage.
-
-The artwork should immediately appear suitable for the ribs because of its proportions and movement.
-
-==================================================
-PLACEMENT PRIORITY
-==================================================
-
-The ribs prioritize movement over symmetry.
-
-Flow is more important than density.
-
-Elegance is more important than complexity.
-
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-The rib cage is long and naturally curved.
+The ribs provide a tall curved surface with meaningful usable width.
 
-The tattoo should suggest this curvature through composition.
+The composition should follow the natural vertical or diagonal curvature of the rib cage without becoming excessively narrow.
 
-Never create a rigid straight layout.
+Maintain enough width through the middle of the composition to create a substantial tattoo rather than a thin side strip.
 
-The upper section may be slightly wider.
-
-The lower section may narrow naturally with the torso, but the subject and style should determine the exact outer silhouette.
+The upper and lower sections may change width naturally according to the requested subject, but the anatomy does not require continuous narrowing.
 
 ==================================================
 OVERALL SHAPE
@@ -45,187 +16,51 @@ OVERALL SHAPE
 
 Preferred silhouettes
 
-• Flowing ribbon
-
-• Elongated organic curve
-
-• Organic vine
-
-• Anatomically flowing vertical composition
-
-• Long botanical composition
+• Broad flowing vertical composition
+• Organic curved composition
+• Controlled diagonal flow
+• Botanical or subject-led flow
+• Moderately elongated composition
 
 Avoid
 
+• Extremely thin ribbons
+• Needle-like compositions
+• Excessively long narrow silhouettes
 • Squares
-
 • Wide horizontal layouts
-
-• Circular badges
-
-• Heavy rectangular blocks
+• Rigid rectangular blocks
 
 ==================================================
 ASPECT RATIO
 ==================================================
 
-Preferred ratio
+Preferred height-to-width ratio:
 
-3.2 : 1
+2.2 : 1
 
-Acceptable
+Acceptable range:
 
-2.8 : 1
-
+1.8 : 1
 to
+2.6 : 1
 
-3.8 : 1
+These proportions describe the overall occupied footprint, not a requirement to stretch the subject.
+
+A naturally narrow subject such as a sword, snake, botanical stem or lettering may use a slimmer composition when appropriate.
+
+A naturally broader subject such as a bird, dragon or floral arrangement should retain more width.
 
 ==================================================
 VISUAL FLOW
 ==================================================
 
-Movement should travel diagonally or vertically.
+Favor vertical or diagonal movement following the rib cage.
 
-The eye should naturally follow one continuous path.
+Flow does not mean the design must be thin.
 
-Never divide the tattoo into disconnected areas.
+Maintain substantial visual mass around the primary focal point.
 
-==================================================
-BEST SUITED SUBJECTS
-==================================================
+Use secondary elements to continue movement only when they naturally belong to the requested design.
 
-✓ Snake
-
-✓ Dragon
-
-✓ Floral stems
-
-✓ Cherry blossoms
-
-✓ Koi fish
-
-✓ Sword
-
-✓ Script
-
-✓ Botanical compositions
-
-✓ Ornamental flow
-
-==================================================
-POOR CHOICES
-==================================================
-
-Avoid
-
-✗ Large portraits
-
-✗ Square mandalas
-
-✗ Wide landscape scenes
-
-✗ Symmetrical chest layouts
-
-✗ Large circular compositions
-
-==================================================
-VISUAL MOOD
-==================================================
-
-Elegant
-
-Organic
-
-Flowing
-
-Graceful
-
-Dynamic
-
-Lightweight
-
-Never appear blocky or static.
-
-==================================================
-COMMON AI MISTAKES
-==================================================
-
-Never create
-
-• straight rectangles
-
-• equal width
-
-• poster layouts
-
-• body mockups
-
-• skin
-
-• cropped artwork
-
-
-==================================================
-SILHOUETTE INTERPRETATION
-==================================================
-
-Anatomy defines the available proportions, flow and limits of the placement; it does not automatically define one fixed geometric silhouette.
-
-Let the requested subject and tattoo style determine the exact outer contour within those anatomical limits.
-
-Anatomical narrowing should influence the composition subtly and must not automatically create a spear, blade, needle, sharp triangle or pointed tail.
-
-==================================================
-OUTPUT REQUIREMENTS
-==================================================
-
-Generate only one isolated tattoo.
-
-Neutral background.
-
-Entire tattoo visible.
-
-No ribs.
-
-No torso.
-
-No skin.
-
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
-
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
-
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
-
-==================================================
-FINAL CHECKLIST
-==================================================
-
-✓ Long flowing composition
-
-✓ Elegant silhouette
-
-✓ Natural body flow without forced spear or blade geometry
-
-✓ Readable tattoo
-
-✓ No body parts
-
-✓ Ready for tattoo execution
+Do not add long extensions solely to satisfy placement proportions.

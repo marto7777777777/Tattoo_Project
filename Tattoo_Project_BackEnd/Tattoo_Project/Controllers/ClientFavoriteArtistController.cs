@@ -1,13 +1,14 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Client")]
+    [Authorize(Roles = UserRoles.Admin + "," + UserRoles.Client)]
     public class ClientFavoriteArtistController : ControllerBase
     {
         private readonly IClientFavoriteArtistService clientFavoriteArtistService;

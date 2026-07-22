@@ -31,7 +31,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpGet("my-artist-requests")]
         public async Task<IActionResult> GetMyArtistTattooRequests(
             [FromQuery] RequestStatus? status)
@@ -85,7 +85,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpGet("my-requests")]
         public async Task<IActionResult> GetMyTattooRequests()
         {
@@ -108,7 +108,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPost]
         public async Task<IActionResult> CreateTattooRequest(
             CreateTattooRequestDto dto)
@@ -132,7 +132,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPost("with-images")]
         public async Task<IActionResult> CreateTattooRequestWithImages(
             [FromForm] CreateTattooRequestWithImagesDto dto)
@@ -156,7 +156,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpGet("{id}/availability")]
         public async Task<IActionResult> GetBookingAvailability(
             int id,
@@ -181,7 +181,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTattooRequest(
             int id,

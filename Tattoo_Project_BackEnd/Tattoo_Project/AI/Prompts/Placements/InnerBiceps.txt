@@ -1,155 +1,306 @@
+INNER BICEPS TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
 PURPOSE
-
-Design an isolated tattoo specifically intended for the INNER BICEPS.
-
-Never generate an arm.
-
-The tattoo should naturally fit the soft vertical anatomy of the inner biceps.
-
-The composition should appear elegant and slightly more intimate than outer arm tattoos.
-
 ==================================================
 
+Design one isolated tattoo specifically intended for the INNER BICEPS.
+
+Never generate an arm, skin, body part, or tattoo mockup.
+
+The inner biceps is a relatively broad, compact tattoo area. Designs should use the available horizontal width naturally rather than being forced into a long vertical strip.
+
+The final composition should look intentionally designed for the inner biceps from the beginning.
+
+==================================================
 PLACEMENT PRIORITY
-
-Favor vertical flow.
-
-Favor elegant movement.
-
-Avoid heavy symmetrical blocks.
-
 ==================================================
 
+Favor compact or moderately wide compositions.
+
+Favor natural horizontal or gently diagonal movement when appropriate for the requested subject.
+
+Do not automatically convert the design into a vertical composition.
+
+Do not force secondary elements to extend upward or downward merely to create artificial length.
+
+The requested subject and tattoo style should determine the exact silhouette within the anatomical limits of the placement.
+
+==================================================
 ANATOMICAL ANALYSIS
-
-The inner biceps is long but relatively narrow.
-
-The available space is softer and flatter than the outer arm.
-
-The upper portion is slightly wider.
-
-The lower portion gradually narrows.
-
 ==================================================
 
+The inner biceps provides more useful width than vertical length for many tattoo compositions.
+
+Treat it as a compact, softly curved area rather than a long narrow limb section such as the forearm, calf, or shin.
+
+The center of the area provides the strongest usable visual mass.
+
+The composition may spread laterally around the main focal point while remaining cohesive and readable.
+
+Do not interpret the anatomy as a narrow vertical column.
+
+Do not create unnecessary taper toward either end.
+
+==================================================
 OVERALL SHAPE
-
-Preferred
-
-
-• Botanical flow
-
-• Soft elongated composition
-
-
-Avoid
-
-• Squares
-
-• Wide shields
-
-• Circular badges
-
 ==================================================
 
-ASPECT RATIO
+Preferred silhouettes depend on the requested subject.
 
-Preferred
+Suitable structures include:
 
-2.9 : 1
+• Broad organic composition
+
+• Compact horizontal composition
+
+• Soft oval composition
+
+• Moderately wide botanical arrangement
+
+• Gentle horizontal arc
+
+• Compact diagonal composition
+
+• Centered subject with supporting elements extending laterally
+
+The exact outer contour must follow the subject rather than a predetermined geometric template.
+
+Avoid:
+
+• Long vertical strips
+
+• Spear-shaped compositions
+
+• Blade-shaped compositions unless the requested subject is a blade
+
+• Artificial downward tails
+
+• Narrow vertical columns
+
+• Extreme tapering
+
+• Tall pointed compositions
+
+• Large rigid rectangles
+
+• Decorative extensions added only to create length
 
 ==================================================
+PROPORTION CONTROL
+==================================================
 
-BEST SUBJECTS
+Do NOT use a fixed tall vertical aspect ratio.
 
-✓ Snake
+The composition should generally feel wider and more compact than forearm, shin, or calf designs.
 
-✓ Rose stem
+Allow naturally wide subjects to remain wide.
 
-✓ Orchid
+Do not compress moths, butterflies, animals, flowers, masks, eyes, symmetrical ornaments, or similar subjects into narrow vertical silhouettes.
 
-✓ Sword
+Do not stretch supporting elements vertically simply to fill space.
 
-✓ Fine Line
+A subject that naturally benefits from some length, such as a snake, dagger, feather, botanical stem, or lettering arrangement, may use a more elongated composition when appropriate.
+
+Placement anatomy provides boundaries, not a mandatory silhouette.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Flow may be horizontal, gently diagonal, curved, or compact depending on the subject.
+
+The eye should move naturally through the main focal point and supporting elements.
+
+For broad subjects, allow supporting elements to frame the left and right sides.
+
+For asymmetric subjects, use controlled imbalance rather than forcing artificial symmetry.
+
+Avoid disconnected visual islands.
+
+Avoid long empty extensions above or below the main composition.
+
+==================================================
+FOCAL POINT
+==================================================
+
+Use one clear dominant focal point.
+
+The focal point should normally occupy the central visual mass of the composition.
+
+Do not automatically place the focal point in the upper third.
+
+Allow the main subject enough width to remain anatomically natural and visually readable.
+
+Supporting elements should frame or reinforce the focal point rather than extending the tattoo unnecessarily.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Flowers, leaves, ornaments, smoke, geometry, branches, stars, moons and other secondary elements should support the requested subject.
+
+They may extend laterally, diagonally, or around the focal point to create a cohesive composition.
+
+Never add long stems, chains, branches, smoke trails, ornaments, or other filler solely to make the tattoo taller.
+
+Do not repeatedly reduce secondary elements toward one narrow endpoint.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Preserve breathing room between major forms.
+
+Use negative space to separate the focal subject from supporting elements.
+
+Do not fill every available area.
+
+Keep the outer silhouette clean and readable.
+
+==================================================
+DETAIL DISTRIBUTION
+==================================================
+
+Highest detail should remain around the main focal point.
+
+Supporting elements may use medium detail.
+
+Outer transitions should use simpler forms where appropriate.
+
+Do not reduce detail according to an artificial top-to-bottom hierarchy unless the requested composition naturally requires it.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
+
+✓ Moths and butterflies
+
+✓ Flowers and botanical compositions
+
+✓ Snakes
+
+✓ Animals and animal heads
+
+✓ Eyes
+
+✓ Masks
+
+✓ Ornamental designs
+
+✓ Fine line compositions
+
+✓ Blackwork compositions
 
 ✓ Lettering
 
-✓ Feather
+✓ Daggers and swords
 
-✓ Botanical
+✓ Feathers
 
-==================================================
-
-AVOID
-
-✗ Giant portraits
-
-✗ Wide dragons
-
-✗ Landscape scenes
-
-✗ Large mandalas
+✓ Symbolic compositions
 
 ==================================================
-
-VISUAL MOOD
-
-Elegant
-
-Organic
-
-Soft
-
-Flowing
-
-Minimal
-
+SUBJECT-SPECIFIC INTERPRETATION
 ==================================================
 
+Wide subjects such as moths, butterflies, animal heads, masks, flowers, eyes, and symmetrical ornaments should retain their natural width.
+
+Do not narrow their anatomy to satisfy placement proportions.
+
+Elongated subjects such as snakes, daggers, swords, feathers, stems, and lettering may use more vertical or diagonal movement when this naturally benefits the design.
+
+When combining a broad focal subject with botanical or ornamental elements, build around the focal subject instead of creating a long decorative tail beneath it.
+
+==================================================
 COMMON AI MISTAKES
-
-Never
-
-• draw the arm
-
-• create equal width
-
-• overcrowd
-
-• create mockups
-
 ==================================================
 
-FINAL CHECKLIST
+Never create:
 
-✓ Long composition
+• visible arms
 
-✓ Gentle anatomical narrowing without a pointed ending
+• skin
 
-✓ One focal point
+• body mockups
+
+• unnecessarily long vertical compositions
+
+• forearm-like proportions
+
+• shin-like proportions
+
+• extreme tapering
+
+• artificial pointed endings
+
+• long botanical tails
+
+• filler added only to increase height
+
+• compressed wide subjects
+
+• disconnected decorative elements
+
+• cropped artwork
+
+• background scenes
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Show the complete tattoo fully visible.
+
+Use a plain white or very light neutral background.
+
+No arm.
+
+No skin.
+
+No body.
+
+No tattoo mockup.
+
+No text unless explicitly requested by the client.
+
+No watermark.
+
+No logo.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Appropriate inner-biceps proportions
+
+✓ Compact or moderately wide composition when suitable
+
+✓ Subject retains natural proportions
+
+✓ No forced vertical elongation
+
+✓ No unnecessary taper
+
+✓ No artificial pointed ending
+
+✓ One clear focal point
+
+✓ Supporting elements reinforce the focal subject
+
+✓ Natural placement flow
+
+✓ Clean negative space
 
 ✓ Entire tattoo visible
 
-✓ No body
+✓ No body or mockup
 
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
+✓ Professional tattoo composition
 
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
+✓ Ready to present to a tattoo artist
 
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
+END OF GUIDE

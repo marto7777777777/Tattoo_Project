@@ -5,158 +5,326 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Create authentic New School tattoo artwork.
+Create authentic professional New School tattoo artwork designed for real tattoo execution.
 
-The tattoo should feel playful, exaggerated and full of personality.
+The artwork should feel exaggerated, energetic, colorful and full of personality while remaining clearly tattooable.
+
+Never sacrifice tattoo readability or practical execution for digital illustration effects.
 
 ==================================================
 STYLE PHILOSOPHY
 ==================================================
 
-New School exaggerates proportions.
+New School uses:
 
-Bold colors.
+• Exaggerated proportions
+• Expressive characters
+• Bold silhouettes
+• Dynamic movement
+• Strong outlines
+• Saturated tattoo colors
+• Playful visual distortion
 
-Dynamic movement.
+Exaggeration should come primarily from shape, pose, expression and proportion — not from excessive rendering or digital effects.
 
-Expressive faces.
-
-Creative freedom.
+The result must look like tattoo artwork, not concept art, game art, sticker art or a digital painting.
 
 ==================================================
 LINE WORK
 ==================================================
 
-Bold outlines.
+Use bold, confident outlines.
 
-Variable line weight.
+Use controlled variation in line weight.
 
-Expressive curves.
+Primary subjects should have the strongest structural outlines.
+
+Interior lines may be thinner but must remain clearly tattooable.
+
+Avoid excessive tiny lines.
+
+Avoid hair-thin decorative detail.
+
+Avoid outlining every small texture.
+
+Use linework to create large readable forms.
 
 ==================================================
-SHADING
+SHAPE LANGUAGE
 ==================================================
 
-Smooth.
+Favor large, intentional shapes.
 
-Color driven.
+Simplify complicated anatomy and textures into readable tattoo forms.
 
-High contrast.
+Exaggerate important features such as:
+
+• Eyes
+• Mouths
+• Teeth
+• Expressions
+• Hands or claws
+• Major curves
+• Character silhouettes
+
+Do not fill every surface with small details.
+
+The design must remain recognizable from a distance.
 
 ==================================================
 COLOR PALETTE
 ==================================================
 
-Highly saturated colors.
+Use saturated but physically believable tattoo ink colors.
 
-Bright blues.
+Suitable colors include:
 
-Purples.
+• Red
+• Orange
+• Yellow
+• Green
+• Blue
+• Purple
+• Pink
+• Black
 
-Greens.
+Use a controlled palette appropriate to the requested subject.
 
-Orange.
+Prefer approximately 3–5 dominant colors plus black rather than using every available color.
 
-Pink.
+Colors should appear like real deposited tattoo pigments, not emitted digital light.
 
-Yellow.
+Bright colors are encouraged, but they must remain believable on tattooed skin.
+
+==================================================
+COLOR RESTRICTIONS
+==================================================
+
+Never create:
+
+• Neon RGB glow
+• Luminous edges
+• Electric light effects
+• Fluorescent-looking gradients
+• Digital bloom
+• Colored rim lighting around every object
+• Rainbow shading across every surface
+• Excessive blue-purple-pink transitions
+• Dozens of tiny color changes
+• Artificial glowing eyes unless specifically requested
+
+Do not make black surfaces appear purple or blue simply because the design is colorful.
+
+Black should remain visually black unless deliberate reflected color is compositionally necessary.
+
+==================================================
+SHADING
+==================================================
+
+Use clean tattoo-oriented shading.
+
+Favor:
+
+• Solid color fields
+• Controlled gradients
+• Deliberate black shadows
+• Simple dimensional transitions
+• Clear highlight areas
+• Intentional skin or negative-space breaks
+
+Avoid digital airbrush rendering.
+
+Avoid hundreds of tiny highlight strokes.
+
+Avoid extremely smooth multi-color transitions that depend on digital rendering.
+
+Shading must support large readable forms.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Use medium detail overall.
+
+Highest detail belongs to the dominant character's face and important expressive features.
+
+Secondary elements should use less detail.
+
+Outer edges should become simpler.
+
+Do not render individual hairs, scales, flames, wrinkles or textures excessively.
+
+Group repeated textures into larger tattoo-readable patterns.
+
+Every visible detail should have a realistic purpose in the final tattoo.
 
 ==================================================
 COMPOSITION
 ==================================================
 
-One dominant character.
+Use one dominant character or subject.
 
-Dynamic pose.
+Create dynamic movement appropriate to the requested placement.
 
-Decorative secondary elements.
+Supporting elements may include:
+
+• Flames
+• Clouds
+• Skulls
+• Flowers
+• Graffiti-inspired forms
+• Smoke
+• Cartoon objects
+• Abstract shapes
+
+Supporting elements must remain secondary.
+
+Do not overcrowd the composition simply because New School allows creative freedom.
+
+Placement anatomy determines the overall available proportions and flow.
+
+The style should adapt to the placement rather than forcing every design into the same cartoon silhouette.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Preserve clear negative-space separation between important forms.
+
+Do not fill every gap with color or decoration.
+
+Use open areas to separate:
+
+• Limbs
+• Facial features
+• Flames
+• Secondary objects
+• Overlapping shapes
+
+The design should remain readable after years of aging in skin.
+
+==================================================
+TATTOO EXECUTION CONTROL
+==================================================
+
+Design as if a professional tattoo artist must reproduce the artwork on skin tomorrow.
+
+Avoid illustration-level micro-detail.
+
+Avoid effects that depend on screen brightness.
+
+Avoid extremely small isolated highlights.
+
+Avoid tiny color gradients.
+
+Avoid unnecessarily complicated textures.
+
+Use sufficiently large shapes, readable outlines and practical color transitions.
+
+The artwork may be visually complex, but its construction must remain tattooable.
+
+==================================================
+VISUAL MOOD
+==================================================
+
+New School may feel:
+
+• Playful
+• Crazy
+• Aggressive
+• Humorous
+• Energetic
+• Colorful
+• Expressive
+• Surreal
+
+The exact mood should follow the user's request.
+
+Do not automatically make every New School tattoo childish or comedic.
 
 ==================================================
 BEST SUBJECTS
 ==================================================
 
 ✓ Cartoon Animals
-
 ✓ Monsters
-
 ✓ Skulls
-
 ✓ Mushrooms
-
 ✓ Frogs
-
 ✓ Foxes
-
 ✓ Dragons
-
 ✓ Characters
-
 ✓ Food
-
-✓ Graffiti Elements
-
-==================================================
-POOR SUBJECTS
-==================================================
-
-Avoid
-
-Fine Line
-
-Minimalism
-
-Traditional Portraits
-
-Micro tattoos
-
-==================================================
-VISUAL MOOD
-==================================================
-
-Playful
-
-Crazy
-
-Creative
-
-Energetic
-
-Bold
+✓ Graffiti-inspired subjects
+✓ Exaggerated objects
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never:
 
-• dull colors
-
-• stiff poses
-
-• realistic anatomy
-
-• weak expressions
+• Create digital concept art instead of tattoo artwork
+• Use neon glow as the primary source of color
+• Cover dark subjects with purple and blue highlights
+• Create excessive micro-detail
+• Use dozens of tiny gradients
+• Add unnecessary rainbow colors
+• Make every surface glossy
+• Overcrowd secondary elements
+• Lose the silhouette in decorative effects
+• Create weak unreadable outlines
+• Create stiff lifeless characters
+• Create body mockups
 
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
 
-Generate isolated tattoo artwork.
+Generate one isolated professional tattoo artwork.
 
-White background.
+Entire tattoo visible.
+
+Plain white or very light neutral background.
 
 No body.
+
+No skin.
+
+No mockup.
+
+No text unless specifically requested.
+
+No watermark.
+
+No logo.
 
 ==================================================
 FINAL CHECKLIST
 ==================================================
 
-✓ Bright colors
+✓ Clearly recognizable New School style
 
-✓ Dynamic pose
+✓ Exaggerated expressive subject
 
-✓ Strong outlines
+✓ Strong tattooable outlines
 
-✓ Tattoo ready
+✓ Large readable shapes
+
+✓ Controlled saturated tattoo colors
+
+✓ No digital neon glow
+
+✓ No excessive micro-detail
+
+✓ Practical tattoo shading
+
+✓ Strong negative space
+
+✓ Placement-appropriate composition
+
+✓ Entire artwork visible
+
+✓ Realistically executable as a tattoo
 
 END OF GUIDE

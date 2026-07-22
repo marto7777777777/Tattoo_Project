@@ -59,7 +59,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPost]
         public async Task<IActionResult> CreateTattooSession(
             CreateTattooSessionDto dto)
@@ -83,7 +83,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTattooSession(
             int id,
@@ -108,7 +108,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTattooSession(int id)
         {
@@ -131,7 +131,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPut("add-more-sessions/{tattooRequestId}")]
         public async Task<IActionResult> AddMoreSessions(
             int tattooRequestId,
@@ -159,7 +159,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPut("complete-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> CompleteTattoo(int tattooRequestId)
         {

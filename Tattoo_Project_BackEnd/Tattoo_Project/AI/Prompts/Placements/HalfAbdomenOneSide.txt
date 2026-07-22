@@ -5,116 +5,181 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design an isolated tattoo specifically intended for ONE SIDE OF THE ABDOMEN.
+Design one isolated tattoo specifically intended for ONE HALF OF THE ABDOMEN.
 
-Never generate a human body.
+Never generate a human body, abdomen, torso, skin, or body mockup.
 
-The tattoo should naturally occupy one side while maintaining elegant vertical flow.
+The design should use the substantial available surface of one side of the abdomen rather than behaving like a narrow vertical limb tattoo.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-One-sided balance.
+Prioritize:
 
-Vertical movement.
+• Broad vertical coverage
+• Substantial usable width
+• One-sided composition
+• Balanced top-to-bottom distribution
+• Natural abdominal flow
 
-Organic flow.
+The design should feel made to fill one half of the abdomen.
+
+Do NOT interpret this placement as a long narrow strip.
 
 ==================================================
-ANATOMICAL ANALYSIS
+ANATOMICAL FOOTPRINT
 ==================================================
 
-The upper area is wider.
+One half of the abdomen provides a relatively broad and tall surface.
 
-The lower area becomes narrower.
+The usable area extends vertically from the upper abdominal region toward the lower abdomen while retaining substantial width throughout most of the placement.
 
-The tattoo may narrow with the anatomy, but the exact silhouette should remain subject-led and must not be forced into a blade or pointed shape.
+The inner boundary follows the abdominal midline.
 
-Avoid symmetrical full-abdomen layouts.
+The outer boundary may respond gently to the side of the torso.
+
+Do NOT assume that the lower abdomen must become dramatically narrower.
+
+Do NOT continuously reduce width from top to bottom.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred
+The default footprint should resemble a BROAD VERTICAL RECTANGLE with softly organic anatomical edges.
 
-• Organic one-sided vertical flow
+The upper, middle, and lower sections should retain relatively similar visual width.
 
-• Vertical shield
+Small variations in width are allowed when created naturally by the requested subject.
 
-• Botanical ribbon
+Preferred:
 
-• Ornamental frame
+• Broad vertical rectangle
+• Soft rectangular composition
+• Wide organic vertical panel
+• Structured one-sided composition
+• Connected composition using most of the available area
 
-Avoid
+Avoid:
 
-• Wide chest layouts
-
-• Full back compositions
-
-• Horizontal posters
-
-==================================================
-ASPECT RATIO
-==================================================
-
-Preferred
-
-2.3 : 1
-
-==================================================
-BEST SUITED SUBJECTS
-==================================================
-
-✓ Snake
-
-✓ Dragon
-
-✓ Botanical
-
-✓ Floral
-
-✓ Dagger
-
-✓ Script
-
-✓ Sacred Geometry
+• Long narrow strips
+• Spears
+• Tall diamonds
+• Strong triangles
+• Long shields
+• Narrow botanical ribbons
+• Designs that repeatedly taper downward
+• Large empty unused side areas
 
 ==================================================
-VISUAL MOOD
+PROPORTION CONTROL
 ==================================================
 
-Organic
+The design should be only moderately taller than it is wide.
 
-Flowing
+Target approximately:
 
-Elegant
+HEIGHT : WIDTH = 1.4 : 1 to 1.6 : 1
 
-Balanced
+This is NOT a 2:1 or 3:1 elongated placement.
+
+Use both the HEIGHT and WIDTH of the available abdominal area.
+
+==================================================
+COMPOSITION
+==================================================
+
+Use one dominant focal point or one clearly connected main composition.
+
+The focal subject may occupy the central or upper-middle portion, but supporting elements should expand naturally around it to use the available width.
+
+Do not stretch the primary subject simply to fill the placement.
+
+Use connected secondary elements when necessary to distribute the design across the abdominal footprint.
+
+The composition may be asymmetric because it occupies only one half of the abdomen.
+
+Internal symmetry is allowed when appropriate to the requested subject or style.
+
+==================================================
+EDGE BEHAVIOR
+==================================================
+
+Keep the inner abdominal edge relatively stable and vertically organized.
+
+Allow the outer edge to have slightly more organic movement.
+
+The lower edge should remain visually substantial.
+
+Do NOT automatically converge the lower section toward one centered point.
+
+Do NOT create an artificial pointed ending unless the requested subject naturally contains one.
+
+==================================================
+STYLE ADAPTATION
+==================================================
+
+Placement controls the available footprint, not the artistic silhouette.
+
+Geometric designs may use structured rectangular organization.
+
+Realism may use softer irregular edges.
+
+Japanese, illustrative, floral, tribal, blackwork and other flowing styles may break the rectangular boundary organically.
+
+Regardless of style, the design must continue to use the broad abdominal area.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never:
 
-• create symmetrical layouts
+• Draw a body
+• Treat half abdomen like a forearm or calf
+• Create an excessively elongated tattoo
+• Continuously narrow the design downward
+• Force a spear or blade silhouette
+• Leave most of the available width unused
+• Create a full-abdomen symmetrical composition
+• Stretch the main subject unnaturally
+• Crop the artwork
 
-• draw body parts
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
 
-• crop artwork
+Generate only one isolated tattoo artwork.
+
+Entire tattoo fully visible.
+
+Plain white or very light neutral background.
+
+Clean empty margins.
+
+No body.
+
+No skin.
+
+No mockup.
+
+No text.
+
+No watermark.
 
 ==================================================
 FINAL CHECKLIST
 ==================================================
 
-✓ One-sided composition
-
-✓ Natural anatomical narrowing without forced blade geometry
-
-✓ Strong flow
-
+✓ One-half abdomen composition
+✓ Broad vertical footprint
+✓ Approximately 1.4–1.6 : 1 height-to-width
+✓ Substantial width retained through the design
+✓ No forced downward taper
+✓ No artificial pointed ending
+✓ Subject remains naturally proportioned
+✓ Placement area used efficiently
 ✓ Entire tattoo visible
-
 ✓ No body
+✓ Professional tattoo-ready composition

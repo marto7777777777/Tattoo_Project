@@ -5,45 +5,54 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-You are currently designing a tattoo specifically intended for the human wrist.
+You are designing an isolated tattoo specifically intended for the human WRIST.
 
 Do NOT generate a wrist.
-
 Do NOT generate a hand.
-
 Do NOT generate skin.
 
-Your task is to create an isolated tattoo artwork whose proportions, simplicity and readability naturally fit the limited space of the wrist.
+The wrist is a small, compact tattoo placement.
 
-The final design should immediately feel like it belongs on a wrist without requiring a body mockup.
+The design must feel intentionally composed for this limited area rather than appearing like a shortened forearm tattoo.
+
+Prioritize compactness, readability, clean silhouette and immediate visual recognition.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-The wrist is one of the smallest tattoo placements.
+The wrist is NOT an elongated placement.
 
-Readability is more important than detail.
+Do not automatically create vertical compositions.
 
-Simplicity is more important than complexity.
+Do not stretch the design to create artificial length.
 
-Clean composition is more important than decoration.
+Do not use secondary elements merely to extend the composition upward or downward.
+
+The requested subject and tattoo style should determine the exact silhouette within the compact anatomical limits of the wrist.
 
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-The wrist is narrow.
+The usable wrist area is relatively short and compact.
 
-The available tattoo area is short.
+Compared with the forearm, there is significantly less available length for composition.
 
-The cylindrical shape becomes tighter than the forearm.
+The design should therefore concentrate its visual information into a compact area.
 
-There is little room for excessive detail.
+The composition may be:
 
-The tattoo should remain recognizable even when viewed from several meters away.
+• near-circular
+• oval
+• slightly vertically elongated
+• slightly horizontally oriented
+• compact organic
+• compact asymmetrical
 
-Never design the tattoo as if it were intended for the forearm.
+depending on the natural structure of the requested subject.
+
+Do not treat the wrist like a miniature forearm.
 
 ==================================================
 OVERALL SHAPE
@@ -51,143 +60,164 @@ OVERALL SHAPE
 
 Preferred silhouettes:
 
-• Slim ribbon
+• Compact oval
+• Near-circular organic composition
+• Short vertical oval
+• Compact asymmetrical composition
+• Small subject-driven silhouette
+• Compact ornamental composition
 
-• Vertical ornament
-
-• Small oval
-
-• Compact elongated composition
-
-• Compact botanical composition
+The exact outer contour should follow the requested subject.
 
 Avoid:
 
-• Large rectangles
-
-• Squares
-
-• Wide horizontal layouts
-
-• Dense circular badges
-
-• Large symmetrical back-piece style compositions
+• Long narrow columns
+• Tall spear-like compositions
+• Forearm-style vertical designs
+• Long botanical trails
+• Artificial top-to-bottom extensions
+• Large rectangular compositions
+• Large shield compositions
 
 ==================================================
 ASPECT RATIO
 ==================================================
 
-Preferred ratio
+There is no mandatory fixed aspect ratio.
 
-2.8 : 1
+For most wrist designs, keep the overall composition relatively compact.
 
-Acceptable range
+Typical compositions should remain approximately near-square to moderately elongated.
 
-2.5 : 1
+A useful general range is approximately:
 
+Height : Width
+
+0.8 : 1
 to
+1.6 : 1
 
-3.2 : 1
+This is guidance, not a forced geometric template.
 
-The composition should remain clearly vertical and compact.
+The subject may exceed this range when its natural anatomy genuinely requires it.
+
+Never distort or stretch the primary subject simply to satisfy a ratio.
 
 ==================================================
-VISUAL FLOW
+ORIENTATION
 ==================================================
 
-Movement should remain simple.
+Orientation is subject-dependent.
 
-The eye should travel naturally from top to bottom.
+Do NOT automatically favor vertical flow.
 
-Avoid unnecessary complexity.
+A scorpion may use a compact oval composition.
 
-Avoid several competing focal points.
+A flower may use a near-circular or softly asymmetrical composition.
 
-Create one clean visual movement.
+A small snake may coil into a compact shape.
+
+A symbol may remain centered and nearly square.
+
+A short dagger may use a moderately vertical composition because the object itself is naturally elongated.
+
+Let the subject determine orientation.
 
 ==================================================
 PRIMARY FOCAL POINT
 ==================================================
 
-Use one dominant subject only.
+Use one clearly dominant subject.
 
-The focal point should remain centered.
+The subject should occupy most of the usable composition.
 
-Avoid oversized decorative frames.
+Keep it immediately recognizable.
 
-Avoid multiple unrelated subjects.
+Do not reduce the main subject simply to make room for decorative elements.
 
 ==================================================
 SECONDARY ELEMENTS
 ==================================================
 
-Supporting elements should remain minimal.
+Secondary elements are optional.
 
-Suitable examples:
+Use them only when they improve the requested concept or composition.
+
+Suitable supporting elements may include:
 
 • Small leaves
+• Small flowers
+• Minimal ornaments
+• Small geometric accents
+• Limited decorative linework
 
-• Fine ornamental lines
+Do NOT add secondary elements simply to increase the height or width of the tattoo.
 
-• Tiny flowers
-
-• Smoke accents
-
-• Thin geometric elements
-
-Never allow secondary elements to become visually dominant.
+Do NOT create long ornamental extensions above or below the main subject unless explicitly requested or naturally required by the concept.
 
 ==================================================
 NEGATIVE SPACE
 ==================================================
 
-Negative space is essential.
+Negative space is essential at wrist scale.
 
-Allow empty areas to improve readability.
+Preserve clear separation between important forms.
 
-Avoid filling every gap.
+Do not fill every available gap.
 
-The silhouette should remain clean.
+Avoid tiny enclosed spaces that will become unreadable over time.
+
+The overall silhouette should remain recognizable from a distance.
 
 ==================================================
 DETAIL DENSITY
 ==================================================
 
-Low to medium detail.
+Use low to medium overall detail appropriate for the physical size of the wrist.
 
-Avoid tiny textures.
+Concentrate important detail around the focal point.
 
-Avoid excessive realism.
+Simplify secondary structures where necessary.
 
-Avoid heavy black masses.
+Avoid excessive microtexture.
 
-Every detail must remain tattooable.
+Avoid detail that depends on extremely small separation.
+
+Tattoo style should still remain recognizable.
+
+Do not automatically remove strong black areas when the selected tattoo style requires them.
 
 ==================================================
 SUBJECT SCALING
 ==================================================
 
-Small flowers should remain proportional.
+Keep subjects naturally proportioned.
 
-Minimal snakes should wrap vertically.
+Animals should remain anatomically coherent.
 
-Symbols should remain centered.
+Flowers should remain readable.
 
-Lettering should stay readable.
+Symbols should remain clean.
 
-Animals should be simplified if necessary.
+Lettering must remain legible.
 
-Never overcrowd the available space.
+Snakes and scorpions should use their natural curves or coils to remain compact rather than being artificially stretched.
+
+Naturally elongated objects such as daggers, feathers or short ornamental elements may use moderate vertical orientation, but should still feel appropriate for wrist scale.
 
 ==================================================
 EDGE TREATMENT
 ==================================================
 
-Top and bottom may soften or narrow naturally when appropriate to the subject, without forcing pointed spear-like endings.
+Edges should follow the natural subject silhouette.
 
-Avoid abrupt endings.
+There is no requirement for the top or bottom to narrow.
 
-Maintain elegant transitions.
+Do not create artificial pointed endings.
+
+Do not add ornamental tips merely to finish the composition.
+
+Compact rounded, irregular, asymmetrical or naturally open endings are acceptable.
 
 ==================================================
 PROFESSIONAL TATTOO PRINCIPLES
@@ -195,15 +225,16 @@ PROFESSIONAL TATTOO PRINCIPLES
 
 Design as if the tattoo will be applied tomorrow.
 
-Prioritize longevity.
+Prioritize:
 
-Prioritize readability.
+• readability
+• longevity
+• clean execution
+• recognizable silhouette
+• appropriate scale
+• controlled detail
 
-Prioritize clean execution.
-
-Avoid decorative excess.
-
-Every line should serve a purpose.
+Every element must justify the limited space it occupies.
 
 ==================================================
 COMMON AI MISTAKES
@@ -211,48 +242,48 @@ COMMON AI MISTAKES
 
 Never create:
 
-• Overly detailed tattoos
-
+• Forearm-length compositions
+• Extremely elongated vertical designs
+• Artificial spear shapes
+• Long decorative extensions
+• Excessive botanical trails
 • Tiny unreadable textures
-
-• Multiple focal points
-
-• Wide layouts
-
-• Human hands
-
-• Wrist mockups
-
-• Skin
-
-• Poster compositions
-
-• Cropped artwork
-
+• Multiple competing focal points
 • Decorative overload
-
+• Human hands
+• Visible wrists
+• Skin
+• Body mockups
+• Poster compositions
+• Cropped artwork
 
 ==================================================
 SILHOUETTE INTERPRETATION
 ==================================================
 
-Anatomy defines the available proportions, flow and limits of the placement; it does not automatically define one fixed geometric silhouette.
+The wrist defines a compact available area, not one mandatory geometric silhouette.
 
-Let the requested subject and tattoo style determine the exact outer contour within those anatomical limits.
+The requested subject and tattoo style determine the final outer contour.
 
-Anatomical narrowing should influence the composition subtly and must not automatically create a spear, blade, needle, sharp triangle or pointed tail.
+Do not force anatomical tapering.
+
+Do not force vertical flow.
+
+Do not force symmetry.
+
+Do not force circularity.
+
+Instead, create the most natural compact silhouette for the requested subject while respecting wrist scale and readability.
 
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
 
-Generate only:
-
-One isolated tattoo artwork.
+Generate one isolated tattoo artwork.
 
 Entire tattoo visible.
 
-Neutral or white background.
+White or neutral background.
 
 No wrist.
 
@@ -260,9 +291,11 @@ No hand.
 
 No body.
 
+No skin.
+
 No clothing.
 
-No text.
+No text unless explicitly requested as part of the tattoo.
 
 No watermark.
 
@@ -272,50 +305,32 @@ No logo.
 FINAL VALIDATION CHECKLIST
 ==================================================
 
-✓ Correct wrist proportions
+✓ Clearly designed for wrist scale
 
-✓ Compact composition
+✓ Compact rather than elongated
+
+✓ Subject has natural proportions
+
+✓ Orientation follows the subject
+
+✓ One dominant focal point
+
+✓ Secondary elements are necessary and restrained
+
+✓ No artificial vertical extensions
+
+✓ No forced pointed ending
 
 ✓ Strong readability
-
-✓ Clean silhouette
-
-✓ Single focal point
 
 ✓ Balanced negative space
 
 ✓ Entire tattoo visible
 
-✓ No cropped elements
-
 ✓ No body parts
 
-✓ No mockups
+✓ No mockup
 
-✓ Professional wrist tattoo composition
-
-✓ Suitable for long-term tattoo execution
+✓ Professional tattoo composition
 
 END OF GUIDE
-
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
-
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
-
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.

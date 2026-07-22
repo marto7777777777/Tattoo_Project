@@ -5,132 +5,427 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design a tattoo specifically intended for HALF BACK placement.
+Design one isolated tattoo specifically intended for HALF BACK placement.
 
-Generate only an isolated tattoo artwork.
+The tattoo must occupy only the LEFT or RIGHT half of the back.
+
+Do NOT generate a human body, back, torso, skin, or mockup.
+
+Generate only the complete isolated tattoo artwork.
 
 ==================================================
-PLACEMENT PRIORITY
+PLACEMENT PHILOSOPHY
 ==================================================
 
-The tattoo should occupy either the left or right side while remaining visually balanced.
+Treat HALF BACK as one anatomical half of the actual human back.
 
-Avoid creating a full back composition.
+It is a LARGE, BROAD, ONE-SIDED BACK CANVAS.
+
+It is NOT a narrow elongated placement.
+
+Do not design it like a forearm, calf, ribs, or vertical poster.
+
+The composition should use substantial width while remaining confined to one side of the back.
 
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-Half back provides a tall vertical canvas.
+The half-back canvas is controlled by two fundamentally different boundaries:
 
-The tattoo may expand slightly toward the shoulder.
+1. INNER / SPINE-SIDE BOUNDARY
 
-It should naturally taper toward the lower back.
+This boundary runs beside the spinal column.
+
+It should remain approximately straight and vertically stable from the upper back toward the lower back.
+
+It must NOT progressively move inward.
+
+It must NOT curve toward the center near the bottom.
+
+It must NOT participate in a symmetrical taper.
+
+2. OUTER / LATISSIMUS-SIDE BOUNDARY
+
+This boundary follows the natural outer anatomy of the back.
+
+The upper region may expand outward through the trapezius and shoulder-blade area.
+
+The middle back remains broad through the latissimus dorsi region.
+
+Moving downward toward the waist, the OUTER boundary may gradually move inward following the latissimus and waist anatomy.
+
+Therefore:
+
+ANATOMICAL NARROWING HAPPENS PRIMARILY FROM THE OUTER SIDE.
+
+The spine-side boundary remains comparatively stable.
+
+==================================================
+ANATOMICAL FOOTPRINT
+==================================================
+
+The upper section should have substantial width across the shoulder-blade region.
+
+The middle section should remain broad and visually important.
+
+The lower section may become moderately narrower as the outer contour approaches the waist.
+
+Do NOT make the entire composition progressively narrower from both sides.
+
+The overall footprint should resemble one real anatomical half of a back.
+
+Do not convert this anatomy into a decorative geometric silhouette.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred
+Preferred:
 
+• Broad one-sided back panel
+• Anatomical half-back footprint
+• Stable vertical spine-side structure
+• Broad upper and middle region
+• Outer contour following the latissimus
+• Organic asymmetrical composition
+• Large connected tattoo structure
 
+Avoid:
 
-• Dragon flow
-
-• Botanical frame
-
-Avoid
-
-• Full width compositions
-
-• Horizontal layouts
-
-• Circular badges
+• Narrow vertical strips
+• V-shaped silhouettes
+• Diamonds
+• Shields
+• Spears
+• Teardrops
+• Long triangles
+• Vertical poster shapes
+• Symmetrical tapering
+• Artificially rounded closed bottoms
+• Centered pointed endings
 
 ==================================================
-ASPECT RATIO
+PROPORTION
 ==================================================
 
-Preferred
+The composition should be taller than wide, but NOT dramatically elongated.
 
-2.5 : 1
+Preferred height-to-width relationship:
+
+Approximately 1.4 : 1 to 1.7 : 1
+
+This is a guideline, not a rigid frame.
+
+Subject anatomy and tattoo style may alter the exact silhouette.
+
+Always prioritize the broad anatomical half-back footprint over forcing an exact ratio.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Use the full available half-back canvas.
+
+Internal movement may travel:
+
+• Vertically
+• Diagonally
+• In curves
+• Through overlapping subjects
+• Through connected background elements
+
+However, internal artistic movement must NOT redefine the entire tattoo into a narrow or tapered silhouette.
+
+Keep the composition visually anchored beside the spine while allowing subjects to expand outward across the shoulder blade and latissimus region.
+
+==================================================
+PRIMARY SUBJECT
+==================================================
+
+Use one clear dominant focal point or one strongly connected primary scene.
+
+Large subjects should retain believable natural proportions.
+
+Do NOT vertically stretch animals, faces, skulls, masks, characters, or other subjects simply to fill the placement.
+
+Allow large focal subjects to use the width of the back.
+
+==================================================
+SECONDARY ELEMENTS
+==================================================
+
+Use connected secondary elements to occupy and organize the remaining canvas.
+
+Depending on the requested style, these may include:
+
+• Flowers
+• Clouds
+• Waves
+• Smoke
+• Architecture
+• Stone
+• Foliage
+• Ornamental structures
+• Graphic elements
+• Geometry
+• Additional connected subjects
+
+Secondary elements should support the anatomical footprint rather than force everything into one centered vertical column.
+
+==================================================
+EDGE BEHAVIOR
+==================================================
+
+Do NOT treat the tattoo as one closed decorative shape.
+
+The outer perimeter does not need to form one continuous smooth border.
+
+Individual subjects and supporting elements may end at different heights and positions.
+
+Use staggered endings and controlled negative space where appropriate.
+
+The silhouette should feel naturally created by the tattoo elements themselves.
+
+Do NOT artificially trim the artwork into an oval, shield, diamond, triangle, or decorative panel outline.
+
+==================================================
+SPINE-SIDE CONTROL
+==================================================
+
+The spine-side edge is the main structural anchor.
+
+Maintain visual presence beside the spine from upper to lower sections.
+
+Do NOT gradually pull every element away from the spine as the composition moves downward.
+
+Do NOT create an inward curve near the lower spine-side area.
+
+Some elements may naturally move away from the spine, but the overall composition must preserve a stable inner boundary.
+
+==================================================
+LATISSIMUS-SIDE CONTROL
+==================================================
+
+The outer side should reflect the natural contour of the latissimus dorsi.
+
+It may project farther outward through the upper and middle back.
+
+As it approaches the waist, it may gradually become narrower.
+
+This change should be smooth and anatomical.
+
+Do NOT create an abrupt inward notch.
+
+Do NOT create a dramatic concave curve.
+
+Do NOT suddenly collapse the outer width.
+
+==================================================
+LOWER SECTION
+==================================================
+
+The lower half-back must retain meaningful visual structure.
+
+Do NOT narrow both sides toward one endpoint.
+
+Do NOT make all secondary elements converge.
+
+Do NOT create a V-shaped or pointed bottom.
+
+Do NOT create a rounded bowl-like bottom closure.
+
+The spine-side structure may continue lower while outer elements terminate slightly higher as the anatomy narrows toward the waist.
+
+Different elements may finish at different heights.
+
+The lower boundary may therefore be:
+
+• Staggered
+• Softly irregular
+• Partially open
+• Interrupted by negative space
+• Formed by multiple natural endpoints
+
+It does NOT need to become one continuous decorative line.
 
 ==================================================
 BEST SUITED SUBJECTS
 ==================================================
 
 ✓ Dragon
-
 ✓ Phoenix
-
 ✓ Snake
-
-✓ Wolf
-
 ✓ Oni
-
 ✓ Samurai
-
-✓ Floral
+✓ Warrior
+✓ Lion
+✓ Wolf
+✓ Raven
+✓ Skull compositions
+✓ Portrait compositions
+✓ Floral compositions
+✓ Japanese scenes
+✓ Realism scenes
+✓ Illustrative compositions
+✓ Trash Polka compositions
+✓ Biomechanical structures
 
 ==================================================
-VISUAL MOOD
+DETAIL DISTRIBUTION
 ==================================================
 
-Dynamic
+Do not use maximum detail everywhere.
 
-Powerful
+Place the highest detail and contrast around the primary focal point.
 
-Vertical
+Use medium detail through important supporting subjects.
 
-Organic
+Simplify peripheral and transitional elements where appropriate.
+
+Maintain readable separation between overlapping forms.
+
+Use negative space deliberately.
+
+==================================================
+STYLE ADAPTATION
+==================================================
+
+Placement anatomy controls:
+
+• Available width
+• Overall footprint
+• Spine-side boundary
+• Outer latissimus contour
+• General scale
+• Usable vertical range
+
+The requested tattoo STYLE controls:
+
+• Linework
+• Shading
+• Color
+• Texture
+• Detail density
+• Background language
+• Edge character
+
+The requested SUBJECT controls the internal silhouette.
+
+Do not force every style or subject into the same geometric outer shape.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never:
 
-• occupy the whole back
-
-• create poster layouts
-
-• create equal width
-
-• body mockups
-
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
-
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
-
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
+• Create a full-back composition
+• Create a narrow elongated tattoo
+• Treat half back like ribs or forearm
+• Taper both sides downward
+• Pull the spine-side boundary inward
+• Create a strange inward curve near the lower spine
+• Create an abrupt notch along the latissimus side
+• Create a centered V-shaped bottom
+• Create a spear silhouette
+• Create a diamond silhouette
+• Create a teardrop silhouette
+• Create a decorative closed perimeter
+• Force every element toward one bottom endpoint
+• Stretch the primary subject unnaturally
+• Leave excessive unused width
+• Generate a body mockup
+• Crop the artwork
 
 ==================================================
-FINAL CHECKLIST
+SILHOUETTE INTERPRETATION
 ==================================================
 
-✓ One-sided composition
+The human anatomy defines the AVAILABLE CANVAS.
 
-✓ Strong vertical flow
+It does NOT define one mandatory decorative silhouette.
 
-✓ Natural taper
+Think:
+
+SPINE = stable inner vertical anchor.
+
+SHOULDER BLADE + LATISSIMUS = broad outer canvas.
+
+WAIST = gradual narrowing primarily from the outer side.
+
+The tattoo subjects should be composed INSIDE this anatomical footprint.
+
+Do not transform the entire composition into a generic geometric shape merely to make the artwork look visually complete.
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo artwork.
+
+Entire tattoo fully visible.
+
+Plain white or very light neutral background.
+
+Clear empty margins around the artwork.
+
+No human back.
+
+No torso.
+
+No body.
+
+No skin.
+
+No clothing.
+
+No mockup.
+
+No watermark.
+
+No logo.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Occupies only one half of the back
+
+✓ Large broad half-back composition
+
+✓ Taller than wide without excessive elongation
+
+✓ Uses substantial upper and middle-back width
+
+✓ Inner edge remains stable beside the spine
+
+✓ No lower inward curl on the spine side
+
+✓ Outer edge follows shoulder blade and latissimus anatomy
+
+✓ Outer side gradually approaches the waist
+
+✓ Narrowing occurs primarily from the outer side
+
+✓ No abrupt latissimus-side notch
+
+✓ Lower section retains meaningful structure
+
+✓ Natural staggered lower endings allowed
+
+✓ No forced closed bottom
+
+✓ No symmetrical taper
+
+✓ No V shape
+
+✓ No spear or diamond silhouette
+
+✓ Subjects retain natural proportions
 
 ✓ Entire tattoo visible
 
-✓ No body
+✓ No body or mockup
+
+✓ Professional half-back tattoo composition

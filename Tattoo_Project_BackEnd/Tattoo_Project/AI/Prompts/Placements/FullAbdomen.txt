@@ -5,128 +5,230 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design an isolated tattoo specifically intended for the FULL ABDOMEN.
+Design one isolated tattoo specifically intended for the FULL ABDOMEN.
 
-Do NOT generate an abdomen.
+Do NOT generate an abdomen, torso, body, skin, or body mockup.
 
-Do NOT generate a torso.
-
-Create a tattoo composition that naturally follows the proportions of the stomach area while remaining a standalone artwork.
+Create a broad central tattoo composition capable of occupying the abdominal area from side to side while using its available vertical space.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-The abdomen favors vertically balanced compositions.
+Prioritize:
 
-The design should remain centered.
+• Broad abdominal coverage
+• Strong central organization
+• Balanced use of width and height
+• Stable visual mass
+• Natural adaptation to abdominal anatomy
 
-Avoid excessive width.
+The abdomen is a large surface.
+
+Do NOT treat it as a narrow vertical placement.
 
 ==================================================
-ANATOMICAL ANALYSIS
+ANATOMICAL FOOTPRINT
 ==================================================
 
-The upper abdomen is wider.
+The full abdomen provides substantial width across both sides of the central abdominal line.
 
-The lower abdomen gradually narrows.
+The middle abdominal region retains significant usable width.
 
-The central line is the strongest visual axis.
+The lower abdomen may change shape slightly, but it should NOT automatically cause the entire tattoo to taper dramatically downward.
 
-The tattoo should naturally follow this vertical anatomy.
+The central abdominal line can act as a compositional axis when appropriate.
+
+The design should use both sides of this axis.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred
+The default footprint should resemble a BROAD, MODERATELY TALL RECTANGULAR OR SOFTLY STRUCTURED ABDOMINAL PANEL.
 
-• Shield
+The design may have organic edges and anatomical variation, but its main visual mass should remain broad.
 
-• Vertical ornamental frame
+Preferred:
 
-• Diamond
+• Broad vertical rectangle
+• Soft rectangular panel
+• Wide ornamental composition
+• Broad structured frame
+• Large centered organic composition
+• Wide symmetrical or asymmetrical composition
 
-• Cathedral silhouette
+Avoid:
 
-Avoid
-
-• Landscape layouts
-
-• Wide rectangles
-
-• Circular badges
-
-==================================================
-ASPECT RATIO
-==================================================
-
-Preferred
-
-1.8 : 1
-
-Acceptable
-
-1.6 : 1
-
-to
-
-2.1 : 1
+• Narrow shields
+• Tall diamonds
+• Cathedral-like pointed silhouettes by default
+• Long vertical columns
+• Spear shapes
+• Strong triangular taper
+• Designs concentrated only around the centerline
 
 ==================================================
-BEST SUITED SUBJECTS
+PROPORTION CONTROL
 ==================================================
 
-✓ Dragon
+Use substantial width.
 
-✓ Snake
+The full abdomen should NOT appear dramatically taller than it is wide.
 
-✓ Oni
+Target approximately:
 
-✓ Sacred Geometry
+HEIGHT : WIDTH = 1.1 : 1 to 1.35 : 1
 
-✓ Ornamental
+Exact proportions may vary slightly depending on the requested subject and style.
 
-✓ Floral compositions
+The important rule is:
 
-✓ Skull
+USE THE WIDTH OF THE ABDOMEN.
+
+Do not compress a large design into a narrow central strip.
 
 ==================================================
-VISUAL MOOD
+COMPOSITION
 ==================================================
 
-Balanced
+The design may use:
 
-Powerful
+• One large central focal point
+• A central subject with connected lateral elements
+• Two interacting subjects
+• A structured symmetrical composition
+• A broad organic composition spanning both sides
 
-Centered
+The central axis may organize the artwork, but it must not force everything into a narrow vertical stack.
 
-Elegant
+Supporting elements should distribute visual weight across the abdomen.
+
+Keep the primary subject anatomically natural.
+
+Do not stretch subjects vertically merely to fill space.
+
+==================================================
+SYMMETRY
+==================================================
+
+Symmetry is suitable for many full-abdomen designs but is NOT mandatory.
+
+Geometric, ornamental, tribal and similar styles may use strong symmetry.
+
+Realism, Japanese, illustrative, biomechanical, Trash Polka and other styles may use controlled asymmetry.
+
+The placement requires BALANCE, not compulsory mirror symmetry.
+
+==================================================
+NAVEL-SAFE COMPOSITION
+==================================================
+
+The central abdominal area may contain the navel when applied to the body.
+
+Do not make one tiny critical feature dependent on the exact central point of the design.
+
+When possible, allow the central region to contain:
+
+• Negative space
+• Background shading
+• Pattern transitions
+• Secondary texture
+• Non-critical supporting structure
+
+The design should remain visually coherent if a tattoo artist modifies or interrupts a small central area during application.
+
+Do not draw a navel.
+
+==================================================
+EDGE BEHAVIOR
+==================================================
+
+Maintain substantial width through the middle and lower portions.
+
+The sides may curve or contract gently according to the subject.
+
+Avoid automatic continuous tapering.
+
+Avoid forcing both lower sides to converge toward a single point.
+
+The bottom may finish broadly, organically, asymmetrically, or through several connected endpoints depending on the design.
+
+==================================================
+STYLE ADAPTATION
+==================================================
+
+The abdominal footprint defines available space, not one mandatory silhouette.
+
+Geometric designs may remain structured and rectangular.
+
+Japanese designs may create broad flowing edges.
+
+Realism may use soft irregular transitions.
+
+Tribal and ornamental styles may follow stronger controlled contours.
+
+Floral and illustrative designs may break the boundary organically.
+
+Every style should still use the substantial WIDTH of the full abdomen.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never:
 
-• generate a torso
+• Generate a torso or body
+• Treat full abdomen like a forearm
+• Produce a narrow vertical column
+• Automatically create a shield
+• Automatically create a diamond
+• Continuously taper toward the bottom
+• Force a pointed lower ending
+• Place all important content on the centerline
+• Stretch subjects vertically
+• Ignore the available abdominal width
+• Crop the artwork
 
-• create posters
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
 
-• crop artwork
+Generate one isolated tattoo artwork.
 
-• create equal width
+Entire tattoo fully visible.
+
+Plain white or very light neutral background.
+
+Clean margins.
+
+No abdomen.
+
+No torso.
+
+No skin.
+
+No body.
+
+No mockup.
+
+No text.
+
+No watermark.
 
 ==================================================
 FINAL CHECKLIST
 ==================================================
 
-✓ Strong center
-
-✓ Vertical balance
-
+✓ Full-abdomen scale
+✓ Broad composition
+✓ Approximately 1.1–1.35 : 1 height-to-width
+✓ Strong but not mandatory central organization
+✓ Substantial width through middle and lower sections
+✓ No forced shield or diamond
+✓ No excessive downward taper
+✓ Navel-safe central structure
+✓ Natural subject proportions
 ✓ Entire tattoo visible
-
 ✓ No body
-
-✓ Professional composition
+✓ Professional tattoo-ready composition

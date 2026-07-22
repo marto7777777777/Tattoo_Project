@@ -15,10 +15,12 @@ import {
 } from "../api/aiTattooApi";
 import { getImageUrl } from "../utils/images";
 import ImageLightbox from "../components/ImageLightbox";
+import { useAuth } from "../context/AuthContext";
 
 function AiTattooProjectPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { isAdmin } = useAuth();
 
   const [project, setProject] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -219,15 +221,19 @@ function AiTattooProjectPage() {
             }`}
           >
             <strong>
-              {project.canEdit
-                ? "AI editing available"
-                : "AI editing unavailable"}
+              {isAdmin
+                ? "Admin unlimited access"
+                : project.canEdit
+                  ? "AI editing available"
+                  : "AI editing unavailable"}
             </strong>
 
             <small>
-              {project.canEdit
-                ? `${project.freeEditsRemaining} improvements remaining`
-                : "This project cannot currently be edited"}
+              {isAdmin
+                ? "Project and edit limits are bypassed for development testing"
+                : project.canEdit
+                  ? `${project.freeEditsRemaining} improvements remaining`
+                  : "This project cannot currently be edited"}
             </small>
           </div>
         </div>

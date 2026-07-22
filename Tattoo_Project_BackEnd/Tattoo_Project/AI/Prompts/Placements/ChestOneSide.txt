@@ -1,4 +1,4 @@
-UPPER CHEST TATTOO DESIGN GUIDE
+ONE SIDE UPPER CHEST TATTOO DESIGN GUIDE
 InkRoute AI Knowledge Base
 
 ==================================================
@@ -7,128 +7,356 @@ PURPOSE
 
 Design an isolated tattoo specifically intended for ONE SIDE OF THE UPPER CHEST.
 
-Do NOT generate a human body.
+Do NOT generate a human body, chest, skin or mockup.
 
-The tattoo should naturally fit the upper chest while remaining an isolated artwork.
+Generate only the tattoo artwork.
+
+The design must naturally follow the anatomical footprint of a single pectoral rather than looking like a generic horizontal tattoo.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-This placement combines horizontal expansion with gentle vertical flow.
+The design should occupy one pectoral with a broad, rounded and asymmetrical shape.
 
-Avoid creating full chest compositions.
+It should feel full across the main chest mass.
+
+The lower portion should remain broad and softly rounded.
+
+The outer-upper portion may rise naturally toward the shoulder.
+
+The inner portion near the sternum should remain compact but smoothly rounded.
+
+Never turn the composition into a vertical taper, shield, triangle or pointed chest piece.
 
 ==================================================
-ANATOMICAL ANALYSIS
+ANATOMICAL SHAPE
 ==================================================
 
-The upper chest is wide near the shoulder.
+A single pectoral is not rectangular and does not continuously narrow downward.
 
-The inner edge naturally points toward the sternum.
+The main chest area has substantial horizontal width.
 
-The tattoo should visually expand outward.
+The lower pectoral contour is broad and rounded.
 
-Never create perfect symmetry.
+Toward the sternum, the composition should transition inward through a smooth curve.
+
+Toward the outer-upper chest, the composition may gradually rise toward the shoulder.
+
+This creates an asymmetrical anatomical footprint rather than a symmetrical geometric shape.
+
+==================================================
+INNER CHEST / STERNUM SIDE
+==================================================
+
+The inner edge must remain softly rounded and anatomically full.
+
+Do NOT create:
+
+• Deep inward indentations
+
+• Concave notches
+
+• Pinched waist shapes
+
+• Hourglass silhouettes
+
+• Bean-shaped contours
+
+• Sudden narrowing near the sternum
+
+Transition gradually from the broad rounded lower chest toward the upper-inner chest.
+
+The composition may become slightly narrower toward the clavicle, but this change must remain smooth and gradual.
+
+==================================================
+OUTER CHEST / SHOULDER SIDE
+==================================================
+
+The outer-upper portion may rise toward the shoulder.
+
+This rise must happen through a broad, smooth anatomical curve.
+
+Do NOT create:
+
+• Sharp peaks
+
+• Triangular extensions
+
+• Flame-like tips
+
+• Narrow shoulder points
+
+• Sudden upward spikes
+
+Maintain meaningful visual mass while approaching the shoulder.
+
+The shoulder transition should feel like a continuation of the chest rather than a separate pointed extension.
+
+==================================================
+LOWER CHEST CONTOUR
+==================================================
+
+The lower edge should remain broad, soft and rounded.
+
+Do not continuously taper the composition downward.
+
+Do not create a centered bottom point.
+
+Supporting elements may follow the rounded lower pectoral curve laterally.
+
+The lower silhouette should feel substantial enough to cover the main chest mass.
+
+==================================================
+NIPPLE-SAFE COMPOSITION
+==================================================
+
+The nipple area must never contain an essential part of the design.
+
+Do NOT place critical features directly through this region, including:
+
+• Faces
+
+• Eyes
+
+• Hands
+
+• Animal heads
+
+• Important symbols
+
+• Essential lettering
+
+• Critical object intersections
+
+Instead, allow this region to contain expendable or interruptible elements such as:
+
+• Soft shading
+
+• Negative space
+
+• Background transitions
+
+• Simple petals
+
+• Leaves
+
+• Clouds
+
+• Waves
+
+• Smoke-like supporting forms when appropriate to the style
+
+The tattoo must remain visually complete if this small area is left untattooed or modified by the tattoo artist.
+
+Do not draw a literal nipple hole or obvious empty circle.
+
+The safe area should be naturally integrated into the composition.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred
+Preferred:
 
-• Wing
+• Broad asymmetrical pectoral composition
 
-• Half shield
+• Rounded lower contour
 
-• Curved ornament
+• Smooth sternum-side transition
 
-• Botanical frame
+• Gentle rise toward the shoulder
 
-Avoid
+• Curved ornamental flow
 
-• Tall narrow layouts
+• Lateral subject movement
+
+Avoid:
+
+• Tall narrow compositions
+
+• Shields
+
+• Diamonds
+
+• Triangles
+
+• Vertical columns
+
+• Deep concave sides
+
+• Hourglass silhouettes
 
 • Perfect circles
 
 • Square compositions
 
 ==================================================
-ASPECT RATIO
+PROPORTION
 ==================================================
 
-Preferred
+The design should be clearly wider than tall.
 
-1.8 : 1
+Treat proportions as anatomical guidance rather than a rigid geometric frame.
 
-==================================================
-BEST SUITED SUBJECTS
-==================================================
+Prioritize the natural pectoral footprint over forcing an exact aspect ratio.
 
-✓ Eagle
-
-✓ Raven
-
-✓ Rose
-
-✓ Compass
-
-✓ Dagger
-
-✓ Clock
-
-✓ Snake
-
-✓ Fine Line
+The composition should use substantial horizontal width without becoming a full-chest design.
 
 ==================================================
-POOR CHOICES
+VISUAL FLOW
 ==================================================
 
-Avoid
+Favor lateral and gently diagonal movement.
 
-✗ Full back layouts
+The eye may travel from the inner chest outward and slightly upward toward the shoulder.
 
-✗ Full dragons
+Supporting elements should help create this flow.
 
-✗ Giant mandalas
+Avoid strong top-to-bottom sleeve-like movement.
 
-✗ Wide landscapes
+Never stack all major subjects vertically.
 
 ==================================================
-VISUAL MOOD
+SUBJECT PLACEMENT
 ==================================================
 
-Confident
+Keep the dominant focal point within the main pectoral mass.
 
-Balanced
+Large subjects should use the broad central chest area.
 
-Elegant
+Secondary elements may extend:
 
-Powerful
+• Laterally along the lower chest
+
+• Toward the sternum
+
+• Outward and slightly upward toward the shoulder
+
+Do not force naturally wide subjects into narrow vertical arrangements.
+
+==================================================
+DETAIL DISTRIBUTION
+==================================================
+
+Highest detail should remain around the primary focal point.
+
+Use medium detail through major supporting elements.
+
+Simplify elements near anatomical boundaries.
+
+Keep the nipple-safe region visually non-critical.
+
+Do not use equal detail everywhere.
+
+==================================================
+SILHOUETTE INTERPRETATION
+==================================================
+
+Chest anatomy defines the available footprint, but the requested subject and tattoo style determine the exact outer contour.
+
+Do not force every design into the same chest-shaped template.
+
+However, the final silhouette must still respect:
+
+• Broad pectoral width
+
+• Rounded lower anatomy
+
+• Smooth inner transition
+
+• Gradual shoulder rise
+
+• Nipple-safe structure
+
+The composition should look naturally adaptable to one pectoral without requiring a body mockup.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never create:
 
-• create full chest layouts
+• Full-chest compositions
 
-• draw a torso
+• Deep concave inner edges
 
-• crop the composition
+• Pinched waist silhouettes
+
+• Bean-shaped outlines
+
+• Sharp shoulder peaks
+
+• Pointed lower endings
+
+• Vertical thigh-like taper
+
+• Sleeve-style proportions
+
+• Critical details through the nipple area
+
+• Obvious circular nipple holes
+
+• Torso or skin mockups
+
+• Cropped artwork
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate one isolated tattoo artwork.
+
+Entire tattoo fully visible.
+
+Plain white or very light neutral background.
+
+Clear empty margins.
+
+No body.
+
+No chest.
+
+No skin.
+
+No nipple.
+
+No clothing.
+
+No mockup.
+
+No text unless specifically requested.
+
+No watermark.
 
 ==================================================
 FINAL CHECKLIST
 ==================================================
 
-✓ Natural shoulder flow
+✓ One-side chest composition
 
-✓ Balanced proportions
+✓ Clearly wider than tall
+
+✓ Broad main pectoral mass
+
+✓ Soft rounded lower contour
+
+✓ No deep inner indentation
+
+✓ Smooth sternum-side curve
+
+✓ Gradual outer rise toward shoulder
+
+✓ No sharp shoulder peak
+
+✓ Nipple-safe non-critical region
+
+✓ Strong lateral or diagonal flow
 
 ✓ Entire tattoo visible
 
-✓ No body
+✓ No body or mockup
 
-✓ Professional composition
+✓ Professional tattoo-ready composition
+
+END OF GUIDE

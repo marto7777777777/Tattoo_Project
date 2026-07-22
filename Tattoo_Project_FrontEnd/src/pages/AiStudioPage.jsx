@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getAiProjects } from "../api/aiTattooApi";
 import { getImageUrl } from "../utils/images";
+import { useAuth } from "../context/AuthContext";
 
 function AiStudioPage() {
+  const { isAdmin } = useAuth();
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState("");
 
@@ -20,10 +22,12 @@ function AiStudioPage() {
           <div>
             <p className="subtitle">InkRoute AI Studio</p>
             <h1>Shape the tattoo before the first session.</h1>
-            <p>Create one free tattoo concept, refine it twice, then send it directly into the InkRoute workflow.</p>
+            <p>{isAdmin ? "Admin testing mode: create and refine AI tattoo projects without project or edit limits." : "Create one free tattoo concept, refine it twice, then send it directly into the InkRoute workflow."}</p>
           </div>
 
-          {freeUsed ? (
+          {isAdmin ? (
+            <Link className="primary-button" to="/ai-studio/new">Create admin project</Link>
+          ) : freeUsed ? (
             <button className="primary-button" type="button" disabled title="The one free AI project has already been used">
               Free project used
             </button>
@@ -33,8 +37,8 @@ function AiStudioPage() {
         </div>
 
         <div className="ai-benefit-strip">
-          <span><strong>1 free project</strong><small>Initial generation included</small></span>
-          <span><strong>2 free improvements</strong><small>Then editing stops</small></span>
+          <span><strong>{isAdmin ? "Unlimited admin projects" : "1 free project"}</strong><small>{isAdmin ? "Development testing access" : "Initial generation included"}</small></span>
+          <span><strong>{isAdmin ? "Unlimited improvements" : "2 free improvements"}</strong><small>{isAdmin ? "No edit counter for Admin" : "Then editing stops"}</small></span>
           <span><strong>Locked direction</strong><small>Style and placement stay fixed</small></span>
           <span><strong>Download versions</strong><small>Keep every generated result</small></span>
         </div>

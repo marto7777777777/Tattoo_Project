@@ -1,0 +1,48 @@
+INKROUTE ADMIN SETUP
+
+The admin credentials are intentionally NOT stored in appsettings.json or source code.
+
+1. Open a terminal in the backend folder (the folder containing Tattoo_Project.csproj).
+
+2. Set the seeded admin values with .NET user-secrets:
+
+dotnet user-secrets set "AdminSeed:Email" "YOUR_ADMIN_EMAIL"
+dotnet user-secrets set "AdminSeed:Password" "YOUR_STRONG_ADMIN_PASSWORD"
+dotnet user-secrets set "AdminSeed:UserName" "inkroute-admin"
+dotnet user-secrets set "AdminSeed:FirstName" "InkRoute"
+dotnet user-secrets set "AdminSeed:LastName" "Admin"
+
+Only Email and Password are required. The other values have safe defaults.
+
+3. Start the backend normally.
+
+On every backend start:
+- InkRoute checks whether the configured admin email exists.
+- If it does not exist, the account is created automatically.
+- Email confirmation is set to true.
+- The Admin role is created if necessary and assigned.
+- If the password in user-secrets was changed, the seeded admin password is synchronized.
+
+The secrets are stored by .NET outside the repository and are not committed to GitHub.
+
+ADMIN CAPABILITIES ADDED
+- Dedicated Admin role and /admin frontend.
+- Admin can view users, profile IDs, tattoo requests and AI projects.
+- Admin can delete any non-admin user and related InkRoute data.
+- Admin can delete client profiles.
+- Admin can delete artist profiles and related studio data.
+- Admin can delete tattoo requests and their consultation/session/response/review data.
+- Admin can delete AI projects.
+- Admin can verify or unverify artist profiles.
+- Admin can enter role-protected frontend routes.
+- Admin has unlimited AI projects and unlimited AI improvements.
+- Normal users still keep the existing 1 free AI project + 2 free improvements logic.
+- No Stripe checkout/payment endpoints were added or enabled.
+
+DATABASE
+No new database columns or tables were added, so no new EF migration is required for the Admin feature itself.
+The existing database must still exist and be up to date.
+
+SECURITY
+Do not put AdminSeed:Email or AdminSeed:Password in appsettings.json if the project is committed to GitHub.
+For deployment later, use environment variables or the production secret store instead of local user-secrets.

@@ -15,6 +15,7 @@ const Icon = ({ name }) => {
     studio: <><path d="M4 21h16"/><path d="M6 21V9l6-5 6 5v12"/><path d="M9 21v-6h6v6"/></>,
     user: <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
     logout: <><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 19V5a2 2 0 0 0-2-2h-6"/></>,
+    admin: <><path d="M12 3l7 3v5c0 4.6-2.8 8.4-7 10-4.2-1.6-7-5.4-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
 };
@@ -22,7 +23,7 @@ const Icon = ({ name }) => {
 function Navbar() {
   const navigate = useNavigate();
   const menuRef = useRef(null);
-  const { isLoggedIn, isClient, isArtist, logout, user } = useAuth();
+  const { isLoggedIn, isClient, isArtist, isAdmin, logout, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profile, setProfile] = useState(null);
 
@@ -42,7 +43,7 @@ function Navbar() {
   }, []);
 
   const displayName = profile?.firstName || user?.userName || user?.email || "User";
-  const roleLabel = isArtist ? "Artist & Client" : isClient ? "Client" : "Member";
+  const roleLabel = isAdmin ? "Administrator" : isArtist ? "Artist & Client" : isClient ? "Client" : "Member";
 
   const handleLogout = () => {
     logout();
@@ -70,6 +71,7 @@ function Navbar() {
           {navItem("/", "home", "Overview")}
           {navItem("/explore", "explore", "Discover artists")}
           {isLoggedIn && navItem("/ai-studio", "ai", "AI Tattoo Studio")}
+          {isAdmin && navItem("/admin", "admin", "Admin control")}
           {isClient && navItem("/bookings", "bookings", "My bookings")}
           {isClient && navItem("/favorites", "heart", "Saved artists")}
           {isArtist && navItem("/my-studio", "studio", "My studio")}
@@ -118,6 +120,7 @@ function Navbar() {
         {navItem("/", "home", "Home")}
         {navItem("/explore", "explore", "Explore")}
         {isLoggedIn && navItem("/ai-studio", "ai", "AI")}
+        {isAdmin && navItem("/admin", "admin", "Admin")}
         {isClient && navItem("/bookings", "bookings", "Bookings")}
         {isArtist ? navItem("/my-studio", "studio", "Studio") : isClient && navItem("/favorites", "heart", "Saved")}
       </nav>

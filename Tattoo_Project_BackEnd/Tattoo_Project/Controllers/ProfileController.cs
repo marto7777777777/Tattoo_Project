@@ -95,32 +95,32 @@ namespace Tattoo_Project.Controllers
         public async Task<IActionResult> UpdateCountry(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateCountryAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/studio-name")]
         public async Task<IActionResult> UpdateStudioName(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateStudioNameAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/description")]
         public async Task<IActionResult> UpdateDescription(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateDescriptionAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/studio-address")]
         public async Task<IActionResult> UpdateStudioAddress(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateStudioAddressAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/studio-city")]
         public async Task<IActionResult> UpdateStudioCity(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateStudioCityAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/studio-country")]
         public async Task<IActionResult> UpdateStudioCountry(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateStudioCountryAsync);
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("consultation/duration")]
         public async Task<IActionResult> UpdateConsultationDuration(UpdateIntValueDto dto)
         {
@@ -133,7 +133,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Consultation duration updated successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("consultation/offers-online")]
         public async Task<IActionResult> UpdateOffersOnlineConsultation(UpdateBoolValueDto dto)
         {
@@ -146,7 +146,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Online consultation setting updated successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("deposit/requires-deposit")]
         public async Task<IActionResult> UpdateRequiresDeposit(UpdateBoolValueDto dto)
         {
@@ -159,7 +159,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Deposit requirement updated successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("deposit/amount")]
         public async Task<IActionResult> UpdateDepositAmount(UpdateNullableDecimalValueDto dto)
         {
@@ -172,7 +172,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Deposit amount updated successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPost("studio/requirements")]
         public async Task<IActionResult> AddRequirement(UpdateStringValueDto dto)
         {
@@ -185,7 +185,7 @@ namespace Tattoo_Project.Controllers
             return Ok(result.Data);
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("studio/requirements/{id}")]
         public async Task<IActionResult> UpdateRequirement(int id, UpdateStringValueDto dto)
         {
@@ -198,7 +198,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Requirement updated successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpDelete("studio/requirements/{id}")]
         public async Task<IActionResult> DeleteRequirement(int id)
         {
@@ -211,7 +211,7 @@ namespace Tattoo_Project.Controllers
             return Ok("Requirement deleted successfully.");
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPost("portfolio/images")]
         public async Task<IActionResult> AddPortfolioImage(IFormFile image)
         {
@@ -224,7 +224,7 @@ namespace Tattoo_Project.Controllers
             return Ok(result.Data);
         }
 
-        [Authorize(Roles = UserRoles.TattooArtist)]
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpDelete("portfolio/images/{id}")]
         public async Task<IActionResult> DeletePortfolioImage(int id)
         {

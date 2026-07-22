@@ -14,21 +14,21 @@ namespace Tattoo_Project.Controllers;
 [ApiController]
 public class AiTattooController(IAiTattooService service, TattooDbContext context, IWebHostEnvironment environment) : ControllerBase
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpGet]
     public async Task<IActionResult> GetMine()
     {
         var id=User.FindFirstValue(ClaimTypes.NameIdentifier); if(id==null)return Unauthorized();
         var r=await service.GetMyProjectsAsync(id); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
     }
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
         var uid=User.FindFirstValue(ClaimTypes.NameIdentifier); if(uid==null)return Unauthorized();
         var r=await service.GetProjectAsync(id,uid); return r.Success?Ok(r.Data):NotFound(r.ErrorMessage);
     }
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpPost("{id:int}/generate")]
     public async Task<IActionResult> Generate(int id)
     {
@@ -36,7 +36,7 @@ public class AiTattooController(IAiTattooService service, TattooDbContext contex
         var r=await service.GenerateInitialAsync(id,uid); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpPost]
     [RequestSizeLimit(12_000_000)]
     public async Task<IActionResult> Create([FromForm] CreateAiTattooProjectDto dto)
@@ -44,7 +44,7 @@ public class AiTattooController(IAiTattooService service, TattooDbContext contex
         var uid=User.FindFirstValue(ClaimTypes.NameIdentifier); if(uid==null)return Unauthorized();
         var r=await service.CreateProjectAsync(dto,uid); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
     }
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpPost("{id:int}/edit")]
     public async Task<IActionResult> Edit(int id,[FromBody] EditAiTattooProjectDto dto)
     {
@@ -52,7 +52,7 @@ public class AiTattooController(IAiTattooService service, TattooDbContext contex
         var r=await service.EditProjectAsync(id,dto,uid); return r.Success?Ok(r.Data):BadRequest(r.ErrorMessage);
     }
 
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
     [HttpGet("versions/{versionId:int}/download")]
     public async Task<IActionResult> DownloadVersion(int versionId)
     {

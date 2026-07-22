@@ -59,7 +59,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPost]
         public async Task<IActionResult> CreateConsultation(CreateConsultationDto dto)
         {
@@ -82,7 +82,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateConsultation(
             int id,
@@ -107,7 +107,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteConsultation(int id)
         {
@@ -130,7 +130,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPut("complete-consultation/{tattooRequestId}")]
         public async Task<IActionResult> CompleteConsultation(
             int tattooRequestId,
@@ -158,7 +158,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPut("reject-consultation/{tattooRequestId}")]
         public async Task<IActionResult> RejectConsultation(int tattooRequestId)
         {

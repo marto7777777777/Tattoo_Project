@@ -3,13 +3,13 @@ import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ children, roles = [] }) {
   const location = useLocation();
-  const { isLoggedIn, roles: userRoles } = useAuth();
+  const { isLoggedIn, roles: userRoles, isAdmin } = useAuth();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.some((role) => userRoles.includes(role))) {
+  if (!isAdmin && roles.length > 0 && !roles.some((role) => userRoles.includes(role))) {
     const returnTo = `${location.pathname}${location.search}`;
 
     if (roles.includes("Client")) {

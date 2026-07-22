@@ -85,7 +85,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Client)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client)]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateClientProfile(UpdateClientDto dto)
         {
