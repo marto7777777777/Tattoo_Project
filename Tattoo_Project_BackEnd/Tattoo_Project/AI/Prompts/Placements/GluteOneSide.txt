@@ -5,132 +5,263 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design an isolated tattoo specifically intended for ONE SIDE OF THE GLUTE.
+Design one isolated tattoo specifically intended for ONE SIDE OF THE GLUTE.
 
-Never generate a body.
+Never generate a human body, glute, hip, skin, underwear, or body mockup.
 
-The tattoo should naturally fit the rounded anatomy of this placement.
+The artwork must function as a standalone tattoo design while naturally fitting the broad, rounded surface of one glute.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-Favor rounded compositions.
+The glute is primarily a compact, rounded placement.
 
-Avoid large sleeve layouts.
+Prioritize:
 
-Keep the artwork compact and elegant.
+• Broad rounded coverage
+• Compact composition
+• Strong central mass
+• Soft outer curvature
+• Balanced use of width and height
+• Cohesive silhouette
+
+The design should feel naturally contained within one rounded anatomical area.
+
+Do not treat this placement like a thigh, back, ribs, or sleeve.
 
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-The glute provides a rounded tattoo surface.
+One glute provides a broad, convex and approximately rounded tattoo surface.
 
-The composition should remain centered.
+Unlike elongated placements, there is no strong vertical axis that needs to carry the composition through a long distance.
 
-Soft curves should dominate the silhouette.
+Width and height should remain relatively similar.
+
+The artwork may extend slightly farther in one direction when required by the subject, but it should still read as a compact rounded composition.
+
+Avoid strong vertical stretching.
+
+Avoid excessive horizontal stretching.
+
+Avoid long narrow extensions.
 
 ==================================================
-OVERALL SHAPE
+OVERALL FOOTPRINT
 ==================================================
 
-Preferred
+The preferred overall footprint is:
 
-• Oval
+• Near-circular
+• Soft oval
+• Rounded organic cluster
+• Compact radial composition
+• Broad rounded silhouette
 
-• Crescent
+The tattoo does NOT need to form a mathematically perfect circle.
 
-• Floral cluster
+The subject and tattoo style should determine the exact outer contour while remaining inside a generally rounded footprint.
 
-• Rounded ornament
+The silhouette may contain natural irregularities such as petals, fur, flames, leaves, horns, wings, ornamental extensions, or other subject-specific forms.
 
-Avoid
-
-• Long vertical sleeves
-
-• Squares
-
-• Landscape posters
+These should support the rounded mass rather than turning the design into a long composition.
 
 ==================================================
 ASPECT RATIO
 ==================================================
 
-Preferred
+Preferred height-to-width relationship:
 
-1.5 : 1
+approximately 1 : 1
 
-==================================================
-BEST SUITED SUBJECTS
-==================================================
+Typical acceptable range:
 
-✓ Flowers
+0.9 : 1
+to
+1.2 : 1
 
-✓ Butterfly
+Minor variation is acceptable when naturally required by the requested subject.
 
-✓ Snake
-
-✓ Moon
-
-✓ Ornamental
-
-✓ Fine Line
-
-✓ Peonies
+Do not force an elongated 1.5 : 1 composition.
 
 ==================================================
-POOR CHOICES
+COMPOSITION
 ==================================================
 
-Avoid
+Use one clear dominant focal point or one tightly connected primary subject group.
 
-✗ Full dragons
+Build secondary elements around the main subject to reinforce the rounded footprint.
 
-✗ Samurai
+Visual weight should remain concentrated near the central and middle areas.
 
-✗ Full back layouts
+Supporting elements may expand outward in several directions rather than traveling primarily upward or downward.
 
-✗ Giant portraits
+Avoid large empty gaps that divide the tattoo into separate pieces.
+
+Avoid disconnected sticker-like elements.
 
 ==================================================
-VISUAL MOOD
+VISUAL FLOW
 ==================================================
 
-Elegant
+Flow should move around, across, or slightly diagonally through the central mass.
 
-Soft
+Radial and curved movement works especially well.
 
-Organic
+The eye should circulate naturally through the composition instead of following a long sleeve-like path.
 
-Feminine
+==================================================
+SUITABLE SUBJECT BEHAVIOR
+==================================================
 
-Balanced
+Many subjects can work when adapted correctly.
+
+Examples include:
+
+✓ Flowers and peonies
+✓ Animal heads
+✓ Skull compositions
+✓ Oni masks
+✓ Butterflies and moths
+✓ Snakes arranged through compact curves or coils
+✓ Ornamental designs
+✓ Mandala-inspired compositions
+✓ Moons
+✓ New School characters
+✓ Traditional motifs
+✓ Japanese masks or compact Japanese compositions
+✓ Fine Line compositions
+
+Large or naturally elongated subjects should be reorganized into a compact composition rather than stretched vertically.
+
+==================================================
+SUBJECT SCALING
+==================================================
+
+Do not place a small subject inside a large empty circular boundary.
+
+Allow the primary subject to occupy substantial visual area.
+
+Supporting elements should help complete the outer footprint.
+
+For faces, masks, skulls, and animal heads, allow the focal subject to dominate the center.
+
+For floral designs, build outward through overlapping flowers, leaves, and stems while preserving a compact mass.
+
+For snakes, use controlled curves or coils instead of a long descending body.
+
+==================================================
+SILHOUETTE INTERPRETATION
+==================================================
+
+The anatomy defines a generally rounded available area.
+
+It does NOT require every tattoo to have a perfectly circular outline.
+
+Do not draw an artificial circle around the artwork.
+
+Do not crop elements to manufacture a circular boundary.
+
+Do not force every outer edge to follow identical curvature.
+
+Instead, distribute the subject and supporting elements so their combined visual mass naturally forms a near-circular or softly oval footprint.
+
+==================================================
+DETAIL DISTRIBUTION
+==================================================
+
+Keep the highest detail and strongest contrast around the primary focal point.
+
+Use medium detail in supporting elements.
+
+Simplify minor outer elements where appropriate for tattoo readability.
+
+Maintain clear negative-space separation between important overlapping forms.
+
+Avoid uniform micro-detail across the entire composition.
+
+==================================================
+STYLE ADAPTATION
+==================================================
+
+Preserve the requested tattoo style.
+
+Do not automatically make the tattoo floral, delicate, feminine, or ornamental simply because the placement is the glute.
+
+A dark, aggressive, masculine, colorful, traditional, realistic, geometric, illustrative, or other requested style is valid if its composition is adapted to the rounded placement.
+
+Placement controls the footprint.
+
+Style controls the visual language.
+
+Subject controls the exact silhouette.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never:
 
-• draw body parts
-
-• create mockups
-
-• crop artwork
-
-• create poster layouts
+• Generate a body or glute
+• Generate skin or a body mockup
+• Create a thigh-like vertical composition
+• Create a long sleeve composition
+• Create a ribs-style flowing strip
+• Create a wide lower-back composition
+• Stretch the main subject vertically
+• Force a perfect geometric circle
+• Put the tattoo inside a circular frame unless requested
+• Make every design floral or feminine
+• Create a square or rectangular poster
+• Use disconnected filler elements
+• Crop the artwork
 
 ==================================================
-FINAL CHECKLIST
+OUTPUT REQUIREMENTS
 ==================================================
 
-✓ Rounded composition
+Generate only one isolated tattoo artwork.
 
-✓ Elegant silhouette
+Plain white or very light neutral background.
+
+Entire tattoo fully visible.
+
+Clear empty margin around the complete design.
+
+No body.
+
+No skin.
+
+No mockup.
+
+No text unless specifically requested.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Designed specifically for one glute
+
+✓ Near-circular or softly rounded overall footprint
+
+✓ Width and height remain relatively similar
+
+✓ Compact composition
+
+✓ Strong central visual mass
+
+✓ No unnecessary vertical elongation
+
+✓ Subject determines the natural outer contour
+
+✓ Requested tattoo style is preserved
+
+✓ Supporting elements reinforce the rounded footprint
 
 ✓ Entire tattoo visible
 
-✓ No body
+✓ No body or mockup
 
-✓ Professional tattoo design
+✓ Professional tattoo-ready composition

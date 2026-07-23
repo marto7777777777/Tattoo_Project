@@ -1,131 +1,176 @@
+TOP OF FOOT TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
 PURPOSE
-
-Design an isolated tattoo specifically intended for the TOP OF THE FOOT.
-
-Never generate a foot.
-
-Create a tattoo that naturally follows the narrow shape of the foot.
-
 ==================================================
 
+Design one isolated tattoo specifically intended for the TOP OF THE FOOT.
+
+Never generate a foot, leg, skin or body mockup.
+
+The artwork must naturally follow the long narrow surface of the top of the foot.
+
+==================================================
 PLACEMENT PRIORITY
-
-Readability is essential.
-
-Avoid excessive detail.
-
-Maintain elegant flow.
-
 ==================================================
 
+The top of the foot requires a clean, readable and relatively simple composition.
+
+Prioritize:
+
+• clear silhouette
+• controlled detail
+• elegant longitudinal flow
+• enough negative space
+• practical tattoo readability
+
+Do not treat this placement like a large thigh, back or forearm canvas.
+
+==================================================
+ANATOMICAL DIRECTION
+==================================================
+
+IMPORTANT:
+
+The composition must be NARROWER at the ANKLE / SHIN SIDE.
+
+It should gradually become WIDER as it travels forward across the top of the foot toward the TOES.
+
+ANKLE / SHIN SIDE = NARROWER
+TOE SIDE = WIDER
+
+This directional relationship is essential.
+
+Never reverse it.
+
+The tattoo should begin with a relatively narrow visual footprint near the ankle and progressively open outward as it approaches the broader front portion of the foot.
+
+==================================================
 ANATOMICAL ANALYSIS
-
-The top of the foot is narrow.
-
-The ankle is wider.
-
-The toes create a natural taper.
-
-The composition should follow this direction.
-
 ==================================================
 
+The top of the foot is an elongated anatomical surface.
+
+Near the ankle and lower shin transition, the usable composition should remain relatively narrow.
+
+As the design travels forward across the foot toward the toes, it should gradually gain width.
+
+The widening must feel smooth and anatomical rather than geometric.
+
+Do not create a sharp triangle or fan shape.
+
+Do not suddenly expand at one point.
+
+Instead, allow the major forms and supporting elements to progressively occupy more lateral space toward the toe-side end.
+
+==================================================
 OVERALL SHAPE
-
-Preferred
-
-• Leaf
-
-• Vine
-
-• Dagger
-
-• Feather
-
-• Floral stem
-
-Avoid
-
-• Squares
-
-• Shields
-
-• Posters
-
 ==================================================
 
-ASPECT RATIO
+Preferred:
 
-Preferred
+• elongated narrow-to-broad composition
+• soft expanding panel
+• subtle anatomical trapezoid
+• flowing botanical composition
+• organic widening silhouette
 
-3 : 1
+The composition should remain relatively substantial through its length rather than becoming an extremely thin strip.
 
-==================================================
+The ANKLE SIDE is the narrower end.
 
-BEST SUBJECTS
+The TOE SIDE is the broader end.
 
-✓ Flowers
+Avoid:
 
-✓ Feather
-
-✓ Snake
-
-✓ Butterfly
-
-✓ Fine Line
-
-✓ Botanical
-
-✓ Script
-
-==================================================
-
-AVOID
-
-✗ Giant skulls
-
-✗ Dragons
-
-✗ Battle scenes
-
-✗ Heavy Japanese sleeves
+• wider ankle-side compositions
+• narrowing toward the toes
+• inverted anatomical taper
+• sharp triangles
+• spear silhouettes
+• diamonds
+• circular badges
+• square compositions
+• extremely thin vertical strips
 
 ==================================================
-
-VISUAL MOOD
-
-Elegant
-
-Light
-
-Organic
-
-Graceful
-
+VISUAL FLOW
 ==================================================
 
-COMMON AI MISTAKES
+Movement should travel longitudinally from the ankle toward the toes.
 
-Never
+Begin relatively narrow near the ankle.
 
-• draw feet
+Gradually allow the composition to spread outward toward both sides as it approaches the toes.
 
-• create body mockups
+The widening should come from the natural arrangement of the requested subject and supporting elements.
 
-• overcrowd
+Do not manufacture the shape using arbitrary decorative filler.
 
-• create heavy black masses
+Do not terminate the toe-side section in one centered point.
+
+The toe-side ending should retain the greatest overall width of the composition.
 
 ==================================================
+DETAIL CONTROL
+==================================================
 
+The top of the foot has limited practical space.
+
+Keep the artwork considerably simpler than designs intended for the thigh, back, calf or shin.
+
+Prefer:
+
+• one dominant subject
+• maximum one or two supporting elements
+• larger readable shapes
+• clean line separation
+• intentional negative space
+
+Avoid excessive:
+
+• filigree
+• tiny ornaments
+• hanging jewelry
+• chains
+• miniature symbols
+• micro-patterns
+• decorative curls
+• repeated small details
+
+The design must remain readable at realistic tattoo size.
+
+==================================================
 FINAL CHECKLIST
+==================================================
 
-✓ Elegant flow
+✓ Narrower at the ankle / shin side
 
-✓ Readable silhouette
+✓ Gradually wider toward the toes
 
-✓ Natural taper
+✓ Toe-side section carries the greatest width
+
+✓ Smooth anatomical expansion
+
+✓ No reversed taper
+
+✓ No sharp triangular silhouette
+
+✓ No artificial pointed ending
+
+✓ Strong elongated flow
+
+✓ Controlled detail density
+
+✓ Simple readable structure
 
 ✓ Entire tattoo visible
+
+✓ No foot
+
+✓ No leg
+
+✓ No skin
 
 ✓ Professional tattoo composition

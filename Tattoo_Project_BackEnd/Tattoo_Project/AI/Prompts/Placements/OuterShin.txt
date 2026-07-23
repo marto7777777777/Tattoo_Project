@@ -1,73 +1,278 @@
+OUTER SHIN TATTOO DESIGN GUIDE
+InkRoute AI Knowledge Base
+
+==================================================
 PURPOSE
-
-Design a tattoo specifically intended for the OUTER SHIN.
-
-Never generate a leg.
-
-Create a strong vertical tattoo composition.
-
 ==================================================
 
+You are designing a tattoo specifically intended for the OUTER SHIN.
+
+Do NOT generate a leg.
+
+Create one isolated tattoo composition optimized for the long, narrow vertical surface extending from below the knee toward the ankle.
+
+The finished artwork must immediately read as an OUTER-SHIN-SPECIFIC composition rather than a compact generic tattoo.
+
+==================================================
 PLACEMENT PRIORITY
-
-The shin favors bold readable artwork.
-
-The tattoo should feel aggressive and powerful.
-
 ==================================================
 
+VERTICAL LENGTH is a primary requirement.
+
+The outer shin provides a distinctly long and relatively narrow tattoo canvas.
+
+The artwork should deliberately use most of the available vertical distance of this placement.
+
+Do not allow the design to collapse into a compact badge, short oval, short shield, or central cluster.
+
+The composition must remain clearly and substantially taller than it is wide.
+
+==================================================
 ANATOMICAL ANALYSIS
-
-The shin is a distinctly long vertical tattoo area.
-
-Relatively narrow.
-
-The artwork should visibly use this available length instead of becoming a compact central design.
-
-Slightly wider near the knee.
-
-Gradually narrows toward the ankle.
-
 ==================================================
 
+The outer shin provides usable width below the knee and through the upper section.
+
+The placement remains relatively narrow compared with the calf or thigh.
+
+Available width gradually becomes more limited toward the ankle.
+
+This anatomical transition should influence the artwork naturally.
+
+However, anatomical narrowing must NOT be interpreted as a command to continuously shrink the composition toward one central point.
+
+Maintain meaningful visual structure throughout the majority of the vertical length.
+
+The tattoo should visibly travel from the upper shin toward the lower shin rather than occupying only the center of the placement.
+
+==================================================
 OVERALL SHAPE
+==================================================
 
-Preferred
+Preferred silhouettes
 
-• Elongated vertical composition
+• Long organic vertical composition
 
-• Organic vertical flow
+• Elongated subject-led composition
 
+• Flowing anatomical column
 
-• Vertical ornament
+• Long asymmetrical composition
+
+• Connected vertical sequence with overlapping elements
+
+• Dynamic vertically flowing structure
+
+• Vertical ornamental composition
 
 Avoid
 
-• Landscape
+• Compact badge
 
-• Square
+• Short oval
 
-• Circular badge
+• Short shield
+
+• Near-square composition
+
+• Wide poster composition
+
+• Equal-width rectangle
+
+• Artificial diamond silhouette
+
+• Artificial spear silhouette
+
+• Forced pointed bottom
 
 ==================================================
-
 ASPECT RATIO
+==================================================
 
-Preferred
+Target height-to-width relationship:
 
-3.3 : 1
+Approximately 3.3 : 1
 
-Acceptable
+Preferred range:
 
 3.0 : 1
-
 to
-
 3.8 : 1
 
+For concepts containing naturally broad focal subjects, preserve their natural anatomy while extending the COMPLETE COMPOSITION vertically through connected supporting structure.
+
+Do NOT compress the complete tattoo merely because the primary focal subject is naturally broad.
+
+Do NOT stretch or deform individual subjects vertically to satisfy the ratio.
+
+==================================================
+VERTICAL CANVAS UTILIZATION
 ==================================================
 
-BEST SUBJECTS
+The tattoo should make deliberate use of the long distance between the area below the knee and the lower shin approaching the ankle.
+
+A successful outer-shin composition should appear distinctly LONG even when viewed as isolated artwork without seeing a leg.
+
+The primary focal subject may occupy the upper or upper-middle region.
+
+Supporting subjects and connected structures should continue the composition vertically instead of clustering immediately around the focal point.
+
+When multiple major subjects are requested, distribute them through the vertical axis using intentional overlap, directional movement and visual connection.
+
+Do not compress every major element into one compact central mass.
+
+A broad animal head, skull, mask, portrait or other focal subject may establish the upper visual mass while connected secondary elements continue farther downward.
+
+Suitable vertical extensions may include:
+
+• flowing anatomy
+• snakes or tails
+• feathers
+• flowers and foliage
+• branches
+• weapons
+• fabric
+• ornaments
+• chains
+• architectural fragments
+• clouds
+• waves
+• subject-appropriate structural elements
+
+These elements must genuinely belong to the requested concept.
+
+Do not add arbitrary filler merely to manufacture height.
+
+The resulting artwork should use LENGTH through composition, not through distortion.
+
+==================================================
+PRIMARY SUBJECT PROPORTION
+==================================================
+
+Never stretch, narrow, elongate, or deform the primary subject merely to create a tall tattoo.
+
+Preserve believable anatomy and natural proportions.
+
+If the primary subject is naturally broad, allow it to retain enough width to remain convincing.
+
+Create additional vertical reach through connected supporting elements and composition.
+
+A naturally broad wolf, tiger, panther, skull, oni mask, eagle, portrait or similar subject must not force the complete tattoo to become short.
+
+==================================================
+MULTIPLE ELEMENT DISTRIBUTION
+==================================================
+
+When the concept contains several major elements, avoid compressing them into one overlapping badge.
+
+Use controlled vertical separation combined with meaningful overlap.
+
+The composition may follow a structure such as:
+
+dominant upper focal area
+↓
+connected transitional structure
+↓
+secondary focal area
+↓
+lower supporting structure
+
+This does NOT mean creating disconnected objects stacked vertically.
+
+Every section must remain visually connected through overlap, anatomy, directional movement, supporting elements, or controlled negative space.
+
+The viewer's eye should travel continuously through the complete artwork.
+
+==================================================
+WIDTH DISTRIBUTION
+==================================================
+
+The upper and upper-middle region may contain the greatest visual width.
+
+Maintain enough width through the middle for the design to remain powerful and readable.
+
+The lower region may become moderately narrower as it approaches the ankle.
+
+Do not reduce width aggressively.
+
+Do not repeatedly shrink individual supporting elements toward the bottom.
+
+Do not force all lower elements toward the central axis.
+
+The narrower anatomy of the shin must not turn the complete artwork into a thin needle-like design.
+
+==================================================
+LOWER SHIN ENDING
+==================================================
+
+The lower section must remain visually meaningful.
+
+Do not finish the composition prematurely after the primary focal subject.
+
+Use the available lower-shin length whenever the requested concept allows it.
+
+The terminal area may resolve through:
+
+• staggered elements
+• overlapping forms
+• flowing anatomy
+• feathers
+• foliage
+• flowers
+• fabric
+• chains
+• tails
+• clouds
+• waves
+• ornaments
+• broken structural elements
+• multiple endpoints
+• controlled negative space
+
+The lower silhouette does NOT need to end at one central point.
+
+A naturally pointed subject element is acceptable when it genuinely belongs to the requested subject.
+
+Examples include:
+
+• sword tip
+• dagger tip
+• snake tail
+• feather tip
+
+However, do not add an artificial pointed extension solely to make the composition appear elongated.
+
+==================================================
+VISUAL FLOW
+==================================================
+
+Movement should remain predominantly vertical.
+
+Diagonal movement may support the design but must not shorten the overall vertical footprint.
+
+The viewer's eye should travel from the upper focal region through the middle and clearly into the lower portion.
+
+Maintain one continuous visual story.
+
+Avoid disconnected stacked objects.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Place the highest detail and strongest contrast around the primary focal point.
+
+Use medium detail in secondary focal elements.
+
+Simplify transitional and outer structures where appropriate for tattoo readability and longevity.
+
+Do NOT automatically reduce detail from top to bottom.
+
+The lower section may contain an important secondary element if the requested concept benefits from it.
+
+==================================================
+BEST SUITED SUBJECTS
+==================================================
 
 ✓ Sword
 
@@ -85,9 +290,19 @@ BEST SUBJECTS
 
 ✓ Dagger
 
-==================================================
+✓ Eagle
 
+✓ Oni
+
+✓ Samurai
+
+✓ Vertical portrait compositions
+
+✓ Connected ornamental compositions
+
+==================================================
 VISUAL MOOD
+==================================================
 
 Strong
 
@@ -97,52 +312,122 @@ Sharp
 
 Dominant
 
-==================================================
+Dynamic
 
+Powerful
+
+==================================================
 COMMON AI MISTAKES
-
-Never
-
-• create body mockups
-
-• draw legs
-
-• crop lower section
-
-• create equal width
-
 ==================================================
 
-FINAL CHECKLIST
+Never create
 
-✓ Strong vertical flow
+• compact badge compositions
 
-✓ Upper wider
+• short central clusters
 
-✓ Moderate anatomical narrowing without a pointed lower ending
+• near-square designs
 
-✓ Powerful silhouette
+• landscape layouts
+
+• body mockups
+
+• legs
+
+• skin
+
+• cropped lower sections
+
+• unnecessarily short compositions
+
+• stretched primary subjects
+
+• equal-width columns
+
+• artificial spear-like silhouettes
+
+• elongated diamonds
+
+• forced pointed endings
+
+• every subject compressed around one central focal point
+
+• tiny decorative elements added only to manufacture length
+
+==================================================
+SILHOUETTE INTERPRETATION
+==================================================
+
+Outer-shin anatomy defines the available LENGTH, usable width, orientation and anatomical limits.
+
+It does NOT prescribe one fixed geometric silhouette.
+
+The requested subject and tattoo style determine the exact outer contour.
+
+The most important placement characteristic is that the finished composition remains distinctly elongated and uses the available shin length confidently.
+
+Anatomical narrowing toward the ankle should influence the lower composition subtly.
+
+It must never automatically create a triangle, spear, blade, needle, elongated diamond, shield point, or artificial tail.
+
+Naturally pointed subject elements remain acceptable when they genuinely belong to the requested concept.
+
+==================================================
+OUTPUT REQUIREMENTS
+==================================================
+
+Generate only one isolated tattoo artwork.
+
+Entire artwork visible.
+
+Neutral or white background.
+
+Clear margin around the complete tattoo.
+
+No leg.
+
+No body.
+
+No skin.
+
+No mockup.
+
+No text unless specifically requested.
+
+==================================================
+FINAL VALIDATION CHECKLIST
+==================================================
+
+✓ Clearly designed for the outer shin
+
+✓ Distinctly elongated vertical footprint
+
+✓ Uses substantial vertical length
+
+✓ Does not collapse into a compact badge
+
+✓ Primary subject retains natural proportions
+
+✓ Broad subjects are not artificially compressed
+
+✓ Strong upper-to-middle structure
+
+✓ Meaningful middle section
+
+✓ Meaningful lower section
+
+✓ Natural adaptation toward the ankle
+
+✓ No artificial spear or diamond silhouette
+
+✓ No forced centered point at the bottom
+
+✓ Connected visual flow from top to bottom
 
 ✓ Entire tattoo visible
 
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
+✓ No body parts
 
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
+✓ Professional tattoo composition
 
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
+END OF GUIDE

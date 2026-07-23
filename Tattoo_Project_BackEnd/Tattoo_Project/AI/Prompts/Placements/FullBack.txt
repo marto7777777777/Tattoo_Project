@@ -5,235 +5,321 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-You are currently designing a tattoo specifically intended for the FULL BACK.
+You are designing an isolated tattoo specifically intended for the FULL BACK.
 
-Your task is NOT to generate a human back.
+Do NOT generate a human back, torso, skin or body mockup.
 
-Your task is to create an isolated tattoo composition that naturally follows the proportions, movement and visual balance of the human back.
+Create a large tattoo composition that uses the full available back area and naturally follows back anatomy without turning the artwork into a geometric emblem.
 
-The final artwork should immediately feel like it was designed specifically for the back.
+The result should feel like a true full-back tattoo piece rather than a poster, shield or narrow vertical design.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-Back anatomy has higher priority than generic tattoo composition rules.
+The full back is a LARGE, BROAD anatomical canvas.
 
-The composition must always respect the natural widening of the shoulders and the gradual narrowing toward the waist.
+The composition should use substantial width through the upper, middle and lower sections.
 
-Never optimize the artwork as if it were a poster.
+The shoulders provide the greatest width, but this does NOT mean the entire design should continuously narrow from shoulders to waist.
+
+Think of the placement as a broad anatomical panel, not an inverted triangle.
 
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-The back is the largest tattoo placement on the human body.
+The upper back is broad across the shoulders.
 
-The shoulders provide the greatest usable width.
+The middle back remains broad and provides significant lateral space on both sides of the spine.
 
-The torso gradually narrows toward the waist.
+The lower torso becomes moderately narrower, but still provides substantial tattooable width.
 
-The center line of the spine acts as the natural visual axis.
+The spine forms a useful central visual axis but should not become the only occupied area.
 
-Large tattoo compositions should follow this anatomical flow.
+The composition should therefore:
 
-Never maintain identical width from top to bottom.
+• expand naturally across the upper back
+• maintain substantial width through the middle
+• narrow only moderately where anatomy requires it
+• retain meaningful width through the lower back
 
-Never create a perfect rectangle.
-
-Never create a square layout.
+Never interpret the back as a continuous top-to-bottom taper.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred silhouettes:
+Preferred:
 
-• Shield
-
-• Tapered diamond
-
-• Cathedral
-
-• Vertical crest
-
-• Wide upper triangle with soft taper
+• Broad full-back panel
+• Large organic backpiece
+• Wide anatomical composition
+• Broad upper and middle structure
+• Moderately narrower lower structure
+• Subject-led outer silhouette
 
 Avoid:
 
-• Rectangle
+• Shield silhouette
+• Cathedral silhouette
+• Inverted triangle
+• Tapered diamond
+• Spearhead
+• Long vertical crest
+• Narrow central column
+• Continuous V-shaped taper
+• Perfect rectangle
+• Square poster composition
 
-• Perfect square
-
-• Landscape poster
-
-• Equal-width column
-
-• Circular badge
-
-The tattoo should always appear wider at the top than at the bottom.
+The requested subject and tattoo style should determine the exact outer contour.
 
 ==================================================
-ASPECT RATIO
+PROPORTION
 ==================================================
 
-Preferred ratio:
+The artwork should be moderately taller than wide.
 
-Height : Width
+Approximate overall Height : Width:
 
-1.3 : 1
+1.25 : 1 to 1.45 : 1
 
-Acceptable range:
+Do not force this ratio by compressing the width.
 
-1.2 : 1
+The middle and lower portions must still feel substantial enough to occupy a real full back.
 
-to
+==================================================
+WIDTH DISTRIBUTION
+==================================================
 
-1.5 : 1
+This rule is critical.
 
-The tattoo should feel large, dominant and vertically structured.
+Do NOT progressively reduce width at every stage from top to bottom.
+
+The upper back may be the widest region.
+
+The middle back should retain most of that visual width.
+
+The lower back may become moderately narrower, but must remain a broad compositional area.
+
+The sides should not continuously converge toward the spinal axis.
+
+The bottom must not collapse into one central point.
 
 ==================================================
 VISUAL FLOW
 ==================================================
 
-The viewer's eye should begin near the upper center.
+Create connected movement throughout the entire back.
 
-The composition should naturally travel downward.
+The eye may travel vertically, diagonally, circularly or through interacting subjects depending on the requested design.
 
-Visual movement should remain continuous.
+Do NOT force every full-back tattoo into a straight downward flow.
 
-Avoid abrupt visual interruptions.
+Large subjects may interact across different regions of the back.
 
-Never split the tattoo into unrelated sections.
+Maintain one cohesive composition rather than separate floating sections.
+
+==================================================
+CENTRAL AXIS
+==================================================
+
+The spine provides a natural compositional reference.
+
+It does NOT require all major elements to sit directly on the center line.
+
+Use both lateral sides of the back.
+
+Large subjects, secondary subjects and supporting elements should occupy the available left and right areas where appropriate.
+
+Avoid creating a narrow central stack surrounded by unused space.
 
 ==================================================
 PRIMARY FOCAL POINT
 ==================================================
 
-Place the dominant focal point within the upper third.
+Use one clear dominant subject or one clearly defined primary interaction.
 
-Examples:
+The focal point may appear in the upper or central region depending on the requested subject.
 
-• Dragon head
+Do not automatically force the main subject into the upper third.
 
-• Tiger face
+Examples include:
 
+• Large animal
+• Portrait
 • Samurai
-
+• Oni
+• Dragon
+• Mechanical structure
+• Mythological scene
 • Skull
-
 • Phoenix
+• Interacting subjects
 
-• Oni mask
-
-Supporting elements should guide the eye downward.
+Scale the focal subject appropriately for a large full-back tattoo.
 
 ==================================================
 SECONDARY ELEMENTS
 ==================================================
 
-Use secondary elements to reinforce movement.
+Secondary elements should help occupy and connect the large anatomical canvas.
+
+They may extend laterally to prevent the composition from collapsing toward the center.
 
 Examples:
 
-• Smoke
-
-• Clouds
-
-• Waves
-
-• Wind bars
-
 • Flowers
-
+• Clouds
+• Waves
+• Wind
+• Mechanical components
+• Architecture
 • Snakes
+• Fabric
+• Branches
+• Ornamental structures
+• Abstract style-appropriate forms
 
-• Ornamental geometry
+Use them according to the requested tattoo style.
 
-These elements should connect the complete composition.
-
-Never let them overpower the main subject.
+Never add generic filler merely to occupy space.
 
 ==================================================
-NEGATIVE SPACE
+LOWER BACK CONTROL
 ==================================================
 
-Maintain readable separation between major forms.
+The lower section is part of the main tattoo, not a decorative tail.
 
-Avoid filling every available space.
+Maintain meaningful visual mass and width in this area.
 
-Allow breathing room around the silhouette.
+Do NOT repeatedly reduce the size of elements as they move downward.
 
-Negative space should improve readability rather than create empty gaps.
+Do NOT finish the composition with a long central ornament simply to create length.
+
+Do NOT create:
+
+• one pointed bottom
+• a spear tip
+• a narrow central tail
+• a long V-shaped ending
+• progressively shrinking stacked elements
+
+The lower edge may finish through broad organic forms, staggered elements, multiple endpoints, soft curves, lateral structures or controlled negative space.
+
+A naturally pointed subject feature is acceptable only when it genuinely belongs to the requested subject.
 
 ==================================================
 DETAIL DENSITY
 ==================================================
 
-The upper half should contain the highest level of detail.
+Detail hierarchy should follow the subject, not simply the vertical position.
 
-Reduce detail gradually toward the lower back.
+Highest detail belongs to the focal point.
 
-Large decorative masses should become lighter toward the bottom.
+Secondary subjects receive medium detail.
+
+Supporting and transitional elements receive simpler treatment.
+
+Do NOT automatically reduce detail just because an element is lower on the back.
+
+Maintain enough structure throughout the lower section for the tattoo to feel complete.
 
 ==================================================
 WEIGHT DISTRIBUTION
 ==================================================
 
-Visual weight should remain strongest across the shoulders.
+Visual weight should be distributed across the full composition.
 
-The composition should naturally become lighter toward the waist.
+The upper section may carry strong mass, but the middle and lower sections must not feel empty or weak.
 
-Avoid placing the heaviest element at the bottom.
+Avoid making the tattoo look top-heavy.
 
-The tattoo should feel stable and balanced.
+Large dark masses may appear anywhere when required by the subject and style.
+
+Balance them using surrounding forms, negative space and secondary elements.
+
+==================================================
+NEGATIVE SPACE
+==================================================
+
+Use negative space between important forms to maintain readability.
+
+Negative space should separate and organize the composition.
+
+It should NOT create large unused lateral gaps that make the tattoo appear narrower than the actual placement.
 
 ==================================================
 SUBJECT SCALING
 ==================================================
 
-Large animals should dominate the upper half.
+Keep primary subjects anatomically natural.
 
-Portraits should remain centered.
+Do not stretch animals, portraits, characters or objects merely to fill the height.
 
-Wings should naturally expand toward the shoulders.
+Use additional connected elements when more coverage is required.
 
-Dragons should travel vertically.
+For example:
 
-Snakes should create flowing movement.
+A mechanical design may use lateral machinery, pistons, panels and cables.
 
-Floral compositions should frame rather than dominate.
+A realism design may use secondary subjects, architecture, flowers or environmental transitions.
+
+A Japanese design may use clouds, waves, wind, flowers and interacting subjects.
+
+The full available width should be used intelligently according to the requested concept.
 
 ==================================================
 EDGE TREATMENT
 ==================================================
 
-The upper silhouette may expand broadly.
+The outer silhouette should follow the requested subject and style.
 
-The lower silhouette should taper naturally.
+The shoulder area may expand naturally.
 
-Avoid flat horizontal endings.
+The sides may curve inward or outward where compositionally appropriate.
 
-Decorative elements should soften the overall outline.
+The lower region may narrow moderately but should retain substantial width.
+
+Avoid mechanically symmetrical convergence toward the bottom.
+
+Avoid artificial geometric outlines unless explicitly requested.
+
+==================================================
+STYLE INDEPENDENCE
+==================================================
+
+Placement anatomy must work consistently across ALL tattoo styles.
+
+Do not rely on Japanese clouds, waves, flowers or similar filler to create a correct full-back silhouette.
+
+Biomechanical, Realism, Blackwork, Trash Polka, Geometric, Chicano, New School and other styles must also occupy the full-back canvas correctly.
+
+Placement controls available area and proportions.
+
+Style controls visual language.
+
+Subject controls the exact silhouette.
 
 ==================================================
 PROFESSIONAL TATTOO PRINCIPLES
 ==================================================
 
-The design should immediately communicate that it belongs on a full back.
+Design as a real large-scale backpiece.
 
-Maintain a strong central axis.
+Use the available anatomy deliberately.
 
-Maintain readable silhouettes.
+Maintain readable hierarchy.
 
-Avoid visual clutter.
+Maintain tattooable separation.
 
-Avoid unnecessary filler.
+Avoid unnecessary micro-detail.
 
-Every element should improve the composition.
+Avoid artificial stretching.
 
-Design the artwork as though it will become a lifetime tattoo.
+Avoid generic filler.
+
+Every major region should contribute to one cohesive tattoo.
 
 ==================================================
 COMMON AI MISTAKES
@@ -241,29 +327,22 @@ COMMON AI MISTAKES
 
 Never create:
 
+• Shield-shaped backpieces by default
+• Cathedral silhouettes by default
+• Inverted triangles
+• Continuous top-to-bottom taper
+• Narrow spinal columns pretending to be full-back tattoos
+• Extremely wide shoulders followed by a tiny lower section
+• Pointed lower endings
+• Empty lateral middle-back areas
+• Empty lower-back areas
+• Poster compositions
 • Square layouts
-
-• Equal-width compositions
-
-• Poster-like artwork
-
+• Disconnected subjects
 • Human backs
-
 • Skin
-
-• Mockups
-
-• Cropped wings
-
-• Cropped dragons
-
-• Cropped flowers
-
-• Empty lower sections
-
-• Decorative overload
-
-• Multiple disconnected compositions
+• Body mockups
+• Cropped artwork
 
 ==================================================
 OUTPUT REQUIREMENTS
@@ -273,21 +352,21 @@ Generate only:
 
 One isolated tattoo artwork.
 
-Entire composition visible.
+Entire tattoo visible.
 
-Neutral or white background.
+White or neutral background.
 
 No human body.
 
 No back.
 
+No torso.
+
 No skin.
 
 No clothing.
 
-No tattoo studio.
-
-No text.
+No text unless explicitly requested as part of the tattoo.
 
 No watermark.
 
@@ -297,32 +376,36 @@ No logo.
 FINAL VALIDATION CHECKLIST
 ==================================================
 
-✓ Correct full back proportions
+✓ Large full-back coverage
 
-✓ Wider shoulders than waist
+✓ Broad upper section
 
-✓ Strong vertical composition
+✓ Substantial middle width
 
-✓ Central visual axis
+✓ Substantial lower width
 
-✓ Powerful upper focal point
+✓ No continuous taper
 
-✓ Natural downward flow
+✓ No shield or inverted-triangle silhouette
 
-✓ Balanced weight distribution
+✓ No pointed bottom
 
-✓ Secondary elements reinforce movement
+✓ Both sides of the back meaningfully utilized
+
+✓ Central axis used without creating a narrow central column
+
+✓ Subject remains naturally proportioned
+
+✓ Supporting elements extend coverage when necessary
+
+✓ Detail hierarchy follows focal importance
+
+✓ Cohesive full-back composition
 
 ✓ Entire tattoo visible
 
-✓ No cropped elements
+✓ No body or mockup
 
-✓ No body parts
-
-✓ No mockups
-
-✓ Professional full back composition
-
-✓ Ready for tattoo execution
+✓ Professional tattoo-ready structure
 
 END OF GUIDE

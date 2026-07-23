@@ -5,61 +5,165 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-Design an isolated tattoo specifically intended for FACE placement.
+Design one isolated tattoo specifically intended for a SMALL FACE placement.
 
 Never generate a human face.
 
-Generate only the tattoo artwork.
+Never generate skin or a body mockup.
+
+Generate only the tattoo artwork itself.
+
+The design should feel appropriate for a small tattoo placed on an open facial area such as the cheek or side of the face.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-Face tattoos must remain minimal.
+Face placement is fundamentally different from large anatomical tattoo placements.
 
-Readability is more important than complexity.
+Do NOT attempt to cover the entire face.
+
+Do NOT create a face-piece composition.
+
+Do NOT create a large multi-element tattoo.
+
+Treat this placement as one small, intentional standalone tattoo.
+
+Compactness, readability and simplicity have the highest priority.
 
 ==================================================
-ANATOMICAL ANALYSIS
+ANATOMICAL SCALE
 ==================================================
 
-The available area is extremely limited.
+The usable tattoo area is intentionally small.
 
-The tattoo should remain compact.
+The design should be suitable for approximately cheek-sized placement or smaller.
 
-Fine details should be minimized.
+The artwork should occupy a compact footprint and remain clearly readable when reduced to real facial tattoo size.
+
+Do not interpret the available facial area as a canvas that must be filled.
+
+Empty surrounding space is expected.
 
 ==================================================
 OVERALL SHAPE
 ==================================================
 
-Preferred
+The outer silhouette should be determined naturally by the requested subject.
 
-• Small ornament
+Suitable forms include:
 
-• Symbol
+• Small compact symbol
+• Small vertical motif
+• Small horizontal motif
+• Tiny organic shape
+• Small ornamental element
+• Simple fine-line illustration
 
-• Tiny botanical
+There is no required anatomical taper or fixed geometric silhouette.
 
-• Fine line
-
-Avoid
-
-• Large portraits
-
-• Dragons
-
-• Sleeves
-
-• Large geometric compositions
+Do not artificially stretch or widen the requested subject.
 
 ==================================================
-ASPECT RATIO
+COMPOSITION
 ==================================================
 
-Flexible depending on placement.
+Prefer ONE dominant subject.
 
-Overall composition must remain compact.
+If secondary details are necessary, keep them extremely limited and directly connected to the main subject.
+
+The tattoo should usually be understandable immediately from its silhouette.
+
+Avoid complex visual hierarchy.
+
+Avoid multiple focal points.
+
+Avoid large surrounding filler.
+
+Avoid compositions that resemble miniature sleeves or large tattoo panels.
+
+==================================================
+DETAIL CONTROL
+==================================================
+
+This is critical.
+
+Because the tattoo will be physically small, detail must remain controlled.
+
+Prefer:
+
+• Clear shapes
+• Clean line separation
+• Simple internal structure
+• Limited shading
+• Strong readable silhouette
+• Intentional negative space
+
+Avoid:
+
+• Micro-textures
+• Extremely dense linework
+• Excessive stippling
+• Tiny overlapping details
+• Complex backgrounds
+• Numerous small objects
+• Detail that would merge when tattooed at small scale
+
+Do not create complexity merely because the selected tattoo style normally supports high detail.
+
+Placement scale has priority over unnecessary detail.
+
+==================================================
+LINEWORK
+==================================================
+
+Line weight should remain appropriate for the requested style while accounting for the small physical scale.
+
+Fine-line designs may use thin precise lines, but they must remain clearly separated.
+
+Blackwork may use stronger shapes and small solid-black areas.
+
+Traditional or similar styles may use bolder outlines, but the composition must remain compact.
+
+Avoid excessive line density.
+
+==================================================
+SHADING
+==================================================
+
+Keep shading controlled.
+
+Large smooth gradients and extremely complex tonal rendering are usually unnecessary at this scale.
+
+Use shading only when it improves readability and supports the requested style.
+
+Maintain enough negative space for the tattoo to remain readable over time.
+
+==================================================
+SUBJECT ADAPTATION
+==================================================
+
+The requested subject should be simplified appropriately for face-tattoo scale.
+
+Examples:
+
+A spider:
+Use a clearly readable body and legs with controlled detail.
+
+A rose:
+Use a small number of clearly separated petals rather than excessive petal complexity.
+
+A snake:
+Use a compact curved or coiled pose rather than a long sleeve-like composition.
+
+A skull:
+Use a small simplified skull with strong recognizable structure rather than highly detailed realism.
+
+A symbol:
+Keep the geometry clean and immediately readable.
+
+A word or lettering:
+Keep it short and legible.
 
 ==================================================
 BEST SUITED SUBJECTS
@@ -67,11 +171,9 @@ BEST SUITED SUBJECTS
 
 ✓ Small symbols
 
-✓ Tiny stars
+✓ Stars
 
 ✓ Crescent moon
-
-✓ Fine lettering
 
 ✓ Small cross
 
@@ -79,78 +181,170 @@ BEST SUITED SUBJECTS
 
 ✓ Spider
 
-✓ Rose
+✓ Small rose
+
+✓ Small snake
+
+✓ Small skull
+
+✓ Simple ornamental motifs
+
+✓ Short lettering
+
+✓ Small botanical elements
+
+✓ Minimal abstract designs
+
+==================================================
+STYLE INTERPRETATION
+==================================================
+
+The selected tattoo style should still be recognizable, but it must adapt to the small placement.
+
+Do not force the normal complexity of a large tattoo style into a tiny face design.
+
+For realism:
+Use simplified black-and-grey realism with one small recognizable subject and controlled texture.
+
+For blackwork:
+Use bold clean shapes and intentional negative space.
+
+For fine line:
+Use delicate but clearly separated lines.
+
+For traditional styles:
+Use a simplified compact version of the style with strong readability.
+
+Placement scale overrides unnecessary stylistic complexity.
 
 ==================================================
 POOR CHOICES
 ==================================================
 
-Avoid
+Avoid:
 
-✗ Giant skulls
+✗ Full portraits
+
+✗ Large animal heads
 
 ✗ Full dragons
+
+✗ Samurai scenes
 
 ✗ Battle scenes
 
 ✗ Large mandalas
 
-✗ Full realism portraits
+✗ Large sacred geometry
+
+✗ Multi-character compositions
+
+✗ Sleeve-like compositions
+
+✗ Large landscapes
+
+✗ Highly complex realism scenes
+
+If the requested concept is naturally too complex, simplify it into one recognizable focal subject rather than creating a miniature large-scale tattoo.
 
 ==================================================
 VISUAL MOOD
 ==================================================
 
-Minimal
+Compact
+
+Intentional
+
+Readable
 
 Clean
 
-Elegant
+Confident
 
-Bold
+Tattooable
 
-Modern
+The exact artistic mood should still follow the requested tattoo style and subject.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never
+Never create:
 
-• create oversized artwork
+• a human face
+• skin
+• eyes, nose, lips or ears as placement references
+• a body mockup
+• an oversized tattoo
+• a full-face composition
+• a large vertical panel
+• a sleeve-like design
+• multiple unrelated subjects
+• excessive background decoration
+• excessive micro-detail
+• poster artwork
+• unnecessary filler
 
-• generate faces
-
-• create body mockups
-
-• overcrowd the composition
+Do not enlarge the concept merely to showcase more detail.
 
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
 
-Generate only one isolated tattoo.
+Generate:
 
-Neutral background.
+One isolated small tattoo artwork.
 
-Entire artwork visible.
+Plain white or very light neutral background.
 
-No face.
+Entire tattoo fully visible.
+
+Clear empty margin surrounding the artwork.
+
+No human face.
 
 No skin.
 
+No body.
+
+No placement mockup.
+
+No text unless specifically requested.
+
+No watermark.
+
+No logo.
+
 ==================================================
-FINAL CHECKLIST
+FINAL VALIDATION CHECKLIST
 ==================================================
 
-✓ Compact
+✓ Small face-tattoo scale
 
-✓ Readable
+✓ Suitable for cheek or similar facial area
 
-✓ Minimal
+✓ One clear dominant subject
+
+✓ Compact footprint
+
+✓ Simple readable silhouette
+
+✓ Controlled detail
+
+✓ Appropriate negative space
+
+✓ No large composition
+
+✓ No face coverage
+
+✓ No unnecessary filler
 
 ✓ Entire tattoo visible
 
-✓ No body
+✓ No human body or face
 
-✓ Professional tattoo design
+✓ Selected tattoo style remains recognizable
+
+✓ Realistically tattooable at small scale
+
+END OF GUIDE

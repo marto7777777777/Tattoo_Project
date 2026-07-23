@@ -5,186 +5,376 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-You are designing a tattoo specifically intended for the neck.
+Design one isolated tattoo specifically intended for the FULL FRONT OF THE NECK.
 
-Do NOT generate a neck.
+Never generate a neck, body, skin or tattoo mockup.
 
-Create an isolated tattoo composition optimized for the limited curved surface of the neck.
+The isolated artwork itself must have an outer silhouette that matches the usable anatomical area of the front neck.
+
+The placement shape is a major requirement.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-The neck requires elegance.
+The tattoo should occupy the full front-neck area:
 
-The design should remain clean and highly readable.
+• from directly beneath the jaw and chin
+• across the complete visible width of the front neck
+• down to the base of the throat
+• with the lower edges naturally following the collarbone directions
 
-Avoid heavy visual masses.
+Do not design this as a small neck tattoo.
 
-==================================================
-ANATOMICAL ANALYSIS
-==================================================
+Do not design this as a narrow vertical ornament.
 
-The neck is narrow.
+Do not design this as a chest piece.
 
-It curves naturally.
-
-Available tattoo space is limited.
-
-The tattoo should respect this curvature through composition.
+The finished isolated artwork should immediately look shaped for a full front-neck tattoo.
 
 ==================================================
-OVERALL SHAPE
+CORE SILHOUETTE
 ==================================================
 
-Preferred silhouettes
+The overall footprint should resemble a compact anatomical panel.
 
-• Crescent
+Through most of its height, maintain substantial and relatively consistent width.
 
-• Vertical ornament
+The basic structure is approximately rectangular through the central area, but BOTH the top and bottom boundaries must be anatomically curved.
 
-• Small botanical flow
+The silhouette must be determined by:
 
-• Elegant curve
+TOP:
+a pronounced inward curve beneath the chin
 
-Avoid
+SIDES:
+strong, mostly vertical side boundaries
 
-• Large rectangles
+BOTTOM:
+a broad curved transition following the base of the throat and collarbone directions
 
-• Squares
+Do NOT use a shield silhouette.
 
-• Heavy shields
+Do NOT use a diamond silhouette.
 
-• Large portrait compositions
+Do NOT use a triangle.
+
+Do NOT use a narrow vertical oval.
+
+Do NOT progressively taper the complete composition toward one point.
+
+==================================================
+TOP EDGE — FOLLOW THE JAW
+==================================================
+
+This is critical.
+
+The upper boundary of the isolated tattoo must visually follow the underside of the jaw.
+
+The tattoo should rise highest at the LEFT and RIGHT upper corners where the neck meets the jaw.
+
+From both upper corners, the boundary must curve DOWNWARD toward the center underneath the chin.
+
+This creates a broad, smooth, clearly visible CONCAVE upper edge.
+
+LEFT JAW SIDE = HIGH
+
+CENTER UNDER CHIN = LOWER
+
+RIGHT JAW SIDE = HIGH
+
+The result should resemble a wide U-shaped cutout in the TOP of the tattoo.
+
+The central upper indentation must be broad enough to represent the space occupied by the underside of the chin.
+
+Do not make the top edge flat.
+
+Do not make it convex.
+
+Do not create a pointed central notch.
+
+Do not place a decorative peak above the center.
+
+The artwork itself must visibly contain this anatomical upper cutout.
+
+ABSOLUTE UPPER BOUNDARY RULE
+
+The concave jaw-following contour defines the actual outer boundary of the entire tattoo.
+
+No major subject, wing, horn, feather, ornament, crown, weapon, smoke, floral element, or supporting structure may project above this anatomical boundary.
+
+Supporting elements must bend, rotate, spread sideways, or terminate inside the available jaw-shaped footprint.
+
+Do not interpret "higher near the left and right jaw corners" as permission to create tall upward projections.
+
+The two upper outer corners may rise moderately, but the complete top silhouette must still read as one broad anatomical concave curve designed to sit directly beneath the jaw.
+
+When the requested subject naturally contains tall elements, adapt their orientation to the neck placement instead of allowing them to break the placement silhouette.
+
+ABSOLUTE UPPER BOUNDARY RULE
+
+The concave jaw-following contour defines the actual outer boundary of the entire tattoo.
+
+No major subject, wing, horn, feather, ornament, crown, weapon, smoke, floral element, or supporting structure may project above this anatomical boundary.
+
+Supporting elements must bend, rotate, spread sideways, or terminate inside the available jaw-shaped footprint.
+
+Do not interpret "higher near the left and right jaw corners" as permission to create tall upward projections.
+
+The two upper outer corners may rise moderately, but the complete top silhouette must still read as one broad anatomical concave curve designed to sit directly beneath the jaw.
+
+When the requested subject naturally contains tall elements, adapt their orientation to the neck placement instead of allowing them to break the placement silhouette.
+
+==================================================
+SIDE EDGES
+==================================================
+
+After the upper jaw corners, both outer sides should descend predominantly downward.
+
+The side boundaries should remain relatively vertical through most of the composition.
+
+They may have subtle organic irregularities caused by the requested subject and style.
+
+However, the overall width must remain substantial.
+
+Do not continuously pull both sides inward toward the bottom.
+
+Do not create an hourglass.
+
+Do not create a V-shaped silhouette.
+
+Do not create a shield.
+
+Do not create a long taper.
+
+==================================================
+BOTTOM EDGE — THROAT AND COLLARBONE FLOW
+==================================================
+
+The lower boundary must follow the transition between the base of the throat and the collarbone region.
+
+Unlike the upper boundary, the lower center may extend LOWER than the outer edges.
+
+The left and right lower edges should naturally spread slightly outward toward the collarbone directions.
+
+The bottom contour should therefore form a broad, shallow downward curve.
+
+LEFT COLLARBONE SIDE = slightly higher
+
+CENTER BASE OF THROAT = lower
+
+RIGHT COLLARBONE SIDE = slightly higher
+
+The center may descend moderately toward the suprasternal notch, but it must remain broad and rounded.
+
+Do NOT turn this into a long central point.
+
+Do NOT create a V-shaped ending.
+
+Do NOT create a spear tip.
+
+Do NOT create a diamond bottom.
+
+Do NOT extend the artwork far onto the chest.
+
+The bottom should feel like it rests naturally across the base of the neck.
+
+==================================================
+TARGET OUTER SHAPE
+==================================================
+
+Imagine the complete tattoo as a front-neck panel with this approximate behavior:
+
+        HIGH               HIGH
+          \               /
+           \_____   _____/
+                 \_/
+             UNDER CHIN
+
+        |               |
+        |               |
+        |               |
+        |               |
+        |               |
+         \             /
+          \___________/
+        COLLARBONE FLOW
+
+This diagram describes ONLY the placement footprint.
+
+Do not literally create a geometric border.
+
+The requested tattoo subject and style must naturally fill this anatomical footprint.
+
+==================================================
+WIDTH DISTRIBUTION
+==================================================
+
+Maintain substantial width through approximately 70–80% of the tattoo height.
+
+The design should NOT begin wide and continuously narrow.
+
+The design should NOT begin narrow and continuously widen.
+
+The main central neck area is relatively consistent in width.
+
+Only the anatomical top and bottom boundaries should strongly modify the silhouette.
 
 ==================================================
 ASPECT RATIO
 ==================================================
 
-Preferred
+The full front-neck tattoo should be moderately vertical but not extremely elongated.
 
-2.3 : 1
+Target approximate overall proportion:
 
-Acceptable
+Height : Width = 1.2 : 1 to 1.5 : 1
 
-2.0 : 1
+Do not create a 2:1 or 3:1 narrow vertical composition.
 
-to
-
-2.7 : 1
+Do not create a wide horizontal chest-piece composition.
 
 ==================================================
-VISUAL FLOW
+SUBJECT ADAPTATION
 ==================================================
 
-Movement should remain graceful.
+The requested subject must adapt to the neck footprint.
 
-The eye should follow a gentle curve.
+For a large animal head:
 
-Avoid aggressive geometry.
+• face occupies the central area
+• ears, horns, feathers, shadows or supporting forms may rise toward the jaw corners
+• cheeks, fur, feathers or supporting elements may fill the side boundaries
+• lower fur, shadows, ornaments or connected elements may follow the collarbone curve
 
-==================================================
-BEST SUITED SUBJECTS
-==================================================
+For a skull or mask:
 
-✓ Rose
+• main face remains central
+• surrounding structures complete the upper jaw-side corners
+• lower supporting forms complete the base-of-neck curve
 
-✓ Snake
+For abstract or ornamental designs:
 
-✓ Script
+• ornamentation should deliberately follow the same anatomical boundaries
 
-✓ Ornamental design
+Never distort important anatomy merely to fill the shape.
 
-✓ Dagger
-
-✓ Raven feather
-
-✓ Botanical composition
-
-✓ Fine line geometry
+Use connected secondary structure when necessary.
 
 ==================================================
-POOR CHOICES
+REALISM AND HEAVY STYLES
 ==================================================
 
-Avoid
+Full front-neck placement can support strong visual mass.
 
-✗ Large dragons
+Realism portraits, animal heads, skulls, masks, blackwork and other dark subjects are allowed.
 
-✗ Battle scenes
+Do not automatically make neck tattoos delicate, minimal or lightweight.
 
-✗ Wide compositions
+When the requested style supports it, deep black saturation and strong contrast are appropriate.
 
-✗ Heavy realism portraits
-
-✗ Giant mandalas
+Maintain enough negative space and tonal separation for tattoo readability.
 
 ==================================================
-VISUAL MOOD
+DETAIL DISTRIBUTION
 ==================================================
 
-Elegant
+The main focal subject should contain the highest detail.
 
-Minimal
+Supporting structures near the outer boundaries should use slightly reduced detail.
 
-Sophisticated
+Do not fill every available area with micro-detail.
 
-Lightweight
-
-Organic
-
-==================================================
-DETAIL DENSITY
-==================================================
-
-Medium detail only.
-
-Avoid micro-details.
-
-Maintain strong readability.
+The tattoo should remain readable at real neck scale.
 
 ==================================================
 COMMON AI MISTAKES
 ==================================================
 
-Never create
+Never create:
 
-• body mockups
-
-• neck
-
+• a human neck
+• a body mockup
 • skin
+• a narrow vertical ornament
+• a shield
+• a diamond
+• a triangle
+• a pointed lower ending
+• a flat upper edge
+• a convex upper edge
+• a decorative peak above the center
+• a long chest extension
+• an extremely wide chest piece
+• a small floating central tattoo
+• continuous taper from top to bottom
 
-• oversized tattoos
-
-• cropped artwork
+The isolated tattoo itself must visibly communicate the front-neck anatomy through its outer silhouette.
 
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
 
-Generate only one isolated tattoo.
+Generate:
 
-Neutral background.
+One isolated tattoo artwork.
 
-Entire tattoo visible.
+Entire artwork visible.
+
+Plain white or very light neutral background.
+
+Clear empty margin around the complete artwork.
+
+No human body.
 
 No neck.
 
-No body.
+No skin.
+
+No clothing.
+
+No mockup.
+
+No text unless specifically requested.
+
+No watermark.
+
+No logo.
 
 ==================================================
-FINAL CHECKLIST
+FINAL VALIDATION CHECKLIST
 ==================================================
 
-✓ Elegant composition
+✓ Full front-neck composition
 
-✓ Readable silhouette
+✓ Broad concave upper cutout beneath the chin
 
-✓ Natural curvature
+✓ Upper left and right edges rise toward the jaw
 
-✓ Appropriate scale
+✓ Mostly vertical side boundaries
 
-✓ Entire tattoo visible
+✓ Substantial width maintained through the central neck
 
-✓ Professional tattoo design
+✓ Broad lower curve following the base of the throat
+
+✓ Lower edges move toward the collarbone directions
+
+✓ Center bottom may extend moderately lower
+
+✓ No shield shape
+
+✓ No diamond shape
+
+✓ No long pointed bottom
+
+✓ No excessive taper
+
+✓ Subject naturally fills the anatomical footprint
+
+✓ Entire isolated tattoo visible
+
+✓ No body
+
+✓ Professional tattoo-ready composition
+
+END OF GUIDE

@@ -5,33 +5,45 @@ InkRoute AI Knowledge Base
 PURPOSE
 ==================================================
 
-You are designing a tattoo specifically intended for the calf.
+You are designing a tattoo specifically intended for the CALF.
 
 Do NOT generate a leg.
 
-Create an isolated tattoo composition optimized for the muscular shape of the calf.
+Create one isolated tattoo composition optimized for the long muscular surface extending from below the knee toward the ankle.
+
+The finished artwork must immediately read as a CALF-SPECIFIC composition rather than a compact generic tattoo.
 
 ==================================================
 PLACEMENT PRIORITY
 ==================================================
 
-The calf supports bold vertical compositions.
+VERTICAL LENGTH is a primary requirement.
 
-The design should feel powerful.
+The calf provides a long and relatively narrow tattoo canvas.
 
-Avoid delicate layouts that disappear visually.
+The artwork should deliberately use most of the available vertical distance of this placement.
+
+Do not allow the design to collapse into a compact badge, short oval, short shield, or stacked cluster.
+
+The composition must remain clearly and substantially taller than it is wide.
 
 ==================================================
 ANATOMICAL ANALYSIS
 ==================================================
 
-The calf is widest in the upper third.
+The calf begins with substantial usable width below the knee.
 
-It gradually narrows toward the ankle.
+The muscular upper-to-middle calf provides the broadest visual area.
 
-The tattoo should acknowledge this anatomical taper subtly while retaining substantial visual width through the main composition.
+Available width gradually becomes more limited toward the ankle.
 
-The upper section should carry more visual weight.
+This anatomical transition should influence the artwork naturally.
+
+However, anatomical narrowing must NOT be interpreted as a command to continuously shrink the composition toward one central point.
+
+Maintain meaningful visual structure throughout the majority of the vertical length.
+
+The tattoo should visually travel from the upper calf toward the lower calf rather than occupying only the central muscular bulge.
 
 ==================================================
 OVERALL SHAPE
@@ -39,48 +51,190 @@ OVERALL SHAPE
 
 Preferred silhouettes
 
+• Long organic vertical composition
 
-• Elongated vertical composition
+• Elongated subject-led composition
 
-• Soft anatomical column
+• Flowing anatomical column
 
-• Organic calf-shaped composition
+• Long asymmetrical composition
 
-• Dynamic ornamental frame
+• Connected vertical sequence with overlapping elements
+
+• Dynamic vertically flowing structure
 
 Avoid
 
-• Squares
+• Compact badge
 
-• Landscape layouts
+• Short oval
 
-• Equal-width columns
+• Short shield
+
+• Near-square composition
+
+• Wide poster composition
+
+• Equal-width rectangle
+
+• Diamond silhouette
+
+• Spear silhouette
+
+• Artificial pointed bottom
 
 ==================================================
 ASPECT RATIO
 ==================================================
 
-Preferred
+Target height-to-width relationship:
+
+Approximately 3.0 : 1
+
+Preferred range:
 
 2.7 : 1
-
-Acceptable
-
-2.4 : 1
-
 to
+3.4 : 1
 
-3.1 : 1
+For concepts containing naturally broad focal subjects, preserve their natural anatomy but extend the COMPLETE COMPOSITION vertically through connected supporting structure.
+
+Do NOT compress the entire tattoo merely because the primary focal subject is broad.
+
+Do NOT stretch individual subjects vertically to satisfy the ratio.
+
+==================================================
+VERTICAL CANVAS UTILIZATION
+==================================================
+
+The tattoo should make deliberate use of the long distance between the area below the knee and the lower calf approaching the ankle.
+
+A successful calf composition should feel noticeably LONG even when viewed as isolated artwork without seeing a leg.
+
+The main focal subject may occupy the broad upper or upper-middle region.
+
+Supporting subjects should continue the composition vertically rather than clustering immediately around the focal point.
+
+When multiple major subjects are requested, distribute them through the vertical axis with intentional overlap and visual connection.
+
+Do not place every major element inside one compact central mass.
+
+For example, a broad animal, portrait, mask, or head may establish the upper mass while connected secondary subjects, anatomy, flowers, feathers, fabric, tails, weapons, ornaments, architectural forms, clouds, waves, or other concept-appropriate elements continue the artwork farther downward.
+
+The resulting artwork should use LENGTH through composition, not through distortion.
+
+==================================================
+PRIMARY SUBJECT PROPORTION
+==================================================
+
+Never stretch, narrow, elongate, or deform the primary subject merely to create a tall tattoo.
+
+Preserve believable anatomy and natural proportions.
+
+If the primary subject is naturally wide, allow it to remain wide.
+
+Create additional vertical reach through connected elements and composition.
+
+A naturally broad eagle, tiger head, wolf, oni mask, skull, or similar subject must not force the entire tattoo to become short.
+
+==================================================
+MULTIPLE ELEMENT DISTRIBUTION
+==================================================
+
+When the concept contains several major elements, avoid compressing them into one overlapping badge.
+
+Use controlled vertical separation and overlap.
+
+The composition may follow a structure such as:
+
+dominant upper focal area
+↓
+connected middle transition
+↓
+secondary focal structure
+↓
+lower supporting structure
+
+This does NOT mean creating disconnected objects stacked vertically.
+
+Every section must remain visually connected through overlap, directional movement, anatomy, supporting elements, or controlled negative space.
+
+The eye should travel continuously through the complete tattoo.
+
+==================================================
+WIDTH DISTRIBUTION
+==================================================
+
+The upper-to-middle region may contain the greatest width.
+
+Maintain substantial width through the middle.
+
+The lower region may become moderately narrower as it approaches the ankle.
+
+Do not reduce width aggressively.
+
+Do not repeatedly shrink individual elements toward the bottom.
+
+Do not force all lower elements toward the center axis.
+
+==================================================
+LOWER CALF ENDING
+==================================================
+
+The lower section must remain visually meaningful.
+
+Do not finish the tattoo prematurely after the main focal subject.
+
+Use the available lower-calf length when the concept allows it.
+
+The terminal area may resolve through:
+
+• staggered elements
+• overlapping forms
+• flowing anatomy
+• feathers
+• foliage
+• flowers
+• fabric
+• tails
+• clouds
+• waves
+• ornaments
+• broken structural elements
+• multiple endpoints
+• controlled negative space
+
+The lower silhouette does NOT need to end at one central point.
+
+A naturally pointed subject element is acceptable when appropriate.
+
+An artificial pointed extension added only to make the composition appear long is not acceptable.
 
 ==================================================
 VISUAL FLOW
 ==================================================
 
-Movement should remain strongly vertical.
+Movement should remain predominantly vertical.
 
-The eye should travel downward.
+Diagonal movement may support the composition but must not shorten its overall vertical footprint.
 
-Maintain one continuous silhouette.
+The viewer's eye should travel from the upper focal region through the middle and clearly into the lower portion.
+
+Maintain one coherent visual story.
+
+==================================================
+DETAIL DENSITY
+==================================================
+
+Place the highest detail and strongest contrast around the primary focal point.
+
+Use medium detail in secondary focal elements.
+
+Simplify transitional and outer structures where appropriate for tattoo longevity.
+
+Do NOT automatically reduce detail from top to bottom.
+
+The lower section may contain an important secondary element if the requested concept benefits from it.
 
 ==================================================
 BEST SUITED SUBJECTS
@@ -106,21 +260,9 @@ BEST SUITED SUBJECTS
 
 ✓ Eagle
 
-==================================================
-POOR CHOICES
-==================================================
+✓ Portrait compositions
 
-Avoid
-
-✗ Wide flowers
-
-✗ Large landscapes
-
-✗ Horizontal scripts
-
-✗ Broad mandalas
-
-✗ Wide ornamental frames
+✓ Connected floral compositions
 
 ==================================================
 VISUAL MOOD
@@ -139,92 +281,111 @@ Strong
 Confident
 
 ==================================================
-DETAIL DENSITY
-==================================================
-
-Highest detail belongs near the upper calf.
-
-Gradually simplify toward the ankle.
-
-==================================================
 COMMON AI MISTAKES
 ==================================================
 
 Never create
 
-• equal width
+• compact badge compositions
 
-• square layouts
+• short central clusters
+
+• near-square designs
 
 • body mockups
 
+• legs
+
 • skin
 
-• cropped designs
+• cropped artwork
 
-• oversized lower sections
+• unnecessarily short compositions
 
+• stretched primary subjects
+
+• spear-like lower sections
+
+• elongated diamonds
+
+• artificial pointed endings
+
+• every subject compressed around one central focal point
+
+• tiny decorative elements added only to manufacture length
 
 ==================================================
 SILHOUETTE INTERPRETATION
 ==================================================
 
-Anatomy defines the available proportions, flow and limits of the placement; it does not automatically define one fixed geometric silhouette.
+Calf anatomy defines the available LENGTH, width distribution, orientation and anatomical limits.
 
-Let the requested subject and tattoo style determine the exact outer contour within those anatomical limits.
+It does NOT prescribe one fixed geometric silhouette.
 
-Anatomical narrowing should influence the composition subtly and must not automatically create a spear, blade, needle, sharp triangle or pointed tail.
+The requested subject and tattoo style determine the exact outer contour.
+
+The most important placement characteristic is that the finished composition remains distinctly elongated and uses the available calf length confidently.
+
+Anatomical narrowing toward the ankle should influence the lower composition subtly.
+
+It must never automatically create a triangle, spear, blade, needle, elongated diamond, shield point, or artificial tail.
 
 ==================================================
 OUTPUT REQUIREMENTS
 ==================================================
 
-Generate only one isolated tattoo.
+Generate only one isolated tattoo artwork.
 
 Entire artwork visible.
 
-Neutral background.
+Neutral or white background.
+
+Clear margin around the complete tattoo.
 
 No leg.
 
+No body.
+
 No skin.
 
-==================================================
-ELONGATED PLACEMENT PROPORTION CONTROL
-==================================================
+No mockup.
 
-This is an elongated anatomical placement. Use its available LENGTH deliberately.
-
-Do not achieve the required vertical proportion by stretching or deforming the primary subject.
-
-Keep the primary subject anatomically natural and use connected secondary elements, supporting forms, controlled negative space, or subject-appropriate extensions to carry the composition through the available length.
-
-Reduced detail toward a narrower anatomical end does NOT mean the composition must continuously lose width.
-
-Do not repeatedly shrink secondary elements until they converge into one centered point.
-
-Do not create a spear, blade, needle, elongated diamond, sharp triangle, shield point, or artificial pointed tail merely because the placement becomes narrower.
-
-The lower or terminal section should retain meaningful visual structure and sufficient width for the placement. It may finish through staggered elements, open negative space, asymmetry, multiple separated endpoints, or a soft organic ending.
-
-A naturally pointed ending is acceptable only when it genuinely belongs to the requested subject itself, such as a snake tail, weapon tip, feather tip, or another inherently pointed form.
-
-Placement anatomy controls overall proportions, usable width, orientation and flow. The requested subject and tattoo style determine the exact outer silhouette.
+No text unless specifically requested.
 
 ==================================================
-FINAL CHECKLIST
+FINAL VALIDATION CHECKLIST
 ==================================================
 
-✓ Upper section wider
+✓ Clearly designed for the calf
 
-✓ Natural anatomical narrowing without a sharp or needle-like ending
+✓ Distinctly elongated vertical footprint
 
-✓ Powerful silhouette
+✓ Uses substantial vertical length
 
-✓ Strong vertical flow
+✓ Does not collapse into a compact badge
+
+✓ Primary subject retains natural proportions
+
+✓ Broad subjects are not artificially compressed
+
+✓ Strong upper-to-middle structure
+
+✓ Meaningful middle section
+
+✓ Meaningful lower section
+
+✓ Natural adaptation toward the ankle
+
+✓ No artificial spear or diamond silhouette
+
+✓ No forced centered point at the bottom
+
+✓ Connected visual flow from top to bottom
 
 ✓ Entire tattoo visible
 
 ✓ No body parts
 
 ✓ Professional tattoo composition
+
+END OF GUIDE
