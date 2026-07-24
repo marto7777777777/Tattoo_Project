@@ -243,6 +243,29 @@ public class AdminService(
         var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.Id == artistId);
         if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
 
+        var ownedStudio = await context.Studios.FirstOrDefaultAsync(s => s.OwnerArtistId == artistId);
+        if (ownedStudio != null)
+        {
+            var nextOwner = await context.TattooArtists
+                .Where(a => a.StudioId == ownedStudio.Id && a.Id != artistId)
+                .OrderBy(a => a.JoinedStudioOn ?? DateTime.MaxValue)
+                .ThenBy(a => a.Id)
+                .FirstOrDefaultAsync();
+
+            if (nextOwner != null)
+            {
+                ownedStudio.OwnerArtistId = nextOwner.Id;
+            }
+            else
+            {
+                ownedStudio.OwnerArtistId = null;
+                artist.StudioId = null;
+                await context.SaveChangesAsync();
+                context.Studios.Remove(ownedStudio);
+                await context.SaveChangesAsync();
+            }
+        }
+
         var requestIds = await context.TattooRequests
             .Where(x => x.TattooArtistId == artistId)
             .Select(x => x.Id)

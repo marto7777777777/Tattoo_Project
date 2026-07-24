@@ -27,7 +27,7 @@ namespace Tattoo_Project.Services
             }
 
             var artistExists = await context.TattooArtists
-                .AnyAsync(a => a.Id == tattooArtistId);
+                .AnyAsync(a => a.Id == tattooArtistId && a.StudioId != null);
 
             if (!artistExists)
             {
@@ -94,9 +94,11 @@ namespace Tattoo_Project.Services
             }
 
             var favoriteArtists = await context.ClientFavoriteArtists
-                .Where(f => f.ClientId == client.Id)
+                .Where(f => f.ClientId == client.Id && f.TattooArtist.StudioId != null)
                 .Include(f => f.TattooArtist)
                     .ThenInclude(a => a.User)
+                .Include(f => f.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(f => f.TattooArtist)
                     .ThenInclude(a => a.Reviews)
                 .Include(f => f.TattooArtist)
@@ -126,13 +128,14 @@ namespace Tattoo_Project.Services
                 Email = artist.Email,
                 ProfileImageUrl = artist.User?.ProfileImageUrl,
 
-                StudioName = artist.StudioName,
+                StudioId = artist.StudioId,
+                StudioName = artist.Studio?.Name ?? string.Empty,
                 Description = artist.Description,
-                StudioAddress = artist.StudioAddress,
-                StudioCity = artist.StudioCity,
-                StudioCountry = artist.StudioCountry,
-                StudioLatitude = artist.StudioLatitude,
-                StudioLongitude = artist.StudioLongitude,
+                StudioAddress = artist.Studio?.Address ?? string.Empty,
+                StudioCity = artist.Studio?.City ?? string.Empty,
+                StudioCountry = artist.Studio?.Country ?? string.Empty,
+                StudioLatitude = artist.Studio?.Latitude,
+                StudioLongitude = artist.Studio?.Longitude,
                 PhoneNumber = artist.PhoneNumber,
 
                 OffersOnlineConsultation = artist.OffersOnlineConsultation,

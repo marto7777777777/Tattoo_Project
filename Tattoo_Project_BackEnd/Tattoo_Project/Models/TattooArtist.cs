@@ -1,4 +1,4 @@
-﻿namespace Tattoo_Project.Models
+namespace Tattoo_Project.Models
 {
     public class TattooArtist
     {
@@ -7,21 +7,13 @@
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
 
-        public string StudioName { get; set; } = null!;
-
         public string Description { get; set; } = null!;
 
-        public string StudioAddress { get; set; } = null!;
-
-        public string StudioCity { get; set; } = null!;
-
-        public string StudioCountry { get; set; } = null!;
-
-        public double? StudioLatitude { get; set; }
-
-        public double? StudioLongitude { get; set; }
-
         public string PhoneNumber { get; set; } = null!;
+
+        public int? StudioId { get; set; }
+        public Studio? Studio { get; set; }
+        public DateTime? JoinedStudioOn { get; set; }
 
         public bool IsVerified { get; set; }
 
@@ -53,5 +45,8 @@
 
         public ICollection<ArtistUnavailableDate> UnavailableDates { get; set; }
         = new List<ArtistUnavailableDate>();
+
+        public ICollection<StudioJoinRequest> StudioJoinRequests { get; set; }
+            = new List<StudioJoinRequest>();
     }
 }

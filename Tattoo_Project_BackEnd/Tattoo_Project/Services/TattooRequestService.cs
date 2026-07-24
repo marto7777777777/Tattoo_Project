@@ -21,6 +21,7 @@ namespace Tattoo_Project.Services
             var tattooRequests = await context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -44,6 +45,7 @@ namespace Tattoo_Project.Services
             var tattooRequest = await context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -106,6 +108,7 @@ namespace Tattoo_Project.Services
             var tattooRequests = await context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -137,6 +140,7 @@ namespace Tattoo_Project.Services
             var query = context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.Images)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
@@ -175,9 +179,9 @@ namespace Tattoo_Project.Services
             var tattooArtist = await context.TattooArtists
                 .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
 
-            if (tattooArtist == null)
+            if (tattooArtist == null || tattooArtist.StudioId == null)
             {
-                return ResultService.Fail("Tattoo artist was not found.");
+                return ResultService.Fail("Tattoo artist was not found or is not currently part of a studio.");
             }
 
             if (string.IsNullOrWhiteSpace(dto.Description))
@@ -306,6 +310,8 @@ namespace Tattoo_Project.Services
             var tattooRequest = await context.TattooRequests
                 .Include(r => r.TattooArtist)
                     .ThenInclude(a => a.Schedules)
+                .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
                 .Include(r => r.Consultation)
@@ -438,6 +444,7 @@ namespace Tattoo_Project.Services
             var tattooRequest = await context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
+                    .ThenInclude(a => a.Studio)
                 .Include(r => r.Images)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
@@ -582,9 +589,7 @@ namespace Tattoo_Project.Services
                 TattooArtistName = tattooRequest.TattooArtist == null
                     ? null
                     : $"{tattooRequest.TattooArtist.FirstName} {tattooRequest.TattooArtist.LastName}",
-                StudioName = tattooRequest.TattooArtist == null
-                    ? null
-                    : tattooRequest.TattooArtist.StudioName,
+                StudioName = tattooRequest.TattooArtist?.Studio?.Name,
                 Status = tattooRequest.Status,
 
                 UpcomingConsultationStartTime = tattooRequest.Consultation != null &&

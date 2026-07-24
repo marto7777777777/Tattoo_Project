@@ -69,7 +69,7 @@ function Navbar() {
         <nav className="app-nav">
           <p className="nav-section-label">Workspace</p>
           {navItem("/", "home", "Overview")}
-          {navItem("/explore", "explore", "Discover artists")}
+          {navItem("/explore", "explore", "Discover studios")}
           {isLoggedIn && navItem("/ai-studio", "ai", "AI Tattoo Studio")}
           {isAdmin && navItem("/admin", "admin", "Admin control")}
           {isClient && navItem("/bookings", "bookings", "My bookings")}

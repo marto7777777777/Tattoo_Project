@@ -33,10 +33,7 @@ function HomePage() {
             <h1>From first idea to final session.</h1>
             <p className="dashboard-lead">Discover the right artist, shape the concept, book every step and keep the whole tattoo journey in one beautifully organized place.</p>
           </div>
-          <div className="topline-actions">
-            <Link className="secondary-button" to="/explore">Browse artists</Link>
-            {isClient ? <Link className="primary-button" to="/create-tattoo-request">New request</Link> : !isLoggedIn ? <Link className="primary-button" to="/register">Get started</Link> : null}
-          </div>
+
         </div>
 
         <section className="hero-command-card">
@@ -48,10 +45,13 @@ function HomePage() {
               <Link className="primary-button" to="/explore">Find your artist</Link>
               {isArtist && <Link className="text-link-button" to="/my-studio">Open studio dashboard →</Link>}
             </div>
-            <div className="hero-metrics">
-              <div><strong>01</strong><span>Structured request</span></div>
-              <div><strong>02</strong><span>Consultation</span></div>
-              <div><strong>03</strong><span>Tattoo sessions</span></div>
+            <div className="hero-metrics hero-metrics-workflow">
+              <div><strong>01</strong><span>Request submitted</span></div>
+              <div><strong>02</strong><span>Artist response</span></div>
+              <div><strong>03</strong><span>Consultation booked</span></div>
+              <div><strong>04</strong><span>Consultation completed</span></div>
+              <div><strong>05</strong><span>Tattoo sessions</span></div>
+              <div><strong>06</strong><span>Completed</span></div>
             </div>
           </div>
 
@@ -85,9 +85,12 @@ function HomePage() {
           <article className="dashboard-panel dashboard-panel-large">
             <div className="panel-heading"><div><p className="eyebrow-label">Client journey</p><h3>Everything stays connected</h3></div><span className="panel-number">01</span></div>
             <div className="journey-list">
-              <div className="journey-item active"><span>01</span><div><strong>Send a detailed request</strong><p>Placement, style, description and reference images.</p></div></div>
-              <div className="journey-item"><span>02</span><div><strong>Choose a real available slot</strong><p>No double-booking, no endless messages.</p></div></div>
-              <div className="journey-item"><span>03</span><div><strong>Track every tattoo session</strong><p>Clear status, pricing and remaining sessions.</p></div></div>
+              <div className="journey-item active"><span>01</span><div><strong>Request submitted</strong><p>Placement, style, description and reference images are sent to the chosen artist.</p></div></div>
+              <div className="journey-item"><span>02</span><div><strong>Artist response</strong><p>The artist reviews the idea and responds with the next details.</p></div></div>
+              <div className="journey-item"><span>03</span><div><strong>Consultation booked</strong><p>The client chooses an available consultation slot from that artist's schedule.</p></div></div>
+              <div className="journey-item"><span>04</span><div><strong>Consultation completed</strong><p>The artist completes the consultation and defines the tattoo-session plan.</p></div></div>
+              <div className="journey-item"><span>05</span><div><strong>Tattoo sessions</strong><p>Sessions are booked and the tattoo moves through the in-progress stage.</p></div></div>
+              <div className="journey-item"><span>06</span><div><strong>Completed</strong><p>After the final session the tattoo moves into completed work.</p></div></div>
             </div>
           </article>
 

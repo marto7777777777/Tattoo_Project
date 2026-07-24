@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tattoo_Project.Models;
 
@@ -22,15 +22,13 @@ namespace Tattoo_Project.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(x => x.StudioName)
-                .HasMaxLength(100);
-
-            builder.Property(x => x.StudioAddress)
-                .IsRequired()
-                .HasMaxLength(200);
-
             builder.Property(x => x.Description)
-                .HasMaxLength(1000);
+                .IsRequired()
+                .HasMaxLength(1200);
+
+            builder.Property(x => x.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(40);
 
             builder.HasMany(x => x.Schedules)
                 .WithOne(x => x.TattooArtist)

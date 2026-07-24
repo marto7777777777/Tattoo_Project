@@ -17,11 +17,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> UpdateCityAsync(string userId, string value);
         Task<ResultService> UpdateCountryAsync(string userId, string value);
 
-        Task<ResultService> UpdateStudioNameAsync(string userId, string value);
         Task<ResultService> UpdateDescriptionAsync(string userId, string value);
-        Task<ResultService> UpdateStudioAddressAsync(string userId, string value);
-        Task<ResultService> UpdateStudioCityAsync(string userId, string value);
-        Task<ResultService> UpdateStudioCountryAsync(string userId, string value);
 
         Task<ResultService> UpdateConsultationDurationAsync(string userId, int value);
         Task<ResultService> UpdateOffersOnlineConsultationAsync(string userId, bool value);

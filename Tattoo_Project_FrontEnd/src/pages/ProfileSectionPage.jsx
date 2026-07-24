@@ -21,7 +21,7 @@ import { getImageUrl } from "../utils/images";
 const sectionTitles = {
   user: "Account & identity",
   contact: "Contact information",
-  studio: "Studio profile",
+  studio: "Artist profile",
   consultation: "Consultation settings",
   deposit: "Deposit settings",
   portfolio: "Portfolio manager",
@@ -30,7 +30,7 @@ const sectionTitles = {
 const sectionDescriptions = {
   user: "Manage your name, email, profile photo and account password.",
   contact: "Keep the phone number and location clients use to reach you up to date.",
-  studio: "Edit how your studio appears to clients, including requirements and address.",
+  studio: "Edit your personal artist description and client requirements. Studio management is handled separately in My Studio.",
   consultation: "Control consultation duration and whether online consultations are available.",
   deposit: "Choose whether projects require a deposit and set the amount.",
   portfolio: "Upload and manage the work clients see on your artist profile.",
@@ -393,6 +393,19 @@ function ProfileSectionPage() {
 
           {section === "studio" && (
             <div className="section profile-extra-section">
+              <div className="studio-profile-settings-link">
+                <div>
+                  <h3>{profile.artist?.studioName || (profile.artist?.hasPendingStudioJoinRequest ? "Studio request pending" : "Studio membership")}</h3>
+                  <p className="muted">
+                    {profile.artist?.hasStudio
+                      ? [profile.artist?.studioAddress, profile.artist?.studioCity, profile.artist?.studioCountry].filter(Boolean).join(", ")
+                      : profile.artist?.hasPendingStudioJoinRequest
+                        ? "Your join request is waiting for the studio owner."
+                        : "You are not currently attached to a studio."}
+                  </p>
+                </div>
+                <Link className="secondary-button compact-button" to="/my-studio">Open My Studio</Link>
+              </div>
               <h3>Requirements</h3>
               <div className="inline-form-row">
                 <input value={newRequirement} onChange={(event) => setNewRequirement(event.target.value)} placeholder="Add new requirement" />
@@ -465,11 +478,7 @@ function getFieldsForSection(section, profile) {
 
   if (section === "studio") {
     return [
-      { key: "studioName", label: "Studio name", value: artist.studioName, path: "/api/Profile/studio/studio-name" },
-      { key: "description", label: "Description", value: artist.description, path: "/api/Profile/studio/description" },
-      { key: "studioCountry", label: "Studio country", value: artist.studioCountry, path: "/api/Profile/studio/studio-country" },
-      { key: "studioCity", label: "Studio city", value: artist.studioCity, path: "/api/Profile/studio/studio-city" },
-      { key: "studioAddress", label: "Studio address", value: artist.studioAddress, path: "/api/Profile/studio/studio-address" },
+      { key: "description", label: "Artist description", value: artist.description, path: "/api/Profile/artist/description" },
     ];
   }
 

@@ -31,10 +31,15 @@ namespace Tattoo_Project.Services
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var artist = await context.TattooArtists
+                .Include(a => a.Studio)
                 .Include(a => a.Requirements)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Schedules)
                 .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            var hasPendingJoinRequest = artist != null && artist.StudioId == null &&
+                await context.StudioJoinRequests.AnyAsync(r =>
+                    r.TattooArtistId == artist.Id && r.Status == StudioJoinRequestStatus.Pending);
 
             var dto = new CurrentProfileDto
             {
@@ -49,11 +54,15 @@ namespace Tattoo_Project.Services
                 Country = client?.Country,
                 Artist = artist == null ? null : new ArtistProfileSectionDto
                 {
-                    StudioName = artist.StudioName,
+                    StudioId = artist.StudioId,
+                    StudioName = artist.Studio?.Name,
                     Description = artist.Description,
-                    StudioAddress = artist.StudioAddress,
-                    StudioCity = artist.StudioCity,
-                    StudioCountry = artist.StudioCountry,
+                    StudioAddress = artist.Studio?.Address,
+                    StudioCity = artist.Studio?.City,
+                    StudioCountry = artist.Studio?.Country,
+                    HasStudio = artist.StudioId != null,
+                    IsStudioOwner = artist.Studio?.OwnerArtistId == artist.Id,
+                    HasPendingStudioJoinRequest = hasPendingJoinRequest,
                     ConsultationDurationMinutes = artist.ConsultationDurationMinutes,
                     OffersOnlineConsultation = artist.OffersOnlineConsultation,
                     RequiresDeposit = artist.RequiresDeposit,
@@ -164,6 +173,7 @@ namespace Tattoo_Project.Services
         public async Task<ResultService> UpdatePhoneNumberAsync(string userId, string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return ResultService.Fail("Phone number is required.");
+            if (value.Trim().Length > 40) return ResultService.Fail("Phone number cannot exceed 40 characters.");
 
             var client = await context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
             var artist = await context.TattooArtists.FirstOrDefaultAsync(a => a.UserId == userId);
@@ -197,20 +207,14 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        public Task<ResultService> UpdateStudioNameAsync(string userId, string value)
-            => UpdateArtistStringAsync(userId, value, "Studio name is required.", a => a.StudioName = value.Trim());
-
         public Task<ResultService> UpdateDescriptionAsync(string userId, string value)
-            => UpdateArtistStringAsync(userId, value, "Description is required.", a => a.Description = value.Trim());
-
-        public Task<ResultService> UpdateStudioAddressAsync(string userId, string value)
-            => UpdateArtistStringAsync(userId, value, "Studio address is required.", a => a.StudioAddress = value.Trim());
-
-        public Task<ResultService> UpdateStudioCityAsync(string userId, string value)
-            => UpdateArtistStringAsync(userId, value, "Studio city is required.", a => a.StudioCity = value.Trim());
-
-        public Task<ResultService> UpdateStudioCountryAsync(string userId, string value)
-            => UpdateArtistStringAsync(userId, value, "Studio country is required.", a => a.StudioCountry = value.Trim());
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return Task.FromResult(ResultService.Fail("Artist description is required."));
+            if (value.Trim().Length > 1200)
+                return Task.FromResult(ResultService.Fail("Artist description cannot exceed 1200 characters."));
+            return UpdateArtistStringAsync(userId, value, "Artist description is required.", a => a.Description = value.Trim());
+        }
 
         public async Task<ResultService> UpdateConsultationDurationAsync(string userId, int value)
         {

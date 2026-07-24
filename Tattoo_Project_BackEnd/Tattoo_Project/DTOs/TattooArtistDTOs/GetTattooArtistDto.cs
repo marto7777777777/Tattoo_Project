@@ -12,6 +12,7 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
 
         public string? ProfileImageUrl { get; set; }
 
+        public int? StudioId { get; set; }
         public string StudioName { get; set; } = null!;
 
         public string Description { get; set; } = null!;

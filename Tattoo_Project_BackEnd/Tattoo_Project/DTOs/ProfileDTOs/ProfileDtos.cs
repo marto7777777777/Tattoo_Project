@@ -21,11 +21,15 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
 
     public class ArtistProfileSectionDto
     {
-        public string StudioName { get; set; } = null!;
+        public int? StudioId { get; set; }
+        public string? StudioName { get; set; }
+        public string? StudioAddress { get; set; }
+        public string? StudioCity { get; set; }
+        public string? StudioCountry { get; set; }
+        public bool HasStudio { get; set; }
+        public bool IsStudioOwner { get; set; }
+        public bool HasPendingStudioJoinRequest { get; set; }
         public string Description { get; set; } = null!;
-        public string StudioAddress { get; set; } = null!;
-        public string StudioCity { get; set; } = null!;
-        public string StudioCountry { get; set; } = null!;
         public int ConsultationDurationMinutes { get; set; }
         public bool OffersOnlineConsultation { get; set; }
         public bool RequiresDeposit { get; set; }

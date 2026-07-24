@@ -1,0 +1,18 @@
+INKROUTE STUDIO SYSTEM - DATABASE STEP
+
+A data-preserving migration is already included:
+20260724130000_AddStudioSystem.cs
+
+In Visual Studio Package Manager Console run:
+
+Update-Database
+
+Or from a terminal with dotnet-ef installed:
+
+dotnet ef database update
+
+IMPORTANT:
+- Do NOT create another AddStudioSystem migration before applying this one.
+- Existing TattooArtist studio fields are migrated into one Studio per existing artist.
+- Existing artists automatically become the owner of their migrated studio.
+- The old duplicate StudioName/StudioAddress/... columns are removed only after their data is copied.

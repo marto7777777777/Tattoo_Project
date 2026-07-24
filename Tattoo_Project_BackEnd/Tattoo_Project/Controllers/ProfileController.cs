@@ -96,29 +96,9 @@ namespace Tattoo_Project.Controllers
             => await RunStringUpdate(dto, service.UpdateCountryAsync);
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
-        [HttpPatch("studio/studio-name")]
-        public async Task<IActionResult> UpdateStudioName(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdateStudioNameAsync);
-
-        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
-        [HttpPatch("studio/description")]
+        [HttpPatch("artist/description")]
         public async Task<IActionResult> UpdateDescription(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateDescriptionAsync);
-
-        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
-        [HttpPatch("studio/studio-address")]
-        public async Task<IActionResult> UpdateStudioAddress(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdateStudioAddressAsync);
-
-        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
-        [HttpPatch("studio/studio-city")]
-        public async Task<IActionResult> UpdateStudioCity(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdateStudioCityAsync);
-
-        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
-        [HttpPatch("studio/studio-country")]
-        public async Task<IActionResult> UpdateStudioCountry(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdateStudioCountryAsync);
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("consultation/duration")]

@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "./apiConfig";
-import { getToken, requestJson } from "./http";
+import { getToken, requestJson, readResponse } from "./http";
 
 export function getMyProfile() {
   return requestJson("/api/Profile/me");
@@ -43,7 +43,7 @@ export async function updateProfileImage(file) {
     throw new Error(await response.text());
   }
 
-  return response.json();
+  return readResponse(response);
 }
 
 export function addRequirement(description) {
@@ -83,7 +83,7 @@ export async function addPortfolioImage(file) {
     throw new Error(await response.text());
   }
 
-  return response.json();
+  return readResponse(response);
 }
 
 export function deletePortfolioImage(id) {

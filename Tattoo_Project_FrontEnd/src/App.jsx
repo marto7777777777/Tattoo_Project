@@ -28,6 +28,7 @@ import AiStudioPage from "./pages/AiStudioPage";
 import CreateAiTattooPage from "./pages/CreateAiTattooPage";
 import AiTattooProjectPage from "./pages/AiTattooProjectPage";
 import AdminPage from "./pages/AdminPage";
+import StudioProfilePage from "./pages/StudioProfilePage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="/profile" element={<Navigate to="/profile/user" replace />} />
 
         <Route path="/explore" element={<ArtistsPage />} />
+        <Route path="/studios/:studioId" element={<StudioProfilePage />} />
         <Route path="/admin" element={<ProtectedRoute roles={["Admin"]}><AdminPage /></ProtectedRoute>} />
         <Route path="/ai-studio" element={<ProtectedRoute roles={["Client", "TattooArtist"]}><AiStudioPage /></ProtectedRoute>} />
         <Route path="/ai-studio/new" element={<ProtectedRoute roles={["Client", "TattooArtist"]}><CreateAiTattooPage /></ProtectedRoute>} />

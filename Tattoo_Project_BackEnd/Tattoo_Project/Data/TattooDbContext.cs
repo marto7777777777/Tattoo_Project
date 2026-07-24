@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Tattoo_Project.Models;
@@ -15,6 +15,10 @@ namespace Tattoo_Project.Data
         public DbSet<Client> Clients { get; set; }
 
         public DbSet<TattooArtist> TattooArtists { get; set; }
+
+        public DbSet<Studio> Studios { get; set; }
+
+        public DbSet<StudioJoinRequest> StudioJoinRequests { get; set; }
 
         public DbSet<TattooRequest> TattooRequests { get; set; }
 

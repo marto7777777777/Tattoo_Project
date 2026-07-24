@@ -32,6 +32,7 @@ namespace Tattoo_Project
 
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
+            builder.Services.AddScoped<IStudioService, StudioService>();
             builder.Services.AddScoped<ITattooRequestService, TattooRequestService>();
             builder.Services.AddScoped<IArtistResponseService, ArtistResponseService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
