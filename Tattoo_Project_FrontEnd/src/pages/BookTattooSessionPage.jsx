@@ -4,6 +4,9 @@ import { getBookingAvailability } from "../api/tattooRequestApi";
 import { createTattooSession } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
 import { formatDateTime, formatTime } from "../utils/format";
+import BookingDayNavigator from "../components/BookingDayNavigator";
+import { useResponsiveBookingPeriod } from "../hooks/useResponsiveBookingPeriod";
+import { todayDateValue } from "../utils/bookingPeriod";
 
 function toApiDateTime(value) {
   // Backend schedule validation treats DateTime as the artist's local schedule time.
@@ -27,6 +30,8 @@ function BookingSlotPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [periodStart, setPeriodStart] = useState(todayDateValue);
+  const periodDays = useResponsiveBookingPeriod();
 
   useEffect(() => {
     if (!requestId) {
@@ -35,13 +40,18 @@ function BookingSlotPage() {
       return;
     }
     loadAvailability();
-  }, [requestId]);
+  }, [requestId, periodStart, periodDays]);
 
   async function loadAvailability() {
     setIsLoading(true);
     setError("");
     try {
-      const response = await getBookingAvailability(requestId, bookingType);
+      const response = await getBookingAvailability(
+        requestId,
+        bookingType,
+        periodStart,
+        periodDays
+      );
       const data = await readResponse(response);
       if (!response.ok) {
         setError(typeof data === "string" ? data : JSON.stringify(data));
@@ -49,7 +59,8 @@ function BookingSlotPage() {
       }
       setAvailability(data);
       const firstDay = data.days?.find((day) => day.slots?.length > 0);
-      if (firstDay) setSelectedDate(firstDay.date);
+      setSelectedDate(firstDay?.date || "");
+      setSelectedSlot(null);
     } catch {
       setError("Server connection failed. Please try again.");
     } finally {
@@ -119,24 +130,18 @@ function BookingSlotPage() {
             <section className="card calendar-card">
               <h2>Available days</h2>
               <p className="muted">Duration: {availability.durationMinutes} minutes</p>
-              <div className="booking-day-grid">
-                {availability.days?.map((day) => (
-                  <button
-                    className={`booking-day ${day.slots?.length ? "booking-day-available" : "booking-day-disabled"} ${selectedDate === day.date ? "booking-day-selected" : ""}`}
-                    aria-pressed={selectedDate === day.date}
-                    type="button"
-                    key={day.date}
-                    disabled={!day.slots?.length}
-                    onClick={() => {
-                      setSelectedDate(day.date);
-                      setSelectedSlot(null);
-                    }}
-                  >
-                    <strong>{new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}</strong>
-                    <span>{day.slots?.length ? `${day.slots.length} free slots` : day.reason || "Busy"}</span>
-                  </button>
-                ))}
-              </div>
+              <BookingDayNavigator
+                availability={availability}
+                selectedDate={selectedDate}
+                onSelectDate={(date) => {
+                  setSelectedDate(date);
+                  setSelectedSlot(null);
+                }}
+                periodStart={periodStart}
+                periodDays={periodDays}
+                onPeriodChange={setPeriodStart}
+                loading={isLoading}
+              />
             </section>
 
             <aside className="card form-card calendar-side-panel">

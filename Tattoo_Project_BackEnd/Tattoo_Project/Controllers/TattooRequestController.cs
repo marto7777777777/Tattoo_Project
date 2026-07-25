@@ -160,7 +160,9 @@ namespace Tattoo_Project.Controllers
         [HttpGet("{id}/availability")]
         public async Task<IActionResult> GetBookingAvailability(
             int id,
-            [FromQuery] string bookingType)
+            [FromQuery] string bookingType,
+            [FromQuery] DateTime? startDate = null,
+            [FromQuery] int days = 14)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -169,7 +171,12 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var result = await service.GetBookingAvailabilityAsync(id, bookingType, userId);
+            var result = await service.GetBookingAvailabilityAsync(
+                id,
+                bookingType,
+                userId,
+                startDate,
+                days);
 
             if (!result.Success)
             {

@@ -47,9 +47,7 @@ namespace Tattoo_Project.Services
 
             var favorites = await context.ClientFavoriteStudios
                 .AsNoTracking()
-                .Where(x =>
-                    x.Client.UserId == userId &&
-                    x.Studio.Artists.Any())
+                .Where(x => x.Client.UserId == userId && x.Studio.Artists.Any())
                 .Include(x => x.Studio)
                     .ThenInclude(x => x.Artists)
                         .ThenInclude(x => x.User)
@@ -63,9 +61,7 @@ namespace Tattoo_Project.Services
                 .AsSplitQuery()
                 .ToListAsync();
 
-            var studios = favorites
-                .Select(x => x.Studio)
-                .ToList();
+            var studios = favorites.Select(x => x.Studio).ToList();
 
             return ResultService<ICollection<StudioDto>>.Ok(
                 studios.Select(StudioService.MapStudio).ToList());

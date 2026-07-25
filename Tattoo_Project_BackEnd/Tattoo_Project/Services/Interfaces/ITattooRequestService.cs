@@ -33,7 +33,9 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService<BookingAvailabilityDto>> GetBookingAvailabilityAsync(
             int tattooRequestId,
             string bookingType,
-            string userId);
+            string userId,
+            DateTime? startDate = null,
+            int days = 14);
 
         Task<ResultService> UpdateTattooRequestAsync(
             int id,

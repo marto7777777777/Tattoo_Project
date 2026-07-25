@@ -299,7 +299,9 @@ namespace Tattoo_Project.Services
         public async Task<ResultService<BookingAvailabilityDto>> GetBookingAvailabilityAsync(
             int tattooRequestId,
             string bookingType,
-            string userId)
+            string userId,
+            DateTime? startDate = null,
+            int days = 14)
         {
             var client = await context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
             if (client == null)
@@ -377,13 +379,27 @@ namespace Tattoo_Project.Services
             };
 
             var today = DateTime.Today;
+            var periodStart = (startDate ?? today).Date;
+
+            if (periodStart < today)
+            {
+                periodStart = today;
+            }
+
+            if (periodStart > today.AddYears(1))
+            {
+                return ResultService<BookingAvailabilityDto>.Fail(
+                    "Availability can be viewed up to one year in advance.");
+            }
+
+            var periodDays = Math.Clamp(days, 1, 31);
             var schedules = tattooRequest.TattooArtist.Schedules
                 .Where(s => s.ScheduleType == scheduleType)
                 .ToList();
 
-            for (var i = 0; i < 30; i++)
+            for (var i = 0; i < periodDays; i++)
             {
-                var day = today.AddDays(i);
+                var day = periodStart.AddDays(i);
                 var daySchedules = schedules.Where(s => s.DayOfWeek == day.DayOfWeek).ToList();
                 var dayDto = new BookingAvailabilityDayDto
                 {
@@ -579,6 +595,8 @@ namespace Tattoo_Project.Services
                 ClientId = tattooRequest.ClientId,
                 TattooArtistId = tattooRequest.TattooArtistId,
                 RemainingSessionsToBook = tattooRequest.RemainingSessionsToBook,
+                PriceForSession = tattooRequest.PriceForSession?.ToList(),
+                DurationHoursForSession = tattooRequest.DurationHoursForSession?.ToList(),
                 ClientName = tattooRequest.Client == null
                     ? null
                     : $"{tattooRequest.Client.FirstName} {tattooRequest.Client.LastName}",

@@ -30,6 +30,21 @@ function getRemainingSessions(request) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function getPlannedSessions(request) {
+  const prices = request?.priceForSession ?? request?.PriceForSession;
+  const durations =
+    request?.durationHoursForSession ?? request?.DurationHoursForSession;
+
+  if (!Array.isArray(prices) || !Array.isArray(durations)) return [];
+
+  return durations
+    .slice(0, Math.min(prices.length, durations.length))
+    .map((durationHours, index) => ({
+      durationHours,
+      price: prices[index],
+    }));
+}
+
 function MyTattooRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
@@ -153,61 +168,113 @@ function MyTattooRequestsPage() {
 
       {selectedRequest && (
         <div className="modal-backdrop" onClick={() => setSelectedRequest(null)}>
-          <section className="modal-card request-modal structured-request-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head">
-              <div>
-                <p className="subtitle">{selectedRequest.tattooArtistName || "Tattoo artist"} · {selectedRequest.studioName || "Studio"}</p>
-                <h2>{selectedRequest.placement || "Tattoo request"}</h2>
+          <section className="modal-card request-modal structured-request-modal request-project-modal" onClick={(event) => event.stopPropagation()}>
+            <header className="request-project-hero">
+              <div className="request-project-hero-top">
+                <span className={`status-pill ${getStatusClass(selectedRequest.status)}`}>
+                  {getStatusName(selectedRequest.status)}
+                </span>
+                <button className="icon-button request-project-close" type="button" onClick={() => setSelectedRequest(null)} aria-label="Close request">×</button>
               </div>
-              <button className="icon-button" type="button" onClick={() => setSelectedRequest(null)}>×</button>
-            </div>
+              <p className="request-project-kicker">Tattoo project</p>
+              <h2>{selectedRequest.placement || "Tattoo request"}</h2>
+              <p className="request-project-description">{selectedRequest.description}</p>
+              <div className="request-project-meta">
+                <div><span>Artist</span><strong>{selectedRequest.tattooArtistName || "Not provided"}</strong></div>
+                <div><span>Studio</span><strong>{selectedRequest.studioName || "Not provided"}</strong></div>
+                <div><span>Style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
+                <div><span>Created</span><strong>{formatDate(selectedRequest.createdOn)}</strong></div>
+              </div>
+            </header>
 
-            <div className="request-detail-tabs">
-              {["overview", "progress", "appointments", "images"].map((tab) => (
-                <button key={tab} type="button" className={`request-detail-tab ${activeTab === tab ? "request-detail-tab-active" : ""}`} onClick={() => setActiveTab(tab)}>
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            <nav className="request-detail-tabs request-project-tabs" aria-label="Request sections">
+              {[
+                { value: "overview", icon: "⌂", label: "Overview" },
+                { value: "progress", icon: "✓", label: "Progress" },
+                { value: "appointments", icon: "◷", label: "Appointments" },
+                { value: "images", icon: "◇", label: "Images" },
+              ].map((tab) => (
+                <button key={tab.value} type="button" className={`request-detail-tab ${activeTab === tab.value ? "request-detail-tab-active" : ""}`} onClick={() => setActiveTab(tab.value)}>
+                  <span aria-hidden="true">{tab.icon}</span>
+                  {tab.label}
                 </button>
               ))}
-            </div>
+            </nav>
 
             {activeTab === "overview" && (
-              <div className="request-detail-panel">
-                <div className="detail-section-card">
-                  <h3>Request overview</h3>
-                  <p className="muted">{selectedRequest.description}</p>
-                  <div className="info-list">
-                    <p><span>Artist:</span> {selectedRequest.tattooArtistName || "Not provided"}</p>
-                    <p><span>Studio:</span> {selectedRequest.studioName || "Not provided"}</p>
-                    <p><span>Placement:</span> {selectedRequest.placement || "Not provided"}</p>
-                    <p><span>Style:</span> {selectedRequest.tattooStyle || "Not provided"}</p>
-                    <p><span>Created:</span> {formatDate(selectedRequest.createdOn)}</p>
-                  </div>
-                </div>
-                {selectedRequest.artistResponse && (
-                  <div className="detail-section-card highlighted">
-                    <h3>Artist response</h3>
-                    <p className="muted">{selectedRequest.artistResponse.responseMessage}</p>
-                    <div className="info-list">
-                      <p><span>Estimated price:</span> {selectedRequest.artistResponse.estimatedPrice} BGN</p>
-                      <p><span>Estimated time:</span> {selectedRequest.artistResponse.estimatedHours} hours</p>
+              <div className="request-detail-panel request-project-content">
+                <div className="request-project-overview-grid">
+                  <section className="request-project-brief">
+                    <p className="request-project-section-label">Your brief</p>
+                    <h3>Project direction</h3>
+                    <p>{selectedRequest.description}</p>
+                    <div className="request-brief-facts">
+                      <div><span>Placement</span><strong>{selectedRequest.placement || "Not provided"}</strong></div>
+                      <div><span>Tattoo style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
                     </div>
-                  </div>
+                  </section>
+
+                  <aside className="request-project-side">
+                    {selectedRequest.artistResponse ? (
+                      <section className="request-artist-note">
+                        <p className="request-project-section-label">Artist response</p>
+                        <blockquote>{selectedRequest.artistResponse.responseMessage || "No message was added."}</blockquote>
+                        <div className="request-estimate-grid">
+                          <div><span>Indicative price</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
+                          <div><span>Indicative time</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
+                        </div>
+                      </section>
+                    ) : (
+                      <section className="request-project-empty">
+                        <span>◌</span>
+                        <div><strong>Waiting for artist</strong><p>The response will appear here.</p></div>
+                      </section>
+                    )}
+                  </aside>
+                </div>
+
+                {getPlannedSessions(selectedRequest).length > 0 && (
+                  <section className="request-session-plan">
+                    <div className="request-session-plan-head">
+                      <div>
+                        <p className="request-project-section-label">Confirmed after consultation</p>
+                        <h3>Your session plan</h3>
+                      </div>
+                      <span>{getPlannedSessions(selectedRequest).length} sessions</span>
+                    </div>
+                    <div className="request-session-plan-grid">
+                      {getPlannedSessions(selectedRequest).map((session, index) => (
+                        <article className="request-session-ticket" key={index}>
+                          <div className="request-session-number">{String(index + 1).padStart(2, "0")}</div>
+                          <div><span>Session {index + 1}</span><strong>{session.durationHours} hours</strong></div>
+                          <div><span>Price</span><strong>{session.price} BGN</strong></div>
+                        </article>
+                      ))}
+                    </div>
+                  </section>
                 )}
-                <div className="modal-next-action">{renderNextAction(selectedRequest)}</div>
+
+                <section className="request-next-step">
+                  <div>
+                    <p className="request-project-section-label">Next step</p>
+                    <h3>Continue your project</h3>
+                  </div>
+                  <div className="modal-next-action">{renderNextAction(selectedRequest)}</div>
+                </section>
               </div>
             )}
 
-            {activeTab === "progress" && <div className="request-detail-panel"><RequestWorkflowTimeline request={selectedRequest} /></div>}
+            {activeTab === "progress" && <div className="request-detail-panel request-project-content"><section className="request-project-tab-card"><p className="request-project-section-label">Project journey</p><h3>Where your tattoo stands</h3><RequestWorkflowTimeline request={selectedRequest} /></section></div>}
 
             {activeTab === "appointments" && (
-              <div className="request-detail-panel">
+              <div className="request-detail-panel request-project-content request-appointments-grid">
                 {selectedRequest.consultation ? (
                   <div className="detail-section-card consultation-accent-card">
                     <h3>Consultation</h3>
                     <p>{formatDateTime(selectedRequest.consultation.startTime)} – {formatTime(selectedRequest.consultation.endTime)}</p>
                     <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
                   </div>
-                ) : <p className="message">No consultation booked yet.</p>}
+                ) : <div className="request-project-empty"><span>◷</span><div><strong>No consultation booked</strong><p>Your confirmed consultation will appear here.</p></div></div>}
 
                 {selectedRequest.tattooSessions?.length > 0 ? (
                   <div className="detail-section-card session-accent-card">
@@ -222,21 +289,21 @@ function MyTattooRequestsPage() {
                       ))}
                     </div>
                   </div>
-                ) : <p className="message">No tattoo sessions booked yet.</p>}
+                ) : <div className="request-project-empty"><span>◇</span><div><strong>No tattoo sessions booked</strong><p>Booked sessions will appear here.</p></div></div>}
               </div>
             )}
 
             {activeTab === "images" && (
-              <div className="request-detail-panel">
+              <div className="request-detail-panel request-project-content">
                 {selectedRequest.images?.length > 0 ? (
-                  <div className="image-grid request-image-grid">
+                  <div className="image-grid request-image-grid request-project-gallery">
                     {selectedRequest.images.map((image, index) => (
                       <button className="request-detail-image-button" type="button" key={index} onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}>
                         <img src={getImageUrl(image.imageUrl)} alt={`Reference ${index + 1}`} />
                       </button>
                     ))}
                   </div>
-                ) : <p className="message">No reference images were uploaded.</p>}
+                ) : <div className="request-project-empty"><span>◇</span><div><strong>No reference images</strong><p>This project was created without uploaded images.</p></div></div>}
               </div>
             )}
           </section>

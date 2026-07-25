@@ -17,8 +17,13 @@ export function getMyArtistTattooRequests() {
   return apiRequest("/api/TattooRequest/my-artist-requests");
 }
 
-export function getBookingAvailability(id, bookingType) {
-  return apiRequest(`/api/TattooRequest/${id}/availability?bookingType=${encodeURIComponent(bookingType)}`);
+export function getBookingAvailability(id, bookingType, startDate, days) {
+  const query = new URLSearchParams({
+    bookingType,
+    startDate,
+    days: String(days),
+  });
+  return apiRequest(`/api/TattooRequest/${id}/availability?${query}`);
 }
 
 export function createTattooRequest(requestData) {

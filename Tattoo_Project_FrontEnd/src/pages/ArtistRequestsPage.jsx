@@ -120,6 +120,7 @@ function ArtistRequestsPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [responseForm, setResponseForm] = useState({
     estimatedPrice: "",
@@ -147,8 +148,21 @@ function ArtistRequestsPage() {
   }, [location.search, requests]);
 
   const filteredRequests = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
+
     return requests
       .filter((request) => matchesFilter(request, activeFilter))
+      .filter((request) => {
+        if (!normalizedQuery) return true;
+
+        return [
+          request.clientName,
+          request.placement,
+          request.tattooStyle,
+        ].some((value) =>
+          String(value || "").toLocaleLowerCase().includes(normalizedQuery)
+        );
+      })
       .sort((a, b) => {
         if (a.status === STATUS.COMPLETED && b.status !== STATUS.COMPLETED) return 1;
         if (b.status === STATUS.COMPLETED && a.status !== STATUS.COMPLETED) return -1;
@@ -157,7 +171,7 @@ function ArtistRequestsPage() {
 
         return new Date(b.createdOn) - new Date(a.createdOn);
       });
-  }, [requests, activeFilter]);
+  }, [requests, activeFilter, searchQuery]);
 
   async function loadRequests() {
     setIsLoading(true);
@@ -399,10 +413,35 @@ function ArtistRequestsPage() {
           ))}
         </div>
 
+        <div className="artist-request-search">
+          <span aria-hidden="true">⌕</span>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search by client, placement or tattoo style"
+            aria-label="Search tattoo requests by client, placement or tattoo style"
+          />
+          {searchQuery && (
+            <button
+              className="icon-button"
+              type="button"
+              onClick={() => setSearchQuery("")}
+              aria-label="Clear request search"
+            >
+              ×
+            </button>
+          )}
+        </div>
+
         {isLoading && <p className="message">Loading requests...</p>}
         {error && !selectedRequest && <p className="error">{error}</p>}
         {!isLoading && !error && filteredRequests.length === 0 && (
-          <p className="message">No requests in this category.</p>
+          <p className="message">
+            {searchQuery.trim()
+              ? "No requests match this search in the selected category."
+              : "No requests in this category."}
+          </p>
         )}
 
         <div className="grid-2">

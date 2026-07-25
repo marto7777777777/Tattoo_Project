@@ -16,6 +16,8 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
         public int ClientId { get; set; }
         public int TattooArtistId { get; set; }
         public int? RemainingSessionsToBook { get; set; }
+        public List<decimal>? PriceForSession { get; set; }
+        public List<int>? DurationHoursForSession { get; set; }
         public string? ClientName { get; set; }
         public string? ClientEmail { get; set; }
         public string? ClientPhoneNumber { get; set; }
