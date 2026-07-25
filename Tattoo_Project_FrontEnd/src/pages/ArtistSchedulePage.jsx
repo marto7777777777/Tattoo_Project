@@ -165,9 +165,12 @@ function ArtistSchedulePage() {
       const start = new Date(period.startDateTime);
       const end = new Date(period.endDateTime);
       const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-      const finalDay = new Date(end.getFullYear(), end.getMonth(), end.getDate());
 
-      while (cursor <= finalDay) {
+      // EndDateTime is an exclusive boundary. A full day saved as
+      // 15 Jul 00:00 -> 16 Jul 00:00 must therefore mark only 15 July.
+      // Comparing the day cursor with the real end time also keeps custom
+      // hourly breaks visible on their start day.
+      while (cursor < end) {
         addEvent(toDateKey(cursor), {
           type: "unavailable",
           label: "Day off",
