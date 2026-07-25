@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createClientProfile } from "../api/clientApi";
 import { updateProfileImage } from "../api/profileApi";
@@ -15,6 +15,14 @@ function CreateClientProfilePage() {
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const profilePreview = useMemo(
+    () => (profileImageFile ? URL.createObjectURL(profileImageFile) : null),
+    [profileImageFile]
+  );
+
+  useEffect(() => () => {
+    if (profilePreview) URL.revokeObjectURL(profilePreview);
+  }, [profilePreview]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -54,8 +62,8 @@ function CreateClientProfilePage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="card form-card">
+    <main className="center-container client-profile-create-page">
+      <section className="card form-card client-profile-create-card">
         <div className="header">
           <p className="subtitle">Client Profile</p>
           <h1>Create your client profile</h1>
@@ -78,8 +86,8 @@ function CreateClientProfilePage() {
                 onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)}
               />
               <div className="user-avatar user-avatar-xlarge">
-                {profileImageFile ? (
-                  <img src={URL.createObjectURL(profileImageFile)} alt="Preview" />
+                {profilePreview ? (
+                  <img src={profilePreview} alt="Preview" />
                 ) : (
                   <span>＋</span>
                 )}
@@ -89,18 +97,18 @@ function CreateClientProfilePage() {
           </div>
           <div className="form-group">
             <label>Phone number</label>
-            <input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
+            <input name="phoneNumber" type="tel" autoComplete="tel" value={form.phoneNumber} onChange={handleChange} />
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>City</label>
-              <input name="city" value={form.city} onChange={handleChange} placeholder="Plovdiv" />
+              <input name="city" autoComplete="address-level2" value={form.city} onChange={handleChange} placeholder="Plovdiv" />
             </div>
 
             <div className="form-group">
               <label>Country</label>
-              <input name="country" value={form.country} onChange={handleChange} placeholder="Bulgaria" />
+              <input name="country" autoComplete="country-name" value={form.country} onChange={handleChange} placeholder="Bulgaria" />
             </div>
           </div>
 

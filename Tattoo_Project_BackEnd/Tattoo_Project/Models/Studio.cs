@@ -20,5 +20,6 @@ namespace Tattoo_Project.Models
 
         public ICollection<TattooArtist> Artists { get; set; } = new List<TattooArtist>();
         public ICollection<StudioJoinRequest> JoinRequests { get; set; } = new List<StudioJoinRequest>();
+        public ICollection<ClientFavoriteStudio> FavoritedByClients { get; set; } = new List<ClientFavoriteStudio>();
     }
 }

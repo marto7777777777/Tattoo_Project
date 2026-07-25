@@ -353,7 +353,7 @@ function CreateArtistProfilePage() {
               <div className="artist-info-stack">
                 <div className="form-group">
                   <label>Phone number</label>
-                  <input value={artistForm.phoneNumber} onChange={(event) => setArtistField("phoneNumber", event.target.value)} placeholder="+359 ..." maxLength={40} />
+                  <input type="tel" autoComplete="tel" value={artistForm.phoneNumber} onChange={(event) => setArtistField("phoneNumber", event.target.value)} placeholder="+359 ..." maxLength={40} />
                 </div>
 
                 <label className={`onboarding-toggle-card onboarding-toggle-card-single ${artistForm.offersOnlineConsultation ? "active" : ""}`}>
@@ -385,10 +385,10 @@ function CreateArtistProfilePage() {
                 </div>
                 <div className="form-group"><label>Studio name</label><input value={studioForm.name} onChange={(event) => setStudioField("name", event.target.value)} maxLength={120} placeholder="InkRoute Studio" /></div>
                 <div className="form-group"><label>Studio description</label><textarea value={studioForm.description} onChange={(event) => setStudioField("description", event.target.value)} maxLength={1500} placeholder="Describe the studio, atmosphere, specialties and what clients can expect." /></div>
-                <div className="form-group"><label>Address</label><input value={studioForm.address} onChange={(event) => setStudioField("address", event.target.value)} maxLength={220} placeholder="ul. Ivan Vazov 10" /></div>
+                <div className="form-group"><label>Address</label><input autoComplete="street-address" value={studioForm.address} onChange={(event) => setStudioField("address", event.target.value)} maxLength={220} placeholder="ul. Ivan Vazov 10" /></div>
                 <div className="form-row">
-                  <div className="form-group"><label>City</label><input value={studioForm.city} onChange={(event) => setStudioField("city", event.target.value)} maxLength={100} placeholder="Plovdiv" /></div>
-                  <div className="form-group"><label>Country</label><input value={studioForm.country} onChange={(event) => setStudioField("country", event.target.value)} maxLength={100} /></div>
+                  <div className="form-group"><label>City</label><input autoComplete="address-level2" value={studioForm.city} onChange={(event) => setStudioField("city", event.target.value)} maxLength={100} placeholder="Plovdiv" /></div>
+                  <div className="form-group"><label>Country</label><input autoComplete="country-name" value={studioForm.country} onChange={(event) => setStudioField("country", event.target.value)} maxLength={100} /></div>
                 </div>
               </section>
             ) : (

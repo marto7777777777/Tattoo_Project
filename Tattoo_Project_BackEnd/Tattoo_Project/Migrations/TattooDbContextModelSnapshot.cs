@@ -552,7 +552,7 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("Clients");
                 });
 
-            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteArtist", b =>
+            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteStudio", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -566,17 +566,17 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TattooArtistId")
+                    b.Property<int>("StudioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TattooArtistId");
+                    b.HasIndex("StudioId");
 
-                    b.HasIndex("ClientId", "TattooArtistId")
+                    b.HasIndex("ClientId", "StudioId")
                         .IsUnique();
 
-                    b.ToTable("ClientFavoriteArtists");
+                    b.ToTable("ClientFavoriteStudios");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Consultation", b =>
@@ -1136,23 +1136,23 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteArtist", b =>
+            modelBuilder.Entity("Tattoo_Project.Models.ClientFavoriteStudio", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.Client", "Client")
-                        .WithMany("FavoriteArtists")
+                        .WithMany("FavoriteStudios")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
-                        .WithMany()
-                        .HasForeignKey("TattooArtistId")
+                    b.HasOne("Tattoo_Project.Models.Studio", "Studio")
+                        .WithMany("FavoritedByClients")
+                        .HasForeignKey("StudioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Client");
 
-                    b.Navigation("TattooArtist");
+                    b.Navigation("Studio");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Consultation", b =>
@@ -1296,7 +1296,7 @@ namespace Tattoo_Project.Migrations
                 {
                     b.Navigation("ArtistReviews");
 
-                    b.Navigation("FavoriteArtists");
+                    b.Navigation("FavoriteStudios");
 
                     b.Navigation("TattooRequests");
                 });
@@ -1304,6 +1304,7 @@ namespace Tattoo_Project.Migrations
             modelBuilder.Entity("Tattoo_Project.Models.Studio", b =>
                 {
                     b.Navigation("Artists");
+                    b.Navigation("FavoritedByClients");
                     b.Navigation("JoinRequests");
                 });
 

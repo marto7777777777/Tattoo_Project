@@ -389,7 +389,7 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        private static StudioDto MapStudio(Studio studio)
+        internal static StudioDto MapStudio(Studio studio)
         {
             var artists = studio.Artists
                 .OrderBy(a => a.Id == studio.OwnerArtistId ? 0 : 1)

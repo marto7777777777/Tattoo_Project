@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, Navigate, NavLink, useParams } from "react-router-dom";
 import {
   addPortfolioImage,
@@ -57,6 +57,7 @@ function ProfileSectionPage() {
   const [newRequirement, setNewRequirement] = useState("");
   const [passwordStep, setPasswordStep] = useState("idle");
   const [passwordForm, setPasswordForm] = useState({ code: "", newPassword: "", confirmNewPassword: "" });
+  const settingsContentRef = useRef(null);
 
   const allowedSections = useMemo(() => {
     const sections = ["user", "contact"];
@@ -67,6 +68,16 @@ function ProfileSectionPage() {
   useEffect(() => {
     loadProfile();
   }, []);
+
+  function scrollToSettingsAction() {
+    if (!window.matchMedia("(max-width: 900px)").matches) return;
+    window.setTimeout(() => {
+      settingsContentRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+  }
 
   async function loadProfile() {
     setLoading(true);
@@ -289,7 +300,7 @@ function ProfileSectionPage() {
             <small>Edit each area separately</small>
           </div>
           {allowedSections.map((item) => (
-            <NavLink key={item} to={`/profile/${item}`}>
+            <NavLink key={item} to={`/profile/${item}`} onClick={scrollToSettingsAction}>
               <span className="settings-nav-icon">{sectionIcons[item]}</span>
               <span><strong>{sectionTitles[item]}</strong><small>{sectionDescriptions[item]}</small></span>
             </NavLink>
@@ -302,7 +313,7 @@ function ProfileSectionPage() {
           )}
         </aside>
 
-        <section className="card profile-section-card profile-settings-content">
+        <section ref={settingsContentRef} className="card profile-section-card profile-settings-content">
           <div className="profile-section-heading">
             <span className="profile-section-icon">{sectionIcons[section]}</span>
             <div>

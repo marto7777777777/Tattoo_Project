@@ -2,7 +2,13 @@ import { useNavigate } from "react-router-dom";
 import UserAvatar from "./UserAvatar";
 import { getImageUrl } from "../utils/images";
 
-function StudioCard({ studio, isMyStudio = false }) {
+function StudioCard({
+  studio,
+  isMyStudio = false,
+  isFavorite = false,
+  showFavoriteButton = false,
+  onToggleFavorite,
+}) {
   const navigate = useNavigate();
   const artists = studio?.artists || studio?.Artists || [];
   const previews = studio?.portfolioPreviewUrls || studio?.PortfolioPreviewUrls || [];
@@ -17,6 +23,17 @@ function StudioCard({ studio, isMyStudio = false }) {
         </div>
         <span className="studio-artist-count">{studio.artistCount ?? artists.length} artist{(studio.artistCount ?? artists.length) === 1 ? "" : "s"}</span>
       </div>
+
+      {showFavoriteButton && !isMyStudio && (
+        <button
+          className={`heart-button studio-heart-button studio-card-favorite ${isFavorite ? "heart-active" : ""}`}
+          type="button"
+          aria-label={isFavorite ? "Remove studio from favorites" : "Add studio to favorites"}
+          onClick={() => onToggleFavorite?.(studio)}
+        >
+          {isFavorite ? "♥" : "♡"}
+        </button>
+      )}
 
       <p className="studio-card-description">{studio.description}</p>
 

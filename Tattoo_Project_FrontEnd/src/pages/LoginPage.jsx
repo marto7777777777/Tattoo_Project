@@ -26,12 +26,12 @@ function LoginPage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="card form-card">
+    <main className="center-container auth-page">
+      <section className="card form-card auth-card">
         <div className="header"><p className="subtitle">Welcome back</p><h1>Login</h1><p>Log in to manage your tattoo workflow.</p></div>
         <form className="form" onSubmit={handleSubmit}>
-          <div className="form-group"><label>Email or username</label><input name="login" value={form.login} onChange={handleChange} /></div>
-          <div className="form-group"><label>Password</label><input name="password" type="password" value={form.password} onChange={handleChange} /></div>
+          <div className="form-group"><label>Email or username</label><input name="login" autoComplete="username" value={form.login} onChange={handleChange} /></div>
+          <div className="form-group"><label>Password</label><input name="password" type="password" autoComplete="current-password" value={form.password} onChange={handleChange} /></div>
           {error && <p className="error">{error}</p>}
           <button className="primary-button" type="submit">Log in</button>
         </form>

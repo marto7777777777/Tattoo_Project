@@ -71,8 +71,8 @@ function RegisterPage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="card form-card">
+    <main className="center-container auth-page">
+      <section className="card form-card auth-card">
         <div className="header">
           <p className="subtitle">Create account</p>
           <h1>{step === "register" ? "Join the platform" : "Check your email"}</h1>
@@ -86,12 +86,12 @@ function RegisterPage() {
         {step === "register" ? (
           <form className="form" onSubmit={handleSubmit}>
             <div className="form-row">
-              <div className="form-group"><label>First name</label><input name="firstName" value={form.firstName} onChange={handleChange} /></div>
-              <div className="form-group"><label>Last name</label><input name="lastName" value={form.lastName} onChange={handleChange} /></div>
+              <div className="form-group"><label>First name</label><input name="firstName" autoComplete="given-name" value={form.firstName} onChange={handleChange} /></div>
+              <div className="form-group"><label>Last name</label><input name="lastName" autoComplete="family-name" value={form.lastName} onChange={handleChange} /></div>
             </div>
-            <div className="form-group"><label>Username</label><input name="userName" value={form.userName} onChange={handleChange} /></div>
-            <div className="form-group"><label>Email</label><input name="email" type="email" value={form.email} onChange={handleChange} /></div>
-            <div className="form-group"><label>Password</label><input name="password" type="password" value={form.password} onChange={handleChange} /></div>
+            <div className="form-group"><label>Username</label><input name="userName" autoComplete="username" value={form.userName} onChange={handleChange} /></div>
+            <div className="form-group"><label>Email</label><input name="email" type="email" autoComplete="email" value={form.email} onChange={handleChange} /></div>
+            <div className="form-group"><label>Password</label><input name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} /></div>
             {error && <p className="error">{error}</p>}{successMessage && <p className="success">{successMessage}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Sending code..." : "Register"}</button>
           </form>
@@ -100,9 +100,11 @@ function RegisterPage() {
             <div className="form-group">
               <label>Verification code</label>
               <input
+                className="verification-code-input"
                 value={code}
                 onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
                 inputMode="numeric"
+                autoComplete="one-time-code"
                 maxLength="6"
                 placeholder="123456"
               />

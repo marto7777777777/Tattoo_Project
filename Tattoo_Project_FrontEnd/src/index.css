@@ -946,10 +946,6 @@
 
 @media(max-width:1100px){.schedule-builder-grid{grid-template-columns:1fr}.portfolio-preview-grid-create{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:760px){.onboarding-toggle-grid{grid-template-columns:1fr}.portfolio-preview-grid-create{grid-template-columns:repeat(2,minmax(0,1fr))}.schedule-day-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.availability-time-row{grid-template-columns:1fr}.availability-time-arrow{display:none}}
-cd /mnt/data/frontend_artist_info_vertical && zip -qr /mnt/data/InkRoute_Frontend_ArtistInfo_Vertical.zip .
-unzip -l /mnt/data/InkRoute_Frontend_ArtistInfo_Vertical.zip | grep -E 'CreateArtistProfilePage.jsx|src/index.css'
-
-
 /* Create Artist Profile - keep personal artist fields in a clear single-column flow */
 .artist-info-stack{display:flex;flex-direction:column;gap:16px;max-width:720px}
 .artist-info-stack .form-group{width:100%;margin:0}
@@ -1017,3 +1013,2758 @@ unzip -l /mnt/data/InkRoute_Frontend_ArtistInfo_Vertical.zip | grep -E 'CreateAr
 .selected-studio-summary strong{color:var(--text)}
 .selected-studio-summary span{color:var(--muted);margin-right:auto}
 @media (max-width:760px){.studio-choice-grid{grid-template-columns:1fr}.studio-search-row{grid-template-columns:1fr}.selected-studio-summary{align-items:flex-start;flex-direction:column}.selected-studio-summary span{margin-right:0}}
+
+/* ===== Responsive foundation — Step 01 ===== */
+:root{
+  --sidebar-width:264px;
+  --mobile-topbar-height:64px;
+  --mobile-bottom-nav-height:68px;
+  --page-gutter:clamp(18px,3vw,56px);
+}
+
+html{
+  width:100%;
+  min-width:320px;
+  overflow-x:clip;
+  text-size-adjust:100%;
+  -webkit-text-size-adjust:100%;
+}
+
+body,
+#root{
+  width:100%;
+  min-width:320px;
+  min-height:100%;
+}
+
+body{
+  overflow-x:clip;
+}
+
+img,
+svg,
+video,
+canvas{
+  max-width:100%;
+}
+
+input,
+select,
+textarea,
+button{
+  max-width:100%;
+}
+
+input,
+select,
+textarea{
+  font-size:16px;
+}
+
+button,
+a,
+input,
+select,
+textarea{
+  -webkit-tap-highlight-color:transparent;
+}
+
+.page-shell,
+.create-request-page,
+.center-container{
+  min-width:0;
+}
+
+.page-shell{
+  margin-left:var(--sidebar-width);
+}
+
+.container,
+.page-container{
+  width:min(1320px,calc(100% - (var(--page-gutter) * 2)));
+}
+
+.card,
+.form-card,
+.dashboard-card,
+.profile-section-card,
+.side-panel,
+.action-panel,
+.detail-section-card,
+.calendar-card,
+.request-detail-panel{
+  min-width:0;
+}
+
+@media (min-width:901px) and (max-width:1180px){
+  body{
+    min-width:0;
+  }
+
+  .page-shell{
+    min-width:0;
+  }
+
+  .container,
+  .page-container{
+    width:calc(100% - 40px);
+  }
+}
+
+@media (max-width:900px){
+  :root{
+    --page-gutter:14px;
+  }
+
+  body{
+    min-width:320px;
+  }
+
+  .page-shell{
+    margin-left:0;
+    padding-top:calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 28px);
+    padding-right:0;
+    padding-bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 28px);
+    padding-left:0;
+  }
+
+  .center-container{
+    margin-left:0;
+    min-height:100dvh;
+    padding:
+      calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 28px)
+      var(--page-gutter)
+      calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 28px);
+  }
+
+  .container,
+  .page-container{
+    width:calc(100% - (var(--page-gutter) * 2));
+    max-width:760px;
+  }
+
+  .header,
+  .dashboard-topline{
+    min-width:0;
+  }
+
+  .header h1,
+  .dashboard-topline h1{
+    overflow-wrap:anywhere;
+  }
+}
+
+@media (max-width:620px){
+  :root{
+    --page-gutter:12px;
+    --radius:16px;
+  }
+
+  .page-shell{
+    padding-top:calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 20px);
+    padding-bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 22px);
+  }
+
+  .card,
+  .form-card,
+  .profile-section-card,
+  .detail-section-card,
+  .action-panel{
+    padding:18px;
+  }
+
+  .form-card-large{
+    padding:20px 18px;
+  }
+
+  .header{
+    margin-bottom:22px;
+  }
+
+  .header h1,
+  .dashboard-topline h1{
+    font-size:clamp(30px,10vw,38px);
+  }
+
+  .header>p:not(.subtitle),
+  .dashboard-lead{
+    font-size:14px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button,
+  .compact-button,
+  .icon-button,
+  .disabled-action-button{
+    min-height:46px;
+  }
+
+  .modal-backdrop{
+    align-items:end;
+    padding:12px max(12px,env(safe-area-inset-right))
+      calc(12px + env(safe-area-inset-bottom))
+      max(12px,env(safe-area-inset-left));
+  }
+
+  .modal-card,
+  .request-modal,
+  .structured-request-modal{
+    width:100%;
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding:20px 18px;
+    border-radius:20px;
+  }
+}
+
+@media (max-width:380px){
+  :root{
+    --page-gutter:10px;
+  }
+
+  .card,
+  .form-card,
+  .profile-section-card,
+  .detail-section-card,
+  .action-panel{
+    padding:16px;
+  }
+
+  .home-actions,
+  .action-row,
+  .inline-actions,
+  .topline-actions{
+    align-items:stretch;
+  }
+}
+
+/* ===== Authentication responsive pass — Step 03B ===== */
+.auth-page{
+  align-content:center;
+}
+
+.auth-card{
+  min-width:0;
+}
+
+.auth-card .header{
+  min-width:0;
+}
+
+.auth-card .header h1,
+.auth-card .header p,
+.auth-card .error,
+.auth-card .success,
+.auth-card .footer-link{
+  overflow-wrap:anywhere;
+}
+
+.auth-card .form > .primary-button,
+.auth-card .form > .secondary-button{
+  width:100%;
+}
+
+.auth-card .verification-code-input{
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.35em;
+  text-align:center;
+  font-size:1.18rem;
+  font-weight:800;
+}
+
+.auth-card .footer-link{
+  margin:16px 0 0;
+  text-align:center;
+}
+
+.auth-card .footer-link + .footer-link{
+  margin-top:8px;
+}
+
+.auth-card .footer-link a{
+  color:#c3b6f5;
+  font-weight:750;
+}
+
+@media (min-width:901px){
+  .auth-page{
+    padding-block:48px;
+  }
+
+  .auth-card{
+    width:min(720px,100%);
+  }
+}
+
+@media (max-width:900px){
+  .auth-page{
+    align-content:start;
+  }
+
+  .auth-card{
+    width:min(100%,680px);
+    margin:auto;
+  }
+}
+
+@media (max-width:620px){
+  .auth-page{
+    display:block;
+    padding-right:max(12px,env(safe-area-inset-right));
+    padding-left:max(12px,env(safe-area-inset-left));
+  }
+
+  .auth-card{
+    width:100%;
+    padding:24px 20px;
+    border-radius:20px;
+  }
+
+  .auth-card .header h1{
+    font-size:clamp(32px,10vw,42px);
+  }
+
+  .auth-card .header > p:not(.subtitle){
+    margin-bottom:0;
+    font-size:14px;
+  }
+
+  .auth-card .form-row{
+    grid-template-columns:1fr;
+  }
+
+  .auth-card .form{
+    gap:15px;
+  }
+
+  .auth-card .form input{
+    min-height:50px;
+  }
+}
+
+@media (max-width:380px){
+  .auth-card{
+    padding:21px 16px;
+  }
+
+  .auth-card .verification-code-input{
+    letter-spacing:.24em;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{
+    scroll-behavior:auto;
+  }
+
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+
+/* ===== Favorite placement, two-card mobile selectors and settings jump ===== */
+.studio-card{
+  position:relative;
+}
+
+.studio-card-topline{
+  padding-right:48px;
+}
+
+.studio-card-favorite,
+.studio-profile-favorite{
+  position:absolute;
+  z-index:4;
+  top:16px;
+  right:16px;
+  border-color:rgba(183,157,255,.3);
+  background:rgba(9,9,13,.9);
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+
+.studio-profile-hero{
+  position:relative;
+}
+
+.studio-profile-hero.has-favorite-action .studio-location-card{
+  margin-top:42px;
+}
+
+.profile-settings-content{
+  scroll-margin-top:calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 14px);
+}
+
+@media (max-width:700px){
+  .create-request-form .selector-carousel-track,
+  .ai-create-page .selector-carousel-track{
+    width:100%;
+    margin-right:0;
+    padding:3px;
+    gap:12px;
+    scroll-padding-inline:3px;
+  }
+
+  .create-request-form .visual-carousel-card,
+  .ai-create-page .visual-carousel-card{
+    flex:0 0 calc(50% - 21px);
+    scroll-snap-stop:always;
+  }
+
+  .create-request-form .visual-carousel-card:last-child,
+  .ai-create-page .visual-carousel-card:last-child{
+    scroll-snap-align:end;
+  }
+
+  .studio-profile-hero.has-favorite-action{
+    padding-top:70px;
+  }
+
+  .studio-profile-hero.has-favorite-action .studio-location-card{
+    margin-top:0;
+  }
+}
+
+@media (max-width:380px){
+  .create-request-form .visual-carousel-card,
+  .ai-create-page .visual-carousel-card{
+    flex-basis:calc(50% - 18px);
+  }
+
+  .create-request-form .selector-carousel-track,
+  .ai-create-page .selector-carousel-track{
+    gap:10px;
+  }
+}
+
+.network-status{
+  position:fixed;
+  z-index:1200;
+  top:max(10px,env(safe-area-inset-top));
+  left:50%;
+  width:min(620px,calc(100% - 24px));
+  transform:translateX(-50%);
+  padding:10px 14px;
+  border:1px solid rgba(255,184,76,.42);
+  border-radius:12px;
+  background:rgba(35,25,14,.96);
+  color:#ffe0aa;
+  font-size:.88rem;
+  line-height:1.4;
+  text-align:center;
+  box-shadow:0 12px 34px rgba(0,0,0,.35);
+  backdrop-filter:blur(14px);
+}
+
+/* ===== Real-device mobile QA fixes ===== */
+.studio-card-badges{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  gap:8px;
+}
+
+.studio-heart-button{
+  flex:0 0 38px;
+}
+
+.studio-favorite-button{
+  width:100%;
+  margin-top:8px;
+}
+
+.studio-favorite-active{
+  color:#ff91a4;
+  border-color:rgba(255,122,145,.3);
+  background:rgba(255,122,145,.08);
+}
+
+.selector-carousel-track{
+  touch-action:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.calendar-side-panel input[type="date"]{
+  display:block;
+  width:100%;
+  min-width:0;
+  max-width:100%;
+  -webkit-min-logical-width:0;
+}
+
+@media (max-width:700px){
+  .profile-settings-hero{
+    padding:24px 20px;
+  }
+
+  .profile-identity-block{
+    width:100%;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .profile-role-pills{
+    justify-content:center;
+  }
+
+  .profile-settings-summary{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .profile-settings-nav{
+    width:100%;
+    grid-template-columns:1fr;
+    overflow:hidden;
+  }
+
+  .profile-settings-nav > a{
+    width:100%;
+    min-width:0;
+  }
+
+  .profile-settings-nav > a > span:last-child,
+  .profile-settings-nav > a strong,
+  .profile-settings-nav > a small{
+    min-width:0;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .profile-settings-content{
+    width:100%;
+    overflow:hidden;
+  }
+
+  .profile-section-heading{
+    min-width:0;
+  }
+
+  .profile-section-heading > div{
+    min-width:0;
+  }
+
+  .profile-section-heading h2{
+    font-size:clamp(25px,8vw,34px);
+    overflow-wrap:anywhere;
+  }
+
+  .create-request-form .carousel-arrow,
+  .ai-create-page .carousel-arrow{
+    display:grid;
+    top:50%;
+    width:38px;
+    height:38px;
+    transform:translateY(-50%);
+    border-color:rgba(183,157,255,.42);
+    background:rgba(9,9,13,.94);
+    box-shadow:0 8px 22px rgba(0,0,0,.4);
+  }
+
+  .create-request-form .carousel-arrow-left,
+  .ai-create-page .carousel-arrow-left{
+    left:6px;
+  }
+
+  .create-request-form .carousel-arrow-right,
+  .ai-create-page .carousel-arrow-right{
+    right:6px;
+  }
+
+  .studio-edit-section .onboarding-section-head{
+    width:100%;
+    align-items:stretch;
+    flex-direction:column;
+    gap:14px;
+    padding-right:0;
+  }
+
+  .studio-edit-section .onboarding-section-head > div{
+    width:100%;
+  }
+
+  .studio-edit-section .onboarding-section-head h2{
+    width:100%;
+    font-size:clamp(26px,8vw,34px);
+    overflow-wrap:normal;
+    word-break:normal;
+  }
+
+  .studio-edit-section .onboarding-section-head .compact-button{
+    position:static;
+    width:100%;
+  }
+}
+
+@media (max-width:480px){
+  .profile-settings-summary{
+    grid-template-columns:1fr;
+  }
+
+  .profile-settings-summary div{
+    min-width:0;
+  }
+
+  .studio-card-topline{
+    align-items:flex-start;
+  }
+
+  .studio-card-badges{
+    flex-direction:column;
+  }
+}
+
+/* ===== Home responsive pass — Step 03A ===== */
+.home-dashboard .dashboard-topline > div,
+.home-dashboard .hero-command-copy,
+.home-dashboard .journey-item > div{
+  min-width:0;
+}
+
+.home-dashboard .hero-command-copy h2,
+.home-dashboard .journey-item p,
+.home-dashboard .floating-project-card strong,
+.home-dashboard .floating-project-card span{
+  overflow-wrap:anywhere;
+}
+
+@media (min-width:901px) and (max-width:1180px){
+  .home-dashboard .hero-command-copy{
+    padding:42px;
+  }
+
+  .home-dashboard .hero-command-copy h2{
+    font-size:clamp(44px,6vw,64px);
+  }
+
+  .home-dashboard .dashboard-grid{
+    grid-template-columns:minmax(0,1.15fr) minmax(260px,.85fr);
+  }
+}
+
+@media (max-width:900px){
+  .home-dashboard .dashboard-topline{
+    margin-bottom:22px;
+  }
+
+  .home-dashboard .hero-command-card{
+    min-height:0;
+  }
+
+  .home-dashboard .hero-command-copy{
+    padding:clamp(28px,6vw,42px);
+  }
+
+  .home-dashboard .hero-command-copy h2{
+    font-size:clamp(42px,8vw,58px);
+  }
+
+  .home-dashboard .hero-visual-panel,
+  .home-dashboard .overview-carousel{
+    min-height:clamp(390px,58vw,500px);
+  }
+
+  .home-dashboard .dashboard-grid{
+    grid-template-columns:1fr;
+    grid-template-rows:auto;
+  }
+
+  .home-dashboard .dashboard-panel-large{
+    grid-row:auto;
+  }
+}
+
+@media (max-width:620px){
+  .home-dashboard .dashboard-topline h1{
+    font-size:clamp(34px,10.5vw,44px);
+  }
+
+  .home-dashboard .hero-command-card{
+    border-radius:20px;
+  }
+
+  .home-dashboard .hero-command-copy{
+    padding:26px 20px 24px;
+  }
+
+  .home-dashboard .hero-command-copy h2{
+    margin:20px 0 15px;
+    font-size:clamp(36px,11.5vw,48px);
+  }
+
+  .home-dashboard .hero-command-copy > p{
+    font-size:14px;
+  }
+
+  .home-dashboard .hero-command-actions{
+    width:100%;
+    margin-top:22px;
+    gap:13px;
+  }
+
+  .home-dashboard .hero-command-actions .primary-button{
+    width:100%;
+  }
+
+  .home-dashboard .text-link-button{
+    min-height:42px;
+    display:inline-flex;
+    align-items:center;
+  }
+
+  .home-dashboard .hero-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:0;
+    margin-top:30px;
+    padding-top:12px;
+  }
+
+  .home-dashboard .hero-metrics div{
+    min-width:0;
+    padding:12px 8px 12px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+  }
+
+  .home-dashboard .hero-metrics span{
+    overflow-wrap:anywhere;
+    line-height:1.35;
+  }
+
+  .home-dashboard .hero-visual-panel,
+  .home-dashboard .overview-carousel{
+    min-height:360px;
+  }
+
+  .home-dashboard .floating-project-card{
+    left:14px;
+    right:14px;
+    bottom:14px;
+    padding:14px;
+  }
+
+  .home-dashboard .overview-dots{
+    right:16px;
+    bottom:94px;
+  }
+
+  .home-dashboard .dashboard-panel{
+    padding:20px 18px;
+    border-radius:18px;
+  }
+
+  .home-dashboard .panel-heading h3,
+  .home-dashboard .dashboard-panel h3{
+    font-size:22px;
+  }
+
+  .home-dashboard .journey-list{
+    margin-top:20px;
+  }
+
+  .home-dashboard .journey-item{
+    gap:12px;
+    padding:15px 13px;
+  }
+
+  .home-dashboard .journey-item > span{
+    width:31px;
+    height:31px;
+    flex-basis:31px;
+  }
+}
+
+@media (max-width:380px){
+  .home-dashboard .hero-command-copy{
+    padding:22px 16px;
+  }
+
+  .home-dashboard .hero-command-copy h2{
+    font-size:34px;
+  }
+
+  .home-dashboard .hero-badge{
+    font-size:10px;
+  }
+
+  .home-dashboard .hero-visual-panel,
+  .home-dashboard .overview-carousel{
+    min-height:330px;
+  }
+
+  .home-dashboard .floating-project-card{
+    align-items:flex-start;
+  }
+
+  .home-dashboard .journey-item{
+    padding:13px 11px;
+  }
+}
+
+/* ===== Profile choice and client setup — Step 04A ===== */
+.profile-choice-container{
+  max-width:1080px;
+}
+
+.profile-choice-header{
+  max-width:820px;
+}
+
+.profile-choice-grid{
+  align-items:stretch;
+}
+
+.profile-choice-grid .choice-card{
+  min-width:0;
+  min-height:300px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:32px;
+  overflow:hidden;
+}
+
+.profile-choice-grid .choice-card h2,
+.profile-choice-grid .choice-card p{
+  overflow-wrap:anywhere;
+}
+
+.profile-choice-grid .choice-card h2{
+  margin:20px 0 8px;
+  font-size:28px;
+}
+
+.profile-choice-grid .choice-card p{
+  margin:0 0 24px;
+}
+
+.profile-choice-grid .choice-card .primary-button{
+  width:100%;
+  margin-top:auto;
+}
+
+.profile-choice-grid .choice-icon{
+  display:grid;
+  width:52px;
+  height:52px;
+  place-items:center;
+  border:1px solid rgba(151,124,255,.2);
+  border-radius:15px;
+  background:rgba(139,108,255,.08);
+  font-size:23px;
+}
+
+.client-profile-create-card{
+  min-width:0;
+}
+
+.client-profile-create-card .header h1,
+.client-profile-create-card .header p,
+.client-profile-create-card .error,
+.client-profile-create-card .success{
+  overflow-wrap:anywhere;
+}
+
+.client-profile-create-card .profile-create-upload{
+  justify-content:flex-start;
+}
+
+.client-profile-create-card .avatar-upload-label{
+  max-width:100%;
+  flex-wrap:wrap;
+}
+
+.client-profile-create-card .avatar-upload-label > span{
+  overflow-wrap:anywhere;
+}
+
+.client-profile-create-card .form > .primary-button{
+  width:100%;
+}
+
+@media (min-width:901px){
+  .client-profile-create-page{
+    padding-block:48px;
+  }
+
+  .client-profile-create-card{
+    width:min(720px,100%);
+  }
+}
+
+@media (max-width:900px){
+  .profile-choice-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .client-profile-create-page{
+    align-content:start;
+  }
+
+  .client-profile-create-card{
+    width:min(100%,680px);
+    margin:auto;
+  }
+}
+
+@media (max-width:700px){
+  .profile-choice-grid{
+    grid-template-columns:1fr;
+  }
+
+  .profile-choice-grid .choice-card{
+    min-height:0;
+  }
+}
+
+@media (max-width:620px){
+  .profile-choice-grid .choice-card{
+    padding:22px 20px;
+    border-radius:18px;
+  }
+
+  .profile-choice-grid .choice-card h2{
+    margin-top:16px;
+    font-size:24px;
+  }
+
+  .client-profile-create-page{
+    display:block;
+    padding-right:max(12px,env(safe-area-inset-right));
+    padding-left:max(12px,env(safe-area-inset-left));
+  }
+
+  .client-profile-create-card{
+    width:100%;
+    padding:24px 20px;
+    border-radius:20px;
+  }
+
+  .client-profile-create-card .header h1{
+    font-size:clamp(31px,10vw,40px);
+  }
+
+  .client-profile-create-card .form-row{
+    grid-template-columns:1fr;
+  }
+
+  .client-profile-create-card .avatar-upload-label{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+
+@media (max-width:380px){
+  .profile-choice-grid .choice-card,
+  .client-profile-create-card{
+    padding:20px 16px;
+  }
+}
+
+/* ===== Artist onboarding and schedule builder — Step 04B ===== */
+.artist-onboarding-page,
+.artist-onboarding-container,
+.artist-onboarding-form,
+.onboarding-section,
+.onboarding-section-head > div,
+.schedule-builder-column,
+.availability-block,
+.join-studio-result > div{
+  min-width:0;
+}
+
+.artist-onboarding-header h1,
+.artist-onboarding-header p,
+.onboarding-section-head h2,
+.onboarding-section-head p,
+.studio-mode-card strong,
+.studio-mode-card small,
+.join-studio-result strong,
+.join-studio-result span,
+.join-studio-result small,
+.selected-studio-banner,
+.artist-onboarding-submit span,
+.artist-create-message{
+  overflow-wrap:anywhere;
+}
+
+.artist-onboarding-form .profile-create-upload{
+  justify-content:flex-start;
+}
+
+.artist-onboarding-form .avatar-upload-label{
+  max-width:100%;
+  flex-wrap:wrap;
+}
+
+.artist-onboarding-form .inline-edit-row input{
+  width:100%;
+}
+
+.artist-onboarding-form .portfolio-upload-tile-create{
+  width:100%;
+}
+
+.schedule-builder-column{
+  overflow:hidden;
+}
+
+.schedule-day-chip{
+  touch-action:manipulation;
+}
+
+.schedule-day-chip[aria-pressed="true"]{
+  border-color:rgba(151,124,255,.53);
+}
+
+@media (min-width:901px) and (max-width:1180px){
+  .artist-onboarding-container{
+    width:calc(100% - 40px);
+  }
+
+  .onboarding-section{
+    padding:26px;
+  }
+}
+
+@media (max-width:900px){
+  .artist-onboarding-header{
+    margin-bottom:20px;
+  }
+
+  .studio-mode-card{
+    min-height:0;
+  }
+
+  .onboarding-section{
+    padding:24px;
+  }
+
+  .artist-onboarding-submit{
+    align-items:stretch;
+  }
+
+  .artist-onboarding-submit .primary-button{
+    flex:0 0 auto;
+  }
+}
+
+@media (max-width:700px){
+  .artist-onboarding-page .container{
+    width:calc(100% - 24px);
+  }
+
+  .artist-onboarding-header h1{
+    font-size:clamp(34px,10vw,44px);
+  }
+
+  .studio-mode-grid{
+    gap:12px;
+  }
+
+  .studio-mode-card{
+    padding:21px 19px;
+    border-radius:18px;
+  }
+
+  .onboarding-section{
+    padding:21px 18px;
+    border-radius:18px;
+  }
+
+  .onboarding-section-head{
+    margin-bottom:18px;
+  }
+
+  .onboarding-section-head h2{
+    font-size:23px;
+  }
+
+  .artist-onboarding-form .form-row{
+    grid-template-columns:1fr;
+  }
+
+  .artist-onboarding-form .avatar-upload-label{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .studio-search-box{
+    grid-template-columns:1fr;
+  }
+
+  .studio-search-box .secondary-button{
+    width:100%;
+  }
+
+  .join-studio-result{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .join-studio-meta{
+    width:100%;
+    align-items:flex-start;
+    white-space:normal;
+  }
+
+  .schedule-builder-column{
+    padding:15px;
+    border-radius:16px;
+  }
+
+  .availability-block{
+    padding:13px;
+  }
+
+  .schedule-preset-row button{
+    min-height:40px;
+    flex:1 1 calc(50% - 6px);
+  }
+
+  .schedule-day-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+
+  .schedule-day-chip{
+    min-height:54px;
+  }
+
+  .availability-time-row{
+    grid-template-columns:1fr;
+  }
+
+  .availability-time-arrow{
+    display:none;
+  }
+
+  .availability-time-row select{
+    min-height:48px;
+    font-size:16px;
+    background-position:calc(100% - 18px) 21px,calc(100% - 13px) 21px;
+  }
+
+  .schedule-add-block{
+    min-height:46px;
+  }
+
+  .artist-onboarding-submit{
+    padding:18px;
+  }
+
+  .artist-onboarding-submit .primary-button{
+    width:100%;
+  }
+}
+
+@media (max-width:480px){
+  .onboarding-section-head{
+    position:relative;
+    padding-right:44px;
+  }
+
+  .onboarding-section-head .step-chip{
+    position:absolute;
+    top:0;
+    right:0;
+  }
+
+  .artist-onboarding-form .inline-edit-row{
+    grid-template-columns:minmax(0,1fr) 44px;
+  }
+
+  .portfolio-preview-grid-create{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .portfolio-preview-overlay{
+    inset:auto 6px 6px;
+    padding:6px;
+  }
+
+  .portfolio-preview-overlay button{
+    min-height:30px;
+  }
+
+  .availability-block-topline{
+    align-items:flex-start;
+  }
+}
+
+@media (max-width:380px){
+  .artist-onboarding-page .container{
+    width:calc(100% - 20px);
+  }
+
+  .studio-mode-card,
+  .onboarding-section{
+    padding-right:15px;
+    padding-left:15px;
+  }
+
+  .schedule-builder-column{
+    padding:12px;
+  }
+
+  .availability-block{
+    padding:11px;
+  }
+
+  .schedule-day-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .portfolio-preview-grid-create{
+    grid-template-columns:1fr;
+  }
+
+  .portfolio-preview-card{
+    aspect-ratio:4/3;
+  }
+}
+
+/* ===== Explore, studios and public portfolios — Step 05 ===== */
+.studio-card,
+.studio-card-topline > div,
+.studio-public-artist-copy,
+.artist-portfolio-identity,
+.artist-portfolio-identity > div{
+  min-width:0;
+}
+
+.studio-card h2,
+.studio-card-description,
+.studio-card .muted,
+.studio-public-artist-title h3,
+.studio-public-artist-title p,
+.artist-portfolio-identity h1,
+.artist-portfolio-location{
+  overflow-wrap:anywhere;
+}
+
+.studio-card > .primary-button{
+  width:100%;
+  margin-top:auto;
+}
+
+.studio-portfolio-preview img,
+.studio-public-portfolio img,
+.artist-portfolio-tile img{
+  display:block;
+}
+
+.artist-portfolio-hero{
+  min-width:0;
+}
+
+.artist-portfolio-hero-actions{
+  flex-wrap:wrap;
+}
+
+.portfolio-lightbox{
+  padding:
+    max(18px,env(safe-area-inset-top))
+    max(18px,env(safe-area-inset-right))
+    max(18px,env(safe-area-inset-bottom))
+    max(18px,env(safe-area-inset-left));
+}
+
+.portfolio-lightbox img{
+  max-width:min(1100px,100%);
+  max-height:calc(100dvh - 36px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  object-fit:contain;
+}
+
+.portfolio-lightbox-close{
+  min-width:44px;
+  min-height:44px;
+}
+
+@media (max-width:700px){
+  .search-bar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .search-bar input{
+    grid-column:1/-1;
+  }
+
+  .studio-card{
+    gap:15px;
+    padding:20px;
+    border-radius:19px;
+  }
+
+  .studio-card-topline{
+    align-items:flex-start;
+  }
+
+  .studio-artist-count{
+    flex:0 0 auto;
+  }
+
+  .studio-portfolio-preview,
+  .studio-public-portfolio{
+    gap:6px;
+  }
+
+  .studio-portfolio-preview img{
+    height:auto;
+    aspect-ratio:1;
+  }
+
+  .studio-profile-hero{
+    gap:18px;
+    padding:22px 20px;
+    border-radius:20px;
+  }
+
+  .studio-section-heading{
+    gap:6px;
+    margin:24px 0 15px;
+  }
+
+  .studio-public-artist-card{
+    gap:15px;
+    padding:19px;
+  }
+
+  .studio-public-artist-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .studio-public-artist-actions button{
+    width:100%;
+  }
+
+  .artist-portfolio-hero{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .artist-portfolio-hero-actions{
+    width:100%;
+  }
+
+  .artist-portfolio-hero-actions > *{
+    flex:1 1 180px;
+  }
+}
+
+@media (max-width:480px){
+  .studio-card-topline{
+    flex-direction:column;
+  }
+
+  .studio-artist-count{
+    align-self:flex-start;
+  }
+
+  .studio-artist-preview-row{
+    gap:10px 14px;
+  }
+
+  .studio-public-artist-card{
+    padding:17px;
+  }
+
+  .studio-public-portfolio{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  .studio-public-portfolio img{
+    height:auto;
+    aspect-ratio:1;
+  }
+
+  .studio-public-artist-actions{
+    grid-template-columns:1fr;
+  }
+
+  .artist-portfolio-identity{
+    align-items:flex-start;
+  }
+
+  .artist-portfolio-hero-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .artist-portfolio-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+}
+
+@media (max-width:360px){
+  .studio-portfolio-preview{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .studio-portfolio-preview img:nth-child(3){
+    display:none;
+  }
+}
+
+/* ===== Tattoo requests, bookings and reviews — Step 06 ===== */
+.create-request-layout,
+.create-request-form,
+.create-request-artist-panel,
+.selection-section-head > div,
+.structured-request-card,
+.structured-request-modal,
+.calendar-layout,
+.calendar-card,
+.calendar-side-panel{
+  min-width:0;
+}
+
+.create-request-layout{
+  width:min(1320px,calc(100vw - var(--sidebar-width) - (var(--page-gutter) * 2)));
+  margin:0 auto;
+  grid-template-columns:280px minmax(0,1fr);
+}
+
+.create-request-artist-panel{
+  align-self:start;
+  position:sticky;
+  top:28px;
+}
+
+.create-request-form{
+  overflow:hidden;
+}
+
+.request-upload-zone{
+  width:100%;
+}
+
+.visual-carousel-card{
+  touch-action:pan-y;
+}
+
+.visual-carousel-card[aria-pressed="true"]{
+  border-color:#9778ff;
+}
+
+.structured-request-card .request-card-action{
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+}
+
+.request-detail-tabs{
+  scrollbar-width:thin;
+}
+
+.request-detail-image-button{
+  min-width:0;
+}
+
+.image-lightbox{
+  z-index:320;
+}
+
+.image-lightbox img{
+  max-width:min(1100px,100%);
+  max-height:calc(100dvh - 40px);
+  object-fit:contain;
+}
+
+.lightbox-close{
+  min-width:44px;
+  min-height:44px;
+}
+
+.booking-day,
+.booking-slot{
+  min-width:0;
+  min-height:48px;
+  overflow-wrap:anywhere;
+  touch-action:manipulation;
+}
+
+.review-form-card{
+  width:min(620px,100%);
+}
+
+.review-form-card > .form > .primary-button{
+  width:100%;
+}
+
+@media (max-width:1100px){
+  .create-request-layout{
+    width:min(760px,calc(100% - (var(--page-gutter) * 2)));
+    grid-template-columns:1fr;
+  }
+
+  .create-request-artist-panel{
+    position:static;
+  }
+}
+
+@media (max-width:700px){
+  .create-request-page{
+    display:block;
+    padding-right:0;
+    padding-left:0;
+  }
+
+  .create-request-layout{
+    width:calc(100% - (var(--page-gutter) * 2));
+  }
+
+  .create-request-artist-panel,
+  .create-request-form{
+    padding:20px;
+  }
+
+  .selection-section-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .selection-value{
+    max-width:100%;
+    overflow-wrap:anywhere;
+  }
+
+  .selector-carousel-track{
+    margin-right:-20px;
+    padding-right:20px;
+    scroll-padding-left:3px;
+    overscroll-behavior-inline:contain;
+  }
+
+  .visual-carousel-card{
+    flex-basis:clamp(154px,45vw,190px);
+  }
+
+  .visual-carousel-card img{
+    height:auto;
+    aspect-ratio:4/5;
+  }
+
+  .portfolio-manage-card{
+    min-width:0;
+  }
+
+  .structured-request-card .request-card-main{
+    padding:20px 20px 0;
+  }
+
+  .structured-request-card .request-card-action{
+    padding:16px 20px 20px;
+  }
+
+  .request-detail-tabs{
+    margin-right:-18px;
+    padding-right:18px;
+  }
+
+  .small-list-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .calendar-card,
+  .calendar-side-panel{
+    padding:20px;
+  }
+
+  .booking-day-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .booking-slot-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width:520px){
+  .structured-request-card .card-head{
+    flex-direction:column;
+  }
+
+  .structured-request-card .status-pill{
+    max-width:100%;
+  }
+
+  .structured-request-card .request-card-action{
+    grid-template-columns:1fr;
+  }
+
+  .structured-request-card .request-card-action .eyebrow-label,
+  .structured-request-card .request-card-action .next-action-note{
+    grid-column:1;
+  }
+
+  .client-project-tabs{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .client-project-tabs .filter-tab{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+  }
+
+  .request-image-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .booking-slot-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .review-page{
+    display:block;
+  }
+
+  .review-form-card{
+    padding:22px 19px;
+  }
+}
+
+@media (max-width:380px){
+  .create-request-artist-panel,
+  .create-request-form,
+  .calendar-card,
+  .calendar-side-panel{
+    padding:17px 15px;
+  }
+
+  .visual-carousel-card{
+    flex-basis:148px;
+  }
+
+  .booking-day-grid,
+  .booking-slot-grid{
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+  }
+
+  .booking-day,
+  .booking-slot{
+    padding:10px 7px;
+    font-size:12px;
+  }
+}
+
+/* ===== Artist studio and request workflow — Step 07 ===== */
+.studio-choice-grid,
+.studio-choice-card,
+.studio-workspace-hero > div,
+.owner-control-card,
+.studio-member-row,
+.studio-join-request-row,
+.artist-request-card,
+.artist-request-content,
+.artist-request-card .card-head > div,
+.request-detail-overview-grid,
+.request-detail-section,
+.request-contact-grid > div,
+.artist-action-card,
+.artist-session-fields{
+  min-width:0;
+}
+
+.studio-choice-card strong,
+.studio-choice-card span,
+.studio-workspace-hero h1,
+.studio-workspace-hero p,
+.studio-workspace-meta span,
+.studio-member-copy,
+.studio-join-request-row > div,
+.artist-request-card h2,
+.artist-request-card p,
+.request-detail-description,
+.request-contact-grid strong,
+.artist-action-card h1,
+.artist-action-card p{
+  overflow-wrap:anywhere;
+}
+
+.studio-choice-card,
+.join-studio-result{
+  touch-action:manipulation;
+}
+
+.studio-choice-card[aria-pressed="true"],
+.join-studio-result[aria-pressed="true"]{
+  border-color:rgba(151,124,255,.58);
+}
+
+.studio-tabs{
+  overflow-x:auto;
+  flex-wrap:nowrap;
+  scrollbar-width:thin;
+}
+
+.studio-tabs .filter-tab{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
+
+.studio-workspace-grid .dashboard-card{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:18px;
+}
+
+.studio-workspace-grid .dashboard-card .primary-button{
+  width:100%;
+}
+
+.artist-request-card .card-head{
+  min-width:0;
+}
+
+.artist-request-card-actions > button{
+  min-width:0;
+}
+
+.request-detail-action-row,
+.request-detail-action-row .action-row,
+.action-panel .action-row{
+  min-width:0;
+}
+
+.artist-action-card{
+  width:min(720px,100%);
+}
+
+.artist-action-card > .form > .primary-button{
+  width:100%;
+}
+
+.artist-session-fields .form-row{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.018);
+}
+
+@media (max-width:900px){
+  .studio-workspace-hero{
+    gap:18px;
+    padding:24px;
+  }
+
+  .owner-control-card{
+    width:100%;
+  }
+
+  .owner-control-card > button{
+    width:100%;
+  }
+
+  .studio-member-row,
+  .studio-join-request-row{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+
+  .studio-member-actions,
+  .studio-request-actions{
+    grid-column:1/-1;
+    justify-content:flex-end;
+  }
+
+  .artist-request-card{
+    max-width:760px;
+  }
+
+  .request-detail-overview-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media (max-width:700px){
+  .studio-workspace-hero,
+  .studio-members-section,
+  .studio-requests-section,
+  .studio-edit-section{
+    padding:20px;
+  }
+
+  .studio-workspace-meta{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .studio-workspace-meta span{
+    max-width:100%;
+  }
+
+  .studio-member-copy span{
+    white-space:normal;
+  }
+
+  .artist-request-card{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+
+  .artist-request-preview{
+    order:-1;
+    min-height:220px;
+    aspect-ratio:16/9;
+  }
+
+  .artist-request-card-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .artist-request-card-actions > button{
+    width:100%;
+  }
+
+  .request-detail-overview-grid{
+    gap:12px;
+  }
+
+  .request-detail-section,
+  .request-reference-section{
+    padding:19px;
+  }
+
+  .request-contact-grid{
+    grid-template-columns:1fr;
+  }
+
+  .request-detail-action-row .action-row,
+  .request-action-cluster{
+    display:grid;
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .request-detail-action-row button,
+  .action-panel .primary-button{
+    width:100%;
+  }
+
+  .artist-action-page{
+    display:block;
+  }
+
+  .artist-action-card{
+    padding:22px 20px;
+  }
+
+  .artist-action-card .action-row{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+
+  .artist-action-card .action-row > button{
+    width:100%;
+  }
+}
+
+@media (max-width:480px){
+  .studio-choice-card{
+    min-height:0;
+    padding:20px;
+  }
+
+  .studio-search-row .secondary-button,
+  .selected-studio-summary .primary-button{
+    width:100%;
+  }
+
+  .studio-member-row,
+  .studio-join-request-row{
+    align-items:start;
+    gap:12px;
+    padding:13px;
+  }
+
+  .studio-member-actions,
+  .studio-request-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+  }
+
+  .studio-member-actions > *,
+  .studio-request-actions > *{
+    width:100%;
+  }
+
+  .studio-edit-section .onboarding-section-head{
+    padding-right:0;
+  }
+
+  .studio-edit-section .onboarding-section-head .compact-button{
+    position:static;
+    width:100%;
+  }
+
+  .artist-request-card-actions{
+    grid-template-columns:1fr;
+  }
+
+  .request-reference-gallery{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+
+  .request-reference-button{
+    border-radius:12px;
+    aspect-ratio:1;
+  }
+
+  .request-reference-zoom{
+    display:none;
+  }
+
+  .artist-session-fields .form-row{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ===== Artist calendar and schedule — Step 08 ===== */
+.availability-layout,
+.availability-grid,
+.availability-grid > section,
+.availability-list-header > div,
+.unavailable-item > div,
+.schedule-builder-section,
+.schedule-builder-grid,
+.calendar-layout,
+.calendar-toolbar,
+.calendar-side-panel,
+.calendar-event-item,
+.calendar-event-item > div{
+  min-width:0;
+}
+
+.availability-layout{
+  display:block;
+}
+
+.availability-grid{
+  align-items:start;
+}
+
+.unavailable-dates,
+.unavailable-item .muted,
+.calendar-event-item strong,
+.calendar-event-item .muted,
+.calendar-closed-message{
+  overflow-wrap:anywhere;
+}
+
+.calendar-day,
+.filter-tab[aria-pressed]{
+  touch-action:manipulation;
+}
+
+.calendar-day[aria-pressed="true"]{
+  border-color:#8b6cff;
+}
+
+.calendar-event-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.calendar-event-item > a,
+.calendar-event-item > button{
+  flex:0 0 auto;
+}
+
+.calendar-side-panel > form .primary-button{
+  width:100%;
+}
+
+.schedule-builder-section > .action-row .primary-button{
+  min-width:180px;
+}
+
+@media (max-width:900px){
+  .availability-grid{
+    grid-template-columns:1fr;
+  }
+
+  .schedule-builder-section{
+    padding:24px;
+  }
+
+  .calendar-layout{
+    grid-template-columns:1fr;
+  }
+
+  .calendar-side-panel{
+    width:100%;
+  }
+}
+
+@media (max-width:700px){
+  .header-row{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .header-row > .action-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    width:100%;
+  }
+
+  .header-row > .action-row > *{
+    width:100%;
+  }
+
+  .availability-grid > .form-card{
+    padding:20px;
+  }
+
+  .availability-list-header{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .availability-list-header .secondary-button{
+    width:100%;
+  }
+
+  .unavailable-item{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .unavailable-item .danger-button{
+    width:100%;
+  }
+
+  .schedule-builder-section{
+    padding:20px 17px;
+  }
+
+  .schedule-builder-section > .action-row .primary-button{
+    width:100%;
+  }
+
+  .calendar-card,
+  .calendar-side-panel{
+    padding:19px 16px;
+  }
+
+  .calendar-toolbar{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) auto;
+  }
+
+  .calendar-toolbar h2{
+    margin:0;
+    font-size:clamp(18px,5vw,24px);
+    text-align:center;
+    overflow-wrap:anywhere;
+  }
+
+  .calendar-toolbar .secondary-button{
+    min-width:46px;
+    padding-inline:10px;
+    font-size:0;
+  }
+
+  .calendar-toolbar .secondary-button:first-child::after{
+    content:"‹";
+    font-size:24px;
+  }
+
+  .calendar-toolbar .secondary-button:last-child::after{
+    content:"›";
+    font-size:24px;
+  }
+
+  .calendar-legend{
+    justify-content:flex-start;
+    flex-wrap:wrap;
+  }
+
+  .calendar-day{
+    min-height:70px;
+  }
+
+  .calendar-event-item{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .calendar-event-item > a,
+  .calendar-event-item > button{
+    width:100%;
+  }
+
+  .calendar-side-panel .small-list-row{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .calendar-side-panel .small-list-row .danger-button{
+    width:100%;
+  }
+}
+
+@media (max-width:520px){
+  .header-row > .action-row{
+    grid-template-columns:1fr;
+  }
+
+  .calendar-card{
+    overflow-x:auto;
+  }
+
+  .calendar-weekdays,
+  .calendar-grid{
+    min-width:0;
+    gap:4px;
+  }
+
+  .calendar-weekdays{
+    font-size:10px;
+  }
+
+  .calendar-day{
+    min-height:58px;
+    padding:6px 4px;
+    border-radius:9px;
+  }
+
+  .calendar-day-number{
+    font-size:11px;
+  }
+
+  .calendar-event-dots{
+    gap:2px;
+  }
+
+  .calendar-event-dots .event-dot:nth-child(n+4){
+    display:none;
+  }
+
+  .event-more{
+    font-size:8px;
+  }
+
+  .schedule-day-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+
+@media (max-width:380px){
+  .studio-workspace-hero,
+  .studio-members-section,
+  .studio-requests-section,
+  .studio-edit-section,
+  .availability-grid > .form-card,
+  .artist-action-card{
+    padding-right:16px;
+    padding-left:16px;
+  }
+
+  .studio-member-actions,
+  .studio-request-actions{
+    grid-template-columns:1fr;
+  }
+
+  .request-reference-gallery{
+    grid-template-columns:1fr;
+  }
+
+  .calendar-card,
+  .calendar-side-panel{
+    padding-right:12px;
+    padding-left:12px;
+  }
+
+  .schedule-day-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+}
+
+/* ===== AI Studio workflow — Step 09 ===== */
+.ai-studio-hero,
+.ai-studio-hero > div,
+.ai-project-grid,
+.ai-project-card,
+.ai-project-card > div,
+.ai-create-shell,
+.ai-create-form,
+.ai-direction-card,
+.ai-create-fields,
+.ai-editor-topbar,
+.ai-editor-topbar > div,
+.ai-editor-layout,
+.ai-version-panel,
+.ai-version-list,
+.ai-version-list button,
+.ai-version-list button > span,
+.ai-canvas-panel,
+.ai-chat-panel,
+.ai-access-card{
+  min-width:0;
+}
+
+.ai-studio-hero h1,
+.ai-studio-hero p,
+.ai-project-card h3,
+.ai-project-card p,
+.ai-create-shell h1,
+.ai-create-shell p,
+.ai-direction-card h2,
+.ai-editor-topbar h1,
+.ai-lock-chips span,
+.ai-access-card strong,
+.ai-access-card small,
+.ai-version-list strong,
+.ai-version-list small,
+.ai-chat-panel h2,
+.ai-chat-panel p{
+  overflow-wrap:anywhere;
+}
+
+.ai-studio-hero > .primary-button,
+.ai-studio-hero > button{
+  position:relative;
+  z-index:1;
+}
+
+.ai-project-card{
+  min-height:100%;
+}
+
+.ai-project-card > div:last-child{
+  min-width:0;
+}
+
+.ai-reference-upload{
+  min-width:0;
+}
+
+.ai-reference-upload strong{
+  width:100%;
+}
+
+.ai-version-list button{
+  touch-action:manipulation;
+}
+
+.ai-version-list button[aria-pressed="true"]{
+  border-color:#8b6cff;
+}
+
+.ai-main-image{
+  touch-action:manipulation;
+}
+
+@media (min-width:1201px) and (max-width:1450px){
+  .ai-editor-layout{
+    grid-template-columns:220px minmax(0,1fr) 300px;
+  }
+
+  .ai-version-panel,
+  .ai-chat-panel{
+    padding:16px;
+  }
+
+  .ai-main-image img{
+    min-height:380px;
+  }
+}
+
+@media (max-width:1100px){
+  .ai-benefit-strip{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .ai-project-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width:900px){
+  .ai-studio-hero{
+    align-items:start;
+  }
+
+  .ai-studio-hero > .primary-button,
+  .ai-studio-hero > button{
+    width:100%;
+  }
+
+  .ai-editor-topbar{
+    align-items:stretch;
+  }
+
+  .ai-access-card{
+    width:100%;
+  }
+
+  .ai-editor-layout{
+    grid-template-columns:1fr;
+  }
+
+  .ai-version-panel{
+    order:2;
+  }
+
+  .ai-canvas-panel{
+    order:1;
+  }
+
+  .ai-chat-panel{
+    order:3;
+  }
+
+  .ai-version-list{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    max-height:none;
+  }
+
+  .ai-version-list button{
+    grid-template-columns:50px minmax(0,1fr);
+  }
+
+  .ai-version-list img{
+    width:50px;
+    height:50px;
+  }
+}
+
+@media (max-width:700px){
+  .ai-studio-hero{
+    gap:24px;
+    padding:25px 21px;
+    border-radius:22px;
+  }
+
+  .ai-studio-hero h1{
+    font-size:clamp(38px,12vw,52px);
+  }
+
+  .ai-studio-hero p{
+    font-size:15px;
+  }
+
+  .ai-benefit-strip{
+    margin:16px 0 32px;
+  }
+
+  .ai-benefit-strip span{
+    min-height:82px;
+    padding:15px;
+  }
+
+  .ai-project-grid{
+    grid-template-columns:1fr;
+  }
+
+  .ai-create-shell > .header{
+    padding:25px 21px;
+    border-radius:21px;
+  }
+
+  .ai-create-shell > .header:after{
+    right:20px;
+    font-size:110px;
+  }
+
+  .ai-direction-card,
+  .ai-create-page .carousel-section{
+    padding:20px;
+    border-radius:20px;
+  }
+
+  .ai-create-fields{
+    grid-template-columns:1fr;
+  }
+
+  .ai-create-page .selector-carousel-track{
+    margin-right:-20px;
+    padding-right:20px;
+  }
+
+  .ai-editor-topbar{
+    padding:20px;
+  }
+
+  .ai-editor-topbar h1{
+    font-size:clamp(31px,9vw,42px);
+  }
+
+  .ai-version-panel,
+  .ai-chat-panel,
+  .ai-canvas-panel{
+    padding:16px;
+    border-radius:19px;
+  }
+
+  .ai-version-list{
+    display:flex;
+    margin-right:-16px;
+    padding-right:16px;
+    overflow-x:auto;
+    flex-direction:row;
+    scroll-snap-type:x mandatory;
+  }
+
+  .ai-version-list button{
+    flex:0 0 210px;
+    scroll-snap-align:start;
+  }
+
+  .ai-main-image img{
+    min-height:0;
+    padding:6px;
+  }
+
+  .ai-canvas-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .ai-canvas-actions button{
+    width:100%;
+    min-width:0;
+  }
+
+  .ai-awaiting-card{
+    min-height:360px;
+    padding:30px 20px;
+  }
+}
+
+@media (max-width:480px){
+  .ai-benefit-strip{
+    grid-template-columns:1fr;
+  }
+
+  .ai-benefit-strip span{
+    min-height:0;
+  }
+
+  .ai-studio-page .section-heading{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .ai-direction-card,
+  .ai-create-page .carousel-section{
+    padding:18px 16px;
+  }
+
+  .ai-create-page .selector-carousel-track{
+    margin-right:-16px;
+    padding-right:16px;
+  }
+
+  .ai-reference-upload{
+    min-height:116px;
+  }
+
+  .ai-lock-chips{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .ai-lock-chips span{
+    max-width:100%;
+  }
+
+  .ai-canvas-actions{
+    grid-template-columns:1fr;
+  }
+
+  .ai-prompt-tips button{
+    width:100%;
+    text-align:left;
+  }
+}
+
+/* ===== Favorites, administration and final route audit — Step 10 ===== */
+.favorite-artists-grid,
+.favorite-artists-grid > *,
+.admin-hero,
+.admin-hero > div,
+.admin-stat-grid,
+.admin-stat-card,
+.admin-table-wrap,
+.admin-actions{
+  min-width:0;
+}
+
+.favorite-artists-grid{
+  align-items:stretch;
+}
+
+.favorite-artists-grid .artist-card-v2{
+  height:100%;
+}
+
+.admin-hero h1,
+.admin-hero p,
+.admin-stat-card span{
+  overflow-wrap:anywhere;
+}
+
+.admin-tabs{
+  max-width:100%;
+  overflow-x:auto;
+  padding-bottom:3px;
+  scrollbar-width:thin;
+}
+
+.admin-tabs button{
+  flex:0 0 auto;
+  white-space:nowrap;
+  touch-action:manipulation;
+}
+
+.admin-tabs button[aria-pressed="true"]{
+  background:rgba(139,108,255,.13);
+  border-color:rgba(139,108,255,.25);
+}
+
+.admin-table-wrap{
+  max-width:100%;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+.admin-table th:first-child,
+.admin-table td:first-child{
+  position:sticky;
+  left:0;
+  z-index:1;
+  background:#13131a;
+}
+
+@media (max-width:900px){
+  .favorite-artists-grid{
+    grid-template-columns:1fr;
+  }
+
+  .admin-hero{
+    align-items:flex-start;
+    gap:18px;
+  }
+
+  .admin-badge{
+    align-self:flex-start;
+  }
+}
+
+@media (max-width:700px){
+  .admin-hero{
+    padding:23px 20px;
+    border-radius:20px;
+  }
+
+  .admin-stat-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .admin-stat-card{
+    padding:15px 13px;
+  }
+
+  .admin-tabs{
+    margin-right:calc(var(--page-gutter) * -1);
+    padding-right:var(--page-gutter);
+  }
+
+  .admin-table{
+    min-width:760px;
+  }
+
+  .admin-table th,
+  .admin-table td{
+    padding:11px 12px;
+  }
+}
+
+@media (max-width:480px){
+  .favorite-artists-page .header h1{
+    font-size:clamp(30px,10vw,38px);
+  }
+
+  .admin-stat-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .admin-stat-card strong{
+    font-size:1.45rem;
+  }
+
+  .admin-stat-card span{
+    font-size:.7rem;
+  }
+}
+
+@media (max-width:360px){
+  .admin-stat-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ===== Final responsive QA and mobile readiness — Step 11 ===== */
+html{
+  width:100%;
+  min-width:320px;
+  min-height:100%;
+  overflow-x:hidden;
+  overflow-x:clip;
+  background:var(--bg);
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+}
+
+body,
+#root{
+  width:100%;
+  min-width:320px;
+  min-height:100%;
+}
+
+body{
+  overflow-x:hidden;
+  overflow-x:clip;
+}
+
+img,
+svg,
+video,
+canvas{
+  max-width:100%;
+}
+
+input,
+textarea,
+select,
+button{
+  max-width:100%;
+}
+
+:where(
+  a,
+  button,
+  input,
+  textarea,
+  select,
+  [tabindex]
+):focus-visible{
+  outline:2px solid #b79dff;
+  outline-offset:3px;
+}
+
+:where(.carousel-arrow,.icon-button,.heart-button,.lightbox-close,.portfolio-lightbox-close):focus-visible{
+  outline-offset:2px;
+}
+
+::selection{
+  background:rgba(151,124,255,.35);
+  color:#fff;
+}
+
+@supports (min-height:100dvh){
+  .page-shell{
+    min-height:100dvh;
+  }
+
+  .center-container{
+    min-height:calc(100dvh - 100px);
+  }
+}
+
+@media (hover:none) and (pointer:coarse){
+  .primary-button:hover,
+  .artist-card-v2:hover,
+  .ai-project-card:hover,
+  .visual-carousel-card:hover,
+  .studio-mode-card:hover,
+  .ai-reference-upload:hover{
+    transform:none;
+  }
+
+  .request-reference-button .request-reference-zoom,
+  .artist-mini-portfolio-zoom{
+    opacity:1;
+    transform:none;
+  }
+
+  button,
+  a,
+  label{
+    -webkit-tap-highlight-color:transparent;
+  }
+}
+
+@media (max-width:900px) and (orientation:landscape) and (max-height:520px){
+  .page-shell{
+    padding-top:calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 14px);
+    padding-bottom:calc(var(--mobile-bottom-nav-height) + env(safe-area-inset-bottom) + 16px);
+  }
+
+  .center-container{
+    display:block;
+    min-height:100dvh;
+    padding-top:calc(var(--mobile-topbar-height) + env(safe-area-inset-top) + 14px);
+  }
+
+  .modal-backdrop{
+    align-items:center;
+    padding-top:max(8px,env(safe-area-inset-top));
+  }
+
+  .modal-card,
+  .request-modal,
+  .structured-request-modal{
+    max-height:calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .hero-visual-panel{
+    min-height:300px;
+  }
+}
+
+@media (min-width:1800px){
+  .container,
+  .page-container{
+    max-width:1500px;
+  }
+
+  .page-shell{
+    padding-top:54px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{
+    scroll-behavior:auto;
+  }
+
+  *,
+  *::before,
+  *::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}

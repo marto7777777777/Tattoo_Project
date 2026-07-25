@@ -1,0 +1,13 @@
+{
+  "appId": "com.inkroute.app",
+  "appName": "InkRoute",
+  "webDir": "dist",
+  "backgroundColor": "#09090d",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#09090d",
+      "showSpinner": false
+    }
+  }
+}

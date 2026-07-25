@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
     token,
     user,
     roles,
-    isLoggedIn: Boolean(token),
+    isLoggedIn: Boolean(user),
     isClient: roles.includes("Client"),
     isArtist: roles.includes("TattooArtist"),
     isAdmin: roles.includes("Admin"),

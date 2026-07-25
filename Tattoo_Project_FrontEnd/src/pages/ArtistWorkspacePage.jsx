@@ -110,8 +110,8 @@ function ArtistWorkspacePage() {
         {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
         {pending ? <article className="card form-card pending-studio-card"><p className="subtitle inline-subtitle">Pending request</p><h2>{pending.studioName}</h2><p className="muted">Sent {new Date(pending.createdOn).toLocaleString()}</p><span className="status-badge status-pending">Pending</span></article> : <>
           <div className="studio-choice-grid">
-            <button type="button" className={`studio-choice-card ${noStudioMode === "create" ? "selected" : ""}`} onClick={() => { setNoStudioMode("create"); setSelectedStudio(null); }}><strong>Create My Studio</strong><span>Start a new studio and become its owner.</span></button>
-            <button type="button" className={`studio-choice-card ${noStudioMode === "join" ? "selected" : ""}`} onClick={() => setNoStudioMode("join")}><strong>Join Studio</strong><span>Find an existing studio and request to join.</span></button>
+            <button type="button" aria-pressed={noStudioMode === "create"} className={`studio-choice-card ${noStudioMode === "create" ? "selected" : ""}`} onClick={() => { setNoStudioMode("create"); setSelectedStudio(null); }}><strong>Create My Studio</strong><span>Start a new studio and become its owner.</span></button>
+            <button type="button" aria-pressed={noStudioMode === "join"} className={`studio-choice-card ${noStudioMode === "join" ? "selected" : ""}`} onClick={() => setNoStudioMode("join")}><strong>Join Studio</strong><span>Find an existing studio and request to join.</span></button>
           </div>
           {noStudioMode === "create" && <form className="card form-card artist-onboarding-form" onSubmit={createStudio}><div className="onboarding-section-head"><div><p className="subtitle inline-subtitle">New studio</p><h2>Studio Information</h2></div></div>
             <label>Studio name<input value={studioCreateForm.name} onChange={(e)=>setStudioCreateForm({...studioCreateForm,name:e.target.value})}/></label>
@@ -122,7 +122,7 @@ function ArtistWorkspacePage() {
             <button className="primary-button" type="submit">Create Studio</button></form>}
           {noStudioMode === "join" && <section className="card form-card artist-onboarding-form"><div className="onboarding-section-head"><div><p className="subtitle inline-subtitle">Existing studio</p><h2>Join Studio</h2></div></div>
             <div className="studio-search-row"><input placeholder="Search by studio name, city or country" value={joinQuery} onChange={(e)=>setJoinQuery(e.target.value)} onKeyDown={(e)=>{if(e.key==="Enter"){e.preventDefault();searchStudios();}}}/><button type="button" className="secondary-button" onClick={searchStudios}>Search</button></div>
-            <div className="join-studio-results">{joinResults.map((studio)=><button type="button" key={studio.id} className={`join-studio-result ${selectedStudio?.id===studio.id?"selected":""}`} onClick={()=>setSelectedStudio(studio)}><strong>{studio.name}</strong><span>{studio.city}, {studio.country}</span><small>{studio.description}</small></button>)}</div>
+            <div className="join-studio-results">{joinResults.map((studio)=><button type="button" key={studio.id} aria-pressed={selectedStudio?.id===studio.id} className={`join-studio-result ${selectedStudio?.id===studio.id?"selected":""}`} onClick={()=>setSelectedStudio(studio)}><strong>{studio.name}</strong><span>{studio.city}, {studio.country}</span><small>{studio.description}</small></button>)}</div>
             {selectedStudio && <div className="selected-studio-summary"><strong>{selectedStudio.name}</strong><span>{selectedStudio.address}</span><button type="button" className="primary-button" onClick={sendJoinRequest}>Send Join Request</button></div>}
           </section>}
         </>}

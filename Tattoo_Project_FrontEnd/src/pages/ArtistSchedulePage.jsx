@@ -401,6 +401,7 @@ function ArtistSchedulePage() {
               key={filter.value}
               className={`filter-tab ${eventFilter === filter.value ? "filter-tab-active" : ""}`}
               type="button"
+              aria-pressed={eventFilter === filter.value}
               onClick={() => setEventFilter(filter.value)}
             >
               {filter.label}
@@ -454,6 +455,7 @@ function ArtistSchedulePage() {
                     className={`calendar-day ${isCurrentMonth ? "" : "calendar-day-muted"} ${isSelected ? "calendar-day-selected" : ""} ${hasDayOff || isOutsideSchedule ? "calendar-day-off" : ""}`}
                     key={key}
                     type="button"
+                    aria-pressed={isSelected}
                     onClick={() => {
                       setSelectedDateKey(key);
                       setForm((current) => ({ ...current, date: key, endDate: key }));

@@ -94,9 +94,9 @@ function AdminPage() {
         {success && <p className="admin-success">{success}</p>}
 
         <div className="admin-tabs">
-          <button className={tab === "users" ? "active" : ""} onClick={() => setTab("users")}>Users & profiles</button>
-          <button className={tab === "requests" ? "active" : ""} onClick={() => setTab("requests")}>Tattoo requests</button>
-          <button className={tab === "ai" ? "active" : ""} onClick={() => setTab("ai")}>AI projects</button>
+          <button type="button" aria-pressed={tab === "users"} className={tab === "users" ? "active" : ""} onClick={() => setTab("users")}>Users & profiles</button>
+          <button type="button" aria-pressed={tab === "requests"} className={tab === "requests" ? "active" : ""} onClick={() => setTab("requests")}>Tattoo requests</button>
+          <button type="button" aria-pressed={tab === "ai"} className={tab === "ai" ? "active" : ""} onClick={() => setTab("ai")}>AI projects</button>
         </div>
 
         {tab === "users" && (

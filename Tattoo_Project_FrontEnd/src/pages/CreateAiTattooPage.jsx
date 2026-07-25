@@ -5,6 +5,8 @@ import {
   PLACEMENTS,
   TATTOO_STYLES,
 } from "../data/tattooOptions";
+import { useCarouselEdges } from "../hooks/useCarouselEdges";
+import { moveCarouselPage } from "../utils/carousel";
 
 function Selector({
   title,
@@ -13,26 +15,10 @@ function Selector({
   onChange,
   trackRef,
 }) {
+  const { canScrollLeft, canScrollRight } = useCarouselEdges(trackRef, items.length);
+
   const move = (direction) => {
-    const element = trackRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const card = element.querySelector(
-      ".visual-carousel-card"
-    );
-
-    if (card) {
-      element.scrollBy({
-        left:
-          direction *
-          (card.getBoundingClientRect().width + 12) *
-          3,
-        behavior: "smooth",
-      });
-    }
+    moveCarouselPage(trackRef.current, direction);
   };
 
   return (
@@ -52,13 +38,16 @@ function Selector({
       </div>
 
       <div className="selector-carousel-shell">
-        <button
-          className="carousel-arrow carousel-arrow-left"
-          onClick={() => move(-1)}
-          type="button"
-        >
-          ‹
-        </button>
+        {canScrollLeft && (
+          <button
+            className="carousel-arrow carousel-arrow-left"
+            onClick={() => move(-1)}
+            type="button"
+            aria-label={`Previous ${title} options`}
+          >
+            ‹
+          </button>
+        )}
 
         <div
           className="selector-carousel-track"
@@ -68,6 +57,7 @@ function Selector({
             <button
               type="button"
               key={item.value}
+              aria-pressed={value === item.value}
               className={`visual-carousel-card ${
                 value === item.value
                   ? "visual-option-selected"
@@ -81,13 +71,16 @@ function Selector({
           ))}
         </div>
 
-        <button
-          className="carousel-arrow carousel-arrow-right"
-          onClick={() => move(1)}
-          type="button"
-        >
-          ›
-        </button>
+        {canScrollRight && (
+          <button
+            className="carousel-arrow carousel-arrow-right"
+            onClick={() => move(1)}
+            type="button"
+            aria-label={`Next ${title} options`}
+          >
+            ›
+          </button>
+        )}
       </div>
     </section>
   );
@@ -141,7 +134,7 @@ function CreateAiTattooPage() {
   };
 
   return (
-    <main className="page-shell">
+    <main className="page-shell ai-create-page">
       <section className="container ai-create-shell">
         <div className="header">
           <p className="subtitle">

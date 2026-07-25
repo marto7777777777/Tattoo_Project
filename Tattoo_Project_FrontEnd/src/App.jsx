@@ -18,7 +18,7 @@ import CreateArtistResponsePage from "./pages/CreateArtistResponsePage";
 import CompleteConsultationPage from "./pages/CompleteConsultationPage";
 import AddMoreSessionsPage from "./pages/AddMoreSessionsPage";
 import CompleteTattooPage from "./pages/CompleteTattooPage";
-import FavoriteArtistsPage from "./pages/FavoriteArtistsPage";
+import FavoriteStudiosPage from "./pages/FavoriteStudiosPage";
 import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
 import ArtistRequestsPage from "./pages/ArtistRequestsPage";
 import ArtistSchedulePage from "./pages/ArtistSchedulePage";
@@ -29,10 +29,14 @@ import CreateAiTattooPage from "./pages/CreateAiTattooPage";
 import AiTattooProjectPage from "./pages/AiTattooProjectPage";
 import AdminPage from "./pages/AdminPage";
 import StudioProfilePage from "./pages/StudioProfilePage";
+import NativePlatformSetup from "./components/NativePlatformSetup";
+import NetworkStatus from "./components/NetworkStatus";
 
 function App() {
   return (
     <>
+      <NativePlatformSetup />
+      <NetworkStatus />
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -57,7 +61,7 @@ function App() {
         <Route path="/create-tattoo-request/:artistId?" element={<ProtectedRoute roles={["Client"]}><CreateTattooRequestPage /></ProtectedRoute>} />
         <Route path="/bookings" element={<ProtectedRoute roles={["Client"]}><MyTattooRequestsPage /></ProtectedRoute>} />
         <Route path="/my-requests" element={<Navigate to="/bookings" replace />} />
-        <Route path="/favorites" element={<ProtectedRoute roles={["Client"]}><FavoriteArtistsPage /></ProtectedRoute>} />
+        <Route path="/favorites" element={<ProtectedRoute roles={["Client"]}><FavoriteStudiosPage /></ProtectedRoute>} />
         <Route path="/review/:tattooRequestId" element={<ProtectedRoute roles={["Client"]}><CreateArtistReviewPage /></ProtectedRoute>} />
         <Route path="/book-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><CreateConsultationPage /></ProtectedRoute>} />
         <Route path="/book-session/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><BookTattooSessionPage /></ProtectedRoute>} />

@@ -223,7 +223,7 @@ public class AdminService(
             await DeleteTattooRequestGraphAsync(requestId);
 
         await context.ArtistReviews.Where(x => x.ClientId == clientId).ExecuteDeleteAsync();
-        await context.ClientFavoriteArtists.Where(x => x.ClientId == clientId).ExecuteDeleteAsync();
+        await context.ClientFavoriteStudios.Where(x => x.ClientId == clientId).ExecuteDeleteAsync();
 
         context.Clients.Remove(client);
         await context.SaveChangesAsync();
@@ -275,7 +275,6 @@ public class AdminService(
             await DeleteTattooRequestGraphAsync(requestId);
 
         await context.ArtistReviews.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
-        await context.ClientFavoriteArtists.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.ArtistUnavailableDates.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Schedules.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Set<ArtistRequirement>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();

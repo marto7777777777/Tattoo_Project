@@ -261,6 +261,7 @@ function AiTattooProjectPage() {
                 (version) => (
                   <button
                     type="button"
+                    aria-pressed={selected?.id === version.id}
                     className={
                       selected?.id === version.id
                         ? "active"

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { getMyProfile } from "../api/profileApi";
 import { useAuth } from "../context/AuthContext";
 import UserAvatar from "./UserAvatar";
@@ -16,15 +16,19 @@ const Icon = ({ name }) => {
     user: <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
     logout: <><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 19V5a2 2 0 0 0-2-2h-6"/></>,
     admin: <><path d="M12 3l7 3v5c0 4.6-2.8 8.4-7 10-4.2-1.6-7-5.4-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></>,
+    menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
+    close: <><path d="m6 6 12 12M18 6 6 18"/></>,
   };
   return <svg viewBox="0 0 24 24" aria-hidden="true">{paths[name]}</svg>;
 };
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const menuRef = useRef(null);
   const { isLoggedIn, isClient, isArtist, isAdmin, logout, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -42,17 +46,44 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mobileMenuOpen]);
+
   const displayName = profile?.firstName || user?.userName || user?.email || "User";
   const roleLabel = isAdmin ? "Administrator" : isArtist ? "Artist & Client" : isClient ? "Client" : "Member";
 
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
+    setMobileMenuOpen(false);
     navigate("/login");
   };
 
-  const navItem = (to, icon, label) => (
-    <NavLink to={to} className={({ isActive }) => `app-nav-link ${isActive ? "active" : ""}`}>
+  const navItem = (to, icon, label, onClick) => (
+    <NavLink
+      to={to}
+      onClick={onClick}
+      className={({ isActive }) => `app-nav-link ${isActive ? "active" : ""}`}
+    >
       <Icon name={icon} />
       <span>{label}</span>
     </NavLink>
@@ -73,7 +104,7 @@ function Navbar() {
           {isLoggedIn && navItem("/ai-studio", "ai", "AI Tattoo Studio")}
           {isAdmin && navItem("/admin", "admin", "Admin control")}
           {isClient && navItem("/bookings", "bookings", "My bookings")}
-          {isClient && navItem("/favorites", "heart", "Saved artists")}
+          {isClient && navItem("/favorites", "heart", "Saved studios")}
           {isArtist && navItem("/my-studio", "studio", "My studio")}
         </nav>
 
@@ -109,20 +140,100 @@ function Navbar() {
 
       <header className="mobile-app-bar">
         <NavLink className="mobile-brand" to="/"><span className="brand-mark">IR</span><strong>InkRoute</strong></NavLink>
-        {isLoggedIn ? (
-          <button className="mobile-avatar-button" onClick={() => navigate("/profile/user")}>
-            <UserAvatar firstName={profile?.firstName} lastName={profile?.lastName} email={profile?.email || user?.email} imageUrl={profile?.profileImageUrl} size="small" />
+        <div className="mobile-app-actions">
+          {isLoggedIn ? (
+            <button
+              type="button"
+              className="mobile-avatar-button"
+              aria-label="Open profile settings"
+              onClick={() => navigate("/profile/user")}
+            >
+              <UserAvatar firstName={profile?.firstName} lastName={profile?.lastName} email={profile?.email || user?.email} imageUrl={profile?.profileImageUrl} size="small" />
+            </button>
+          ) : <NavLink className="mobile-login" to="/login">Sign in</NavLink>}
+          <button
+            type="button"
+            className="mobile-menu-button"
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation-drawer"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            <Icon name={mobileMenuOpen ? "close" : "menu"} />
           </button>
-        ) : <NavLink className="mobile-login" to="/login">Sign in</NavLink>}
+        </div>
       </header>
+
+      {mobileMenuOpen && (
+        <div className="mobile-menu-layer">
+          <button
+            type="button"
+            className="mobile-menu-backdrop"
+            aria-label="Close navigation menu"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside id="mobile-navigation-drawer" className="mobile-menu-drawer" aria-label="Mobile navigation">
+            <div className="mobile-menu-heading">
+              <div>
+                <span className="eyebrow-label">Navigation</span>
+                <strong>InkRoute workspace</strong>
+              </div>
+              <button type="button" aria-label="Close navigation menu" onClick={() => setMobileMenuOpen(false)}>
+                <Icon name="close" />
+              </button>
+            </div>
+
+            {isLoggedIn && (
+              <button type="button" className="mobile-menu-profile" onClick={() => navigate("/profile/user")}>
+                <UserAvatar
+                  firstName={profile?.firstName || user?.userName}
+                  lastName={profile?.lastName}
+                  email={profile?.email || user?.email}
+                  imageUrl={profile?.profileImageUrl}
+                  size="medium"
+                />
+                <span><strong>{displayName}</strong><small>{roleLabel}</small></span>
+                <span aria-hidden="true">›</span>
+              </button>
+            )}
+
+            <nav className="mobile-menu-links">
+              {navItem("/", "home", "Overview")}
+              {navItem("/explore", "explore", "Discover studios")}
+              {isLoggedIn && navItem("/ai-studio", "ai", "AI Tattoo Studio")}
+              {isAdmin && navItem("/admin", "admin", "Admin control")}
+              {isClient && navItem("/bookings", "bookings", "My bookings")}
+              {isClient && navItem("/favorites", "heart", "Saved studios")}
+              {isArtist && navItem("/my-studio", "studio", "My studio")}
+            </nav>
+
+            <div className="mobile-menu-footer">
+              {!isLoggedIn ? (
+                <>
+                  <NavLink className="mobile-menu-primary" to="/register">Create account</NavLink>
+                  <NavLink className="mobile-menu-secondary" to="/login">Sign in</NavLink>
+                </>
+              ) : (
+                <button type="button" className="mobile-menu-logout" onClick={handleLogout}>
+                  <Icon name="logout" />
+                  Log out
+                </button>
+              )}
+            </div>
+          </aside>
+        </div>
+      )}
 
       <nav className="mobile-bottom-nav">
         {navItem("/", "home", "Home")}
         {navItem("/explore", "explore", "Explore")}
         {isLoggedIn && navItem("/ai-studio", "ai", "AI")}
-        {isAdmin && navItem("/admin", "admin", "Admin")}
-        {isClient && navItem("/bookings", "bookings", "Bookings")}
-        {isArtist ? navItem("/my-studio", "studio", "Studio") : isClient && navItem("/favorites", "heart", "Saved")}
+        {isAdmin
+          ? navItem("/admin", "admin", "Admin")
+          : isClient && navItem("/bookings", "bookings", "Bookings")}
+        {isArtist
+          ? navItem("/my-studio", "studio", "Studio")
+          : isClient && navItem("/favorites", "heart", "Saved")}
       </nav>
     </>
   );

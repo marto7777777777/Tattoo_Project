@@ -123,6 +123,7 @@ function BookingSlotPage() {
                 {availability.days?.map((day) => (
                   <button
                     className={`booking-day ${day.slots?.length ? "booking-day-available" : "booking-day-disabled"} ${selectedDate === day.date ? "booking-day-selected" : ""}`}
+                    aria-pressed={selectedDate === day.date}
                     type="button"
                     key={day.date}
                     disabled={!day.slots?.length}
@@ -148,6 +149,7 @@ function BookingSlotPage() {
                     <button
                       key={slot.startTime}
                       className={`booking-slot ${selectedSlot?.startTime === slot.startTime ? "booking-slot-selected" : ""}`}
+                      aria-pressed={selectedSlot?.startTime === slot.startTime}
                       type="button"
                       onClick={() => setSelectedSlot(slot)}
                     >

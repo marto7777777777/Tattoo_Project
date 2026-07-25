@@ -39,7 +39,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<ITattooSessionService, TattooSessionService>();
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IArtistReviewService, ArtistReviewService>();
-            builder.Services.AddScoped<IClientFavoriteArtistService, ClientFavoriteArtistService>();
+            builder.Services.AddScoped<IClientFavoriteStudioService, ClientFavoriteStudioService>();
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
@@ -91,7 +91,9 @@ namespace Tattoo_Project
                     policy
                         .WithOrigins(
                             "http://localhost:5173",
-                            "http://127.0.0.1:5173"
+                            "http://127.0.0.1:5173",
+                            "http://172.19.224.1:5173",
+                            "http://192.168.33.198:5173"
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod();

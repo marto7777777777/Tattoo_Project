@@ -3,6 +3,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTattooRequestWithImages } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
 import { getImageUrl } from "../utils/images";
+import { readStoredJson } from "../utils/storage";
+import { useCarouselEdges } from "../hooks/useCarouselEdges";
+import { moveCarouselPage } from "../utils/carousel";
 
 import outerForearmImage from "../assets/body-placements/outer-forearm.jpeg";
 import forearmImage from "../assets/body-placements/forearm.jpeg";
@@ -95,18 +98,11 @@ const TATTOO_STYLES = [
 ];
 
 function HorizontalSelector({ title, subtitle, value, children, scrollRef }) {
+  const itemCount = Array.isArray(children) ? children.length : 1;
+  const { canScrollLeft, canScrollRight } = useCarouselEdges(scrollRef, itemCount);
+
   function scroll(direction) {
-    const track = scrollRef.current;
-    if (!track) return;
-
-    const firstCard = track.querySelector(".visual-carousel-card");
-    if (!firstCard) return;
-
-    const styles = window.getComputedStyle(track);
-    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0");
-    const pageWidth = (firstCard.getBoundingClientRect().width + gap) * 3;
-
-    track.scrollBy({ left: direction * pageWidth, behavior: "smooth" });
+    moveCarouselPage(scrollRef.current, direction);
   }
 
   return (
@@ -116,9 +112,13 @@ function HorizontalSelector({ title, subtitle, value, children, scrollRef }) {
         <span className="selection-value">{value || "Choose one"}</span>
       </div>
       <div className="selector-carousel-shell">
-        <button className="carousel-arrow carousel-arrow-left" type="button" aria-label="Previous options" onClick={() => scroll(-1)}>‹</button>
+        {canScrollLeft && (
+          <button className="carousel-arrow carousel-arrow-left" type="button" aria-label="Previous options" onClick={() => scroll(-1)}>‹</button>
+        )}
         <div className="selector-carousel-track" ref={scrollRef}>{children}</div>
-        <button className="carousel-arrow carousel-arrow-right" type="button" aria-label="Next options" onClick={() => scroll(1)}>›</button>
+        {canScrollRight && (
+          <button className="carousel-arrow carousel-arrow-right" type="button" aria-label="Next options" onClick={() => scroll(1)}>›</button>
+        )}
       </div>
     </section>
   );
@@ -129,9 +129,9 @@ function CreateTattooRequestPage() {
   const params = useParams();
   const placementTrackRef = useRef(null);
   const styleTrackRef = useRef(null);
-  const storedArtist = JSON.parse(localStorage.getItem("selectedArtist") || "null");
+  const storedArtist = readStoredJson("selectedArtist");
   const artistId = params.artistId || storedArtist?.id || storedArtist?.tattooArtistId || "";
-  const aiReference = JSON.parse(localStorage.getItem("aiTattooReference") || "null");
+  const aiReference = readStoredJson("aiTattooReference");
   const [form, setForm] = useState({ description: aiReference?.description || "", placement: aiReference?.placement || "", tattooStyle: aiReference?.tattooStyle || "" });
   const [imageFiles, setImageFiles] = useState([]);
   const [error, setError] = useState("");
@@ -155,6 +155,10 @@ function CreateTattooRequestPage() {
     () => imageFiles.map((file) => ({ file, url: URL.createObjectURL(file) })),
     [imageFiles]
   );
+
+  useEffect(() => {
+    return () => previews.forEach((preview) => URL.revokeObjectURL(preview.url));
+  }, [previews]);
 
   function handleImagesChange(event) {
     const files = Array.from(event.target.files || []);
@@ -235,7 +239,7 @@ function CreateTattooRequestPage() {
           <form className="form" onSubmit={handleSubmit}>
             <HorizontalSelector title="Where do you want it?" subtitle="Placement" value={form.placement} scrollRef={placementTrackRef}>
               {PLACEMENTS.map((option) => (
-                <button key={option.value} type="button" className={`visual-carousel-card ${form.placement === option.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, placement: option.value }))}>
+                <button key={option.value} type="button" aria-pressed={form.placement === option.value} className={`visual-carousel-card ${form.placement === option.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, placement: option.value }))}>
                   <img src={option.image} alt={option.value} loading="lazy" />
                   <span>{option.value}</span>
                 </button>
@@ -244,7 +248,7 @@ function CreateTattooRequestPage() {
 
             <HorizontalSelector title="Pick a style" subtitle="Tattoo style" value={form.tattooStyle} scrollRef={styleTrackRef}>
               {TATTOO_STYLES.map((style) => (
-                <button key={style.value} type="button" className={`visual-carousel-card ${form.tattooStyle === style.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, tattooStyle: style.value }))}>
+                <button key={style.value} type="button" aria-pressed={form.tattooStyle === style.value} className={`visual-carousel-card ${form.tattooStyle === style.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, tattooStyle: style.value }))}>
                   <img src={style.image} alt={style.value} loading="lazy" />
                   <span>{style.value}</span>
                 </button>

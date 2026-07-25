@@ -59,8 +59,8 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="card form-card">
+    <main className="center-container auth-page">
+      <section className="card form-card auth-card">
         <div className="header">
           <p className="subtitle">Account recovery</p>
           <h1>Forgot password</h1>
@@ -73,7 +73,7 @@ function ForgotPasswordPage() {
 
         {step === "email" && (
           <form className="form" onSubmit={handleSendCode}>
-            <div className="form-group"><label>Email</label><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
+            <div className="form-group"><label>Email</label><input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
             {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Sending..." : "Send code"}</button>
           </form>
@@ -83,7 +83,7 @@ function ForgotPasswordPage() {
           <form className="form" onSubmit={handleVerifyCode}>
             <div className="form-group">
               <label>Verification code</label>
-              <input value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" maxLength="6" placeholder="123456" />
+              <input className="verification-code-input" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" maxLength="6" placeholder="123456" />
             </div>
             {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting || code.length !== 6}>{isSubmitting ? "Verifying..." : "Verify code"}</button>
@@ -93,8 +93,8 @@ function ForgotPasswordPage() {
 
         {step === "password" && (
           <form className="form" onSubmit={handleResetPassword}>
-            <div className="form-group"><label>New password</label><input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} /></div>
-            <div className="form-group"><label>Confirm new password</label><input type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} /></div>
+            <div className="form-group"><label>New password</label><input type="password" autoComplete="new-password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} /></div>
+            <div className="form-group"><label>Confirm new password</label><input type="password" autoComplete="new-password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} /></div>
             {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Saving..." : "Change password"}</button>
           </form>

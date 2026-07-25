@@ -390,6 +390,7 @@ function ArtistRequestsPage() {
               key={filter.value}
               className={`filter-tab ${activeFilter === filter.value ? "filter-tab-active" : ""}`}
               type="button"
+              aria-pressed={activeFilter === filter.value}
               onClick={() => setActiveFilter(filter.value)}
             >
               {filter.label}

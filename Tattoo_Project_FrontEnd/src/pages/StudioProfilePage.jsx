@@ -4,6 +4,8 @@ import { getMyStudio, getStudioById } from "../api/studioApi";
 import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../utils/images";
+import { addFavoriteStudio, getMyFavoriteStudios, removeFavoriteStudio } from "../api/favoriteStudioApi";
+import { readResponse } from "../api/http";
 
 function StudioProfilePage() {
   const { studioId } = useParams();
@@ -12,6 +14,8 @@ function StudioProfilePage() {
   const [studio, setStudio] = useState(null);
   const [error, setError] = useState("");
   const [isMyStudio, setIsMyStudio] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [favoriteBusy, setFavoriteBusy] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -27,6 +31,33 @@ function StudioProfilePage() {
       .then((data) => setIsMyStudio(Boolean(data?.hasStudio && Number(data.studio?.id) === Number(studioId))))
       .catch(() => setIsMyStudio(false));
   }, [isArtist, studioId]);
+
+  useEffect(() => {
+    if (!isClient) { setIsFavorite(false); return; }
+    getMyFavoriteStudios()
+      .then(async (response) => {
+        const data = await readResponse(response);
+        if (response.ok) setIsFavorite((data || []).some((item) => Number(item.id) === Number(studioId)));
+      })
+      .catch(() => setIsFavorite(false));
+  }, [isClient, studioId]);
+
+  async function toggleFavorite() {
+    if (!isLoggedIn) return navigate("/login");
+    if (!isClient) return navigate("/create-client-profile?profileRequired=1");
+    setFavoriteBusy(true);
+    setError("");
+    try {
+      const response = await (isFavorite ? removeFavoriteStudio(studioId) : addFavoriteStudio(studioId));
+      const data = await readResponse(response);
+      if (!response.ok) throw new Error(typeof data === "string" ? data : "Could not update favorites.");
+      setIsFavorite((current) => !current);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setFavoriteBusy(false);
+    }
+  }
 
   function enrichArtist(artist) {
     return {
@@ -55,7 +86,18 @@ function StudioProfilePage() {
   return (
     <main className="page-shell">
       <section className="container">
-        <div className="studio-profile-hero">
+        <div className={`studio-profile-hero ${!isMyStudio ? "has-favorite-action" : ""}`}>
+          {!isMyStudio && (
+            <button
+              className={`heart-button studio-heart-button studio-profile-favorite ${isFavorite ? "heart-active" : ""}`}
+              type="button"
+              disabled={favoriteBusy}
+              aria-label={isFavorite ? "Remove studio from favorites" : "Add studio to favorites"}
+              onClick={toggleFavorite}
+            >
+              {isFavorite ? "♥" : "♡"}
+            </button>
+          )}
           <div>
             <p className="subtitle">Studio profile</p>
             <h1>{studio.name}</h1>

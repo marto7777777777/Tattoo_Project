@@ -121,6 +121,7 @@ export function WeeklyScheduleBuilder({ value, onChange }) {
                 className={`schedule-day-chip ${active ? "active" : ""}`}
                 onClick={() => toggleDay(kind, block.id, day.value)}
                 title={day.label}
+                aria-pressed={active}
               >
                 <span>{day.short}</span>
                 <small>{active ? "On" : "Off"}</small>

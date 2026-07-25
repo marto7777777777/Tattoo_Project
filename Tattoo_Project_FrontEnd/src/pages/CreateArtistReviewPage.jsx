@@ -38,8 +38,8 @@ function CreateArtistReviewPage() {
   }
 
   return (
-    <main className="center-container">
-      <section className="card form-card">
+    <main className="center-container review-page">
+      <section className="card form-card review-form-card">
         <div className="header">
           <p className="subtitle">Artist Review</p>
           <h1>Rate your completed tattoo</h1>

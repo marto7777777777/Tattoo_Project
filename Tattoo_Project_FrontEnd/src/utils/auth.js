@@ -11,7 +11,13 @@ export function decodeJwt(token) {
         .join("")
     );
 
-    return JSON.parse(jsonPayload);
+    const payload = JSON.parse(jsonPayload);
+
+    if (payload.exp && Number(payload.exp) * 1000 <= Date.now()) {
+      return null;
+    }
+
+    return payload;
   } catch {
     return null;
   }
