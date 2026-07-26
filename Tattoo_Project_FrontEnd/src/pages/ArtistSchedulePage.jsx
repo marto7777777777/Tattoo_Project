@@ -9,7 +9,7 @@ import {
 } from "../api/artistUnavailableDateApi";
 import { getMyArtistTattooRequests } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
-import { formatDateTime, getStatusClass, getStatusName } from "../utils/format";
+import { getStatusClass, getStatusName } from "../utils/format";
 import { WeeklyScheduleBuilder } from "../components/WeeklyScheduleBuilder";
 
 const EVENT_FILTERS = [
@@ -75,17 +75,131 @@ function getEventDateKey(value) {
   return toDateKey(new Date(value));
 }
 
-function getEventTimeRange(start, end) {
+function isValidDate(date) {
+  return date instanceof Date && !Number.isNaN(date.getTime());
+}
+
+function resolveEventEndTime(start, end, duration, durationUnit = "minutes") {
   const startDate = new Date(start);
   const endDate = new Date(end);
 
-  return `${startDate.toLocaleTimeString([], {
+  if (isValidDate(endDate) && endDate > startDate) {
+    return end;
+  }
+
+  const numericDuration = Number(duration);
+  if (!isValidDate(startDate) || !Number.isFinite(numericDuration) || numericDuration <= 0) {
+    return null;
+  }
+
+  const durationInMilliseconds = numericDuration
+    * (durationUnit === "hours" ? 60 : 1)
+    * 60
+    * 1000;
+
+  return new Date(startDate.getTime() + durationInMilliseconds).toISOString();
+}
+
+function formatTime(value) {
+  const date = new Date(value);
+  if (!isValidDate(date)) return "";
+
+  return date.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
-  })} - ${endDate.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
+  });
+}
+
+function getEventTimeRange(start, end) {
+  const startLabel = formatTime(start);
+  const endLabel = formatTime(end);
+
+  if (!startLabel) return "Time unavailable";
+  return endLabel ? `${startLabel} – ${endLabel}` : `Starts at ${startLabel}`;
+}
+
+function isStartOfDay(date) {
+  return date.getHours() === 0
+    && date.getMinutes() === 0
+    && date.getSeconds() === 0
+    && date.getMilliseconds() === 0;
+}
+
+function formatCalendarDate(date) {
+  return date.toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function formatDateInputValue(value) {
+  if (!value) return "Choose date";
+  const date = new Date(`${value}T00:00:00`);
+  return isValidDate(date) ? formatCalendarDate(date) : "Choose date";
+}
+
+function formatTimeInputValue(value) {
+  if (!value) return "Choose time";
+  const [hours, minutes] = String(value).split(":");
+  return `${String(hours || "00").padStart(2, "0")}:${String(minutes || "00").padStart(2, "0")}`;
+}
+
+function periodBlocksEntireDay(period, dateKey) {
+  const periodStart = new Date(period.startDateTime);
+  const periodEnd = new Date(period.endDateTime);
+  const dayStart = new Date(`${dateKey}T00:00:00`);
+  const dayEnd = new Date(dayStart);
+  dayEnd.setDate(dayEnd.getDate() + 1);
+
+  return isValidDate(periodStart)
+    && isValidDate(periodEnd)
+    && periodStart <= dayStart
+    && periodEnd >= dayEnd;
+}
+
+function describeUnavailablePeriod(period) {
+  const start = new Date(period.startDateTime);
+  const end = new Date(period.endDateTime);
+
+  if (!isValidDate(start) || !isValidDate(end) || end <= start) {
+    return {
+      typeLabel: "Unavailable",
+      title: "Unavailable period",
+      detail: "Date information unavailable",
+      blocksFullDay: false,
+    };
+  }
+
+  if (isStartOfDay(start) && isStartOfDay(end)) {
+    const lastIncludedDay = new Date(end);
+    lastIncludedDay.setMilliseconds(-1);
+    const isSingleDay = toDateKey(start) === toDateKey(lastIncludedDay);
+
+    return isSingleDay
+      ? {
+        typeLabel: "Full day",
+        title: formatCalendarDate(start),
+        detail: "Unavailable all day",
+        blocksFullDay: true,
+      }
+      : {
+        typeLabel: "Date range",
+        title: `${formatCalendarDate(start)} – ${formatCalendarDate(lastIncludedDay)}`,
+        detail: `${Math.round((end - start) / 86400000)} days unavailable`,
+        blocksFullDay: true,
+      };
+  }
+
+  const sameDay = toDateKey(start) === toDateKey(end);
+  return {
+    typeLabel: "Hourly break",
+    title: sameDay
+      ? formatCalendarDate(start)
+      : `${formatCalendarDate(start)} – ${formatCalendarDate(end)}`,
+    detail: `${formatTime(start)} – ${formatTime(end)}`,
+    blocksFullDay: false,
+  };
 }
 
 function eventMatchesFilter(event, filter) {
@@ -137,24 +251,37 @@ function ArtistSchedulePage() {
 
     requests.forEach((request) => {
       if (request.consultation) {
+        const consultationEndTime = resolveEventEndTime(
+          request.consultation.startTime,
+          request.consultation.endTime,
+          profile?.artist?.consultationDurationMinutes || 30,
+        );
+
         addEvent(getEventDateKey(request.consultation.startTime), {
           type: "consultation",
           label: "Consultation",
           title: request.placement || "Consultation",
           startTime: request.consultation.startTime,
-          endTime: request.consultation.endTime,
+          endTime: consultationEndTime,
           requestId: request.id,
           request,
         });
       }
 
       request.tattooSessions?.forEach((session, index) => {
+        const sessionEndTime = resolveEventEndTime(
+          session.startTime,
+          session.endTime,
+          session.durationHours,
+          "hours",
+        );
+
         addEvent(getEventDateKey(session.startTime), {
           type: "tattoo-session",
           label: "Tattoo session",
           title: `${request.placement || "Tattoo session"} · Session ${index + 1}`,
           startTime: session.startTime,
-          endTime: session.endTime,
+          endTime: sessionEndTime,
           requestId: request.id,
           request,
         });
@@ -165,6 +292,7 @@ function ArtistSchedulePage() {
       const start = new Date(period.startDateTime);
       const end = new Date(period.endDateTime);
       const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+      const description = describeUnavailablePeriod(period);
 
       // EndDateTime is an exclusive boundary. A full day saved as
       // 15 Jul 00:00 -> 16 Jul 00:00 must therefore mark only 15 July.
@@ -173,11 +301,13 @@ function ArtistSchedulePage() {
       while (cursor < end) {
         addEvent(toDateKey(cursor), {
           type: "unavailable",
-          label: "Day off",
-          title: "Unavailable",
+          label: description.typeLabel,
+          title: description.title,
+          timeLabel: description.detail,
           startTime: period.startDateTime,
           endTime: period.endDateTime,
           unavailableId: period.id,
+          blocksFullDay: description.blocksFullDay,
         });
         cursor.setDate(cursor.getDate() + 1);
       }
@@ -188,7 +318,7 @@ function ArtistSchedulePage() {
     });
 
     return result;
-  }, [requests, unavailableDates]);
+  }, [requests, unavailableDates, profile]);
 
   const eventsByDate = useMemo(() => {
     const result = {};
@@ -431,7 +561,7 @@ function ArtistSchedulePage() {
             <div className="calendar-legend">
               <span><i className="event-dot event-consultation" /> Consultation</span>
               <span><i className="event-dot event-tattoo-session" /> Tattoo session</span>
-              <span><i className="event-dot event-unavailable" /> Day off</span>
+              <span><i className="event-dot event-unavailable" /> Day off / break</span>
             </div>
 
             <div className="calendar-weekdays">
@@ -450,12 +580,13 @@ function ArtistSchedulePage() {
                 const events = eventsByDate[key] || [];
                 const isCurrentMonth = day.getMonth() === monthDate.getMonth();
                 const isSelected = key === selectedDateKey;
-                const hasDayOff = events.some((event) => event.type === "unavailable");
+                const hasFullDayOff = unavailableDates.some((period) => periodBlocksEntireDay(period, key));
                 const isOutsideSchedule = Boolean(profile?.artist) && !scheduledWeekdays.has(day.getDay());
+                const isEntireDayUnavailable = hasFullDayOff || isOutsideSchedule;
 
                 return (
                   <button
-                    className={`calendar-day ${isCurrentMonth ? "" : "calendar-day-muted"} ${isSelected ? "calendar-day-selected" : ""} ${hasDayOff || isOutsideSchedule ? "calendar-day-off" : ""}`}
+                    className={`calendar-day ${isCurrentMonth ? "" : "calendar-day-muted"} ${isSelected ? "calendar-day-selected" : ""} ${isEntireDayUnavailable ? "calendar-day-off" : ""}`}
                     key={key}
                     type="button"
                     aria-pressed={isSelected}
@@ -464,7 +595,10 @@ function ArtistSchedulePage() {
                       setForm((current) => ({ ...current, date: key, endDate: key }));
                     }}
                   >
-                    <span className="calendar-day-number">{day.getDate()}</span>
+                    <span className="calendar-day-top">
+                      <span className="calendar-day-number">{day.getDate()}</span>
+                      {isEntireDayUnavailable && <span className="calendar-day-off-label">OFF</span>}
+                    </span>
                     <div className="calendar-event-dots">
                       {events.slice(0, 4).map((event, index) => (
                         <span className={`event-dot event-${event.type}`} key={`${event.type}-${index}`} />
@@ -491,7 +625,7 @@ function ArtistSchedulePage() {
                     <div>
                       <p className="subtitle inline-subtitle">{event.label}</p>
                       <strong>{event.title}</strong>
-                      <p className="muted">{getEventTimeRange(event.startTime, event.endTime)}</p>
+                      <p className="muted">{event.timeLabel || getEventTimeRange(event.startTime, event.endTime)}</p>
                       {event.request && (
                         <span className={`status-pill ${getStatusClass(event.request.status)}`}>
                           {getStatusName(event.request.status)}
@@ -529,13 +663,29 @@ function ArtistSchedulePage() {
 
               <div className="form-group">
                 <label>Start date</label>
-                <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
+                <div className="calendar-picker-shell">
+                  <span>{formatDateInputValue(form.date)}</span>
+                  <input
+                    aria-label="Start date"
+                    type="date"
+                    value={form.date}
+                    onChange={(event) => setForm({ ...form, date: event.target.value })}
+                  />
+                </div>
               </div>
 
               {mode === "date-range" && (
                 <div className="form-group">
                   <label>End date</label>
-                  <input type="date" value={form.endDate} onChange={(event) => setForm({ ...form, endDate: event.target.value })} />
+                  <div className="calendar-picker-shell">
+                    <span>{formatDateInputValue(form.endDate)}</span>
+                    <input
+                      aria-label="End date"
+                      type="date"
+                      value={form.endDate}
+                      onChange={(event) => setForm({ ...form, endDate: event.target.value })}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -543,11 +693,27 @@ function ArtistSchedulePage() {
                 <div className="form-row">
                   <div className="form-group">
                     <label>Start time</label>
-                    <input type="time" value={form.startTime} onChange={(event) => setForm({ ...form, startTime: event.target.value })} />
+                    <div className="calendar-picker-shell">
+                      <span>{formatTimeInputValue(form.startTime)}</span>
+                      <input
+                        aria-label="Start time"
+                        type="time"
+                        value={form.startTime}
+                        onChange={(event) => setForm({ ...form, startTime: event.target.value })}
+                      />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label>End time</label>
-                    <input type="time" value={form.endTime} onChange={(event) => setForm({ ...form, endTime: event.target.value })} />
+                    <div className="calendar-picker-shell">
+                      <span>{formatTimeInputValue(form.endTime)}</span>
+                      <input
+                        aria-label="End time"
+                        type="time"
+                        value={form.endTime}
+                        onChange={(event) => setForm({ ...form, endTime: event.target.value })}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -558,14 +724,20 @@ function ArtistSchedulePage() {
             <div className="section">
               <h3>Days off and breaks</h3>
               {unavailableDates.length === 0 && <p className="muted">No days off yet.</p>}
-              <div className="small-list">
-                {unavailableDates.map((period) => (
-                  <div className="small-list-row" key={period.id}>
-                    <span>{formatDateTime(period.startDateTime)}</span>
-                    <span>{formatDateTime(period.endDateTime)}</span>
-                    <button className="danger-button compact-button" type="button" onClick={() => handleDeleteUnavailable(period.id)}>Delete</button>
-                  </div>
-                ))}
+              <div className="unavailable-period-list">
+                {unavailableDates.map((period) => {
+                  const description = describeUnavailablePeriod(period);
+                  return (
+                    <article className="unavailable-period-card" key={period.id}>
+                      <div className="unavailable-period-copy">
+                        <span className="unavailable-period-type">{description.typeLabel}</span>
+                        <strong>{description.title}</strong>
+                        <span className="muted">{description.detail}</span>
+                      </div>
+                      <button className="danger-button compact-button" type="button" onClick={() => handleDeleteUnavailable(period.id)}>Delete</button>
+                    </article>
+                  );
+                })}
               </div>
             </div>
           </aside>

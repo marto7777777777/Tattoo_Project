@@ -114,6 +114,7 @@ function ArtistRequestsPage() {
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [requestTab, setRequestTab] = useState("overview");
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeAction, setActiveAction] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -197,6 +198,7 @@ function ArtistRequestsPage() {
 
   function openRequest(request) {
     setSelectedRequest(request);
+    setRequestTab("overview");
     setActiveAction("");
     setError("");
     setSuccess("");
@@ -500,142 +502,95 @@ function ArtistRequestsPage() {
 
       {selectedRequest && (
         <div className="modal-backdrop" onClick={closeRequest}>
-          <section className="modal-card request-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-head">
-              <div>
-                <p className="subtitle">{getWorkflowStep(selectedRequest)}</p>
-                <h2>{getRequestTitle(selectedRequest)}</h2>
+          <section className="modal-card request-modal structured-request-modal request-project-modal artist-request-project-modal" onClick={(event) => event.stopPropagation()}>
+            <header className="request-project-hero">
+              <div className="request-project-hero-top">
+                <span className={`status-pill ${getStatusClass(selectedRequest.status)}`}>
+                  {getStatusName(selectedRequest.status)}
+                </span>
+                <button className="icon-button request-project-close" type="button" onClick={closeRequest} aria-label="Close request">×</button>
               </div>
-              <button className="icon-button" type="button" onClick={closeRequest}>×</button>
-            </div>
-
-            <span className={`status-pill ${getStatusClass(selectedRequest.status)}`}>
-              {getStatusName(selectedRequest.status)}
-            </span>
-
-            <div className="section workflow-section">
-              <h3>Project progress</h3>
-              <RequestWorkflowTimeline request={selectedRequest} />
-            </div>
-
-            <div className="request-detail-overview-grid">
-              <section className="request-detail-section request-detail-summary-card">
-                <div className="request-detail-section-head">
-                  <div>
-                    <p className="request-detail-kicker">Project brief</p>
-                    <h3>Request details</h3>
-                  </div>
-                </div>
-                <p className="request-detail-description">{selectedRequest.description}</p>
-                <div className="request-detail-stat-grid">
-                  <div><span>Placement</span><strong>{selectedRequest.placement}</strong></div>
-                  <div><span>Style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
-                  <div><span>Created</span><strong>{formatDate(selectedRequest.createdOn)}</strong></div>
-                </div>
-                <div className="request-detail-timing">{renderRequestTiming(selectedRequest)}</div>
-              </section>
-
-              <section className="request-detail-section request-detail-client-card">
-                <div className="request-detail-section-head">
-                  <div>
-                    <p className="request-detail-kicker">Client</p>
-                    <h3>Contact information</h3>
-                  </div>
-                </div>
-                <div className="request-contact-grid">
-                  <div><span>Name</span><strong>{selectedRequest.clientName || "Not provided"}</strong></div>
-                  <div><span>Email</span><strong>{selectedRequest.clientEmail || "Not provided"}</strong></div>
-                  <div><span>Phone</span><strong>{selectedRequest.clientPhoneNumber || "Not provided"}</strong></div>
-                  <div><span>Location</span><strong>{[selectedRequest.clientCity, selectedRequest.clientCountry].filter(Boolean).join(", ") || "Not provided"}</strong></div>
-                </div>
-              </section>
-            </div>
-
-            {selectedRequest.images?.length > 0 && (
-              <section className="request-detail-section request-reference-section">
-                <div className="request-detail-section-head">
-                  <div>
-                    <p className="request-detail-kicker">Visual direction</p>
-                    <h3>Reference images</h3>
-                  </div>
-                  <span className="request-image-count">{selectedRequest.images.length} image{selectedRequest.images.length === 1 ? "" : "s"}</span>
-                </div>
-                <p className="request-detail-helper">Click an image to inspect it in full size.</p>
-                <div className="request-reference-gallery">
-                  {selectedRequest.images.map((image, index) => (
-                    <button
-                      className="request-reference-button"
-                      type="button"
-                      key={index}
-                      onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}
-                      aria-label={`Open reference image ${index + 1}`}
-                    >
-                      <img src={getImageUrl(image.imageUrl)} alt={`Tattoo reference ${index + 1}`} />
-                      <span className="request-reference-zoom">View full size</span>
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {selectedRequest.artistResponse && (
-              <div className="section highlighted">
-                <h3>Artist response</h3>
-                <p className="muted">{selectedRequest.artistResponse.responseMessage}</p>
-                <div className="small-list-row">
-                  <span>{selectedRequest.artistResponse.estimatedPrice} BGN</span>
-                  <span>{selectedRequest.artistResponse.estimatedHours} hours</span>
-                  <span>{formatDate(selectedRequest.artistResponse.createdOn)}</span>
-                </div>
+              <p className="request-project-kicker">{getWorkflowStep(selectedRequest)}</p>
+              <h2>{getRequestTitle(selectedRequest)}</h2>
+              <p className="request-project-description">{selectedRequest.description}</p>
+              <div className="request-project-meta">
+                <div><span>Client</span><strong>{selectedRequest.clientName || "Not provided"}</strong></div>
+                <div><span>Placement</span><strong>{selectedRequest.placement || "Not provided"}</strong></div>
+                <div><span>Style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
+                <div><span>Created</span><strong>{formatDate(selectedRequest.createdOn)}</strong></div>
               </div>
-            )}
+            </header>
 
-            {selectedRequest.consultation && (
-              <div className="section">
-                <h3>Consultation</h3>
-                <div className="info-list">
-                  <p><span>Start:</span> {formatDateTime(selectedRequest.consultation.startTime)}</p>
-                  <p><span>End:</span> {formatDateTime(selectedRequest.consultation.endTime)}</p>
-                  <p><span>Notes:</span> {selectedRequest.consultation.notes || "No notes"}</p>
-                </div>
-              </div>
-            )}
+            <nav className="request-detail-tabs request-project-tabs" aria-label="Request sections">
+              {[
+                { value: "overview", icon: "⌂", label: "Overview" },
+                { value: "progress", icon: "✓", label: "Progress" },
+                { value: "appointments", icon: "◷", label: "Appointments" },
+                { value: "images", icon: "◇", label: "Images" },
+              ].map((tab) => (
+                <button key={tab.value} type="button" className={`request-detail-tab ${requestTab === tab.value ? "request-detail-tab-active" : ""}`} onClick={() => setRequestTab(tab.value)}>
+                  <span aria-hidden="true">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
 
-            {selectedRequest.tattooSessions?.length > 0 && (
-              <div className="section">
-                <h3>Tattoo sessions</h3>
-                <div className="small-list">
-                  {selectedRequest.tattooSessions.map((session, index) => (
-                    <div className="small-list-row" key={index}>
-                      <span>Session {index + 1}</span>
-                      <span>{formatDateTime(session.startTime)} - {formatTime(session.endTime)}</span>
-                      <span>{session.priceForTheSession} BGN</span>
+            {requestTab === "overview" && (
+              <div className="request-detail-panel request-project-content">
+                <div className="request-project-overview-grid">
+                  <section className="request-project-brief">
+                    <p className="request-project-section-label">Client brief</p>
+                    <h3>Project direction</h3>
+                    <p>{selectedRequest.description}</p>
+                    <div className="request-brief-facts">
+                      <div><span>Placement</span><strong>{selectedRequest.placement || "Not provided"}</strong></div>
+                      <div><span>Tattoo style</span><strong>{selectedRequest.tattooStyle || "Not provided"}</strong></div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    <div className="request-detail-timing">{renderRequestTiming(selectedRequest)}</div>
+                  </section>
 
-            <section className="request-detail-section request-actions-section">
-              <div className="request-detail-section-head">
-                <div>
-                  <p className="request-detail-kicker">Workflow</p>
-                  <h3>Available actions</h3>
+                  <section className="request-artist-client-card">
+                    <p className="request-project-section-label">Client</p>
+                    <h3>Contact information</h3>
+                    <div className="request-artist-contact-list">
+                      <div><span>Name</span><strong>{selectedRequest.clientName || "Not provided"}</strong></div>
+                      <div><span>Email</span><strong>{selectedRequest.clientEmail || "Not provided"}</strong></div>
+                      <div><span>Phone</span><strong>{selectedRequest.clientPhoneNumber || "Not provided"}</strong></div>
+                      <div><span>Location</span><strong>{[selectedRequest.clientCity, selectedRequest.clientCountry].filter(Boolean).join(", ") || "Not provided"}</strong></div>
+                    </div>
+                  </section>
                 </div>
-              </div>
-              <div className="request-detail-action-row">{!activeAction && renderActionButtons(selectedRequest)}</div>
-            </section>
 
-            {activeAction === "response" && (
-              <div className="section action-panel">
+                {selectedRequest.artistResponse && (
+                  <section className="request-artist-note artist-own-response">
+                    <p className="request-project-section-label">Your response</p>
+                    <blockquote>{selectedRequest.artistResponse.responseMessage || "No message was added."}</blockquote>
+                    <div className="request-estimate-grid">
+                      <div><span>Indicative price</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
+                      <div><span>Indicative time</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
+                    </div>
+                  </section>
+                )}
+
+                <section className="request-next-step artist-request-actions-workspace">
+                  <div>
+                    <p className="request-project-section-label">Workflow</p>
+                    <h3>Available actions</h3>
+                  </div>
+                  <div className="request-detail-action-row">{!activeAction && renderActionButtons(selectedRequest)}</div>
+                </section>
+
+                {activeAction === "response" && (
+                  <div className="action-panel artist-workspace-action-panel">
                 <h3>Create response</h3>
+                <p className="artist-estimate-notice">Price and duration are preliminary estimates. Final values are confirmed after the consultation.</p>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Estimated price</label>
+                    <label>Indicative price estimate</label>
                     <input type="number" step="0.01" value={responseForm.estimatedPrice} onChange={(event) => setResponseForm({ ...responseForm, estimatedPrice: event.target.value })} />
                   </div>
                   <div className="form-group">
-                    <label>Estimated hours</label>
+                    <label>Indicative duration estimate (hours)</label>
                     <input type="number" value={responseForm.estimatedHours} onChange={(event) => setResponseForm({ ...responseForm, estimatedHours: event.target.value })} />
                   </div>
                 </div>
@@ -648,7 +603,7 @@ function ArtistRequestsPage() {
             )}
 
             {activeAction === "complete-consultation" && (
-              <div className="section action-panel">
+              <div className="action-panel artist-workspace-action-panel">
                 <h3>Complete consultation</h3>
                 <p className="muted">Set price and duration for each tattoo session the client should book.</p>
                 {sessions.map((session, index) => (
@@ -671,7 +626,7 @@ function ArtistRequestsPage() {
             )}
 
             {activeAction === "add-sessions" && (
-              <div className="section action-panel">
+              <div className="action-panel artist-workspace-action-panel">
                 <h3>Add more sessions</h3>
                 {extraSessions.map((session, index) => (
                   <div className="form-row" key={index}>
@@ -694,6 +649,67 @@ function ArtistRequestsPage() {
 
             {error && <p className="error">{error}</p>}
             {success && <p className="success">{success}</p>}
+              </div>
+            )}
+
+            {requestTab === "progress" && (
+              <div className="request-detail-panel request-project-content">
+                <section className="request-project-tab-card">
+                  <p className="request-project-section-label">Project journey</p>
+                  <h3>Current workflow progress</h3>
+                  <RequestWorkflowTimeline request={selectedRequest} />
+                </section>
+              </div>
+            )}
+
+            {requestTab === "appointments" && (
+              <div className="request-detail-panel request-project-content request-appointments-grid">
+                {selectedRequest.consultation ? (
+                  <section className="detail-section-card consultation-accent-card">
+                    <p className="request-project-section-label">Consultation</p>
+                    <h3>Client consultation</h3>
+                    <p>{formatDateTime(selectedRequest.consultation.startTime)} – {formatTime(selectedRequest.consultation.endTime)}</p>
+                    <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
+                  </section>
+                ) : (
+                  <div className="request-project-empty"><span>◷</span><div><strong>No consultation booked</strong><p>The client's booking will appear here.</p></div></div>
+                )}
+
+                {selectedRequest.tattooSessions?.length > 0 ? (
+                  <section className="detail-section-card session-accent-card">
+                    <p className="request-project-section-label">Schedule</p>
+                    <h3>Tattoo sessions</h3>
+                    <div className="small-list">
+                      {selectedRequest.tattooSessions.map((session, index) => (
+                        <div className="small-list-row" key={index}>
+                          <span>Session {index + 1}</span>
+                          <span>{formatDateTime(session.startTime)} – {formatTime(session.endTime)}</span>
+                          <span>{session.priceForTheSession} BGN</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                ) : (
+                  <div className="request-project-empty"><span>◇</span><div><strong>No tattoo sessions booked</strong><p>Booked sessions will appear here.</p></div></div>
+                )}
+              </div>
+            )}
+
+            {requestTab === "images" && (
+              <div className="request-detail-panel request-project-content">
+                {selectedRequest.images?.length > 0 ? (
+                  <div className="image-grid request-image-grid request-project-gallery">
+                    {selectedRequest.images.map((image, index) => (
+                      <button className="request-detail-image-button" type="button" key={index} onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}>
+                        <img src={getImageUrl(image.imageUrl)} alt={`Tattoo reference ${index + 1}`} />
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="request-project-empty"><span>◇</span><div><strong>No reference images</strong><p>The client created this request without uploaded images.</p></div></div>
+                )}
+              </div>
+            )}
           </section>
         </div>
       )}

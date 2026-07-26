@@ -92,8 +92,13 @@ namespace Tattoo_Project.Services
                 return ResultService<ICollection<GetArtistUnavailableDateDto>>.Fail("Tattoo artist profile not found.");
             }
 
+            var currentDateTime = DateTime.UtcNow;
+
             var unavailableDates = await context.ArtistUnavailableDates
-                .Where(u => u.TattooArtistId == tattooArtist.Id)
+                .AsNoTracking()
+                .Where(u =>
+                    u.TattooArtistId == tattooArtist.Id &&
+                    u.EndDateTime > currentDateTime)
                 .OrderBy(u => u.StartDateTime)
                 .Select(u => new GetArtistUnavailableDateDto
                 {
