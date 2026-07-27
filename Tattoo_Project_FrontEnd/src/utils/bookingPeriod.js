@@ -15,11 +15,11 @@ export function shiftDateValue(value, days) {
   return toLocalDateValue(date);
 }
 
-export function formatBookingPeriod(startDate, periodDays) {
+export function formatBookingPeriod(startDate, periodDays, locale = "en-GB") {
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(start);
   end.setDate(end.getDate() + periodDays - 1);
-  const formatter = new Intl.DateTimeFormat(undefined, {
+  const formatter = new Intl.DateTimeFormat(locale, {
     day: "numeric",
     month: "short",
     year: "numeric",

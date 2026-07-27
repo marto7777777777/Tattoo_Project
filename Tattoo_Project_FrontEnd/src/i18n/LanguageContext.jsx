@@ -17,9 +17,11 @@ function detectInitialLanguage() {
     ? navigator.languages
     : [navigator.language];
 
-  return deviceLanguages.some((language) => language?.toLowerCase().startsWith("bg"))
-    ? "bg"
-    : "en";
+  const deviceLanguage = deviceLanguages
+    .map((item) => item?.toLowerCase().split("-")[0])
+    .find((item) => supportedLanguages.some((language) => language.code === item));
+
+  return deviceLanguage || "en";
 }
 
 export function LanguageProvider({ children }) {
@@ -45,7 +47,6 @@ export function LanguageProvider({ children }) {
       language,
       locale: definition?.locale || "en-GB",
       setLanguage,
-      toggleLanguage: () => setLanguage(language === "bg" ? "en" : "bg"),
       t: (text) => translateUiText(text, language),
     };
   }, [language]);
@@ -58,4 +59,3 @@ export function useLanguage() {
   if (!context) throw new Error("useLanguage must be used inside LanguageProvider.");
   return context;
 }
-

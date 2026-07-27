@@ -93,10 +93,13 @@ function Navbar() {
   return (
     <>
       <aside className="app-sidebar">
-        <NavLink className="brand-lockup" to="/">
-          <img className="brand-mark" src="/inkroute-app-icon.png" alt="" aria-hidden="true" />
-          <span><strong>InkRoute</strong><small>Studio workflow</small></span>
-        </NavLink>
+        <div className="sidebar-brand-row">
+          <NavLink className="brand-lockup" to="/">
+            <img className="brand-mark" src="/inkroute-app-icon.png" alt="" aria-hidden="true" />
+            <span><strong>InkRoute</strong><small>Studio workflow</small></span>
+          </NavLink>
+          <LanguageSwitcher className="language-switcher-sidebar language-switcher-top" />
+        </div>
 
         <nav className="app-nav">
           <p className="nav-section-label">Workspace</p>
@@ -111,7 +114,6 @@ function Navbar() {
 
         {!isLoggedIn ? (
           <div className="sidebar-auth-area">
-            <LanguageSwitcher className="language-switcher-sidebar language-switcher-guest" />
             <div className="sidebar-auth-card">
               <span className="sidebar-auth-glow" />
               <p>Start your next tattoo project.</p>
@@ -122,7 +124,6 @@ function Navbar() {
         ) : (
           <div className="sidebar-profile-area" ref={menuRef}>
             <div className="sidebar-profile-row">
-              <LanguageSwitcher className="language-switcher-sidebar" />
               <div className="sidebar-profile">
                 <button type="button" onClick={() => setMenuOpen((v) => !v)}>
                   <UserAvatar

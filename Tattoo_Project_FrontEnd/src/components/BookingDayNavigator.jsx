@@ -38,7 +38,7 @@ function BookingDayNavigator({
           ‹
         </button>
         <div>
-          <strong>{formatBookingPeriod(periodStart, periodDays)}</strong>
+          <strong>{formatBookingPeriod(periodStart, periodDays, getUiLocale())}</strong>
           <span>{periodDays === 7 ? "One week" : "Two weeks"}</span>
         </div>
         <button

@@ -7,8 +7,8 @@ import { addMoreSessions, completeTattoo } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
 import {
   formatDate,
+  formatAppointmentRange,
   formatDateTime,
-  formatTime,
   getStatusClass,
   getStatusName,
 } from "../utils/format";
@@ -668,7 +668,15 @@ function ArtistRequestsPage() {
                   <section className="detail-section-card consultation-accent-card">
                     <p className="request-project-section-label">Consultation</p>
                     <h3>Client consultation</h3>
-                    <p>{formatDateTime(selectedRequest.consultation.startTime)} – {formatTime(selectedRequest.consultation.endTime)}</p>
+                    <p>{formatAppointmentRange(
+                      selectedRequest.consultation.startTime,
+                      selectedRequest.consultation.endTime,
+                      selectedRequest.consultation.durationMinutes
+                        ?? selectedRequest.consultation.consultationDurationMinutes
+                        ?? selectedRequest.consultationDurationMinutes
+                        ?? selectedRequest.artist?.consultationDurationMinutes
+                        ?? 30,
+                    )}</p>
                     <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
                   </section>
                 ) : (
@@ -681,11 +689,22 @@ function ArtistRequestsPage() {
                     <h3>Tattoo sessions</h3>
                     <div className="small-list">
                       {selectedRequest.tattooSessions.map((session, index) => (
-                        <div className="small-list-row" key={index}>
-                          <span>Session {index + 1}</span>
-                          <span>{formatDateTime(session.startTime)} – {formatTime(session.endTime)}</span>
-                          <span>{session.priceForTheSession} BGN</span>
-                        </div>
+                        <article className="request-appointment-session" key={index}>
+                          <strong className="request-appointment-session-title">Session {index + 1}</strong>
+                          <span className="request-appointment-session-time">{formatAppointmentRange(
+                            session.startTime,
+                            session.endTime,
+                            session.durationHours
+                              ?? session.durationInHours
+                              ?? selectedRequest.durationHoursForSession?.[index]
+                              ?? selectedRequest.DurationHoursForSession?.[index],
+                            "hours",
+                          )}</span>
+                          <span className="request-appointment-session-price">
+                            <small>Price</small>
+                            <strong>{session.priceForTheSession} BGN</strong>
+                          </span>
+                        </article>
                       ))}
                     </div>
                   </section>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyTattooRequests } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
-import { formatDate, formatDateTime, formatTime, getEntityId, getStatusClass, getStatusName } from "../utils/format";
+import { formatAppointmentRange, formatDate, getEntityId, getStatusClass, getStatusName } from "../utils/format";
 import { getImageUrl } from "../utils/images";
 import RequestWorkflowTimeline from "../components/RequestWorkflowTimeline";
 
@@ -271,7 +271,15 @@ function MyTattooRequestsPage() {
                 {selectedRequest.consultation ? (
                   <div className="detail-section-card consultation-accent-card">
                     <h3>Consultation</h3>
-                    <p>{formatDateTime(selectedRequest.consultation.startTime)} – {formatTime(selectedRequest.consultation.endTime)}</p>
+                    <p>{formatAppointmentRange(
+                      selectedRequest.consultation.startTime,
+                      selectedRequest.consultation.endTime,
+                      selectedRequest.consultation.durationMinutes
+                        ?? selectedRequest.consultation.consultationDurationMinutes
+                        ?? selectedRequest.consultationDurationMinutes
+                        ?? selectedRequest.artist?.consultationDurationMinutes
+                        ?? 30,
+                    )}</p>
                     <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
                   </div>
                 ) : <div className="request-project-empty"><span>◷</span><div><strong>No consultation booked</strong><p>Your confirmed consultation will appear here.</p></div></div>}
@@ -281,11 +289,21 @@ function MyTattooRequestsPage() {
                     <h3>Tattoo sessions</h3>
                     <div className="small-list">
                       {selectedRequest.tattooSessions.map((session, index) => (
-                        <div className="small-list-row" key={index}>
-                          <span>Session {index + 1}</span>
-                          <span>{formatDateTime(session.startTime)} – {formatTime(session.endTime)}</span>
-                          <span>{session.priceForTheSession} BGN</span>
-                        </div>
+                        <article className="request-appointment-session" key={index}>
+                          <strong className="request-appointment-session-title">Session {index + 1}</strong>
+                          <span className="request-appointment-session-time">{formatAppointmentRange(
+                            session.startTime,
+                            session.endTime,
+                            session.durationHours
+                              ?? session.durationInHours
+                              ?? getPlannedSessions(selectedRequest)[index]?.durationHours,
+                            "hours",
+                          )}</span>
+                          <span className="request-appointment-session-price">
+                            <small>Price</small>
+                            <strong>{session.priceForTheSession} BGN</strong>
+                          </span>
+                        </article>
                       ))}
                     </div>
                   </div>

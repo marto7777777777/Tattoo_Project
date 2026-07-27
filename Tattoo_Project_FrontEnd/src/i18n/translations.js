@@ -1,3 +1,14 @@
+import { workflowApiTranslations } from "./workflowApiTranslations";
+import { DE } from "./germanTranslations";
+import { germanSupplementalTranslations } from "./germanSupplementalTranslations";
+import { workflowApiTranslationsDe } from "./workflowApiTranslationsDe";
+import { FR } from "./frenchTranslations";
+import { workflowApiTranslationsFr } from "./workflowApiTranslationsFr";
+import { ES } from "./spanishTranslations";
+import { workflowApiTranslationsEs } from "./workflowApiTranslationsEs";
+import { IT } from "./italianTranslations";
+import { workflowApiTranslationsIt } from "./workflowApiTranslationsIt";
+
 const BG = {
   "Overview": "Преглед",
   "Home": "Начало",
@@ -949,15 +960,37 @@ const BG = {
   "versions": "версии",
   "Remove from saved artists": "Премахни татуиста от запазени",
   "Save artist": "Запази татуиста",
+  ...workflowApiTranslations,
 };
 
 export const translations = {
   bg: BG,
+  de: {
+    ...DE,
+    ...germanSupplementalTranslations,
+    ...workflowApiTranslationsDe,
+  },
+  fr: {
+    ...FR,
+    ...workflowApiTranslationsFr,
+  },
+  es: {
+    ...ES,
+    ...workflowApiTranslationsEs,
+  },
+  it: {
+    ...IT,
+    ...workflowApiTranslationsIt,
+  },
 };
 
 export const supportedLanguages = [
-  { code: "en", label: "EN", flag: "🇬🇧", locale: "en-GB" },
-  { code: "bg", label: "BG", flag: "🇧🇬", locale: "bg-BG" },
+  { code: "en", label: "EN", flag: "🇬🇧", nativeName: "English", locale: "en-GB" },
+  { code: "bg", label: "BG", flag: "🇧🇬", nativeName: "Български", locale: "bg-BG" },
+  { code: "de", label: "DE", flag: "🇩🇪", nativeName: "Deutsch", locale: "de-DE" },
+  { code: "fr", label: "FR", flag: "🇫🇷", nativeName: "Français", locale: "fr-FR" },
+  { code: "es", label: "ES", flag: "🇪🇸", nativeName: "Español", locale: "es-ES" },
+  { code: "it", label: "IT", flag: "🇮🇹", nativeName: "Italiano", locale: "it-IT" },
 ];
 
 export const tattooStyles = new Set([

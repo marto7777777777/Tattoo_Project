@@ -54,12 +54,39 @@ export function getScheduleTypeName(scheduleType) {
 
 export function formatTime(time) {
   if (!time) return "";
-  if (typeof time === "string" && time.includes(":")) return time.slice(0, 5);
+  if (typeof time === "string" && /^\d{1,2}:\d{2}/.test(time)) {
+    return time.slice(0, 5);
+  }
 
   return new Date(time).toLocaleTimeString(getUiLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+export function resolveAppointmentEndTime(startTime, endTime, duration, durationUnit = "minutes") {
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (!Number.isNaN(start.getTime()) && !Number.isNaN(end.getTime()) && end > start) {
+    return endTime;
+  }
+
+  const numericDuration = Number(duration);
+  if (Number.isNaN(start.getTime()) || !Number.isFinite(numericDuration) || numericDuration <= 0) {
+    return null;
+  }
+
+  const minutes = numericDuration * (durationUnit === "hours" ? 60 : 1);
+  return new Date(start.getTime() + minutes * 60 * 1000).toISOString();
+}
+
+export function formatAppointmentRange(startTime, endTime, duration, durationUnit = "minutes") {
+  const resolvedEndTime = resolveAppointmentEndTime(startTime, endTime, duration, durationUnit);
+  const startLabel = startTime ? `${formatDate(startTime)}, ${formatTime(startTime)}` : "";
+  const endLabel = formatTime(resolvedEndTime);
+
+  return endLabel ? `${startLabel} – ${endLabel}` : startLabel;
 }
 
 export function formatDate(value) {
