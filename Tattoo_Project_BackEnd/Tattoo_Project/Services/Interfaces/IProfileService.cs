@@ -13,7 +13,6 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> UpdateEmailAsync(string userId, string value);
 
         Task<ResultService<string>> UpdateProfileImageAsync(string userId, IFormFile image);
-        Task<ResultService> UpdatePhoneNumberAsync(string userId, string value);
         Task<ResultService> UpdateCityAsync(string userId, string value);
         Task<ResultService> UpdateCountryAsync(string userId, string value);
 

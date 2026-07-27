@@ -212,7 +212,7 @@ function ArtistWorkspacePage() {
               <div className="studio-confirm-icon">!</div>
               <p className="subtitle inline-subtitle">Confirm removal</p>
               <h2>Remove {memberToRemove.firstName} {memberToRemove.lastName}?</h2>
-              <p>This artist will be removed from <strong>{studio.name}</strong>. Their artist profile will be kept, but they will no longer appear publicly until they join or create another studio, but they will no longer be a member of this studio.</p>
+              <p>This artist will be removed from <strong>{studio.name}</strong>. Their artist profile will be kept, but they will no longer appear publicly until they join or create another studio.</p>
               <div className="studio-confirm-actions">
                 <button className="secondary-button" type="button" onClick={() => setMemberToRemove(null)}>Cancel</button>
                 <button className="danger-button" type="button" onClick={async () => {

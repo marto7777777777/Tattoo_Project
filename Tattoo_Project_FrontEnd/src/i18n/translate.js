@@ -16,7 +16,8 @@ const monthNames = {
 };
 
 const dynamicRules = [
-  [/^Session (\d+) price$/i, (_, number) => `Цена на сесия ${number}`],
+  [/^Session (\d+) price$/i, (_, number) => `Сесия ${number} цена`],
+  [/^Extra session (\d+) price$/i, (_, number) => `Допълнителна сесия ${number} цена`],
   [/^Session (\d+)$/i, (_, number) => `Сесия ${number}`],
   [/^Version (\d+)$/i, (_, number) => `Версия ${number}`],
   [/^Step (\d+) of (\d+)$/i, (_, current, total) => `Стъпка ${current} от ${total}`],

@@ -609,7 +609,7 @@ function ArtistRequestsPage() {
                 {sessions.map((session, index) => (
                   <div className="form-row" key={index}>
                     <div className="form-group">
-                      <label>Session {index + 1} price</label>
+                      <label>{`Session ${index + 1} price`}</label>
                       <input type="number" step="0.01" value={session.price} onChange={(event) => updateSessionList(setSessions, index, "price", event.target.value)} />
                     </div>
                     <div className="form-group">
@@ -631,7 +631,7 @@ function ArtistRequestsPage() {
                 {extraSessions.map((session, index) => (
                   <div className="form-row" key={index}>
                     <div className="form-group">
-                      <label>Extra session {index + 1} price</label>
+                      <label>{`Extra session ${index + 1} price`}</label>
                       <input type="number" step="0.01" value={session.price} onChange={(event) => updateSessionList(setExtraSessions, index, "price", event.target.value)} />
                     </div>
                     <div className="form-group">

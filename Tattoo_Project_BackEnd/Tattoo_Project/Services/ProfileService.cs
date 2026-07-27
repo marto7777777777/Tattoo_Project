@@ -170,23 +170,6 @@ namespace Tattoo_Project.Services
             return ResultService<string>.Ok(imageUrl);
         }
 
-        public async Task<ResultService> UpdatePhoneNumberAsync(string userId, string value)
-        {
-            if (string.IsNullOrWhiteSpace(value)) return ResultService.Fail("Phone number is required.");
-            if (value.Trim().Length > 40) return ResultService.Fail("Phone number cannot exceed 40 characters.");
-
-            var client = await context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
-            var artist = await context.TattooArtists.FirstOrDefaultAsync(a => a.UserId == userId);
-
-            if (client == null && artist == null) return ResultService.Fail("Profile was not found.");
-
-            if (client != null) client.PhoneNumber = value.Trim();
-            if (artist != null) artist.PhoneNumber = value.Trim();
-
-            await context.SaveChangesAsync();
-            return ResultService.Ok();
-        }
-
         public async Task<ResultService> UpdateCityAsync(string userId, string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return ResultService.Fail("City is required.");

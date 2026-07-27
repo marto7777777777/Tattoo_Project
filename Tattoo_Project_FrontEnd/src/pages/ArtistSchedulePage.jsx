@@ -598,7 +598,7 @@ function ArtistSchedulePage() {
                   >
                     <span className="calendar-day-top">
                       <span className="calendar-day-number">{day.getDate()}</span>
-                      {isEntireDayUnavailable && <span className="calendar-day-off-label">OFF</span>}
+                      {isEntireDayUnavailable && <span className="calendar-day-off-label" data-i18n-ignore>OFF</span>}
                     </span>
                     <div className="calendar-event-dots">
                       {events.slice(0, 4).map((event, index) => (

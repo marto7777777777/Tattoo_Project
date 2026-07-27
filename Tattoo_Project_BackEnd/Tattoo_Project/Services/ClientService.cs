@@ -120,7 +120,6 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Client profile was not found.");
             }
 
-            client.PhoneNumber = dto.PhoneNumber;
             client.City = dto.City;
             client.Country = dto.Country;
 

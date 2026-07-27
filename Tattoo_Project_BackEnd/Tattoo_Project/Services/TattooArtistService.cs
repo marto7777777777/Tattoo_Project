@@ -296,7 +296,6 @@ namespace Tattoo_Project.Services
             }
 
             artist.Description = dto.Description.Trim();
-            artist.PhoneNumber = dto.PhoneNumber.Trim();
             artist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
             artist.RequiresDeposit = dto.RequiresDeposit;
             artist.DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null;

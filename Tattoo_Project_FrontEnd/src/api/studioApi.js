@@ -1,8 +1,30 @@
 import { requestJson } from "./http";
+import { getSearchAliases } from "../utils/searchAliases";
+
+async function searchStudiosWithAliases(path, query) {
+  const aliases = getSearchAliases(query);
+  const results = await Promise.allSettled(
+    aliases.map((alias) => {
+      const suffix = alias ? `?query=${encodeURIComponent(alias)}` : "";
+      return requestJson(`${path}${suffix}`);
+    }),
+  );
+
+  const successfulResults = results
+    .filter((result) => result.status === "fulfilled")
+    .flatMap((result) => Array.isArray(result.value) ? result.value : []);
+
+  if (!successfulResults.length && results.every((result) => result.status === "rejected")) {
+    throw results[0].reason;
+  }
+
+  return Array.from(
+    new Map(successfulResults.map((studio) => [Number(studio.id), studio])).values(),
+  );
+}
 
 export function getStudios(query = "") {
-  const suffix = query.trim() ? `?query=${encodeURIComponent(query.trim())}` : "";
-  return requestJson(`/api/Studio${suffix}`);
+  return searchStudiosWithAliases("/api/Studio", query);
 }
 
 export function getStudioById(studioId) {
@@ -10,7 +32,7 @@ export function getStudioById(studioId) {
 }
 
 export function searchOpenStudiosForJoin(query) {
-  return requestJson(`/api/Studio/join-search?query=${encodeURIComponent(query.trim())}`);
+  return searchStudiosWithAliases("/api/Studio/join-search", query);
 }
 
 export function getMyStudio() {

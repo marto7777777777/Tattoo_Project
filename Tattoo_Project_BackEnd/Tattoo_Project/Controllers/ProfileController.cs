@@ -83,10 +83,6 @@ namespace Tattoo_Project.Controllers
             return Ok(result.Data);
         }
 
-        [HttpPatch("contact/phone-number")]
-        public async Task<IActionResult> UpdatePhoneNumber(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdatePhoneNumberAsync);
-
         [HttpPatch("contact/city")]
         public async Task<IActionResult> UpdateCity(UpdateStringValueDto dto)
             => await RunStringUpdate(dto, service.UpdateCityAsync);

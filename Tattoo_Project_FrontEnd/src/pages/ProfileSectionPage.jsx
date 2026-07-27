@@ -29,7 +29,7 @@ const sectionTitles = {
 
 const sectionDescriptions = {
   user: "Manage your name, email, profile photo and account password.",
-  contact: "Keep the phone number and location clients use to reach you up to date.",
+  contact: "View your verified phone number and keep your location up to date.",
   studio: "Edit your personal artist description and client requirements. Studio management is handled separately in My Studio.",
   consultation: "Control consultation duration and whether online consultations are available.",
   deposit: "Choose whether projects require a deposit and set the amount.",
@@ -94,6 +94,7 @@ function ProfileSectionPage() {
   }
 
   function startEdit(field) {
+    if (field.readOnly) return;
     setEditingKey(field.key);
     setEditValue(field.value ?? "");
     setError("");
@@ -101,6 +102,7 @@ function ProfileSectionPage() {
   }
 
   async function saveField(field) {
+    if (field.readOnly) return;
     setError("");
     setSuccess("");
 
@@ -347,7 +349,9 @@ function ProfileSectionPage() {
                     )}
                   </div>
 
-                  {editingKey === field.key ? (
+                  {field.readOnly ? (
+                    <span className="readonly-badge">Verified</span>
+                  ) : editingKey === field.key ? (
                     <div className="inline-actions">
                       <button className="primary-button compact-button" type="button" onClick={() => saveField(field)}>Save</button>
                       <button className="secondary-button compact-button" type="button" onClick={() => setEditingKey(null)}>Cancel</button>
@@ -481,7 +485,7 @@ function getFieldsForSection(section, profile) {
 
   if (section === "contact") {
     return [
-      { key: "phoneNumber", label: "Phone number", value: profile.phoneNumber, path: "/api/Profile/contact/phone-number" },
+      { key: "phoneNumber", label: "Phone number", value: profile.phoneNumber, readOnly: true },
       { key: "city", label: "City", value: profile.city, path: "/api/Profile/contact/city" },
       { key: "country", label: "Country", value: profile.country, path: "/api/Profile/contact/country" },
     ];
