@@ -7,7 +7,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "apple-touch-icon.png"],
+      includeAssets: [
+        "favicon-32x32.png",
+        "favicon-48x48.png",
+        "apple-touch-icon.png",
+        "inkroute-app-icon.png",
+      ],
       manifest: {
         name: "InkRoute",
         short_name: "InkRoute",

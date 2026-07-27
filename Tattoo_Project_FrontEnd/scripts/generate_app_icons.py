@@ -1,82 +1,58 @@
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "public"
+MASTER_ICON = PUBLIC / "inkroute-app-icon.png"
+BACKGROUND = "#09090d"
+RESAMPLING = Image.Resampling.LANCZOS
+
+
+def load_master_icon() -> Image.Image:
+    with Image.open(MASTER_ICON) as source:
+        icon = source.convert("RGB")
+
+    side = min(icon.size)
+    left = (icon.width - side) // 2
+    top = (icon.height - side) // 2
+    return icon.crop((left, top, left + side, top + side))
+
+
+MASTER = load_master_icon()
 
 
 def create_icon(size: int, safe_padding: bool = False) -> Image.Image:
-    image = Image.new("RGB", (size, size), "#09090d")
-    draw = ImageDraw.Draw(image)
-    unit = size / 1024
+    if not safe_padding:
+        return MASTER.resize((size, size), RESAMPLING)
 
-    margin = int((142 if safe_padding else 34) * unit)
-    draw.rounded_rectangle(
-        (margin, margin, size - margin, size - margin),
-        radius=int(205 * unit),
-        fill="#171128",
-        outline="#34255b",
-        width=max(1, int(18 * unit)),
-    )
-    draw.ellipse(
-        (int(182 * unit), int(182 * unit), int(842 * unit), int(842 * unit)),
-        outline="#392866",
-        width=max(1, int(26 * unit)),
-    )
-
-    purple = "#9d79ff"
-    light = "#c8b5ff"
-    draw.rounded_rectangle(
-        (int(330 * unit), int(277 * unit), int(446 * unit), int(747 * unit)),
-        radius=int(18 * unit),
-        fill=purple,
-    )
-    draw.rounded_rectangle(
-        (int(505 * unit), int(277 * unit), int(621 * unit), int(747 * unit)),
-        radius=int(18 * unit),
-        fill=purple,
-    )
-    draw.rounded_rectangle(
-        (int(570 * unit), int(277 * unit), int(760 * unit), int(390 * unit)),
-        radius=int(52 * unit),
-        fill=purple,
-    )
-    draw.rounded_rectangle(
-        (int(570 * unit), int(500 * unit), int(744 * unit), int(613 * unit)),
-        radius=int(52 * unit),
-        fill=purple,
-    )
-    draw.polygon(
-        [
-            (int(650 * unit), int(568 * unit)),
-            (int(760 * unit), int(568 * unit)),
-            (int(875 * unit), int(747 * unit)),
-            (int(735 * unit), int(747 * unit)),
-        ],
-        fill=purple,
-    )
-    draw.arc(
-        (int(220 * unit), int(720 * unit), int(820 * unit), int(930 * unit)),
-        start=195,
-        end=338,
-        fill=light,
-        width=max(2, int(24 * unit)),
-    )
-    return image
+    canvas = Image.new("RGB", (size, size), BACKGROUND)
+    artwork_size = round(size * 0.80)
+    artwork = MASTER.resize((artwork_size, artwork_size), RESAMPLING)
+    offset = (size - artwork_size) // 2
+    canvas.paste(artwork, (offset, offset))
+    return canvas
 
 
-create_icon(192).save(PUBLIC / "pwa-192x192.png", optimize=True)
-create_icon(512).save(PUBLIC / "pwa-512x512.png", optimize=True)
-create_icon(512, safe_padding=True).save(
-    PUBLIC / "pwa-maskable-512x512.png", optimize=True
+def save_icon(image: Image.Image, path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    image.save(path, optimize=True)
+
+
+save_icon(create_icon(32), PUBLIC / "favicon-32x32.png")
+save_icon(create_icon(48), PUBLIC / "favicon-48x48.png")
+save_icon(create_icon(180), PUBLIC / "apple-touch-icon.png")
+save_icon(create_icon(192), PUBLIC / "pwa-192x192.png")
+save_icon(create_icon(512), PUBLIC / "pwa-512x512.png")
+save_icon(
+    create_icon(512, safe_padding=True),
+    PUBLIC / "pwa-maskable-512x512.png",
 )
-create_icon(180).save(PUBLIC / "apple-touch-icon.png", optimize=True)
 
 
 def create_splash(width: int, height: int) -> Image.Image:
-    splash = Image.new("RGB", (width, height), "#09090d")
+    splash = Image.new("RGB", (width, height), BACKGROUND)
     logo_size = min(width, height) * 34 // 100
     logo = create_icon(logo_size)
     splash.paste(logo, ((width - logo_size) // 2, (height - logo_size) // 2))
@@ -102,24 +78,29 @@ if android_res.exists():
 
     for folder, size in launcher_sizes.items():
         destination = android_res / folder
-        create_icon(size).save(destination / "ic_launcher.png", optimize=True)
-        create_icon(size).save(destination / "ic_launcher_round.png", optimize=True)
+        save_icon(create_icon(size), destination / "ic_launcher.png")
+        save_icon(create_icon(size), destination / "ic_launcher_round.png")
 
     for folder, size in foreground_sizes.items():
-        create_icon(size, safe_padding=True).save(
-            android_res / folder / "ic_launcher_foreground.png", optimize=True
+        save_icon(
+            create_icon(size, safe_padding=True),
+            android_res / folder / "ic_launcher_foreground.png",
         )
 
     for splash_path in android_res.glob("drawable*/splash.png"):
         with Image.open(splash_path) as current_splash:
-            create_splash(*current_splash.size).save(splash_path, optimize=True)
+            splash_size = current_splash.size
+        save_icon(create_splash(*splash_size), splash_path)
+
 
 ios_assets = ROOT / "ios" / "App" / "App" / "Assets.xcassets"
 if ios_assets.exists():
-    create_icon(1024).save(
-        ios_assets / "AppIcon.appiconset" / "AppIcon-512@2x.png", optimize=True
+    save_icon(
+        create_icon(1024),
+        ios_assets / "AppIcon.appiconset" / "AppIcon-512@2x.png",
     )
 
     for splash_path in (ios_assets / "Splash.imageset").glob("*.png"):
         with Image.open(splash_path) as current_splash:
-            create_splash(*current_splash.size).save(splash_path, optimize=True)
+            splash_size = current_splash.size
+        save_icon(create_splash(*splash_size), splash_path)

@@ -93,7 +93,7 @@ function Navbar() {
     <>
       <aside className="app-sidebar">
         <NavLink className="brand-lockup" to="/">
-          <span className="brand-mark">IR</span>
+          <img className="brand-mark" src="/inkroute-app-icon.png" alt="" aria-hidden="true" />
           <span><strong>InkRoute</strong><small>Studio workflow</small></span>
         </NavLink>
 
@@ -139,7 +139,7 @@ function Navbar() {
       </aside>
 
       <header className="mobile-app-bar">
-        <NavLink className="mobile-brand" to="/"><span className="brand-mark">IR</span><strong>InkRoute</strong></NavLink>
+        <NavLink className="mobile-brand" to="/"><img className="brand-mark" src="/inkroute-app-icon.png" alt="" aria-hidden="true" /><strong>InkRoute</strong></NavLink>
         <div className="mobile-app-actions">
           {isLoggedIn ? (
             <button

@@ -32,15 +32,11 @@
   width: 42px;
   height: 42px;
   flex: 0 0 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(164,141,255,.34);
+  display: block;
+  border: 0;
   border-radius: 13px;
-  background: linear-gradient(145deg, rgba(145,116,255,.22), rgba(255,255,255,.035));
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 28px rgba(72,48,160,.18);
-  color: #d5c9ff;
-  font-weight: 950;
-  letter-spacing: -.05em;
+  object-fit: cover;
+  box-shadow: 0 10px 28px rgba(72,48,160,.24);
 }
 
 .brand-lockup > span:last-child {
