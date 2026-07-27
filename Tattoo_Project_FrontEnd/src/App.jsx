@@ -31,14 +31,19 @@ import AdminPage from "./pages/AdminPage";
 import StudioProfilePage from "./pages/StudioProfilePage";
 import NativePlatformSetup from "./components/NativePlatformSetup";
 import NetworkStatus from "./components/NetworkStatus";
+import DomTranslator from "./i18n/DomTranslator";
+import { useLanguage } from "./i18n/LanguageContext";
 
 function App() {
+  const { language } = useLanguage();
+
   return (
     <>
       <NativePlatformSetup />
       <NetworkStatus />
+      <DomTranslator />
       <Navbar />
-      <Routes>
+      <Routes data-language={language}>
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />

@@ -11,6 +11,8 @@ import {
   getAdminUsers,
   setAdminArtistVerified,
 } from "../api/adminApi";
+import { getUiLanguage, getUiLocale } from "../i18n/locale";
+import { translateUiText } from "../i18n/translate";
 
 function AdminPage() {
   const [overview, setOverview] = useState(null);
@@ -49,7 +51,7 @@ function AdminPage() {
   }, []);
 
   async function runAction(key, confirmation, action) {
-    if (confirmation && !window.confirm(confirmation)) return;
+    if (confirmation && !window.confirm(translateUiText(confirmation, getUiLanguage()))) return;
     setBusyKey(key);
     setError("");
     setSuccess("");
@@ -140,7 +142,7 @@ function AdminPage() {
                     <td>#{request.id}</td><td>{request.clientName}</td><td>{request.artistName}</td>
                     <td><strong>{request.tattooStyle}</strong><small>{request.placement}</small></td>
                     <td><span className="admin-status">{request.status}</span></td>
-                    <td>{new Date(request.createdOn).toLocaleString()}</td>
+                    <td>{new Date(request.createdOn).toLocaleString(getUiLocale())}</td>
                     <td><button className="admin-delete-button" disabled={busyKey === `request-${request.id}`} onClick={() => runAction(`request-${request.id}`, `Permanently delete tattoo request #${request.id} and all sessions, consultation, review and response data attached to it?`, () => deleteAdminTattooRequest(request.id))}>Delete request</button></td>
                   </tr>
                 ))}
@@ -158,7 +160,7 @@ function AdminPage() {
                   <tr key={project.id}>
                     <td>#{project.id}</td><td>{project.userEmail}</td><td><strong>{project.title}</strong></td>
                     <td><span>{project.tattooStyle}</span><small>{project.placement}</small></td>
-                    <td>{project.versionCount}</td><td>{new Date(project.updatedAt).toLocaleString()}</td>
+                    <td>{project.versionCount}</td><td>{new Date(project.updatedAt).toLocaleString(getUiLocale())}</td>
                     <td><button className="admin-delete-button" disabled={busyKey === `ai-${project.id}`} onClick={() => runAction(`ai-${project.id}`, `Permanently delete AI project #${project.id} and all generated versions?`, () => deleteAdminAiProject(project.id))}>Delete AI project</button></td>
                   </tr>
                 ))}

@@ -12,6 +12,7 @@ import {
   createMyStudio,
 } from "../api/studioApi";
 import UserAvatar from "../components/UserAvatar";
+import { getUiLocale } from "../i18n/locale";
 
 const emptyEdit = { name: "", description: "", address: "", city: "", country: "" };
 
@@ -108,7 +109,7 @@ function ArtistWorkspacePage() {
         <div className="header"><p className="subtitle">My Studio</p><h1>{pending ? "Waiting for studio approval" : "Choose what you want to do"}</h1>
           <p>{pending ? `Your request to join ${pending.studioName} is pending.` : "You currently do not belong to a studio. Create your own studio or join an existing one."}</p></div>
         {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
-        {pending ? <article className="card form-card pending-studio-card"><p className="subtitle inline-subtitle">Pending request</p><h2>{pending.studioName}</h2><p className="muted">Sent {new Date(pending.createdOn).toLocaleString()}</p><span className="status-badge status-pending">Pending</span></article> : <>
+        {pending ? <article className="card form-card pending-studio-card"><p className="subtitle inline-subtitle">Pending request</p><h2>{pending.studioName}</h2><p className="muted">Sent {new Date(pending.createdOn).toLocaleString(getUiLocale())}</p><span className="status-badge status-pending">Pending</span></article> : <>
           <div className="studio-choice-grid">
             <button type="button" aria-pressed={noStudioMode === "create"} className={`studio-choice-card ${noStudioMode === "create" ? "selected" : ""}`} onClick={() => { setNoStudioMode("create"); setSelectedStudio(null); }}><strong>Create My Studio</strong><span>Start a new studio and become its owner.</span></button>
             <button type="button" aria-pressed={noStudioMode === "join"} className={`studio-choice-card ${noStudioMode === "join" ? "selected" : ""}`} onClick={() => setNoStudioMode("join")}><strong>Join Studio</strong><span>Find an existing studio and request to join.</span></button>

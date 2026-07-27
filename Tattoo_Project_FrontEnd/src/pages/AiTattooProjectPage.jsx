@@ -16,6 +16,7 @@ import {
 import { getImageUrl } from "../utils/images";
 import ImageLightbox from "../components/ImageLightbox";
 import { useAuth } from "../context/AuthContext";
+import { getUiLocale } from "../i18n/locale";
 
 function AiTattooProjectPage() {
   const { projectId } = useParams();
@@ -288,7 +289,7 @@ function AiTattooProjectPage() {
                       <small>
                         {new Date(
                           version.createdAt
-                        ).toLocaleString()}
+                        ).toLocaleString(getUiLocale())}
                       </small>
                     </span>
                   </button>

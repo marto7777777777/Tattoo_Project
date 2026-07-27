@@ -1,3 +1,5 @@
+import { getUiLocale } from "../i18n/locale";
+
 export const REQUEST_STATUS = {
   0: "Submitted",
   1: "Under review",
@@ -54,7 +56,7 @@ export function formatTime(time) {
   if (!time) return "";
   if (typeof time === "string" && time.includes(":")) return time.slice(0, 5);
 
-  return new Date(time).toLocaleTimeString([], {
+  return new Date(time).toLocaleTimeString(getUiLocale(), {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -62,12 +64,12 @@ export function formatTime(time) {
 
 export function formatDate(value) {
   if (!value) return "Unknown date";
-  return new Date(value).toLocaleDateString();
+  return new Date(value).toLocaleDateString(getUiLocale());
 }
 
 export function formatDateTime(value) {
   if (!value) return "";
-  return new Date(value).toLocaleString();
+  return new Date(value).toLocaleString(getUiLocale());
 }
 
 export function toApiDateTime(localDateTimeValue) {

@@ -7,6 +7,7 @@ import { formatDateTime, formatTime } from "../utils/format";
 import BookingDayNavigator from "../components/BookingDayNavigator";
 import { useResponsiveBookingPeriod } from "../hooks/useResponsiveBookingPeriod";
 import { todayDateValue } from "../utils/bookingPeriod";
+import { getUiLocale } from "../i18n/locale";
 
 function toApiDateTime(value) {
   // Backend schedule validation treats DateTime as the artist's local schedule time.
@@ -145,7 +146,7 @@ function BookingSlotPage() {
             </section>
 
             <aside className="card form-card calendar-side-panel">
-              <h2>{selectedDate ? new Date(`${selectedDate}T00:00:00`).toLocaleDateString() : "Choose a day"}</h2>
+              <h2>{selectedDate ? new Date(`${selectedDate}T00:00:00`).toLocaleDateString(getUiLocale()) : "Choose a day"}</h2>
               <div className="section">
                 <h3>Available times</h3>
                 {!selectedDay?.slots?.length && <p className="muted">The artist is busy or outside schedule for this day.</p>}

@@ -6,6 +6,8 @@ import {
 } from "../api/artistUnavailableDateApi";
 import { readResponse } from "../api/http";
 import { formatDateTime, toApiDateTime } from "../utils/format";
+import { getUiLanguage } from "../i18n/locale";
+import { translateUiText } from "../i18n/translate";
 
 function getTodayDateInputValue() {
   const today = new Date();
@@ -146,9 +148,10 @@ function ArtistAvailabilityPage() {
     setError("");
     setSuccess("");
 
-    const shouldDelete = window.confirm(
-      "Are you sure you want to remove this unavailable period?"
-    );
+    const shouldDelete = window.confirm(translateUiText(
+      "Are you sure you want to remove this unavailable period?",
+      getUiLanguage(),
+    ));
 
     if (!shouldDelete) {
       return;

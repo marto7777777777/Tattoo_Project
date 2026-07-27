@@ -3,6 +3,7 @@ import {
   shiftDateValue,
   todayDateValue,
 } from "../utils/bookingPeriod";
+import { getUiLocale } from "../i18n/locale";
 
 function BookingDayNavigator({
   availability,
@@ -62,7 +63,7 @@ function BookingDayNavigator({
             onClick={() => onSelectDate(day.date)}
           >
             <strong>
-              {new Date(`${day.date}T00:00:00`).toLocaleDateString(undefined, {
+              {new Date(`${day.date}T00:00:00`).toLocaleDateString(getUiLocale(), {
                 weekday: "short",
                 day: "numeric",
                 month: "short",

@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { getMyProfile } from "../api/profileApi";
 import { useAuth } from "../context/AuthContext";
 import UserAvatar from "./UserAvatar";
+import LanguageSwitcher from "./LanguageSwitcher";
 import "../styles/navbar.css";
 
 const Icon = ({ name }) => {
@@ -109,25 +110,33 @@ function Navbar() {
         </nav>
 
         {!isLoggedIn ? (
-          <div className="sidebar-auth-card">
-            <span className="sidebar-auth-glow" />
-            <p>Start your next tattoo project.</p>
-            <NavLink to="/register">Create account</NavLink>
-            <NavLink className="ghost-auth-link" to="/login">Sign in</NavLink>
+          <div className="sidebar-auth-area">
+            <LanguageSwitcher className="language-switcher-sidebar language-switcher-guest" />
+            <div className="sidebar-auth-card">
+              <span className="sidebar-auth-glow" />
+              <p>Start your next tattoo project.</p>
+              <NavLink to="/register">Create account</NavLink>
+              <NavLink className="ghost-auth-link" to="/login">Sign in</NavLink>
+            </div>
           </div>
         ) : (
-          <div className="sidebar-profile" ref={menuRef}>
-            <button type="button" onClick={() => setMenuOpen((v) => !v)}>
-              <UserAvatar
-                firstName={profile?.firstName || user?.userName}
-                lastName={profile?.lastName}
-                email={profile?.email || user?.email}
-                imageUrl={profile?.profileImageUrl}
-                size="medium"
-              />
-              <span className="sidebar-profile-copy"><strong>{displayName}</strong><small>{roleLabel}</small></span>
-              <span className="profile-more">•••</span>
-            </button>
+          <div className="sidebar-profile-area" ref={menuRef}>
+            <div className="sidebar-profile-row">
+              <LanguageSwitcher className="language-switcher-sidebar" />
+              <div className="sidebar-profile">
+                <button type="button" onClick={() => setMenuOpen((v) => !v)}>
+                  <UserAvatar
+                    firstName={profile?.firstName || user?.userName}
+                    lastName={profile?.lastName}
+                    email={profile?.email || user?.email}
+                    imageUrl={profile?.profileImageUrl}
+                    size="medium"
+                  />
+                  <span className="sidebar-profile-copy"><strong>{displayName}</strong><small>{roleLabel}</small></span>
+                  <span className="profile-more">•••</span>
+                </button>
+              </div>
+            </div>
             {menuOpen && (
               <div className="sidebar-profile-menu">
                 <button onClick={() => navigate("/profile/user")}><Icon name="user" /> Profile settings</button>
@@ -141,6 +150,7 @@ function Navbar() {
       <header className="mobile-app-bar">
         <NavLink className="mobile-brand" to="/"><img className="brand-mark" src="/inkroute-app-icon.png" alt="" aria-hidden="true" /><strong>InkRoute</strong></NavLink>
         <div className="mobile-app-actions">
+          <LanguageSwitcher className="language-switcher-mobile" />
           {isLoggedIn ? (
             <button
               type="button"
@@ -148,7 +158,13 @@ function Navbar() {
               aria-label="Open profile settings"
               onClick={() => navigate("/profile/user")}
             >
-              <UserAvatar firstName={profile?.firstName} lastName={profile?.lastName} email={profile?.email || user?.email} imageUrl={profile?.profileImageUrl} size="small" />
+              <UserAvatar
+                firstName={profile?.firstName}
+                lastName={profile?.lastName}
+                email={profile?.email || user?.email}
+                imageUrl={profile?.profileImageUrl}
+                size="small"
+              />
             </button>
           ) : <NavLink className="mobile-login" to="/login">Sign in</NavLink>}
           <button
