@@ -11,6 +11,8 @@ namespace Tattoo_Project.Models
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public bool IsOpenForJoinRequests { get; set; } = true;
+        public string? CoverImageUrl { get; set; }
+        public string? LogoImageUrl { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         // Nullable at database level to make studio + owner creation safe in one workflow.

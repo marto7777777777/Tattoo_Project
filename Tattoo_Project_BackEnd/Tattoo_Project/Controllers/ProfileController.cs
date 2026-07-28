@@ -97,6 +97,17 @@ namespace Tattoo_Project.Controllers
             => await RunStringUpdate(dto, service.UpdateDescriptionAsync);
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [HttpPatch("artist/specialty-styles")]
+        public async Task<IActionResult> UpdateSpecialtyStyles(UpdateStringListDto dto)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+            var result = await service.UpdateSpecialtyStylesAsync(userId, dto.Values);
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+            return Ok("Specialty styles updated successfully.");
+        }
+
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("consultation/duration")]
         public async Task<IActionResult> UpdateConsultationDuration(UpdateIntValueDto dto)
         {

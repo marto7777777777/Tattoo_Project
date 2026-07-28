@@ -26,6 +26,13 @@ export function updateBoolField(path, value) {
   });
 }
 
+export function updateSpecialtyStyles(values) {
+  return requestJson("/api/Profile/artist/specialty-styles", {
+    method: "PATCH",
+    body: JSON.stringify({ values }),
+  });
+}
+
 export async function updateProfileImage(file) {
   const token = getToken();
   const formData = new FormData();

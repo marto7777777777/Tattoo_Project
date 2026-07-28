@@ -10,9 +10,13 @@ import {
   searchOpenStudiosForJoin,
   requestJoinStudio,
   createMyStudio,
+  uploadStudioImage,
 } from "../api/studioApi";
 import UserAvatar from "../components/UserAvatar";
 import { getUiLocale } from "../i18n/locale";
+import { getImageUrl } from "../utils/images";
+import ImageCropModal from "../components/ImageCropModal";
+import StudioImageSetupFields from "../components/StudioImageSetupFields";
 
 const emptyEdit = { name: "", description: "", address: "", city: "", country: "" };
 
@@ -29,6 +33,9 @@ function ArtistWorkspacePage() {
   const [joinResults, setJoinResults] = useState([]);
   const [selectedStudio, setSelectedStudio] = useState(null);
   const [studioCreateForm, setStudioCreateForm] = useState({ name: "", description: "", address: "", city: "", country: "Bulgaria" });
+  const [studioCrop, setStudioCrop] = useState(null);
+  const [newStudioCoverFile, setNewStudioCoverFile] = useState(null);
+  const [newStudioLogoFile, setNewStudioLogoFile] = useState(null);
 
   async function refresh() {
     setLoading(true);
@@ -96,8 +103,51 @@ function ArtistWorkspacePage() {
     event.preventDefault();
     const f = studioCreateForm;
     if (![f.name, f.description, f.address, f.city, f.country].every((x) => x.trim())) { setError("Complete all studio fields."); return; }
-    await doAction(() => createMyStudio(f), "Studio created successfully.");
-    setNoStudioMode(null);
+    setError("");
+    setSuccess("");
+    try {
+      await createMyStudio(f);
+      const uploadWarnings = [];
+      if (newStudioCoverFile) {
+        try { await uploadStudioImage("cover", newStudioCoverFile); }
+        catch { uploadWarnings.push("studio banner"); }
+      }
+      if (newStudioLogoFile) {
+        try { await uploadStudioImage("logo", newStudioLogoFile); }
+        catch { uploadWarnings.push("studio profile image"); }
+      }
+      setNoStudioMode(null);
+      setNewStudioCoverFile(null);
+      setNewStudioLogoFile(null);
+      await refresh();
+      setSuccess(uploadWarnings.length
+        ? `Studio created. Could not upload: ${uploadWarnings.join(", ")}. You can add them below.`
+        : "Studio created successfully.");
+    } catch (err) {
+      setError(err.message || "Studio could not be created.");
+    }
+  }
+
+  async function uploadStudioAsset(kind, event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setStudioCrop({ kind, file });
+  }
+
+  async function confirmStudioCrop(file) {
+    const kind = studioCrop?.kind;
+    if (!kind) return;
+    setError("");
+    setSuccess("");
+    try {
+      await uploadStudioImage(kind, file);
+      setStudioCrop(null);
+      setSuccess(kind === "cover" ? "Studio cover updated." : "Studio logo updated.");
+      await refresh();
+    } catch (err) {
+      setError(err.message || "Studio image could not be uploaded.");
+    }
   }
 
   if (loading) return <main className="page-shell"><section className="container"><p className="message">Loading your studio...</p></section></main>;
@@ -115,6 +165,7 @@ function ArtistWorkspacePage() {
             <button type="button" aria-pressed={noStudioMode === "join"} className={`studio-choice-card ${noStudioMode === "join" ? "selected" : ""}`} onClick={() => setNoStudioMode("join")}><strong>Join Studio</strong><span>Find an existing studio and request to join.</span></button>
           </div>
           {noStudioMode === "create" && <form className="card form-card artist-onboarding-form" onSubmit={createStudio}><div className="onboarding-section-head"><div><p className="subtitle inline-subtitle">New studio</p><h2>Studio Information</h2></div></div>
+            <StudioImageSetupFields coverFile={newStudioCoverFile} logoFile={newStudioLogoFile} onCoverChange={setNewStudioCoverFile} onLogoChange={setNewStudioLogoFile} />
             <label>Studio name<input value={studioCreateForm.name} onChange={(e)=>setStudioCreateForm({...studioCreateForm,name:e.target.value})}/></label>
             <label>Description<textarea rows="4" value={studioCreateForm.description} onChange={(e)=>setStudioCreateForm({...studioCreateForm,description:e.target.value})}/></label>
             <label>Address<input value={studioCreateForm.address} onChange={(e)=>setStudioCreateForm({...studioCreateForm,address:e.target.value})}/></label>
@@ -137,7 +188,10 @@ function ArtistWorkspacePage() {
   return (
     <main className="page-shell">
       <section className="container">
-        <div className="studio-workspace-hero">
+        <div
+          className={`studio-workspace-hero ${studio.coverImageUrl ? "has-studio-cover" : ""}`}
+          style={studio.coverImageUrl ? { "--studio-cover": `url("${getImageUrl(studio.coverImageUrl)}")` } : undefined}
+        >
           <div>
             <p className="subtitle">My Studio</p>
             <h1>{studio.name}</h1>
@@ -193,6 +247,22 @@ function ArtistWorkspacePage() {
 
             <section className="card form-card studio-edit-section">
               <div className="onboarding-section-head"><div><p className="subtitle inline-subtitle">Owner controls</p><h2>Studio information</h2></div><button className="secondary-button compact-button" type="button" onClick={() => setEditing((value) => !value)}>{editing ? "Cancel" : "Edit studio"}</button></div>
+              <div className="studio-media-controls">
+                <div className="studio-media-preview studio-media-cover">
+                  {studio.coverImageUrl ? <img src={getImageUrl(studio.coverImageUrl)} alt="Studio cover" /> : <span>Dark cover placeholder</span>}
+                  <label className="secondary-button compact-button">
+                    Change cover
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden onChange={(event) => uploadStudioAsset("cover", event)} />
+                  </label>
+                </div>
+                <div className="studio-media-preview studio-media-logo">
+                  {studio.logoImageUrl ? <img src={getImageUrl(studio.logoImageUrl)} alt="Studio logo" /> : <strong>{studio.name?.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "ST"}</strong>}
+                  <label className="secondary-button compact-button">
+                    Change logo
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" hidden onChange={(event) => uploadStudioAsset("logo", event)} />
+                  </label>
+                </div>
+              </div>
               {editing ? (
                 <form className="form" onSubmit={saveStudio}>
                   <div className="form-group"><label>Name</label><input value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} /></div>
@@ -223,6 +293,17 @@ function ArtistWorkspacePage() {
               </div>
             </section>
           </div>
+        )}
+        {studioCrop && (
+          <ImageCropModal
+            file={studioCrop.file}
+            title={studioCrop.kind === "cover" ? "Adjust studio cover" : "Adjust studio logo"}
+            shape={studioCrop.kind === "cover" ? "rectangle" : "rounded"}
+            aspect={studioCrop.kind === "cover" ? 16 / 9 : 1}
+            outputWidth={studioCrop.kind === "cover" ? 1600 : 900}
+            onCancel={() => setStudioCrop(null)}
+            onConfirm={confirmStudioCrop}
+          />
         )}
       </section>
     </main>

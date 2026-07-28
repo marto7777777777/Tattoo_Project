@@ -2,10 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createArtistProfile } from "../api/artistApi";
 import { addPortfolioImage, updateProfileImage } from "../api/profileApi";
-import { searchOpenStudiosForJoin } from "../api/studioApi";
+import { searchOpenStudiosForJoin, uploadStudioImage } from "../api/studioApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 import { WeeklyScheduleBuilder } from "../components/WeeklyScheduleBuilder";
+import SpecialtyStyleSelector from "../components/SpecialtyStyleSelector";
+import ImageCropModal from "../components/ImageCropModal";
+import StudioImageSetupFields from "../components/StudioImageSetupFields";
 
 const DEFAULT_AVAILABILITY = {
   consultation: [
@@ -44,6 +47,7 @@ function CreateArtistProfilePage() {
     requiresDeposit: false,
     depositAmount: "",
     requirements: [""],
+    specialtyStyles: [],
   });
   const [studioForm, setStudioForm] = useState({
     name: "",
@@ -59,7 +63,10 @@ function CreateArtistProfilePage() {
   const [selectedStudio, setSelectedStudio] = useState(null);
   const [searchingStudios, setSearchingStudios] = useState(false);
   const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileCropFile, setProfileCropFile] = useState(null);
   const [portfolioImageFiles, setPortfolioImageFiles] = useState([]);
+  const [studioCoverFile, setStudioCoverFile] = useState(null);
+  const [studioLogoFile, setStudioLogoFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -262,6 +269,7 @@ function CreateArtistProfilePage() {
         .map((description) => ({ description })),
       portfolioImages: [],
       schedules: buildSchedules(),
+      specialtyStyles: artistForm.specialtyStyles,
     };
 
     try {
@@ -276,15 +284,34 @@ function CreateArtistProfilePage() {
       const token = data?.token || data?.Token;
       if (token) saveAuthToken(token);
 
-      if (profileImageFile) await updateProfileImage(profileImageFile);
-      for (const file of portfolioImageFiles) await addPortfolioImage(file);
+      const uploadWarnings = [];
+      if (profileImageFile) {
+        try { await updateProfileImage(profileImageFile); }
+        catch { uploadWarnings.push("profile picture"); }
+      }
+      for (const file of portfolioImageFiles) {
+        try { await addPortfolioImage(file); }
+        catch { uploadWarnings.push("a portfolio image"); }
+      }
+      if (setupMode === 0 && studioCoverFile) {
+        try { await uploadStudioImage("cover", studioCoverFile); }
+        catch { uploadWarnings.push("studio banner"); }
+      }
+      if (setupMode === 0 && studioLogoFile) {
+        try { await uploadStudioImage("logo", studioLogoFile); }
+        catch { uploadWarnings.push("studio profile image"); }
+      }
 
       if (setupMode === 0) {
-        setSuccess("Artist profile and studio created successfully.");
+        setSuccess(uploadWarnings.length
+          ? `Artist profile and studio created. Could not upload: ${uploadWarnings.join(", ")}. You can add these from My Studio.`
+          : "Artist profile and studio created successfully.");
       } else {
-        setSuccess(`Artist profile created. Your join request was sent to ${selectedStudio.name}.`);
+        setSuccess(uploadWarnings.length
+          ? `Artist profile created and your join request was sent to ${selectedStudio.name}. Some images can be added again from Settings.`
+          : `Artist profile created. Your join request was sent to ${selectedStudio.name}.`);
       }
-      setTimeout(() => navigate("/my-studio"), 700);
+      setTimeout(() => navigate("/my-studio"), uploadWarnings.length ? 1800 : 700);
     } catch (err) {
       setError(err.message || "Server connection failed. Please try again.");
     } finally {
@@ -294,6 +321,7 @@ function CreateArtistProfilePage() {
 
 
   return (
+    <>
     <main className="page-shell artist-onboarding-page">
       <section className="container artist-onboarding-container">
         <div className="header artist-onboarding-header">
@@ -338,7 +366,11 @@ function CreateArtistProfilePage() {
 
               <div className="profile-create-upload">
                 <label className="avatar-upload-label">
-                  <input type="file" accept="image/*" hidden onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)} />
+                  <input type="file" accept="image/*" hidden onChange={(event) => {
+                    const file = event.target.files?.[0] || null;
+                    event.target.value = "";
+                    if (file) setProfileCropFile(file);
+                  }} />
                   <div className="user-avatar user-avatar-xlarge">
                     {profilePreview ? <img src={profilePreview} alt="Profile preview" /> : <span>＋</span>}
                   </div>
@@ -375,6 +407,17 @@ function CreateArtistProfilePage() {
                   <div className="form-group"><label>Deposit amount</label><input type="number" min="0.01" step="0.01" value={artistForm.depositAmount} onChange={(event) => setArtistField("depositAmount", event.target.value)} /></div>
                 )}
               </div>
+
+              <div className="artist-specialty-create artist-specialty-create-separated">
+                <div>
+                  <h3>Specialty styles</h3>
+                  <p className="muted">Choose the tattoo styles you are strongest in. Clients can use them to find you.</p>
+                </div>
+                <SpecialtyStyleSelector
+                  value={artistForm.specialtyStyles}
+                  onChange={(specialtyStyles) => setArtistField("specialtyStyles", specialtyStyles)}
+                />
+              </div>
             </section>
 
             {setupMode === 0 ? (
@@ -383,6 +426,12 @@ function CreateArtistProfilePage() {
                   <div><p className="subtitle inline-subtitle">Create studio</p><h2>Studio information</h2><p className="muted">This belongs to the studio. Your artist description and phone remain personal.</p></div>
                   <span className="step-chip">2</span>
                 </div>
+                <StudioImageSetupFields
+                  coverFile={studioCoverFile}
+                  logoFile={studioLogoFile}
+                  onCoverChange={setStudioCoverFile}
+                  onLogoChange={setStudioLogoFile}
+                />
                 <div className="form-group"><label>Studio name</label><input value={studioForm.name} onChange={(event) => setStudioField("name", event.target.value)} maxLength={120} placeholder="InkRoute Studio" /></div>
                 <div className="form-group"><label>Studio description</label><textarea value={studioForm.description} onChange={(event) => setStudioField("description", event.target.value)} maxLength={1500} placeholder="Describe the studio, atmosphere, specialties and what clients can expect." /></div>
                 <div className="form-group"><label>Address</label><input autoComplete="street-address" value={studioForm.address} onChange={(event) => setStudioField("address", event.target.value)} maxLength={220} placeholder="ul. Ivan Vazov 10" /></div>
@@ -476,6 +525,21 @@ function CreateArtistProfilePage() {
         )}
       </section>
     </main>
+    {profileCropFile && (
+      <ImageCropModal
+        file={profileCropFile}
+        title="Adjust profile picture"
+        shape="circle"
+        aspect={1}
+        outputWidth={900}
+        onCancel={() => setProfileCropFile(null)}
+        onConfirm={(file) => {
+          setProfileImageFile(file);
+          setProfileCropFile(null);
+        }}
+      />
+    )}
+    </>
   );
 }
 

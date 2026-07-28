@@ -1,4 +1,4 @@
-import { requestJson } from "./http";
+import { apiRequest, readResponse, requestJson } from "./http";
 import { getSearchAliases } from "../utils/searchAliases";
 
 async function searchStudiosWithAliases(path, query) {
@@ -74,4 +74,13 @@ export function createMyStudio(studio) {
     method: "POST",
     body: JSON.stringify({ ...studio, latitude: null, longitude: null }),
   });
+}
+
+export async function uploadStudioImage(kind, file) {
+  const formData = new FormData();
+  formData.append("image", file);
+  const response = await apiRequest(`/api/Studio/mine/${kind}`, { method: "POST", body: formData });
+  const data = await readResponse(response);
+  if (!response.ok) throw new Error(typeof data === "string" ? data : data?.message || "Could not upload studio image.");
+  return data;
 }

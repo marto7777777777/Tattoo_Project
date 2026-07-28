@@ -28,6 +28,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
                 .Include(a => a.Reviews)
+                .Include(a => a.SpecialtyStyles)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Images)
                 .Include(a => a.TattooRequests!)
@@ -55,6 +56,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
+                .Include(a => a.SpecialtyStyles)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Images)
                 .Include(a => a.TattooRequests!)
@@ -80,8 +82,6 @@ namespace Tattoo_Project.Services
                 return await GetAllTattooArtistsAsync();
             }
 
-            query = query.Trim().ToLower();
-
             var artists = await context.TattooArtists
                 .Include(a => a.User)
                 .Include(a => a.Studio)
@@ -89,18 +89,32 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
+                .Include(a => a.SpecialtyStyles)
                 .Where(a => a.StudioId != null && a.Studio != null)
-                .Where(a =>
-                    a.Studio!.Name.ToLower().Contains(query) ||
-                    a.FirstName.ToLower().Contains(query) ||
-                    a.LastName.ToLower().Contains(query) ||
-                    a.Studio.City.ToLower().Contains(query) ||
-                    a.Studio.Country.ToLower().Contains(query) ||
-                    a.Studio.Address.ToLower().Contains(query))
+                .AsSplitQuery()
+                .ToListAsync();
+
+            var tokens = StudioService.NormalizeSearch(query)
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            artists = artists
+                .Where(artist =>
+                {
+                    var searchable = StudioService.NormalizeSearch(string.Join(" ", new[]
+                    {
+                        artist.FirstName,
+                        artist.LastName,
+                        artist.Studio!.Name,
+                        artist.Studio.City,
+                        artist.Studio.Country,
+                        artist.Studio.Address,
+                        string.Join(" ", artist.SpecialtyStyles.Select(x => x.Name))
+                    }));
+                    return tokens.All(token => searchable.Contains(token, StringComparison.Ordinal));
+                })
                 .OrderByDescending(a => a.Reviews.Any() ? a.Reviews.Average(r => r.Rating) : 0)
                 .ThenByDescending(a => a.Reviews.Count)
                 .ThenBy(a => a.Studio!.Name)
-                .ToListAsync();
+                .ToList();
 
             return ResultService<ICollection<GetTattooArtistDto>>.Ok(artists.Select(MapToGetTattooArtistDto).ToList());
         }
@@ -118,6 +132,10 @@ namespace Tattoo_Project.Services
             var validation = ValidateArtistProfile(dto.Description, dto.PhoneNumber, dto.ConsultationDurationMinutes,
                 dto.RequiresDeposit, dto.DepositAmount, dto.Schedules, dto.Requirements);
             if (!validation.Success) return validation;
+            var specialtyStyles = TattooStyleCatalog.Normalize(dto.SpecialtyStyles);
+            if (dto.SpecialtyStyles?.Count > 0 && specialtyStyles.Count != dto.SpecialtyStyles
+                    .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Count())
+                return ResultService.Fail("One or more specialty styles are invalid.");
 
             Studio? selectedStudio = null;
             if (dto.StudioSetupMode == StudioSetupMode.CreateStudio)
@@ -188,7 +206,8 @@ namespace Tattoo_Project.Services
                     StartTime = s.StartTime,
                     EndTime = s.EndTime,
                     ScheduleType = s.ScheduleType
-                }).ToList()
+                }).ToList(),
+                SpecialtyStyles = specialtyStyles.Select(x => new ArtistSpecialtyStyle { Name = x }).ToList()
             };
 
             context.TattooArtists.Add(tattooArtist);
@@ -247,6 +266,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Requirements)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Schedules)
+                .Include(a => a.SpecialtyStyles)
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
             if (artist == null)
@@ -304,6 +324,7 @@ namespace Tattoo_Project.Services
             artist.Requirements.Clear();
             artist.PortfolioImages.Clear();
             artist.Schedules.Clear();
+            artist.SpecialtyStyles.Clear();
 
             foreach (var requirement in dto.Requirements)
             {
@@ -331,6 +352,13 @@ namespace Tattoo_Project.Services
                     ScheduleType = schedule.ScheduleType
                 });
             }
+
+            var updatedStyles = TattooStyleCatalog.Normalize(dto.SpecialtyStyles);
+            if (dto.SpecialtyStyles?.Count > 0 && updatedStyles.Count != dto.SpecialtyStyles
+                    .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.OrdinalIgnoreCase).Count())
+                return ResultService.Fail("One or more specialty styles are invalid.");
+            foreach (var style in updatedStyles)
+                artist.SpecialtyStyles.Add(new ArtistSpecialtyStyle { Name = style });
 
             await context.SaveChangesAsync();
 
@@ -390,6 +418,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Schedules)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
+                .Include(a => a.SpecialtyStyles)
                 .Where(a => a.StudioId != null && a.Studio != null)
                 .AsQueryable();
 
@@ -502,6 +531,7 @@ namespace Tattoo_Project.Services
                 ReviewCount = artist.Reviews.Count,
 
                 ConsultationDurationMinutes = artist.ConsultationDurationMinutes,
+                SpecialtyStyles = artist.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList(),
 
                 Schedules = artist.Schedules.Select(s => new TattooArtistScheduleDto
                 {

@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Text;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.StudioDTOs;
 using Tattoo_Project.Models;
@@ -7,30 +9,35 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
-    public class StudioService(TattooDbContext context) : IStudioService
+    public class StudioService(TattooDbContext context, IWebHostEnvironment environment) : IStudioService
     {
         public async Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null)
         {
             var studiosQuery = BaseStudioQuery();
-
-            if (!string.IsNullOrWhiteSpace(query))
-            {
-                var normalized = query.Trim().ToLower();
-                studiosQuery = studiosQuery.Where(s =>
-                    s.Name.ToLower().Contains(normalized) ||
-                    s.City.ToLower().Contains(normalized) ||
-                    s.Country.ToLower().Contains(normalized) ||
-                    s.Address.ToLower().Contains(normalized) ||
-                    s.Artists.Any(a =>
-                        a.FirstName.ToLower().Contains(normalized) ||
-                        a.LastName.ToLower().Contains(normalized)));
-            }
 
             var studios = await studiosQuery
                 .Where(s => s.Artists.Any())
                 .OrderBy(s => s.Name)
                 .ThenBy(s => s.City)
                 .ToListAsync();
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                var tokens = NormalizeSearch(query).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                studios = studios.Where(studio =>
+                {
+                    var searchable = NormalizeSearch(string.Join(" ", new[]
+                    {
+                        studio.Name, studio.City, studio.Country, studio.Address,
+                        string.Join(" ", studio.Artists.SelectMany(a => new[]
+                        {
+                            a.FirstName, a.LastName,
+                            string.Join(" ", a.SpecialtyStyles.Select(x => x.Name))
+                        }))
+                    }));
+                    return tokens.All(token => searchable.Contains(token, StringComparison.Ordinal));
+                }).ToList();
+            }
 
             return ResultService<ICollection<StudioDto>>.Ok(studios.Select(MapStudio).ToList());
         }
@@ -362,13 +369,91 @@ namespace Tattoo_Project.Services
                 .AsNoTracking()
                 .Include(s => s.Artists).ThenInclude(a => a.User)
                 .Include(s => s.Artists).ThenInclude(a => a.Reviews)
-                .Include(s => s.Artists).ThenInclude(a => a.PortfolioImages);
+                .Include(s => s.Artists).ThenInclude(a => a.PortfolioImages)
+                .Include(s => s.Artists).ThenInclude(a => a.SpecialtyStyles)
+                .AsSplitQuery();
 
         private async Task<Studio?> FindOwnedStudioAsync(string ownerUserId)
         {
             return await context.Studios
                 .Include(s => s.OwnerArtist)
                 .FirstOrDefaultAsync(s => s.OwnerArtist != null && s.OwnerArtist.UserId == ownerUserId);
+        }
+
+        public async Task<ResultService<string>> UpdateStudioCoverAsync(IFormFile image, string ownerUserId)
+            => await UpdateStudioImageAsync(image, ownerUserId, true);
+
+        public async Task<ResultService<string>> UpdateStudioLogoAsync(IFormFile image, string ownerUserId)
+            => await UpdateStudioImageAsync(image, ownerUserId, false);
+
+        private async Task<ResultService<string>> UpdateStudioImageAsync(IFormFile image, string ownerUserId, bool isCover)
+        {
+            var studio = await FindOwnedStudioAsync(ownerUserId);
+            if (studio == null)
+                return ResultService<string>.Fail("Only the studio owner can update studio images.");
+
+            var validation = ValidateImage(image);
+            if (!validation.Success) return ResultService<string>.Fail(validation.ErrorMessage!);
+
+            var oldUrl = isCover ? studio.CoverImageUrl : studio.LogoImageUrl;
+            var imageUrl = await SaveImageAsync(image, isCover ? "studio-covers" : "studio-logos");
+            if (isCover) studio.CoverImageUrl = imageUrl;
+            else studio.LogoImageUrl = imageUrl;
+            await context.SaveChangesAsync();
+            DeleteOldFileIfLocal(oldUrl);
+            return ResultService<string>.Ok(imageUrl);
+        }
+
+        private static ResultService ValidateImage(IFormFile image)
+        {
+            if (image == null || image.Length == 0) return ResultService.Fail("Choose an image.");
+            if (image.Length > 8 * 1024 * 1024) return ResultService.Fail("Studio image cannot exceed 8 MB.");
+            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+            if (extension is not ".jpg" and not ".jpeg" and not ".png" and not ".webp")
+                return ResultService.Fail("Only JPG, PNG and WebP images are allowed.");
+            return ResultService.Ok();
+        }
+
+        private async Task<string> SaveImageAsync(IFormFile image, string folder)
+        {
+            var webRoot = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+            var directory = Path.Combine(webRoot, "uploads", folder);
+            Directory.CreateDirectory(directory);
+            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
+            var fileName = $"{Guid.NewGuid():N}{extension}";
+            await using var stream = File.Create(Path.Combine(directory, fileName));
+            await image.CopyToAsync(stream);
+            return $"/uploads/{folder}/{fileName}";
+        }
+
+        private void DeleteOldFileIfLocal(string? imageUrl)
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl) || !imageUrl.StartsWith("/uploads/", StringComparison.Ordinal))
+                return;
+            var webRoot = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+            var path = Path.Combine(webRoot, imageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+            if (File.Exists(path)) File.Delete(path);
+        }
+
+        internal static string NormalizeSearch(string value)
+        {
+            var decomposed = (value ?? string.Empty).ToLowerInvariant().Normalize(NormalizationForm.FormD);
+            var result = new StringBuilder();
+            foreach (var character in decomposed)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(character) == UnicodeCategory.NonSpacingMark) continue;
+                result.Append(character switch
+                {
+                    'а' => "a", 'б' => "b", 'в' => "v", 'г' => "g", 'д' => "d", 'е' => "e",
+                    'ж' => "zh", 'з' => "z", 'и' => "i", 'й' => "y", 'к' => "k", 'л' => "l",
+                    'м' => "m", 'н' => "n", 'о' => "o", 'п' => "p", 'р' => "r", 'с' => "s",
+                    'т' => "t", 'у' => "u", 'ф' => "f", 'х' => "h", 'ц' => "ts", 'ч' => "ch",
+                    'ш' => "sh", 'щ' => "sht", 'ъ' => "a", 'ь' => "", 'ю' => "yu", 'я' => "ya",
+                    _ => character.ToString()
+                });
+            }
+            return string.Join(' ', result.ToString().Normalize(NormalizationForm.FormC)
+                .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
         }
 
         public static ResultService ValidateStudio(CreateStudioDto dto)
@@ -407,9 +492,12 @@ namespace Tattoo_Project.Services
                     AverageRating = a.Reviews.Any() ? Math.Round(a.Reviews.Average(r => r.Rating), 1) : 0,
                     ReviewCount = a.Reviews.Count,
                     JoinedStudioOn = a.JoinedStudioOn,
-                    PortfolioImageUrls = a.PortfolioImages.OrderBy(p => p.Id).Take(3).Select(p => p.ImageUrl).ToList()
+                    PortfolioImageUrls = a.PortfolioImages.OrderBy(p => p.Id).Select(p => p.ImageUrl).ToList(),
+                    SpecialtyStyles = a.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList()
                 })
                 .ToList();
+
+            var reviews = studio.Artists.SelectMany(a => a.Reviews).ToList();
 
             return new StudioDto
             {
@@ -422,9 +510,15 @@ namespace Tattoo_Project.Services
                 Latitude = studio.Latitude,
                 Longitude = studio.Longitude,
                 IsOpenForJoinRequests = studio.IsOpenForJoinRequests,
+                CoverImageUrl = studio.CoverImageUrl,
+                LogoImageUrl = studio.LogoImageUrl,
                 ArtistCount = artists.Count,
+                AverageRating = reviews.Count > 0 ? Math.Round(reviews.Average(x => x.Rating), 1) : null,
+                ReviewCount = reviews.Count,
+                SpecialtyStyles = artists.SelectMany(a => a.SpecialtyStyles)
+                    .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x).ToList(),
                 Artists = artists,
-                PortfolioPreviewUrls = artists.SelectMany(a => a.PortfolioImageUrls).Take(6).ToList()
+                PortfolioPreviewUrls = artists.SelectMany(a => a.PortfolioImageUrls).Take(12).ToList()
             };
         }
 

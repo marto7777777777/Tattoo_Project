@@ -51,5 +51,6 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
 
         public ICollection<TattooArtistScheduleDto> Schedules { get; set; }
             = new List<TattooArtistScheduleDto>();
+        public ICollection<string> SpecialtyStyles { get; set; } = new List<string>();
     }
 }

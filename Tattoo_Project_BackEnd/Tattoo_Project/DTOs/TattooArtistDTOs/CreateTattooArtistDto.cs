@@ -19,5 +19,6 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
         public ICollection<TattooArtistRequirementsDto> Requirements { get; set; } = new List<TattooArtistRequirementsDto>();
         public ICollection<TattooArtistPortfolioImageDto> PortfolioImages { get; set; } = new List<TattooArtistPortfolioImageDto>();
         public ICollection<TattooArtistScheduleDto> Schedules { get; set; } = new List<TattooArtistScheduleDto>();
+        public ICollection<string> SpecialtyStyles { get; set; } = new List<string>();
     }
 }

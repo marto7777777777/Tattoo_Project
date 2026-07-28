@@ -37,6 +37,7 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
         public ICollection<ProfileRequirementDto> Requirements { get; set; } = new List<ProfileRequirementDto>();
         public ICollection<ProfilePortfolioImageDto> PortfolioImages { get; set; } = new List<ProfilePortfolioImageDto>();
         public ICollection<TattooArtistScheduleDto> Schedules { get; set; } = new List<TattooArtistScheduleDto>();
+        public ICollection<string> SpecialtyStyles { get; set; } = new List<string>();
     }
 
     public class ProfileRequirementDto
@@ -69,5 +70,10 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
     public class UpdateBoolValueDto
     {
         public bool Value { get; set; }
+    }
+
+    public class UpdateStringListDto
+    {
+        public ICollection<string> Values { get; set; } = new List<string>();
     }
 }

@@ -12,8 +12,11 @@ import {
   updateNumberField,
   updateProfileImage,
   updateRequirement,
+  updateSpecialtyStyles,
   updateStringField,
 } from "../api/profileApi";
+import SpecialtyStyleSelector from "../components/SpecialtyStyleSelector";
+import ImageCropModal from "../components/ImageCropModal";
 import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../utils/images";
@@ -55,6 +58,8 @@ function ProfileSectionPage() {
   const [editingKey, setEditingKey] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [newRequirement, setNewRequirement] = useState("");
+  const [specialtyStylesDraft, setSpecialtyStylesDraft] = useState([]);
+  const [profileCropFile, setProfileCropFile] = useState(null);
   const [passwordStep, setPasswordStep] = useState("idle");
   const [passwordForm, setPasswordForm] = useState({ code: "", newPassword: "", confirmNewPassword: "" });
   const settingsContentRef = useRef(null);
@@ -86,6 +91,7 @@ function ProfileSectionPage() {
     try {
       const data = await getMyProfile();
       setProfile(data);
+      setSpecialtyStylesDraft(data.artist?.specialtyStyles || []);
     } catch (err) {
       setError(err.message || "Profile could not be loaded.");
     } finally {
@@ -126,13 +132,17 @@ function ProfileSectionPage() {
 
   async function handleProfileImageChange(event) {
     const file = event.target.files?.[0];
+    event.target.value = "";
     if (!file) return;
+    setProfileCropFile(file);
+  }
 
+  async function handleCroppedProfileImage(file) {
     setError("");
     setSuccess("");
-
     try {
       await updateProfileImage(file);
+      setProfileCropFile(null);
       setSuccess("Profile picture updated successfully.");
       await loadProfile();
     } catch (err) {
@@ -206,6 +216,18 @@ function ProfileSectionPage() {
       await loadProfile();
     } catch (err) {
       setError(err.message || "Requirement could not be deleted.");
+    }
+  }
+
+  async function handleSpecialtyStylesSave() {
+    setError("");
+    setSuccess("");
+    try {
+      await updateSpecialtyStyles(specialtyStylesDraft);
+      setSuccess("Specialty styles updated.");
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "Specialty styles could not be updated.");
     }
   }
 
@@ -421,6 +443,16 @@ function ProfileSectionPage() {
                 </div>
                 <Link className="secondary-button compact-button" to="/my-studio">Open My Studio</Link>
               </div>
+              <div className="artist-specialty-editor">
+                <div>
+                  <h3>Specialty styles</h3>
+                  <p className="muted">Choose up to 8 styles that best represent your work. These styles help clients find your studio.</p>
+                </div>
+                <SpecialtyStyleSelector value={specialtyStylesDraft} onChange={setSpecialtyStylesDraft} />
+                <button className="primary-button compact-button" type="button" onClick={handleSpecialtyStylesSave}>
+                  Save specialty styles
+                </button>
+              </div>
               <h3>Requirements</h3>
               <div className="inline-form-row">
                 <input value={newRequirement} onChange={(event) => setNewRequirement(event.target.value)} placeholder="Add new requirement" />
@@ -467,6 +499,17 @@ function ProfileSectionPage() {
           {success && <p className="success">{success}</p>}
         </section>
       </div>
+      {profileCropFile && (
+        <ImageCropModal
+          file={profileCropFile}
+          title="Adjust profile picture"
+          shape="circle"
+          aspect={1}
+          outputWidth={900}
+          onCancel={() => setProfileCropFile(null)}
+          onConfirm={handleCroppedProfileImage}
+        />
+      )}
       </div>
     </main>
   );

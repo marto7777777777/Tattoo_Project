@@ -702,6 +702,30 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("Schedules");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistSpecialtyStyle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<int>("TattooArtistId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TattooArtistId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("ArtistSpecialtyStyles");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Studio", b =>
                 {
                     b.Property<int>("Id")
@@ -725,6 +749,10 @@ namespace Tattoo_Project.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("CoverImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
@@ -743,6 +771,10 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<double?>("Longitude")
                         .HasColumnType("float");
+
+                    b.Property<string>("LogoImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1199,6 +1231,17 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("TattooArtist");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistSpecialtyStyle", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
+                        .WithMany("SpecialtyStyles")
+                        .HasForeignKey("TattooArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TattooArtist");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Studio", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.TattooArtist", "OwnerArtist")
@@ -1317,6 +1360,8 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Schedules");
+
+                    b.Navigation("SpecialtyStyles");
 
                     b.Navigation("StudioJoinRequests");
 

@@ -4,6 +4,7 @@ import { createClientProfile } from "../api/clientApi";
 import { updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
+import ImageCropModal from "../components/ImageCropModal";
 
 function CreateClientProfilePage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function CreateClientProfilePage() {
   const returnTo = searchParams.get("returnTo");
   const [form, setForm] = useState({ phoneNumber: "", city: "", country: "" });
   const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileCropFile, setProfileCropFile] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const profilePreview = useMemo(
@@ -62,6 +64,7 @@ function CreateClientProfilePage() {
   }
 
   return (
+    <>
     <main className="center-container client-profile-create-page">
       <section className="card form-card client-profile-create-card">
         <div className="header">
@@ -83,7 +86,11 @@ function CreateClientProfilePage() {
                 type="file"
                 accept="image/*"
                 hidden
-                onChange={(event) => setProfileImageFile(event.target.files?.[0] || null)}
+                onChange={(event) => {
+                  const file = event.target.files?.[0] || null;
+                  event.target.value = "";
+                  if (file) setProfileCropFile(file);
+                }}
               />
               <div className="user-avatar user-avatar-xlarge">
                 {profilePreview ? (
@@ -119,6 +126,21 @@ function CreateClientProfilePage() {
         </form>
       </section>
     </main>
+    {profileCropFile && (
+      <ImageCropModal
+        file={profileCropFile}
+        title="Adjust profile picture"
+        shape="circle"
+        aspect={1}
+        outputWidth={900}
+        onCancel={() => setProfileCropFile(null)}
+        onConfirm={(file) => {
+          setProfileImageFile(file);
+          setProfileCropFile(null);
+        }}
+      />
+    )}
+    </>
   );
 }
 

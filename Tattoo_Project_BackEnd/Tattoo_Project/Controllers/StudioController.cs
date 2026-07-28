@@ -135,5 +135,27 @@ namespace Tattoo_Project.Controllers
             if (!result.Success) return BadRequest(result.ErrorMessage);
             return Ok("Studio updated successfully.");
         }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [HttpPost("mine/cover")]
+        public async Task<IActionResult> UpdateCover(IFormFile image)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.UpdateStudioCoverAsync(image, userId);
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+            return Ok(new { imageUrl = result.Data });
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [HttpPost("mine/logo")]
+        public async Task<IActionResult> UpdateLogo(IFormFile image)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.UpdateStudioLogoAsync(image, userId);
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+            return Ok(new { imageUrl = result.Data });
+        }
     }
 }

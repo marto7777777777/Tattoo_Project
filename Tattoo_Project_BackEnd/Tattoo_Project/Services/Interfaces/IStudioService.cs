@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Tattoo_Project.DTOs.StudioDTOs;
 using Tattoo_Project.Services.Results;
 
@@ -16,5 +17,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> RemoveMemberAsync(int artistId, string ownerUserId);
         Task<ResultService> SetOpenForJoinRequestsAsync(bool isOpen, string ownerUserId);
         Task<ResultService> UpdateStudioAsync(UpdateStudioDto dto, string ownerUserId);
+        Task<ResultService<string>> UpdateStudioCoverAsync(IFormFile image, string ownerUserId);
+        Task<ResultService<string>> UpdateStudioLogoAsync(IFormFile image, string ownerUserId);
     }
 }

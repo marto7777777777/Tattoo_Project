@@ -75,11 +75,11 @@ function ArtistsPage() {
         <div className="header">
           <p className="subtitle">Explore studios</p>
           <h1>Find a studio, then choose your artist</h1>
-          <p>Browse tattoo studios and compare the individual artists working inside each one. Every artist keeps their own portfolio, description and availability.</p>
+          <p>Browse studios by city, artist or tattoo style. Every artist keeps their own portfolio, specialties and availability.</p>
         </div>
 
         <form className="search-bar" onSubmit={handleSearch}>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search studio name, city or country..." />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by studio, artist, city or style..." />
           <button className="primary-button" type="submit">Search</button>
           <button className="secondary-button" type="button" onClick={() => { setQuery(""); loadStudios(); }}>Reset</button>
         </form>

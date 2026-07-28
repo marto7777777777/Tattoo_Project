@@ -16,6 +16,8 @@ namespace Tattoo_Project.Configuration
             builder.Property(x => x.City).IsRequired().HasMaxLength(100);
             builder.Property(x => x.Country).IsRequired().HasMaxLength(100);
             builder.Property(x => x.IsOpenForJoinRequests).HasDefaultValue(true);
+            builder.Property(x => x.CoverImageUrl).HasMaxLength(500);
+            builder.Property(x => x.LogoImageUrl).HasMaxLength(500);
 
             builder.HasIndex(x => new { x.Name, x.City });
 

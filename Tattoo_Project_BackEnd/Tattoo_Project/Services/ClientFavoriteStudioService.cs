@@ -57,6 +57,9 @@ namespace Tattoo_Project.Services
                 .Include(x => x.Studio)
                     .ThenInclude(x => x.Artists)
                         .ThenInclude(x => x.PortfolioImages)
+                .Include(x => x.Studio)
+                    .ThenInclude(x => x.Artists)
+                        .ThenInclude(x => x.SpecialtyStyles)
                 .OrderByDescending(x => x.CreatedOn)
                 .AsSplitQuery()
                 .ToListAsync();

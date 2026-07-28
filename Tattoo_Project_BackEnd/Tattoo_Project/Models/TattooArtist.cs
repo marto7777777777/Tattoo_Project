@@ -48,5 +48,7 @@ namespace Tattoo_Project.Models
 
         public ICollection<StudioJoinRequest> StudioJoinRequests { get; set; }
             = new List<StudioJoinRequest>();
+        public ICollection<ArtistSpecialtyStyle> SpecialtyStyles { get; set; }
+            = new List<ArtistSpecialtyStyle>();
     }
 }

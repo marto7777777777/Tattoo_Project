@@ -35,6 +35,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Requirements)
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Schedules)
+                .Include(a => a.SpecialtyStyles)
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
             var hasPendingJoinRequest = artist != null && artist.StudioId == null &&
@@ -67,6 +68,7 @@ namespace Tattoo_Project.Services
                     OffersOnlineConsultation = artist.OffersOnlineConsultation,
                     RequiresDeposit = artist.RequiresDeposit,
                     DepositAmount = artist.DepositAmount,
+                    SpecialtyStyles = artist.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList(),
                     Requirements = artist.Requirements.Select(r => new ProfileRequirementDto
                     {
                         Id = r.Id,
@@ -197,6 +199,27 @@ namespace Tattoo_Project.Services
             if (value.Trim().Length > 1200)
                 return Task.FromResult(ResultService.Fail("Artist description cannot exceed 1200 characters."));
             return UpdateArtistStringAsync(userId, value, "Artist description is required.", a => a.Description = value.Trim());
+        }
+
+        public async Task<ResultService> UpdateSpecialtyStylesAsync(string userId, ICollection<string> values)
+        {
+            var artist = await context.TattooArtists
+                .Include(x => x.SpecialtyStyles)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+            if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
+
+            var normalized = TattooStyleCatalog.Normalize(values);
+            var suppliedCount = (values ?? new List<string>())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase).Count();
+            if (suppliedCount != normalized.Count)
+                return ResultService.Fail("One or more specialty styles are invalid.");
+
+            artist.SpecialtyStyles.Clear();
+            foreach (var style in normalized)
+                artist.SpecialtyStyles.Add(new ArtistSpecialtyStyle { Name = style });
+            await context.SaveChangesAsync();
+            return ResultService.Ok();
         }
 
         public async Task<ResultService> UpdateConsultationDurationAsync(string userId, int value)

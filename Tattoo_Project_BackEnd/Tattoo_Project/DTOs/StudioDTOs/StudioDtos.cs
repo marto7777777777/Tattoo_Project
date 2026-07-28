@@ -30,6 +30,7 @@ namespace Tattoo_Project.DTOs.StudioDTOs
         public int ReviewCount { get; set; }
         public DateTime? JoinedStudioOn { get; set; }
         public ICollection<string> PortfolioImageUrls { get; set; } = new List<string>();
+        public ICollection<string> SpecialtyStyles { get; set; } = new List<string>();
     }
 
     public class StudioDto
@@ -43,7 +44,12 @@ namespace Tattoo_Project.DTOs.StudioDTOs
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public bool IsOpenForJoinRequests { get; set; }
+        public string? CoverImageUrl { get; set; }
+        public string? LogoImageUrl { get; set; }
         public int ArtistCount { get; set; }
+        public double? AverageRating { get; set; }
+        public int ReviewCount { get; set; }
+        public ICollection<string> SpecialtyStyles { get; set; } = new List<string>();
         public ICollection<StudioArtistDto> Artists { get; set; } = new List<StudioArtistDto>();
         public ICollection<string> PortfolioPreviewUrls { get; set; } = new List<string>();
     }

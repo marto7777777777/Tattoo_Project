@@ -33,6 +33,7 @@ namespace Tattoo_Project.Data
         public DbSet<ArtistResponse> ArtistResponses { get; set; }
 
         public DbSet<ArtistReview> ArtistReviews { get; set; }
+        public DbSet<ArtistSpecialtyStyle> ArtistSpecialtyStyles { get; set; }
         public DbSet<ClientFavoriteStudio> ClientFavoriteStudios { get; set; }
 
         public DbSet<ArtistUnavailableDate> ArtistUnavailableDates { get; set; }
