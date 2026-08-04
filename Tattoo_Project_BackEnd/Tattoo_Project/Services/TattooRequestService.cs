@@ -16,6 +16,60 @@ namespace Tattoo_Project.Services
     public class TattooRequestService(TattooDbContext context, IWebHostEnvironment environment)
         : ITattooRequestService
     {
+        public async Task<ResultService> RejectTattooRequestByArtistAsync(
+            int id,
+            string userId)
+        {
+            var tattooArtist = await context.TattooArtists
+                .FirstOrDefaultAsync(a => a.UserId == userId);
+
+            if (tattooArtist == null)
+            {
+                return ResultService.Fail("Tattoo artist profile was not found.");
+            }
+
+            var tattooRequest = await context.TattooRequests
+                .Include(r => r.Consultation)
+                .Include(r => r.TattooSessions)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (tattooRequest == null)
+            {
+                return ResultService.Fail("Tattoo request was not found.");
+            }
+
+            if (tattooRequest.TattooArtistId != tattooArtist.Id)
+            {
+                return ResultService.Fail("You can reject only tattoo requests assigned to you.");
+            }
+
+            if (tattooRequest.Status == RequestStatus.Rejected)
+            {
+                return ResultService.Fail("Tattoo request is already rejected.");
+            }
+
+            if (tattooRequest.Status == RequestStatus.Completed)
+            {
+                return ResultService.Fail("A completed tattoo request cannot be rejected.");
+            }
+
+            if (tattooRequest.Consultation != null)
+            {
+                context.Consultations.Remove(tattooRequest.Consultation);
+            }
+
+            if (tattooRequest.TattooSessions != null && tattooRequest.TattooSessions.Count > 0)
+            {
+                context.TattooSessions.RemoveRange(tattooRequest.TattooSessions);
+            }
+
+            tattooRequest.RemainingSessionsToBook = 0;
+            tattooRequest.Status = RequestStatus.Rejected;
+
+            await context.SaveChangesAsync();
+            return ResultService.Ok();
+        }
+
         public async Task<ResultService<ICollection<GetTattooRequestDto>>> GetAllTattooRequestsAsync()
         {
             var tattooRequests = await context.TattooRequests
@@ -633,6 +687,7 @@ namespace Tattoo_Project.Services
                     ? null
                     : tattooRequest.TattooSessions.Select(s => new TattooSessionDto
                     {
+                        Id = s.Id,
                         StartTime = s.StartTime,
                         EndTime = s.EndTime,
                         DurationHours = s.DurationHours,
@@ -646,6 +701,7 @@ namespace Tattoo_Project.Services
                         EstimatedPrice = tattooRequest.ArtistResponse.EstimatedPrice,
                         EstimatedHours = tattooRequest.ArtistResponse.EstimatedHours,
                         ResponseMessage = tattooRequest.ArtistResponse.ResponseMessage,
+                        WorkflowPath = tattooRequest.ArtistResponse.WorkflowPath,
                         CreatedOn = tattooRequest.ArtistResponse.CreatedOn
                     },
 
@@ -653,6 +709,7 @@ namespace Tattoo_Project.Services
                     ? null
                     : new ConsultationDto
                     {
+                        Id = tattooRequest.Consultation.Id,
                         StartTime = tattooRequest.Consultation.StartTime,
                         EndTime = tattooRequest.Consultation.EndTime,
                         Notes = tattooRequest.Consultation.Notes

@@ -108,7 +108,7 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+            Roles = UserRoles.Admin + "," + UserRoles.Client + "," + UserRoles.TattooArtist)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTattooSession(int id)
         {
@@ -119,7 +119,10 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var result = await service.DeleteTattooSessionAsync(id, userId);
+            var result = await service.DeleteTattooSessionAsync(
+                id,
+                userId,
+                User.IsInRole(UserRoles.Admin));
 
             if (!result.Success)
             {

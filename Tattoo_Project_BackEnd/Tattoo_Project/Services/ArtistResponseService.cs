@@ -19,6 +19,8 @@ namespace Tattoo_Project.Services
                     TattooRequestId = r.TattooRequestId,
                     ResponseMessage = r.ResponseMessage,
                     EstimatedPrice = r.EstimatedPrice,
+                    EstimatedHours = r.EstimatedHours,
+                    WorkflowPath = r.WorkflowPath,
                     CreatedOn = r.CreatedOn
                 })
                 .ToListAsync();
@@ -60,6 +62,8 @@ namespace Tattoo_Project.Services
                 TattooRequestId = response.TattooRequestId,
                 ResponseMessage = response.ResponseMessage,
                 EstimatedPrice = response.EstimatedPrice,
+                EstimatedHours = response.EstimatedHours,
+                WorkflowPath = response.WorkflowPath,
                 CreatedOn = response.CreatedOn
             };
 
@@ -85,6 +89,8 @@ namespace Tattoo_Project.Services
                     TattooRequestId = r.TattooRequestId,
                     ResponseMessage = r.ResponseMessage,
                     EstimatedPrice = r.EstimatedPrice,
+                    EstimatedHours = r.EstimatedHours,
+                    WorkflowPath = r.WorkflowPath,
                     CreatedOn = r.CreatedOn
                 })
                 .ToListAsync();
@@ -133,19 +139,87 @@ namespace Tattoo_Project.Services
                     "This tattoo request already has an artist response.");
             }
 
+            if (!dto.WorkflowPath.HasValue || !Enum.IsDefined(dto.WorkflowPath.Value))
+            {
+                return ResultService.Fail("Choose a valid workflow after the artist response.");
+            }
+
+            if (dto.WorkflowPath.Value == ArtistResponseWorkflowPath.DirectToSessions)
+            {
+                var sessionValidation = ValidateDirectSessionPlan(dto);
+                if (!sessionValidation.Success)
+                {
+                    return sessionValidation;
+                }
+            }
+            else if (dto.EstimatedPrice <= 0 || dto.EstimatedHours <= 0)
+            {
+                return ResultService.Fail(
+                    "Indicative price and duration must be greater than zero when a consultation is required.");
+            }
+
+            var directToSessions = dto.WorkflowPath.Value == ArtistResponseWorkflowPath.DirectToSessions;
+
             ArtistResponse artistResponse = new()
             {
                 TattooRequestId = dto.TattooRequestId,
                 ResponseMessage = dto.ResponseMessage,
-                EstimatedPrice = dto.EstimatedPrice,
+                EstimatedPrice = directToSessions ? dto.PriceForSession!.Sum() : dto.EstimatedPrice,
+                EstimatedHours = directToSessions ? dto.DurationHoursForSession!.Sum() : dto.EstimatedHours,
+                WorkflowPath = dto.WorkflowPath.Value,
                 CreatedOn = DateTime.UtcNow
             };
 
-            tattooRequest.Status = RequestStatus.WaitingForConsultation;
+            if (directToSessions)
+            {
+                tattooRequest.Status = RequestStatus.ConsultationCompleted;
+                tattooRequest.RemainingSessionsToBook = dto.SessionsToBook;
+                tattooRequest.PriceForSession = dto.PriceForSession!.ToList();
+                tattooRequest.DurationHoursForSession = dto.DurationHoursForSession!.ToList();
+            }
+            else
+            {
+                tattooRequest.Status = RequestStatus.WaitingForConsultation;
+                tattooRequest.RemainingSessionsToBook = null;
+                tattooRequest.PriceForSession = null;
+                tattooRequest.DurationHoursForSession = null;
+            }
 
             context.ArtistResponses.Add(artistResponse);
 
             await context.SaveChangesAsync();
+
+            return ResultService.Ok();
+        }
+
+        private static ResultService ValidateDirectSessionPlan(CreateArtistResponseDto dto)
+        {
+            if (dto.SessionsToBook is null or <= 0)
+            {
+                return ResultService.Fail("Direct booking requires at least one tattoo session.");
+            }
+
+            if (dto.PriceForSession == null ||
+                dto.PriceForSession.Count != dto.SessionsToBook.Value)
+            {
+                return ResultService.Fail("Session price count must match the number of sessions.");
+            }
+
+            if (dto.PriceForSession.Any(price => price <= 0))
+            {
+                return ResultService.Fail("Every session price must be greater than zero.");
+            }
+
+            if (dto.DurationHoursForSession == null ||
+                dto.DurationHoursForSession.Count != dto.SessionsToBook.Value)
+            {
+                return ResultService.Fail("Session duration count must match the number of sessions.");
+            }
+
+            if (dto.DurationHoursForSession.Any(duration => duration <= 0))
+            {
+                return ResultService.Fail("Every session duration must be greater than zero.");
+            }
 
             return ResultService.Ok();
         }

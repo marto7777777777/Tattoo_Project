@@ -14,6 +14,12 @@ export function updateTattooSession(id, sessionData) {
   });
 }
 
+export function cancelTattooSession(id) {
+  return apiRequest(`/api/TattooSession/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function addMoreSessions(tattooRequestId, data) {
   return apiRequest(`/api/TattooSession/add-more-sessions/${tattooRequestId}`, {
     method: "PUT",

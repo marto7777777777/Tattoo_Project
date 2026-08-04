@@ -41,5 +41,9 @@ namespace Tattoo_Project.Services.Interfaces
             int id,
             UpdateTattooRequestDto dto,
             string userId);
+
+        Task<ResultService> RejectTattooRequestByArtistAsync(
+            int id,
+            string userId);
     }
 }

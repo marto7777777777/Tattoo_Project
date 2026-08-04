@@ -1051,8 +1051,38 @@ html[lang="bg"] .booking-day-disabled:before { content:"ЗАЕТО"; }
 .studio-confirm-modal>p:not(.subtitle){margin:0;color:var(--muted)}
 .studio-confirm-icon{display:grid;width:46px;height:46px;place-items:center;margin-bottom:18px;border:1px solid rgba(255,95,111,.28);border-radius:14px;background:rgba(255,95,111,.09);color:#ff9ca7;font-size:22px;font-weight:900}
 .studio-confirm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:25px}
+.appointment-cancel-button{align-self:flex-start;margin-top:12px}
+.appointment-cancel-note{display:block;margin:12px 0 0;color:#a98990;font-size:11px;line-height:1.5}
+.request-danger-zone{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  margin:18px 24px 28px;
+  padding:20px;
+  border:1px solid rgba(255,95,111,.22);
+  border-radius:18px;
+  background:rgba(255,79,99,.055);
+}
+.request-danger-zone h3{margin:0 0 5px;font-size:19px}
+.request-danger-zone p{max-width:680px;margin:0;color:var(--muted);font-size:12px}
+.request-danger-zone .request-project-section-label{margin-bottom:6px;color:#ff9ca7}
+.request-danger-zone>.danger-button{flex:0 0 auto}
+.request-cancel-confirm strong{color:#ffadb7}
+.artist-response-workflow-choice{display:flex;flex-direction:column;gap:10px;margin-top:8px;padding-top:22px;border-top:1px solid var(--line)}
+.artist-response-workflow-choice h3,.artist-response-path-details h3{margin:0}
+.artist-response-workflow-choice>p.muted,.artist-response-path-details>p.muted{margin:0 0 8px}
+.artist-response-choice-grid{margin-top:8px}
+.artist-response-path-details{display:flex;flex-direction:column;gap:16px;padding:20px;border:1px solid rgba(145,116,255,.22);border-radius:18px;background:linear-gradient(145deg,rgba(126,92,255,.09),rgba(18,18,24,.72))}
+.direct-session-row{display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--line);border-radius:15px;background:rgba(8,8,12,.34)}
+.direct-session-row>strong{color:var(--accent-2);font-size:13px}
+.consultation-skipped-banner{display:flex;flex-direction:column;gap:4px;margin-top:16px;padding:14px 16px;border:1px solid rgba(151,122,255,.28);border-radius:14px;background:rgba(126,92,255,.1)}
+.consultation-skipped-banner strong{color:#d5c9ff}
+.consultation-skipped-banner span{color:var(--soft);font-size:12px;line-height:1.55}
+.compact-skipped-banner{margin-top:14px}
 .hero-metrics-workflow{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:18px}
-@media(max-width:700px){.hero-metrics-workflow{grid-template-columns:repeat(2,minmax(0,1fr))}.studio-confirm-actions{flex-direction:column-reverse}.studio-confirm-actions button{width:100%}}
+@media(max-width:700px){.hero-metrics-workflow{grid-template-columns:repeat(2,minmax(0,1fr))}.studio-confirm-actions{flex-direction:column-reverse}.studio-confirm-actions button{width:100%}.request-danger-zone{align-items:stretch;flex-direction:column;margin:14px 14px 24px}.request-danger-zone>.danger-button{width:100%}}
+@media(max-width:700px){.artist-response-path-details{padding:16px}.artist-response-choice-grid{grid-template-columns:1fr}.direct-session-row{padding:14px}}
 
 /* Schedule time dropdowns */
 .availability-time-row select{width:100%;min-height:42px;padding:9px 34px 9px 10px;border:1px solid var(--line-strong);border-radius:12px;color:var(--text);background:#0b0b10;outline:none;color-scheme:dark;font-size:12px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#8f8a9f 50%),linear-gradient(135deg,#8f8a9f 50%,transparent 50%);background-position:calc(100% - 18px) 18px,calc(100% - 13px) 18px;background-size:5px 5px;background-repeat:no-repeat}.availability-time-row select:focus{border-color:rgba(151,124,255,.62);box-shadow:0 0 0 3px rgba(139,108,255,.09)}

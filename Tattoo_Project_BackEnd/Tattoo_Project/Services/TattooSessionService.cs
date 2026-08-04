@@ -351,15 +351,14 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService> DeleteTattooSessionAsync(
             int id,
-            string userId)
+            string userId,
+            bool isAdmin)
         {
             var tattooArtist = await context.TattooArtists
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (tattooArtist == null)
-            {
-                return ResultService.Fail("Tattoo artist profile was not found.");
-            }
+            var client = await context.Clients
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var tattooSession = await context.TattooSessions
                 .Include(s => s.TattooRequest)
@@ -370,10 +369,51 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo session was not found.");
             }
 
-            if (tattooSession.TattooRequest.TattooArtistId != tattooArtist.Id)
+            var tattooRequest = tattooSession.TattooRequest;
+            var isAssignedArtist = tattooArtist != null &&
+                                   tattooRequest.TattooArtistId == tattooArtist.Id;
+            var isOwningClient = client != null && tattooRequest.ClientId == client.Id;
+
+            if (!isAdmin && !isAssignedArtist && !isOwningClient)
             {
                 return ResultService.Fail(
-                    "You can delete only tattoo sessions assigned to you.");
+                    "You can cancel only tattoo sessions that belong to your tattoo request.");
+            }
+
+            if (tattooRequest.Status == RequestStatus.Completed ||
+                tattooRequest.Status == RequestStatus.Rejected)
+            {
+                return ResultService.Fail("Tattoo sessions cannot be cancelled for a closed request.");
+            }
+
+            if (tattooSession.StartTime <= DateTime.UtcNow)
+            {
+                return ResultService.Fail("A tattoo session that has already started cannot be cancelled.");
+            }
+
+            if (isOwningClient && !isAssignedArtist && !isAdmin &&
+                tattooSession.StartTime <= DateTime.UtcNow.AddHours(24))
+            {
+                return ResultService.Fail(
+                    "Clients can cancel a tattoo session only more than 24 hours before it starts.");
+            }
+
+            var otherBookedSessionsCount = await context.TattooSessions
+                .CountAsync(s => s.TattooRequestId == tattooRequest.Id && s.Id != tattooSession.Id);
+
+            RestoreCancelledSessionPlan(tattooRequest, tattooSession, otherBookedSessionsCount);
+
+            var plannedSessionsCount = Math.Min(
+                tattooRequest.PriceForSession?.Count ?? 0,
+                tattooRequest.DurationHoursForSession?.Count ?? 0);
+            tattooRequest.RemainingSessionsToBook = Math.Min(
+                plannedSessionsCount,
+                Math.Max(0, tattooRequest.RemainingSessionsToBook ?? 0) + 1);
+
+            if (tattooRequest.Status == RequestStatus.TattooBooked &&
+                otherBookedSessionsCount == 0)
+            {
+                tattooRequest.Status = RequestStatus.ConsultationCompleted;
             }
 
             context.TattooSessions.Remove(tattooSession);
@@ -381,6 +421,38 @@ namespace Tattoo_Project.Services
             await context.SaveChangesAsync();
 
             return ResultService.Ok();
+        }
+
+        private static void RestoreCancelledSessionPlan(
+            TattooRequest tattooRequest,
+            TattooSession tattooSession,
+            int otherBookedSessionsCount)
+        {
+            var prices = tattooRequest.PriceForSession;
+            var durations = tattooRequest.DurationHoursForSession;
+            if (prices == null || durations == null || prices.Count != durations.Count) return;
+
+            var cancelledPlanIndex = -1;
+            for (var index = 0; index < prices.Count; index++)
+            {
+                if (prices[index] == tattooSession.PriceForTheSession &&
+                    durations[index] == tattooSession.DurationHours)
+                {
+                    cancelledPlanIndex = index;
+                    break;
+                }
+            }
+
+            if (cancelledPlanIndex < 0) return;
+
+            var cancelledPrice = prices[cancelledPlanIndex];
+            var cancelledDuration = durations[cancelledPlanIndex];
+            prices.RemoveAt(cancelledPlanIndex);
+            durations.RemoveAt(cancelledPlanIndex);
+
+            var rebookingIndex = Math.Min(otherBookedSessionsCount, prices.Count);
+            prices.Insert(rebookingIndex, cancelledPrice);
+            durations.Insert(rebookingIndex, cancelledDuration);
         }
 
         public async Task<ResultService> AddMoreSessionsAsync(

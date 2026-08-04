@@ -25,7 +25,8 @@ namespace Tattoo_Project.Services.Interfaces
 
         Task<ResultService> DeleteTattooSessionAsync(
             int id,
-            string userId);
+            string userId,
+            bool isAdmin);
 
         Task<ResultService> AddMoreSessionsAsync(
             int tattooRequestId,

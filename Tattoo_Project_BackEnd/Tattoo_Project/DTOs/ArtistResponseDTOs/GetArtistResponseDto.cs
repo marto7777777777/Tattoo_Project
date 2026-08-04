@@ -13,6 +13,8 @@ namespace Tattoo_Project.DTOs.ArtistResponseDTOs
 
         public string ResponseMessage { get; set; } = null!;
 
+        public ArtistResponseWorkflowPath WorkflowPath { get; set; }
+
         public DateTime CreatedOn { get; set; }
     }
 }

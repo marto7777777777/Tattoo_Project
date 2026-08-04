@@ -1,4 +1,6 @@
-﻿namespace Tattoo_Project.DTOs.ArtistResponseDTOs
+﻿using Tattoo_Project.Models;
+
+namespace Tattoo_Project.DTOs.ArtistResponseDTOs
 {
     public class CreateArtistResponseDto
     {
@@ -9,5 +11,13 @@
         public int EstimatedHours { get; set; }
 
         public string ResponseMessage { get; set; } = null!;
+
+        public ArtistResponseWorkflowPath? WorkflowPath { get; set; }
+
+        public int? SessionsToBook { get; set; }
+
+        public ICollection<decimal>? PriceForSession { get; set; }
+
+        public ICollection<int>? DurationHoursForSession { get; set; }
     }
 }

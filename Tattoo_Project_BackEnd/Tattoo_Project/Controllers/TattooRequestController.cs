@@ -213,5 +213,28 @@ namespace Tattoo_Project.Controllers
 
             return Ok("Tattoo request updated successfully.");
         }
+
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = UserRoles.TattooArtist)]
+        [HttpPut("{id}/reject-by-artist")]
+        public async Task<IActionResult> RejectTattooRequestByArtist(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            var result = await service.RejectTattooRequestByArtistAsync(id, userId);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok("Tattoo request rejected and all appointments cancelled successfully.");
+        }
     }
 }

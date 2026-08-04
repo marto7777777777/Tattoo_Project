@@ -8,6 +8,8 @@ import { ES } from "./spanishTranslations";
 import { workflowApiTranslationsEs } from "./workflowApiTranslationsEs";
 import { IT } from "./italianTranslations";
 import { workflowApiTranslationsIt } from "./workflowApiTranslationsIt";
+import { cancellationTranslations } from "./cancellationTranslations";
+import { artistResponseWorkflowTranslations } from "./artistResponseWorkflowTranslations";
 
 const BG = {
   "Image position": "Позиция на снимката",
@@ -997,23 +999,31 @@ const BG = {
 };
 
 export const translations = {
-  bg: BG,
+  bg: { ...BG, ...cancellationTranslations.bg, ...artistResponseWorkflowTranslations.bg },
   de: {
     ...DE,
     ...germanSupplementalTranslations,
     ...workflowApiTranslationsDe,
+    ...cancellationTranslations.de,
+    ...artistResponseWorkflowTranslations.de,
   },
   fr: {
     ...FR,
     ...workflowApiTranslationsFr,
+    ...cancellationTranslations.fr,
+    ...artistResponseWorkflowTranslations.fr,
   },
   es: {
     ...ES,
     ...workflowApiTranslationsEs,
+    ...cancellationTranslations.es,
+    ...artistResponseWorkflowTranslations.es,
   },
   it: {
     ...IT,
     ...workflowApiTranslationsIt,
+    ...cancellationTranslations.it,
+    ...artistResponseWorkflowTranslations.it,
   },
 };
 

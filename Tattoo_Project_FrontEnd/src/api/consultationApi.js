@@ -14,6 +14,12 @@ export function updateConsultation(id, consultationData) {
   });
 }
 
+export function cancelConsultation(id) {
+  return apiRequest(`/api/Consultation/${id}`, {
+    method: "DELETE",
+  });
+}
+
 export function completeConsultation(tattooRequestId, data) {
   return apiRequest(`/api/Consultation/complete-consultation/${tattooRequestId}`, {
     method: "PUT",

@@ -14,6 +14,7 @@ function getStepState(request, step) {
   }
 
   const hasResponse = Boolean(request.artistResponse);
+  const consultationSkipped = request.artistResponse?.workflowPath === 1;
   const hasConsultation = Boolean(request.consultation);
   const consultationCompleted = Boolean(request.consultation?.isCompleted) || request.status >= STATUS.CONSULTATION_COMPLETED;
   const sessions = request.tattooSessions?.length || 0;
@@ -22,7 +23,7 @@ function getStepState(request, step) {
   const completedMap = {
     request: true,
     response: hasResponse,
-    consultationBooked: hasConsultation,
+    consultationBooked: hasConsultation || consultationSkipped,
     consultationCompleted,
     sessions: sessions > 0,
     completed,
@@ -38,11 +39,12 @@ function getStepState(request, step) {
 function RequestWorkflowTimeline({ request, compact = false }) {
   const sessions = request.tattooSessions?.length || 0;
   const remaining = request.remainingSessionsToBook;
+  const consultationSkipped = request.artistResponse?.workflowPath === 1;
   const steps = [
     { key: "request", label: "Request submitted" },
     { key: "response", label: "Artist response" },
-    { key: "consultationBooked", label: "Consultation booked" },
-    { key: "consultationCompleted", label: "Consultation completed" },
+    ...(!consultationSkipped ? [{ key: "consultationBooked", label: "Consultation booked" }] : []),
+    { key: "consultationCompleted", label: consultationSkipped ? "Consultation skipped" : "Consultation completed" },
     {
       key: "sessions",
       label: sessions > 0 ? `Tattoo sessions (${sessions} booked${remaining != null ? `, ${remaining} remaining` : ""})` : "Tattoo sessions",

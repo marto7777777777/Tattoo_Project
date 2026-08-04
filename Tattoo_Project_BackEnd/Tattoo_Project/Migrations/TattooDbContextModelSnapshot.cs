@@ -433,6 +433,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<int>("TattooRequestId")
                         .HasColumnType("int");
 
+                    b.Property<int>("WorkflowPath")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TattooRequestId")

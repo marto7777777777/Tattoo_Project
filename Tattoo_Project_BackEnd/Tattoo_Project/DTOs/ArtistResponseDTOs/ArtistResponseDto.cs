@@ -1,4 +1,6 @@
-﻿namespace Tattoo_Project.DTOs.ArtistResponceDTOs
+﻿using Tattoo_Project.Models;
+
+namespace Tattoo_Project.DTOs.ArtistResponceDTOs
 {
     public class ArtistResponseDto
     {
@@ -7,6 +9,8 @@
         public int EstimatedHours { get; set; }
 
         public string ResponseMessage { get; set; } = null!;
+
+        public ArtistResponseWorkflowPath WorkflowPath { get; set; }
 
         public DateTime CreatedOn { get; set; }
     }

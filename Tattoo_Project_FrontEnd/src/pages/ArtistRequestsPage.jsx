@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { createArtistResponse, rejectTattooRequest } from "../api/artistResponseApi";
-import { completeConsultation, rejectConsultation } from "../api/consultationApi";
-import { getMyArtistTattooRequests } from "../api/tattooRequestApi";
-import { addMoreSessions, completeTattoo } from "../api/tattooSessionApi";
+import { createArtistResponse } from "../api/artistResponseApi";
+import { cancelConsultation, completeConsultation } from "../api/consultationApi";
+import { getMyArtistTattooRequests, rejectTattooRequestByArtist } from "../api/tattooRequestApi";
+import { addMoreSessions, cancelTattooSession, completeTattoo } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
 import {
   formatDate,
@@ -14,6 +14,10 @@ import {
 } from "../utils/format";
 import { getImageUrl } from "../utils/images";
 import RequestWorkflowTimeline from "../components/RequestWorkflowTimeline";
+import ArtistResponseWorkflowFields, {
+  buildArtistResponsePayload,
+  createArtistResponseForm,
+} from "../components/ArtistResponseWorkflowFields";
 
 const STATUS = {
   SUBMITTED: 0,
@@ -56,9 +60,13 @@ function getWorkflowStep(request) {
     return "Consultation booked";
   }
   if (request.status === STATUS.CONSULTATION_COMPLETED && !request.tattooSessions?.length) {
-    return "Consultation completed · waiting for tattoo session booking";
+    return request.artistResponse?.workflowPath === 1
+      ? "Consultation skipped · waiting for tattoo session booking"
+      : "Consultation completed · waiting for tattoo session booking";
   }
-  if (request.status === STATUS.CONSULTATION_COMPLETED) return "Consultation completed";
+  if (request.status === STATUS.CONSULTATION_COMPLETED) {
+    return request.artistResponse?.workflowPath === 1 ? "Consultation skipped" : "Consultation completed";
+  }
   if (request.status === STATUS.TATTOO_BOOKED || request.status === STATUS.IN_PROGRESS) {
     return "Tattoo sessions active";
   }
@@ -122,12 +130,10 @@ function ArtistRequestsPage() {
   const [success, setSuccess] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
-  const [responseForm, setResponseForm] = useState({
-    estimatedPrice: "",
-    estimatedHours: "",
-    responseMessage: "",
-  });
+  const [responseForm, setResponseForm] = useState(createArtistResponseForm);
 
   const [sessions, setSessions] = useState([createEmptySession()]);
   const [extraSessions, setExtraSessions] = useState([createEmptySession()]);
@@ -202,7 +208,7 @@ function ArtistRequestsPage() {
     setActiveAction("");
     setError("");
     setSuccess("");
-    setResponseForm({ estimatedPrice: "", estimatedHours: "", responseMessage: "" });
+    setResponseForm(createArtistResponseForm());
     setSessions([createEmptySession()]);
     setExtraSessions([createEmptySession()]);
   }
@@ -262,26 +268,17 @@ function ArtistRequestsPage() {
       let response;
 
       if (action === "create-response") {
-        response = await createArtistResponse({
-          tattooRequestId: selectedRequest.id,
-          estimatedPrice: Number(responseForm.estimatedPrice),
-          estimatedHours: Number(responseForm.estimatedHours),
-          responseMessage: responseForm.responseMessage,
-        });
-      }
-
-      if (action === "reject-request") {
-        response = await rejectTattooRequest(selectedRequest.id);
+        if (responseForm.workflowPath == null) {
+          setError("Choose how the tattoo project should continue.");
+          return;
+        }
+        response = await createArtistResponse(buildArtistResponsePayload(responseForm, selectedRequest.id));
       }
 
       if (action === "complete-consultation") {
         const payload = buildSessionPayload(sessions);
         delete payload.additionalSessions;
         response = await completeConsultation(selectedRequest.id, payload);
-      }
-
-      if (action === "reject-consultation") {
-        response = await rejectConsultation(selectedRequest.id);
       }
 
       if (action === "add-sessions") {
@@ -313,6 +310,37 @@ function ArtistRequestsPage() {
     }
   }
 
+  async function confirmCancellation() {
+    if (!cancelTarget || !selectedRequest || isCancelling) return;
+    setError("");
+    setSuccess("");
+    setIsCancelling(true);
+    try {
+      let response;
+      if (cancelTarget.type === "request") response = await rejectTattooRequestByArtist(selectedRequest.id);
+      if (cancelTarget.type === "consultation") response = await cancelConsultation(cancelTarget.id);
+      if (cancelTarget.type === "session") response = await cancelTattooSession(cancelTarget.id);
+
+      const data = await readResponse(response);
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+
+      const updatedRequests = await loadRequests();
+      const updatedSelected = updatedRequests?.find((item) => item.id === selectedRequest.id);
+      setSelectedRequest(updatedSelected || null);
+      setCancelTarget(null);
+      setSuccess(cancelTarget.type === "request"
+        ? "Tattoo request rejected and all appointments cancelled."
+        : "Appointment cancelled. The client can book a new available time.");
+    } catch {
+      setError("Server connection failed. Please try again.");
+    } finally {
+      setIsCancelling(false);
+    }
+  }
+
   function renderActionButtons(request) {
     if (request.status === STATUS.REJECTED || request.status === STATUS.COMPLETED) {
       return <p className="muted">No active actions for this request.</p>;
@@ -324,9 +352,6 @@ function ArtistRequestsPage() {
           <button className="primary-button" type="button" onClick={() => setActiveAction("response")}>
             Respond
           </button>
-          <button className="danger-button" type="button" onClick={() => runAction("reject-request")}>
-            Reject
-          </button>
         </div>
       );
     }
@@ -336,9 +361,6 @@ function ArtistRequestsPage() {
         <div className="action-row">
           <button className="primary-button" type="button" onClick={() => setActiveAction("complete-consultation")}>
             Complete consultation
-          </button>
-          <button className="danger-button" type="button" onClick={() => runAction("reject-consultation")}>
-            Reject consultation
           </button>
         </div>
       );
@@ -372,6 +394,9 @@ function ArtistRequestsPage() {
       <div className="info-list">
         {request.artistResponse && !request.consultation && request.status === STATUS.WAITING_FOR_CONSULTATION && (
           <p><span>Consultation:</span> Not booked yet</p>
+        )}
+        {request.artistResponse?.workflowPath === 1 && (
+          <p><span>Consultation:</span> Skipped by artist</p>
         )}
         {request.consultation && (
           <p><span>Consultation:</span> {formatDateTime(request.consultation.startTime)}</p>
@@ -566,9 +591,15 @@ function ArtistRequestsPage() {
                     <p className="request-project-section-label">Your response</p>
                     <blockquote>{selectedRequest.artistResponse.responseMessage || "No message was added."}</blockquote>
                     <div className="request-estimate-grid">
-                      <div><span>Indicative price</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
-                      <div><span>Indicative time</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
+                      <div><span>{selectedRequest.artistResponse.workflowPath === 1 ? "Planned total price" : "Indicative price"}</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
+                      <div><span>{selectedRequest.artistResponse.workflowPath === 1 ? "Planned total time" : "Indicative time"}</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
                     </div>
+                    {selectedRequest.artistResponse.workflowPath === 1 && (
+                      <div className="consultation-skipped-banner compact-skipped-banner">
+                        <strong>Consultation skipped</strong>
+                        <span>This project goes directly to tattoo session booking.</span>
+                      </div>
+                    )}
                   </section>
                 )}
 
@@ -583,21 +614,11 @@ function ArtistRequestsPage() {
                 {activeAction === "response" && (
                   <div className="action-panel artist-workspace-action-panel">
                 <h3>Create response</h3>
-                <p className="artist-estimate-notice">Price and duration are preliminary estimates. Final values are confirmed after the consultation.</p>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Indicative price estimate</label>
-                    <input type="number" step="0.01" value={responseForm.estimatedPrice} onChange={(event) => setResponseForm({ ...responseForm, estimatedPrice: event.target.value })} />
-                  </div>
-                  <div className="form-group">
-                    <label>Indicative duration estimate (hours)</label>
-                    <input type="number" value={responseForm.estimatedHours} onChange={(event) => setResponseForm({ ...responseForm, estimatedHours: event.target.value })} />
-                  </div>
-                </div>
                 <div className="form-group">
                   <label>Response message</label>
                   <textarea value={responseForm.responseMessage} onChange={(event) => setResponseForm({ ...responseForm, responseMessage: event.target.value })} />
                 </div>
+                <ArtistResponseWorkflowFields form={responseForm} setForm={setResponseForm} />
                 <button className="primary-button" type="button" onClick={() => runAction("create-response")}>Send response</button>
               </div>
             )}
@@ -678,6 +699,13 @@ function ArtistRequestsPage() {
                         ?? 30,
                     )}</p>
                     <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
+                    {new Date(selectedRequest.consultation.startTime) > new Date() && (
+                      <button className="danger-button compact-button appointment-cancel-button" type="button" onClick={() => setCancelTarget({
+                        type: "consultation",
+                        id: selectedRequest.consultation.id,
+                        label: "consultation",
+                      })}>Cancel consultation</button>
+                    )}
                   </section>
                 ) : (
                   <div className="request-project-empty"><span>◷</span><div><strong>No consultation booked</strong><p>The client's booking will appear here.</p></div></div>
@@ -704,6 +732,13 @@ function ArtistRequestsPage() {
                             <small>Price</small>
                             <strong>{session.priceForTheSession} BGN</strong>
                           </span>
+                          {new Date(session.startTime) > new Date() && (
+                            <button className="danger-button compact-button appointment-cancel-button" type="button" onClick={() => setCancelTarget({
+                              type: "session",
+                              id: session.id,
+                              label: `tattoo session ${index + 1}`,
+                            })}>Cancel session</button>
+                          )}
                         </article>
                       ))}
                     </div>
@@ -729,6 +764,40 @@ function ArtistRequestsPage() {
                 )}
               </div>
             )}
+
+            {selectedRequest.status !== STATUS.REJECTED && selectedRequest.status !== STATUS.COMPLETED && (
+              <section className="request-danger-zone">
+                <div>
+                  <p className="request-project-section-label">Danger zone</p>
+                  <h3>Reject this tattoo request</h3>
+                  <p>This closes the entire project, cancels every consultation and session, and prevents the client from booking again.</p>
+                </div>
+                <button className="danger-button" type="button" onClick={() => setCancelTarget({ type: "request", label: "tattoo request" })}>Reject entire request</button>
+              </section>
+            )}
+          </section>
+        </div>
+      )}
+
+      {cancelTarget && (
+        <div className="modal-backdrop studio-confirm-backdrop" onClick={() => !isCancelling && setCancelTarget(null)}>
+          <section className="modal-card studio-confirm-modal request-cancel-confirm" onClick={(event) => event.stopPropagation()}>
+            <div className="studio-confirm-icon">!</div>
+            <p className="subtitle inline-subtitle">Confirm cancellation</p>
+            <h2>{cancelTarget.type === "request"
+              ? "Reject the entire tattoo request?"
+              : cancelTarget.type === "consultation"
+                ? "Cancel consultation?"
+                : "Cancel tattoo session?"}</h2>
+            {cancelTarget.type === "request" ? (
+              <p>The request will become <strong>Rejected</strong>. Every booked consultation and tattoo session will be removed, and the client will lose all booking rights for this project. This cannot be undone.</p>
+            ) : (
+              <p>Only this booked time will be removed. The tattoo request will remain active and the client will be able to book a new available time.</p>
+            )}
+            <div className="studio-confirm-actions">
+              <button className="secondary-button" type="button" disabled={isCancelling} onClick={() => setCancelTarget(null)}>Go back</button>
+              <button className="danger-button" type="button" disabled={isCancelling} onClick={confirmCancellation}>{isCancelling ? "Cancelling..." : cancelTarget.type === "request" ? "Reject request" : "Cancel appointment"}</button>
+            </div>
           </section>
         </div>
       )}

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyTattooRequests } from "../api/tattooRequestApi";
+import { cancelConsultation } from "../api/consultationApi";
+import { cancelTattooSession } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
 import { formatAppointmentRange, formatDate, getEntityId, getStatusClass, getStatusName } from "../utils/format";
 import { getImageUrl } from "../utils/images";
@@ -53,6 +55,8 @@ function MyTattooRequestsPage() {
   const [previewImage, setPreviewImage] = useState(null);
   const [viewMode, setViewMode] = useState("active");
   const [isLoading, setIsLoading] = useState(true);
+  const [appointmentToCancel, setAppointmentToCancel] = useState(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => { loadRequests(); }, []);
 
@@ -70,10 +74,39 @@ function MyTattooRequestsPage() {
         if (statusA !== statusB) return statusB - statusA;
         return new Date(b.createdOn || 0) - new Date(a.createdOn || 0);
       }));
+      return data || [];
     } catch {
       setError("Server connection failed. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  function canClientCancel(startTime) {
+    return new Date(startTime).getTime() > Date.now() + 24 * 60 * 60 * 1000;
+  }
+
+  async function confirmAppointmentCancellation() {
+    if (!appointmentToCancel || isCancelling) return;
+    setError("");
+    setIsCancelling(true);
+    try {
+      const response = appointmentToCancel.type === "consultation"
+        ? await cancelConsultation(appointmentToCancel.id)
+        : await cancelTattooSession(appointmentToCancel.id);
+      const data = await readResponse(response);
+      if (!response.ok) {
+        setError(typeof data === "string" ? data : JSON.stringify(data));
+        return;
+      }
+      const requestId = getEntityId(selectedRequest);
+      const updatedRequests = await loadRequests();
+      setSelectedRequest(updatedRequests.find((request) => getEntityId(request) === requestId) || null);
+      setAppointmentToCancel(null);
+    } catch {
+      setError("Server connection failed. Please try again.");
+    } finally {
+      setIsCancelling(false);
     }
   }
 
@@ -220,9 +253,15 @@ function MyTattooRequestsPage() {
                         <p className="request-project-section-label">Artist response</p>
                         <blockquote>{selectedRequest.artistResponse.responseMessage || "No message was added."}</blockquote>
                         <div className="request-estimate-grid">
-                          <div><span>Indicative price</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
-                          <div><span>Indicative time</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
+                          <div><span>{selectedRequest.artistResponse.workflowPath === 1 ? "Planned total price" : "Indicative price"}</span><strong>{selectedRequest.artistResponse.estimatedPrice} BGN</strong></div>
+                          <div><span>{selectedRequest.artistResponse.workflowPath === 1 ? "Planned total time" : "Indicative time"}</span><strong>{selectedRequest.artistResponse.estimatedHours} hours</strong></div>
                         </div>
+                        {selectedRequest.artistResponse.workflowPath === 1 && (
+                          <div className="consultation-skipped-banner">
+                            <strong>Consultation skipped</strong>
+                            <span>The artist confirmed that this project can continue directly to tattoo session booking.</span>
+                          </div>
+                        )}
                       </section>
                     ) : (
                       <section className="request-project-empty">
@@ -281,6 +320,15 @@ function MyTattooRequestsPage() {
                         ?? 30,
                     )}</p>
                     <p className="muted">{selectedRequest.consultation.notes || "No notes"}</p>
+                    {canClientCancel(selectedRequest.consultation.startTime) ? (
+                      <button className="danger-button compact-button appointment-cancel-button" type="button" onClick={() => setAppointmentToCancel({
+                        type: "consultation",
+                        id: selectedRequest.consultation.id,
+                        label: "consultation",
+                      })}>Cancel consultation</button>
+                    ) : new Date(selectedRequest.consultation.startTime) > new Date() ? (
+                      <p className="appointment-cancel-note">Clients cannot cancel within 24 hours of the appointment.</p>
+                    ) : null}
                   </div>
                 ) : <div className="request-project-empty"><span>◷</span><div><strong>No consultation booked</strong><p>Your confirmed consultation will appear here.</p></div></div>}
 
@@ -303,6 +351,15 @@ function MyTattooRequestsPage() {
                             <small>Price</small>
                             <strong>{session.priceForTheSession} BGN</strong>
                           </span>
+                          {canClientCancel(session.startTime) ? (
+                            <button className="danger-button compact-button appointment-cancel-button" type="button" onClick={() => setAppointmentToCancel({
+                              type: "session",
+                              id: session.id,
+                              label: `tattoo session ${index + 1}`,
+                            })}>Cancel session</button>
+                          ) : new Date(session.startTime) > new Date() ? (
+                            <small className="appointment-cancel-note">Cannot be cancelled within 24 hours.</small>
+                          ) : null}
                         </article>
                       ))}
                     </div>
@@ -324,6 +381,21 @@ function MyTattooRequestsPage() {
                 ) : <div className="request-project-empty"><span>◇</span><div><strong>No reference images</strong><p>This project was created without uploaded images.</p></div></div>}
               </div>
             )}
+          </section>
+        </div>
+      )}
+
+      {appointmentToCancel && (
+        <div className="modal-backdrop studio-confirm-backdrop" onClick={() => !isCancelling && setAppointmentToCancel(null)}>
+          <section className="modal-card studio-confirm-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="studio-confirm-icon">!</div>
+            <p className="subtitle inline-subtitle">Confirm cancellation</p>
+            <h2>{appointmentToCancel.type === "consultation" ? "Cancel consultation?" : "Cancel tattoo session?"}</h2>
+            <p>The booked time will be removed. You will be able to choose and book a new available time for this project.</p>
+            <div className="studio-confirm-actions">
+              <button className="secondary-button" type="button" disabled={isCancelling} onClick={() => setAppointmentToCancel(null)}>Keep appointment</button>
+              <button className="danger-button" type="button" disabled={isCancelling} onClick={confirmAppointmentCancellation}>{isCancelling ? "Cancelling..." : "Cancel appointment"}</button>
+            </div>
           </section>
         </div>
       )}

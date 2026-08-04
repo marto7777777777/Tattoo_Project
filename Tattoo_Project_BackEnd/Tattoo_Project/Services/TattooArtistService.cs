@@ -574,6 +574,7 @@ namespace Tattoo_Project.Services
                             ? null
                             : r.TattooSessions.Select(s => new TattooSessionDto
                             {
+                                Id = s.Id,
                                 StartTime = s.StartTime,
                                 EndTime = s.EndTime,
                                 DurationHours = s.DurationHours,
@@ -587,13 +588,15 @@ namespace Tattoo_Project.Services
                                 CreatedOn = r.ArtistResponse.CreatedOn,
                                 EstimatedHours = r.ArtistResponse.EstimatedHours,
                                 EstimatedPrice = r.ArtistResponse.EstimatedPrice,
-                                ResponseMessage = r.ArtistResponse.ResponseMessage
+                                ResponseMessage = r.ArtistResponse.ResponseMessage,
+                                WorkflowPath = r.ArtistResponse.WorkflowPath
                             },
 
                         Consultation = r.Consultation == null
                             ? null
                             : new ConsultationDto
                             {
+                                Id = r.Consultation.Id,
                                 StartTime = r.Consultation.StartTime,
                                 EndTime = r.Consultation.EndTime,
                                 Notes = r.Consultation.Notes

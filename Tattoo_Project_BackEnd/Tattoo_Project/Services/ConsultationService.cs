@@ -319,15 +319,14 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService> DeleteConsultationAsync(
             int id,
-            string userId)
+            string userId,
+            bool isAdmin)
         {
             var tattooArtist = await context.TattooArtists
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
-            if (tattooArtist == null)
-            {
-                return ResultService.Fail("Tattoo artist profile was not found.");
-            }
+            var client = await context.Clients
+                .FirstOrDefaultAsync(c => c.UserId == userId);
 
             var consultation = await context.Consultations
                 .Include(c => c.TattooRequest)
@@ -338,10 +337,33 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Consultation was not found.");
             }
 
-            if (consultation.TattooRequest.TattooArtistId != tattooArtist.Id)
+            var isAssignedArtist = tattooArtist != null &&
+                                   consultation.TattooRequest.TattooArtistId == tattooArtist.Id;
+            var isOwningClient = client != null &&
+                                 consultation.TattooRequest.ClientId == client.Id;
+
+            if (!isAdmin && !isAssignedArtist && !isOwningClient)
             {
                 return ResultService.Fail(
-                    "You can delete only consultations assigned to you.");
+                    "You can cancel only consultations that belong to your tattoo request.");
+            }
+
+            if (consultation.IsCompleted ||
+                consultation.TattooRequest.Status != RequestStatus.WaitingForConsultation)
+            {
+                return ResultService.Fail("A completed consultation cannot be cancelled.");
+            }
+
+            if (consultation.StartTime <= DateTime.UtcNow)
+            {
+                return ResultService.Fail("A consultation that has already started cannot be cancelled.");
+            }
+
+            if (isOwningClient && !isAssignedArtist && !isAdmin &&
+                consultation.StartTime <= DateTime.UtcNow.AddHours(24))
+            {
+                return ResultService.Fail(
+                    "Clients can cancel a consultation only more than 24 hours before it starts.");
             }
 
             context.Consultations.Remove(consultation);
@@ -365,6 +387,8 @@ namespace Tattoo_Project.Services
             }
 
             var tattooRequest = await context.TattooRequests
+                .Include(r => r.Consultation)
+                .Include(r => r.TattooSessions)
                 .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
 
             if (tattooRequest == null)
@@ -451,6 +475,8 @@ namespace Tattoo_Project.Services
             }
 
             var tattooRequest = await context.TattooRequests
+                .Include(r => r.Consultation)
+                .Include(r => r.TattooSessions)
                 .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
 
             if (tattooRequest == null)
@@ -471,14 +497,19 @@ namespace Tattoo_Project.Services
                     "This tattoo request cannot be rejected from the current status.");
             }
 
-            var consultation = await context.Consultations
-                .FirstOrDefaultAsync(c => c.TattooRequestId == tattooRequestId);
-
-            if (consultation == null)
+            if (tattooRequest.Consultation == null)
             {
                 return ResultService.Fail("Consultation was not found.");
             }
 
+            context.Consultations.Remove(tattooRequest.Consultation);
+
+            if (tattooRequest.TattooSessions != null && tattooRequest.TattooSessions.Count > 0)
+            {
+                context.TattooSessions.RemoveRange(tattooRequest.TattooSessions);
+            }
+
+            tattooRequest.RemainingSessionsToBook = 0;
             tattooRequest.Status = RequestStatus.Rejected;
 
             await context.SaveChangesAsync();

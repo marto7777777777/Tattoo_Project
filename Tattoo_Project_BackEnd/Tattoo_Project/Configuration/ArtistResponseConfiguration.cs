@@ -17,6 +17,9 @@ namespace Tattoo_Project.Configuration
                 .IsRequired()
                 .HasMaxLength(1000);
 
+            builder.Property(x => x.WorkflowPath)
+                .IsRequired();
+
             builder.Property(x => x.CreatedOn)
                 .IsRequired();
 

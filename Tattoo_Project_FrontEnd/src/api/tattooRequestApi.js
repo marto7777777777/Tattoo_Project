@@ -61,3 +61,9 @@ export function updateTattooRequest(id, requestData) {
     body: JSON.stringify(requestData),
   });
 }
+
+export function rejectTattooRequestByArtist(id) {
+  return apiRequest(`/api/TattooRequest/${id}/reject-by-artist`, {
+    method: "PUT",
+  });
+}
