@@ -22,7 +22,7 @@ function AiStudioPage() {
           <div>
             <p className="subtitle">InkRoute AI Studio</p>
             <h1>Shape the tattoo before the first session.</h1>
-            <p>{isAdmin ? "Admin testing mode: create and refine AI tattoo projects without project or edit limits." : "Create one free tattoo concept, refine it twice, then send it directly into the InkRoute workflow."}</p>
+            <p>{isAdmin ? "Admin testing mode: create and refine AI tattoo projects without project or edit limits." : "Create one free tattoo concept. Improvements require payment."}</p>
           </div>
 
           {isAdmin ? (
@@ -38,7 +38,7 @@ function AiStudioPage() {
 
         <div className="ai-benefit-strip">
           <span><strong>{isAdmin ? "Unlimited admin projects" : "1 free project"}</strong><small>{isAdmin ? "Development testing access" : "Initial generation included"}</small></span>
-          <span><strong>{isAdmin ? "Unlimited improvements" : "2 free improvements"}</strong><small>{isAdmin ? "No edit counter for Admin" : "Then editing stops"}</small></span>
+          <span><strong>{isAdmin ? "Unlimited improvements" : "No free improvements"}</strong><small>{isAdmin ? "No edit counter for Admin" : "Payment required to refine"}</small></span>
           <span><strong>Locked direction</strong><small>Style and placement stay fixed</small></span>
           <span><strong>Download versions</strong><small>Keep every generated result</small></span>
         </div>
@@ -57,7 +57,7 @@ function AiStudioPage() {
                 <div className="ai-project-cover">
                   {last ? <img src={getImageUrl(last.imageUrl)} alt="" /> : <span>No generated version</span>}
                   <em className={project.canEdit ? "active" : "paused"}>
-                    {project.canEdit ? "Active" : "Limit reached"}
+                    {project.canEdit ? "Active" : "Payment required"}
                   </em>
                 </div>
                 <div>
@@ -72,7 +72,7 @@ function AiStudioPage() {
           {projects.length === 0 && (
             <div className="empty-state">
               <h3>Your first concept starts here.</h3>
-              <p>Create one free project with two AI improvements.</p>
+              <p>Create one free AI tattoo concept. Improvements require payment.</p>
             </div>
           )}
         </div>

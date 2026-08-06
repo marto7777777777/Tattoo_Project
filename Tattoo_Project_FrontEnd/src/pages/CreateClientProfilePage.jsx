@@ -104,7 +104,7 @@ function CreateClientProfilePage() {
           </div>
           <div className="form-group">
             <label>Phone number</label>
-            <input name="phoneNumber" type="tel" autoComplete="tel" value={form.phoneNumber} onChange={handleChange} />
+            <input name="phoneNumber" type="tel" autoComplete="tel" value={form.phoneNumber} onChange={handleChange} placeholder="+359 ..." />
           </div>
 
           <div className="form-row">

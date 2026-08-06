@@ -24,7 +24,9 @@ public class AiTattooService(
     IAiTattooPlanner tattooPlanner,
     UserManager<ApplicationUser> userManager) : IAiTattooService
 {
-    private const int FreeEditLimit = 2;
+    // The free entitlement is exactly one generated image. Refinements require
+    // paid project access (admins remain unlimited for development/testing).
+    private const int FreeEditLimit = 0;
     private readonly string[] allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
 
     public async Task<ResultService<AiTattooProjectDto>> CreatePaidDraftAsync(CreateAiTattooProjectDto dto, string userId)
@@ -90,7 +92,17 @@ public class AiTattooService(
             UpdatedAt = DateTime.UtcNow
         };
         context.AiTattooProjects.Add(project);
-        await context.SaveChangesAsync();
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when (
+            !isAdmin &&
+            exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
+            sqlException.Number is 2601 or 2627)
+        {
+            return ResultService<AiTattooProjectDto>.Fail("You have already used your one free AI tattoo project.");
+        }
 
         var generation = referenceUrl == null
             ? await GenerateImageAsync(await BuildInitialPromptAsync(project))
@@ -127,7 +139,7 @@ public class AiTattooService(
         if (project == null) return ResultService<AiTattooProjectDto>.Fail("AI tattoo project was not found.");
         var isAdmin = await IsAdminAsync(userId);
         if (string.IsNullOrWhiteSpace(dto.Instruction)) return ResultService<AiTattooProjectDto>.Fail("Edit instruction is required.");
-        if (!CanEdit(project, isAdmin)) return ResultService<AiTattooProjectDto>.Fail("The two free improvements for this project have already been used.");
+        if (!CanEdit(project, isAdmin)) return ResultService<AiTattooProjectDto>.Fail("Payment is required to edit this AI tattoo project.");
 
         var source = dto.BaseVersionId.HasValue ? project.Versions.FirstOrDefault(x => x.Id == dto.BaseVersionId) : project.Versions.OrderByDescending(x => x.VersionNumber).FirstOrDefault();
         if (source == null) return ResultService<AiTattooProjectDto>.Fail("A source version was not found.");

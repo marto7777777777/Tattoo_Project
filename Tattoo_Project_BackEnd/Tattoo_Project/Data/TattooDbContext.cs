@@ -48,6 +48,27 @@ namespace Tattoo_Project.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Identity's default EmailIndex is not unique. InkRoute uses email as an
+            // account identifier, so enforce the rule in SQL as well as UserManager.
+            modelBuilder.Entity<ApplicationUser>()
+                .HasIndex(user => user.NormalizedEmail)
+                .HasDatabaseName("EmailIndex")
+                .IsUnique()
+                .HasFilter("[NormalizedEmail] IS NOT NULL");
+
+            // Phone ownership belongs to the User, not to an individual Client/Artist
+            // profile. This lets the same user share one number across both profiles
+            // while preventing a second account from claiming it.
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(user => user.PhoneNumber)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasIndex(user => user.PhoneNumber)
+                .HasDatabaseName("PhoneNumberIndex")
+                .IsUnique()
+                .HasFilter("[PhoneNumber] IS NOT NULL");
+
             modelBuilder.ApplyConfigurationsFromAssembly(
                 Assembly.GetExecutingAssembly());
         }

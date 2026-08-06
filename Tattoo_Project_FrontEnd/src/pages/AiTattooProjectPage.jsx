@@ -225,16 +225,16 @@ function AiTattooProjectPage() {
               {isAdmin
                 ? "Admin unlimited access"
                 : project.canEdit
-                  ? "AI editing available"
-                  : "AI editing unavailable"}
+                  ? "Paid AI editing available"
+                  : "Payment required for improvements"}
             </strong>
 
             <small>
               {isAdmin
                 ? "Project and edit limits are bypassed for development testing"
                 : project.canEdit
-                  ? `${project.freeEditsRemaining} improvements remaining`
-                  : "This project cannot currently be edited"}
+                  ? "Paid editing access is active"
+                  : "The free generation does not include edits"}
             </small>
           </div>
         </div>
@@ -447,13 +447,13 @@ function AiTattooProjectPage() {
                 <span>🤖</span>
 
                 <h3>
-                  AI editing is unavailable
+                  Payment required for improvements
                 </h3>
 
                 <p>
-                  Payment checkout has been removed
-                  while the AI Studio is under
-                  development.
+                  Your free generation is complete.
+                  Further AI changes require paid
+                  project access.
                 </p>
               </div>
             )}

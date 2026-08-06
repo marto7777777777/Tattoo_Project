@@ -56,7 +56,11 @@ namespace Tattoo_Project
                 builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services
-                .AddIdentity<ApplicationUser, IdentityRole>()
+                .AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    // Email is the account identity and must never be shared by two users.
+                    options.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<TattooDbContext>()
                 .AddDefaultTokenProviders();
 

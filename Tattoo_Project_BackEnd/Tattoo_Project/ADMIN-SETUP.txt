@@ -36,7 +36,7 @@ ADMIN CAPABILITIES ADDED
 - Admin can verify or unverify artist profiles.
 - Admin can enter role-protected frontend routes.
 - Admin has unlimited AI projects and unlimited AI improvements.
-- Normal users still keep the existing 1 free AI project + 2 free improvements logic.
+- Normal users receive exactly 1 free AI generation and no free improvements.
 - No Stripe checkout/payment endpoints were added or enabled.
 
 DATABASE

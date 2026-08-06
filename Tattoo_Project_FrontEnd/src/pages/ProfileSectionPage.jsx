@@ -32,7 +32,7 @@ const sectionTitles = {
 
 const sectionDescriptions = {
   user: "Manage your name, email, profile photo and account password.",
-  contact: "View your verified phone number and keep your location up to date.",
+  contact: "View your registered phone number and keep your location up to date.",
   studio: "Edit your personal artist description and client requirements. Studio management is handled separately in My Studio.",
   consultation: "Control consultation duration and whether online consultations are available.",
   deposit: "Choose whether projects require a deposit and set the amount.",

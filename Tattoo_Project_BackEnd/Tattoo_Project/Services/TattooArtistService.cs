@@ -129,6 +129,24 @@ namespace Tattoo_Project.Services
             var user = await userManager.FindByIdAsync(userId);
             if (user == null) return ResultService.Fail("User was not found.");
 
+            if (!PhoneNumberNormalizer.TryNormalize(dto.PhoneNumber, out var normalizedPhone))
+                return ResultService.Fail("Phone number must include a valid international country code, for example +359888123456.");
+
+            if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+            {
+                if (!PhoneNumberNormalizer.TryNormalize(user.PhoneNumber, out var currentPhone) || currentPhone != normalizedPhone)
+                    return ResultService.Fail("Phone number cannot be changed after it has been registered to the account.");
+            }
+            else
+            {
+                var numberAlreadyUsed = await context.Users
+                    .AnyAsync(other => other.Id != userId && other.PhoneNumber == normalizedPhone);
+                if (numberAlreadyUsed)
+                    return ResultService.Fail("Phone number is already registered to another account.");
+
+                user.PhoneNumber = normalizedPhone;
+            }
+
             var validation = ValidateArtistProfile(dto.Description, dto.PhoneNumber, dto.ConsultationDurationMinutes,
                 dto.RequiresDeposit, dto.DepositAmount, dto.Schedules, dto.Requirements);
             if (!validation.Success) return validation;
@@ -174,7 +192,7 @@ namespace Tattoo_Project.Services
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email!,
-                    PhoneNumber = dto.PhoneNumber.Trim(),
+                    PhoneNumber = normalizedPhone,
                     UserId = user.Id,
                     City = locationCity,
                     Country = locationCountry
@@ -187,7 +205,7 @@ namespace Tattoo_Project.Services
                 LastName = user.LastName,
                 Email = user.Email!,
                 Description = dto.Description.Trim(),
-                PhoneNumber = dto.PhoneNumber.Trim(),
+                PhoneNumber = normalizedPhone,
                 IsVerified = false,
                 OffersOnlineConsultation = dto.OffersOnlineConsultation,
                 RequiresDeposit = dto.RequiresDeposit,
@@ -211,7 +229,17 @@ namespace Tattoo_Project.Services
             };
 
             context.TattooArtists.Add(tattooArtist);
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception) when (
+                exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
+                sqlException.Number is 2601 or 2627)
+            {
+                await transaction.RollbackAsync();
+                return ResultService.Fail("Phone number or email is already registered to another account.");
+            }
 
             if (dto.StudioSetupMode == StudioSetupMode.CreateStudio)
             {

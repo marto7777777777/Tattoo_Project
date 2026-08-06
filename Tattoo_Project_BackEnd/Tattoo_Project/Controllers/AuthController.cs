@@ -27,50 +27,9 @@ namespace Tattoo_Project.Controllers
 
             if (existingUserByEmail != null)
             {
-                if (existingUserByEmail.EmailConfirmed)
-                {
-                    return BadRequest("Email is already registered.");
-                }
-
-                if (existingUserByName != null && existingUserByName.Id != existingUserByEmail.Id)
-                {
-                    return BadRequest("Username is already taken.");
-                }
-
-                existingUserByEmail.FirstName = dto.FirstName;
-                existingUserByEmail.LastName = dto.LastName;
-                existingUserByEmail.UserName = dto.UserName;
-                existingUserByEmail.NormalizedUserName = userManager.NormalizeName(dto.UserName);
-
-                var updateResult = await userManager.UpdateAsync(existingUserByEmail);
-
-                if (!updateResult.Succeeded)
-                {
-                    return BadRequest(updateResult.Errors);
-                }
-
-                var resetToken = await userManager.GeneratePasswordResetTokenAsync(existingUserByEmail);
-                var passwordResult = await userManager.ResetPasswordAsync(existingUserByEmail, resetToken, dto.Password);
-
-                if (!passwordResult.Succeeded)
-                {
-                    return BadRequest(passwordResult.Errors);
-                }
-
-                var resendResult = await emailVerificationService.SendCodeAsync(
-                    existingUserByEmail,
-                    EmailVerificationPurpose.Register);
-
-                if (!resendResult.Success)
-                {
-                    return BadRequest(resendResult.ErrorMessage);
-                }
-
-                return Ok(new
-                {
-                    message = "This email already has an unverified account. A new 6-digit verification code was sent.",
-                    email = existingUserByEmail.Email
-                });
+                // Registration never mutates an existing account. Unverified users
+                // can request another code through the dedicated resend endpoint.
+                return BadRequest("Email is already registered.");
             }
 
             if (existingUserByName != null)
@@ -87,7 +46,19 @@ namespace Tattoo_Project.Controllers
                 EmailConfirmed = false
             };
 
-            var result = await userManager.CreateAsync(user, dto.Password);
+            IdentityResult result;
+            try
+            {
+                result = await userManager.CreateAsync(user, dto.Password);
+            }
+            catch (Microsoft.EntityFrameworkCore.DbUpdateException exception) when (
+                exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
+                sqlException.Number is 2601 or 2627)
+            {
+                // The unique database indexes are the final guard if two registration
+                // requests for the same email/username arrive at the same time.
+                return BadRequest("Email or username is already registered.");
+            }
 
             if (!result.Succeeded)
             {

@@ -71,15 +71,6 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("User was not found.");
             }
 
-            if (!await roleManager.RoleExistsAsync(UserRoles.Client))
-            {
-                await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
-            }
-
-            if (!await userManager.IsInRoleAsync(user, UserRoles.Client))
-            {
-                await userManager.AddToRoleAsync(user, UserRoles.Client);
-            }
             if (string.IsNullOrWhiteSpace(dto.City))
             {
                 return ResultService.Fail("City is required.");
@@ -90,12 +81,37 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Country is required.");
             }
 
+            if (!PhoneNumberNormalizer.TryNormalize(dto.PhoneNumber, out var normalizedPhone))
+            {
+                return ResultService.Fail("Phone number must include a valid international country code, for example +359888123456.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.PhoneNumber))
+            {
+                if (!PhoneNumberNormalizer.TryNormalize(user.PhoneNumber, out var currentPhone) || currentPhone != normalizedPhone)
+                    return ResultService.Fail("Phone number cannot be changed after it has been registered to the account.");
+            }
+            else
+            {
+                var numberAlreadyUsed = await context.Users
+                    .AnyAsync(other => other.Id != userId && other.PhoneNumber == normalizedPhone);
+                if (numberAlreadyUsed)
+                    return ResultService.Fail("Phone number is already registered to another account.");
+
+                user.PhoneNumber = normalizedPhone;
+            }
+
+            if (!await roleManager.RoleExistsAsync(UserRoles.Client))
+            {
+                await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
+            }
+
             Client client = new()
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email!,
-                PhoneNumber = dto.PhoneNumber,
+                PhoneNumber = normalizedPhone,
                 UserId = user.Id,
                 City = dto.City,
                 Country = dto.Country
@@ -103,7 +119,25 @@ namespace Tattoo_Project.Services
 
             context.Clients.Add(client);
 
-            await context.SaveChangesAsync();
+            try
+            {
+                await context.SaveChangesAsync();
+            }
+            catch (DbUpdateException exception) when (
+                exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
+                sqlException.Number is 2601 or 2627)
+            {
+                // The unique user phone index is the final guard against two
+                // simultaneous requests claiming the same number.
+                return ResultService.Fail("Phone number or email is already registered to another account.");
+            }
+
+            if (!await userManager.IsInRoleAsync(user, UserRoles.Client))
+            {
+                var roleResult = await userManager.AddToRoleAsync(user, UserRoles.Client);
+                if (!roleResult.Succeeded)
+                    return ResultService.Fail("Client profile was created, but the Client role could not be assigned.");
+            }
 
             return ResultService.Ok();
         }
