@@ -7,6 +7,7 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
     {
         public string Description { get; set; } = null!;
         public string PhoneNumber { get; set; } = null!;
+        public bool ShowPhoneNumberOnPublicProfile { get; set; } = true;
         public int ConsultationDurationMinutes { get; set; }
         public bool OffersOnlineConsultation { get; set; }
         public bool RequiresDeposit { get; set; }

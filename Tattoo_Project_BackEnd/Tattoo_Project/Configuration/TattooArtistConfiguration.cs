@@ -10,6 +10,13 @@ namespace Tattoo_Project.Configuration
         {
             builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.PublicProfileSlug)
+                .IsRequired()
+                .HasMaxLength(140);
+
+            builder.HasIndex(x => x.PublicProfileSlug)
+                .IsUnique();
+
             builder.Property(x => x.FirstName)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -29,6 +36,9 @@ namespace Tattoo_Project.Configuration
             builder.Property(x => x.PhoneNumber)
                 .IsRequired()
                 .HasMaxLength(40);
+
+            builder.Property(x => x.ShowPhoneNumberOnPublicProfile)
+                .HasDefaultValue(true);
 
             builder.HasMany(x => x.Schedules)
                 .WithOne(x => x.TattooArtist)

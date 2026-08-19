@@ -20,6 +20,131 @@ namespace Tattoo_Project.Services
     {
         private const int CodeLifetimeMinutes = 10;
 
+        public async Task<ResultService> StartRegistrationAsync(RegisterDto dto)
+        {
+            dto.Email = dto.Email.Trim();
+            dto.UserName = dto.UserName.Trim();
+            dto.FirstName = dto.FirstName.Trim();
+            dto.LastName = dto.LastName.Trim();
+
+            var normalizedEmail = userManager.NormalizeEmail(dto.Email);
+            var normalizedUserName = userManager.NormalizeName(dto.UserName);
+            var now = DateTime.UtcNow;
+
+            // Remove accounts left by the previous, incorrect flow. They were never
+            // verified and could never have been used to sign in.
+            var existingByEmail = await userManager.FindByEmailAsync(dto.Email);
+            if (existingByEmail != null)
+            {
+                if (await userManager.IsEmailConfirmedAsync(existingByEmail))
+                {
+                    return ResultService.Fail("Email is already registered.");
+                }
+
+                var deleteResult = await userManager.DeleteAsync(existingByEmail);
+                if (!deleteResult.Succeeded)
+                {
+                    return ResultService.Fail(string.Join(" ", deleteResult.Errors.Select(e => e.Description)));
+                }
+            }
+
+            var existingByName = await userManager.FindByNameAsync(dto.UserName);
+            if (existingByName != null)
+            {
+                if (await userManager.IsEmailConfirmedAsync(existingByName))
+                {
+                    return ResultService.Fail("Username is already taken.");
+                }
+
+                var deleteResult = await userManager.DeleteAsync(existingByName);
+                if (!deleteResult.Succeeded)
+                {
+                    return ResultService.Fail(string.Join(" ", deleteResult.Errors.Select(e => e.Description)));
+                }
+            }
+
+            var candidate = new ApplicationUser
+            {
+                FirstName = dto.FirstName,
+                LastName = dto.LastName,
+                UserName = dto.UserName,
+                Email = dto.Email
+            };
+
+            foreach (var validator in userManager.UserValidators)
+            {
+                var validation = await validator.ValidateAsync(userManager, candidate);
+                if (!validation.Succeeded)
+                {
+                    return ResultService.Fail(string.Join(" ", validation.Errors.Select(e => e.Description)));
+                }
+            }
+
+            foreach (var validator in userManager.PasswordValidators)
+            {
+                var validation = await validator.ValidateAsync(userManager, candidate, dto.Password);
+                if (!validation.Succeeded)
+                {
+                    return ResultService.Fail(string.Join(" ", validation.Errors.Select(e => e.Description)));
+                }
+            }
+
+            var expired = await context.PendingRegistrations
+                .Where(p => p.ExpiresAt < now)
+                .ToListAsync();
+            context.PendingRegistrations.RemoveRange(expired);
+            if (expired.Count > 0)
+            {
+                await context.SaveChangesAsync();
+            }
+
+            var conflictingName = await context.PendingRegistrations
+                .FirstOrDefaultAsync(p => p.NormalizedUserName == normalizedUserName && p.NormalizedEmail != normalizedEmail);
+            if (conflictingName != null)
+            {
+                return ResultService.Fail("Username is already awaiting verification.");
+            }
+
+            var pending = await context.PendingRegistrations
+                .FirstOrDefaultAsync(p => p.NormalizedEmail == normalizedEmail);
+
+            if (pending == null)
+            {
+                pending = new PendingRegistration();
+                context.PendingRegistrations.Add(pending);
+            }
+
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            pending.FirstName = dto.FirstName;
+            pending.LastName = dto.LastName;
+            pending.UserName = dto.UserName;
+            pending.NormalizedUserName = normalizedUserName;
+            pending.Email = dto.Email;
+            pending.NormalizedEmail = normalizedEmail;
+            pending.PasswordHash = userManager.PasswordHasher.HashPassword(candidate, dto.Password);
+            pending.VerificationCodeHash = HashPendingCode(pending.Id, code);
+            pending.CreatedAt = now;
+            pending.ExpiresAt = now.AddMinutes(CodeLifetimeMinutes);
+
+            await context.SaveChangesAsync();
+
+            try
+            {
+                await emailService.SendEmailAsync(
+                    pending.Email,
+                    GetSubject(EmailVerificationPurpose.Register),
+                    BuildEmailHtml(pending.FirstName, code, EmailVerificationPurpose.Register));
+            }
+            catch
+            {
+                context.PendingRegistrations.Remove(pending);
+                await context.SaveChangesAsync();
+                return ResultService.Fail("Verification code could not be sent.");
+            }
+
+            return ResultService.Ok();
+        }
+
         public async Task<ResultService> SendCodeAsync(ApplicationUser user, EmailVerificationPurpose purpose)
         {
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
@@ -55,25 +180,59 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService<AuthResponseDto>> VerifyRegisterCodeAsync(string email, string code)
         {
-            var user = await userManager.FindByEmailAsync(email.Trim());
-            if (user == null)
+            var normalizedEmail = userManager.NormalizeEmail(email.Trim());
+            var pending = await context.PendingRegistrations
+                .FirstOrDefaultAsync(p => p.NormalizedEmail == normalizedEmail);
+
+            if (pending == null ||
+                pending.ExpiresAt < DateTime.UtcNow ||
+                !IsPendingCodeValid(pending, code))
             {
-                return ResultService<AuthResponseDto>.Fail("Invalid email or verification code.");
+                return ResultService<AuthResponseDto>.Fail("Invalid or expired verification code.");
             }
 
-            var validation = await ValidateCodeAsync(user, EmailVerificationPurpose.Register, code);
-            if (!validation.Success)
+            if (await userManager.FindByEmailAsync(pending.Email) != null)
             {
-                return ResultService<AuthResponseDto>.Fail(validation.ErrorMessage!);
+                return ResultService<AuthResponseDto>.Fail("Email is already registered.");
             }
 
-            user.EmailConfirmed = true;
-            var updateResult = await userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
+            if (await userManager.FindByNameAsync(pending.UserName) != null)
+            {
+                return ResultService<AuthResponseDto>.Fail("Username is already taken.");
+            }
+
+            var user = new ApplicationUser
+            {
+                FirstName = pending.FirstName,
+                LastName = pending.LastName,
+                UserName = pending.UserName,
+                Email = pending.Email,
+                EmailConfirmed = true,
+                PasswordHash = pending.PasswordHash
+            };
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            IdentityResult createResult;
+            try
+            {
+                createResult = await userManager.CreateAsync(user);
+            }
+            catch (DbUpdateException exception) when (
+                exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
+                sqlException.Number is 2601 or 2627)
+            {
+                return ResultService<AuthResponseDto>.Fail("Email or username is already registered.");
+            }
+
+            if (!createResult.Succeeded)
             {
                 return ResultService<AuthResponseDto>.Fail(
-                    string.Join(" ", updateResult.Errors.Select(e => e.Description)));
+                    string.Join(" ", createResult.Errors.Select(e => e.Description)));
             }
+
+            context.PendingRegistrations.Remove(pending);
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             var token = await tokenService.GenerateJwtTokenAsync(user);
             var roles = await userManager.GetRolesAsync(user);
@@ -95,18 +254,42 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService> ResendRegisterCodeAsync(string email)
         {
-            var user = await userManager.FindByEmailAsync(email.Trim());
-            if (user == null)
+            var normalizedEmail = userManager.NormalizeEmail(email.Trim());
+            var pending = await context.PendingRegistrations
+                .FirstOrDefaultAsync(p => p.NormalizedEmail == normalizedEmail);
+
+            if (pending == null)
             {
-                return ResultService.Fail("User was not found.");
+                return ResultService.Fail("Pending registration was not found. Please register again.");
             }
 
-            if (await userManager.IsEmailConfirmedAsync(user))
+            if (await userManager.FindByEmailAsync(pending.Email) != null)
             {
                 return ResultService.Fail("Email is already verified.");
             }
 
-            return await SendCodeAsync(user, EmailVerificationPurpose.Register);
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            var now = DateTime.UtcNow;
+            pending.VerificationCodeHash = HashPendingCode(pending.Id, code);
+            pending.CreatedAt = now;
+            pending.ExpiresAt = now.AddMinutes(CodeLifetimeMinutes);
+            await context.SaveChangesAsync();
+
+            try
+            {
+                await emailService.SendEmailAsync(
+                    pending.Email,
+                    GetSubject(EmailVerificationPurpose.Register),
+                    BuildEmailHtml(pending.FirstName, code, EmailVerificationPurpose.Register));
+            }
+            catch
+            {
+                context.PendingRegistrations.Remove(pending);
+                await context.SaveChangesAsync();
+                return ResultService.Fail("Verification code could not be sent. Please register again.");
+            }
+
+            return ResultService.Ok();
         }
 
         public async Task<ResultService> SendForgotPasswordCodeAsync(string email)
@@ -250,6 +433,26 @@ namespace Tattoo_Project.Services
             var raw = $"{userId}:{(int)purpose}:{code}";
             var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(raw));
             return Convert.ToHexString(bytes);
+        }
+
+        private static string HashPendingCode(Guid pendingId, string code)
+        {
+            var raw = $"{pendingId:N}:{code}";
+            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(raw));
+            return Convert.ToHexString(bytes);
+        }
+
+        private static bool IsPendingCodeValid(PendingRegistration pending, string code)
+        {
+            var normalizedCode = code?.Trim();
+            if (normalizedCode == null || normalizedCode.Length != 6 || !normalizedCode.All(char.IsDigit))
+            {
+                return false;
+            }
+
+            var expected = Convert.FromHexString(pending.VerificationCodeHash);
+            var actual = Convert.FromHexString(HashPendingCode(pending.Id, normalizedCode));
+            return CryptographicOperations.FixedTimeEquals(expected, actual);
         }
 
         private static string GetSubject(EmailVerificationPurpose purpose)

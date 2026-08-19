@@ -17,68 +17,16 @@ namespace Tattoo_Project.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            dto.Email = dto.Email.Trim();
-            dto.UserName = dto.UserName.Trim();
-            dto.FirstName = dto.FirstName.Trim();
-            dto.LastName = dto.LastName.Trim();
-
-            var existingUserByEmail = await userManager.FindByEmailAsync(dto.Email);
-            var existingUserByName = await userManager.FindByNameAsync(dto.UserName);
-
-            if (existingUserByEmail != null)
+            var result = await emailVerificationService.StartRegistrationAsync(dto);
+            if (!result.Success)
             {
-                // Registration never mutates an existing account. Unverified users
-                // can request another code through the dedicated resend endpoint.
-                return BadRequest("Email is already registered.");
-            }
-
-            if (existingUserByName != null)
-            {
-                return BadRequest("Username is already taken.");
-            }
-
-            ApplicationUser user = new()
-            {
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                UserName = dto.UserName,
-                Email = dto.Email,
-                EmailConfirmed = false
-            };
-
-            IdentityResult result;
-            try
-            {
-                result = await userManager.CreateAsync(user, dto.Password);
-            }
-            catch (Microsoft.EntityFrameworkCore.DbUpdateException exception) when (
-                exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
-                sqlException.Number is 2601 or 2627)
-            {
-                // The unique database indexes are the final guard if two registration
-                // requests for the same email/username arrive at the same time.
-                return BadRequest("Email or username is already registered.");
-            }
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(result.Errors);
-            }
-
-            var codeResult = await emailVerificationService.SendCodeAsync(
-                user,
-                EmailVerificationPurpose.Register);
-
-            if (!codeResult.Success)
-            {
-                await userManager.DeleteAsync(user);
-                return BadRequest(codeResult.ErrorMessage);
+                return BadRequest(result.ErrorMessage);
             }
 
             return Ok(new
             {
-                message = "Registration successful. Please check your email for the 6-digit verification code.",
-                email = user.Email
+                message = "Verification code sent. Your account will be created after the code is confirmed.",
+                email = dto.Email.Trim()
             });
         }
 

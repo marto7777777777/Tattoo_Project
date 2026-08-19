@@ -32,7 +32,7 @@ const sectionTitles = {
 
 const sectionDescriptions = {
   user: "Manage your name, email, profile photo and account password.",
-  contact: "View your registered phone number and keep your location up to date.",
+  contact: "View your registered phone number, control its public visibility and keep your location up to date.",
   studio: "Edit your personal artist description and client requirements. Studio management is handled separately in My Studio.",
   consultation: "Control consultation duration and whether online consultations are available.",
   deposit: "Choose whether projects require a deposit and set the amount.",
@@ -529,6 +529,7 @@ function getFieldsForSection(section, profile) {
   if (section === "contact") {
     return [
       { key: "phoneNumber", label: "Phone number", value: profile.phoneNumber, readOnly: true },
+      ...(profile.isTattooArtist ? [{ key: "showPhoneNumberOnPublicProfile", label: "Show phone number on public profile", value: artist.showPhoneNumberOnPublicProfile, type: "bool", path: "/api/Profile/artist/show-phone-number" }] : []),
       { key: "city", label: "City", value: profile.city, path: "/api/Profile/contact/city" },
       { key: "country", label: "Country", value: profile.country, path: "/api/Profile/contact/country" },
     ];

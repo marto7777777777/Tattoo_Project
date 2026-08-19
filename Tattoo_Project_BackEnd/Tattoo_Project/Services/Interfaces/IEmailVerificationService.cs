@@ -6,6 +6,8 @@ namespace Tattoo_Project.Services.Interfaces
 {
     public interface IEmailVerificationService
     {
+        Task<ResultService> StartRegistrationAsync(RegisterDto dto);
+
         Task<ResultService> SendCodeAsync(ApplicationUser user, EmailVerificationPurpose purpose);
 
         Task<ResultService<AuthResponseDto>> VerifyRegisterCodeAsync(string email, string code);

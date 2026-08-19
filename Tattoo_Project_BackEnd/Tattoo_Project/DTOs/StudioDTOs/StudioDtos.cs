@@ -72,6 +72,7 @@ namespace Tattoo_Project.DTOs.StudioDTOs
     public class MyStudioDto
     {
         public int CurrentArtistId { get; set; }
+        public string CurrentArtistPublicSlug { get; set; } = null!;
         public bool HasStudio { get; set; }
         public bool IsOwner { get; set; }
         public StudioDto? Studio { get; set; }

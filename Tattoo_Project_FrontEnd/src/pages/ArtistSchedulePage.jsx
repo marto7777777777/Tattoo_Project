@@ -461,11 +461,13 @@ function ArtistSchedulePage() {
       consultationDurationMinutes: profile.artist.consultationDurationMinutes,
       phoneNumber: profile.phoneNumber || "",
       offersOnlineConsultation: profile.artist.offersOnlineConsultation,
+      showPhoneNumberOnPublicProfile: profile.artist.showPhoneNumberOnPublicProfile ?? true,
       requiresDeposit: profile.artist.requiresDeposit,
       depositAmount: profile.artist.depositAmount,
       requirements: (profile.artist.requirements || []).map((requirement) => ({ description: requirement.description })),
       portfolioImages: (profile.artist.portfolioImages || []).map((image) => ({ imageUrl: image.imageUrl })),
       schedules,
+      specialtyStyles: profile.artist.specialtyStyles || [],
     };
 
     try {

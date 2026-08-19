@@ -15,6 +15,7 @@ const Icon = ({ name }) => {
     heart: <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>,
     studio: <><path d="M4 21h16"/><path d="M6 21V9l6-5 6 5v12"/><path d="M9 21v-6h6v6"/></>,
     user: <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
+    help: <><circle cx="12" cy="12" r="9"/><path d="M9.8 9a2.3 2.3 0 1 1 3.4 2c-.8.4-1.2 1-1.2 2"/><path d="M12 17h.01"/></>,
     logout: <><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 19V5a2 2 0 0 0-2-2h-6"/></>,
     admin: <><path d="M12 3l7 3v5c0 4.6-2.8 8.4-7 10-4.2-1.6-7-5.4-7-10V6l7-3Z"/><path d="M9 12l2 2 4-4"/></>,
     menu: <><path d="M4 7h16M4 12h16M4 17h16"/></>,
@@ -141,6 +142,7 @@ function Navbar() {
             {menuOpen && (
               <div className="sidebar-profile-menu">
                 <button onClick={() => navigate("/profile/user")}><Icon name="user" /> Profile settings</button>
+                <button onClick={() => navigate("/help-guides")}><Icon name="help" /> Help &amp; guides</button>
                 <button className="danger-menu-item" onClick={handleLogout}><Icon name="logout" /> Log out</button>
               </div>
             )}
@@ -231,10 +233,10 @@ function Navbar() {
                   <NavLink className="mobile-menu-secondary" to="/login">Sign in</NavLink>
                 </>
               ) : (
-                <button type="button" className="mobile-menu-logout" onClick={handleLogout}>
-                  <Icon name="logout" />
-                  Log out
-                </button>
+                <>
+                  <button type="button" className="mobile-menu-logout" onClick={() => navigate("/help-guides")}><Icon name="help" />Help &amp; guides</button>
+                  <button type="button" className="mobile-menu-logout" onClick={handleLogout}><Icon name="logout" />Log out</button>
+                </>
               )}
             </div>
           </aside>

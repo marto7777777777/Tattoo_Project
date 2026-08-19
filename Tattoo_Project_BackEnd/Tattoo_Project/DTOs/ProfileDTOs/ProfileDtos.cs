@@ -32,6 +32,7 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
         public string Description { get; set; } = null!;
         public int ConsultationDurationMinutes { get; set; }
         public bool OffersOnlineConsultation { get; set; }
+        public bool ShowPhoneNumberOnPublicProfile { get; set; }
         public bool RequiresDeposit { get; set; }
         public decimal? DepositAmount { get; set; }
         public ICollection<ProfileRequirementDto> Requirements { get; set; } = new List<ProfileRequirementDto>();

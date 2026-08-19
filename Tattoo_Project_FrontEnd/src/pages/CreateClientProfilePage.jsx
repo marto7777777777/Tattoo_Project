@@ -5,6 +5,7 @@ import { updateProfileImage } from "../api/profileApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 import ImageCropModal from "../components/ImageCropModal";
+import { clearPendingArtistRequest } from "../utils/pendingArtistRequest";
 
 function CreateClientProfilePage() {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ function CreateClientProfilePage() {
       }
 
       setSuccess("Client profile created successfully.");
+      if (returnTo?.startsWith("/create-tattoo-request/")) clearPendingArtistRequest();
       setTimeout(() => navigate(returnTo || "/explore"), 700);
     } catch {
       setError("Server connection failed. Please try again.");

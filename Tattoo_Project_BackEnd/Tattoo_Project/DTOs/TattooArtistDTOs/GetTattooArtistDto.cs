@@ -6,6 +6,7 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
     public class GetTattooArtistDto
     {
         public int Id { get; set; }
+        public string PublicProfileSlug { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -28,6 +29,7 @@ namespace Tattoo_Project.DTOs.TattooArtistDTOs
         public double? StudioLongitude { get; set; }
 
         public string PhoneNumber { get; set; } = null!;
+        public bool ShowPhoneNumberOnPublicProfile { get; set; }
         public bool OffersOnlineConsultation { get; set; }
 
         public bool RequiresDeposit { get; set; }

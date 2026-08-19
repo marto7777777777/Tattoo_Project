@@ -1,5 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
 using Tattoo_Project.DTOs.ConsultationDTOs;
@@ -73,6 +77,56 @@ namespace Tattoo_Project.Services
             }
 
             return ResultService<GetTattooArtistDto>.Ok(MapToGetTattooArtistDto(artist));
+        }
+
+        public async Task<ResultService<PublicTattooArtistDto>> GetPublicTattooArtistAsync(string slug)
+        {
+            var normalizedSlug = slug?.Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(normalizedSlug))
+                return ResultService<PublicTattooArtistDto>.Fail("Tattoo artist was not found.");
+
+            var artist = await context.TattooArtists
+                .AsNoTracking()
+                .Include(a => a.User)
+                .Include(a => a.Studio)
+                .Include(a => a.PortfolioImages)
+                .Include(a => a.Requirements)
+                .Include(a => a.Reviews)
+                .Include(a => a.SpecialtyStyles)
+                .AsSplitQuery()
+                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null);
+
+            if (artist == null)
+                return ResultService<PublicTattooArtistDto>.Fail("Tattoo artist was not found.");
+
+            return ResultService<PublicTattooArtistDto>.Ok(new PublicTattooArtistDto
+            {
+                Id = artist.Id,
+                PublicProfileSlug = artist.PublicProfileSlug,
+                FirstName = artist.FirstName,
+                LastName = artist.LastName,
+                ProfileImageUrl = artist.User.ProfileImageUrl,
+                PhoneNumber = artist.ShowPhoneNumberOnPublicProfile ? artist.PhoneNumber : null,
+                Description = artist.Description,
+                IsVerified = artist.IsVerified,
+                StudioName = artist.Studio?.Name ?? string.Empty,
+                StudioAddress = artist.Studio?.Address ?? string.Empty,
+                StudioCity = artist.Studio?.City ?? string.Empty,
+                StudioCountry = artist.Studio?.Country ?? string.Empty,
+                AverageRating = artist.Reviews.Any() ? Math.Round(artist.Reviews.Average(r => r.Rating), 1) : 0,
+                ReviewCount = artist.Reviews.Count,
+                SpecialtyStyles = artist.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList(),
+                PortfolioImages = artist.PortfolioImages.OrderBy(x => x.Id).Select(x => new TattooArtistPortfolioImageDto
+                {
+                    Id = x.Id,
+                    ImageUrl = x.ImageUrl
+                }).ToList(),
+                Requirements = artist.Requirements.OrderBy(x => x.Id).Select(x => new TattooArtistRequirementsDto
+                {
+                    Id = x.Id,
+                    Description = x.Description
+                }).ToList()
+            });
         }
 
         public async Task<ResultService<ICollection<GetTattooArtistDto>>> SearchTattooArtistsAsync(string query)
@@ -201,11 +255,13 @@ namespace Tattoo_Project.Services
 
             var tattooArtist = new TattooArtist
             {
+                PublicProfileSlug = await CreateUniquePublicSlugAsync(user.FirstName, user.LastName),
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email!,
                 Description = dto.Description.Trim(),
                 PhoneNumber = normalizedPhone,
+                ShowPhoneNumberOnPublicProfile = dto.ShowPhoneNumberOnPublicProfile,
                 IsVerified = false,
                 OffersOnlineConsultation = dto.OffersOnlineConsultation,
                 RequiresDeposit = dto.RequiresDeposit,
@@ -345,6 +401,7 @@ namespace Tattoo_Project.Services
 
             artist.Description = dto.Description.Trim();
             artist.OffersOnlineConsultation = dto.OffersOnlineConsultation;
+            artist.ShowPhoneNumberOnPublicProfile = dto.ShowPhoneNumberOnPublicProfile;
             artist.RequiresDeposit = dto.RequiresDeposit;
             artist.DepositAmount = dto.RequiresDeposit ? dto.DepositAmount : null;
             artist.ConsultationDurationMinutes = dto.ConsultationDurationMinutes;
@@ -532,6 +589,7 @@ namespace Tattoo_Project.Services
             return new GetTattooArtistDto
             {
                 Id = artist.Id,
+                PublicProfileSlug = artist.PublicProfileSlug,
                 FirstName = artist.FirstName,
                 LastName = artist.LastName,
                 Email = artist.Email,
@@ -547,6 +605,7 @@ namespace Tattoo_Project.Services
                 StudioLatitude = artist.Studio?.Latitude,
                 StudioLongitude = artist.Studio?.Longitude,
                 PhoneNumber = artist.PhoneNumber,
+                ShowPhoneNumberOnPublicProfile = artist.ShowPhoneNumberOnPublicProfile,
 
                 OffersOnlineConsultation = artist.OffersOnlineConsultation,
                 RequiresDeposit = artist.RequiresDeposit,
@@ -631,6 +690,29 @@ namespace Tattoo_Project.Services
                             }
                     }).ToList()
             };
+        }
+
+        private async Task<string> CreateUniquePublicSlugAsync(string firstName, string lastName)
+        {
+            var normalized = $"{firstName}-{lastName}".Normalize(NormalizationForm.FormD);
+            var ascii = new string(normalized
+                .Where(character => CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
+                .ToArray())
+                .Normalize(NormalizationForm.FormC)
+                .ToLowerInvariant();
+            var namePart = Regex.Replace(ascii, "[^a-z0-9]+", "-").Trim('-');
+            if (string.IsNullOrWhiteSpace(namePart)) namePart = "artist";
+            if (namePart.Length > 100) namePart = namePart[..100].TrimEnd('-');
+
+            for (var attempt = 0; attempt < 10; attempt++)
+            {
+                var token = RandomNumberGenerator.GetHexString(4).ToLowerInvariant();
+                var candidate = $"{namePart}-{token}";
+                if (!await context.TattooArtists.AnyAsync(a => a.PublicProfileSlug == candidate))
+                    return candidate;
+            }
+
+            return $"{namePart}-{Guid.NewGuid():N}";
         }
     }
 }

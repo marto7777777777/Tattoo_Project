@@ -92,13 +92,22 @@ namespace Tattoo_Project
             {
                 options.AddPolicy("ReactApp", policy =>
                 {
+                    var localOrigins = new[]
+                    {
+                        "http://localhost:5173",
+                        "http://127.0.0.1:5173",
+                        "http://172.19.224.1:5173",
+                        "http://192.168.33.198:5173"
+                    };
+                    var configuredOrigins = builder.Configuration
+                        .GetSection("Cors:AllowedOrigins")
+                        .GetChildren()
+                        .Select(item => item.Value?.Trim().TrimEnd('/'))
+                        .Where(value => !string.IsNullOrWhiteSpace(value))
+                        .Cast<string>();
+
                     policy
-                        .WithOrigins(
-                            "http://localhost:5173",
-                            "http://127.0.0.1:5173",
-                            "http://172.19.224.1:5173",
-                            "http://192.168.33.198:5173"
-                        )
+                        .WithOrigins(localOrigins.Concat(configuredOrigins).Distinct(StringComparer.OrdinalIgnoreCase).ToArray())
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

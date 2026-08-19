@@ -3,6 +3,7 @@ namespace Tattoo_Project.Models
     public class TattooArtist
     {
         public int Id { get; set; }
+        public string PublicProfileSlug { get; set; } = null!;
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
@@ -10,6 +11,8 @@ namespace Tattoo_Project.Models
         public string Description { get; set; } = null!;
 
         public string PhoneNumber { get; set; } = null!;
+
+        public bool ShowPhoneNumberOnPublicProfile { get; set; } = true;
 
         public int? StudioId { get; set; }
         public Studio? Studio { get; set; }

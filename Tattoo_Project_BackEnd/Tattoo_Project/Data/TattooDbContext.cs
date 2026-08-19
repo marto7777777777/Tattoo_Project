@@ -40,6 +40,8 @@ namespace Tattoo_Project.Data
 
         public DbSet<EmailVerificationCode> EmailVerificationCodes { get; set; }
 
+        public DbSet<PendingRegistration> PendingRegistrations { get; set; }
+
         public DbSet<AiTattooProject> AiTattooProjects { get; set; }
         public DbSet<AiTattooVersion> AiTattooVersions { get; set; }
         public DbSet<AiProjectPayment> AiProjectPayments { get; set; }

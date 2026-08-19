@@ -10,6 +10,7 @@ import { IT } from "./italianTranslations";
 import { workflowApiTranslationsIt } from "./workflowApiTranslationsIt";
 import { cancellationTranslations } from "./cancellationTranslations";
 import { artistResponseWorkflowTranslations } from "./artistResponseWorkflowTranslations";
+import { publicLinkTranslations } from "./publicLinkTranslations";
 
 const BG = {
   "Image position": "Позиция на снимката",
@@ -70,6 +71,14 @@ const BG = {
   "Log out": "Изход",
   "Register": "Регистрация",
   "Profile settings": "Настройки на профила",
+  "Help & guides": "Помощ и ръководства",
+  "Video tutorials": "Видео ръководства",
+  "Learn how to set up your artist profile and manage a complete tattoo project in InkRoute.": "Научи как да настроиш профила си на татуист и да управляваш цял тату проект в InkRoute.",
+  "Create your InkRoute artist profile": "Създай своя профил на татуист в InkRoute",
+  "Set up your artist profile, studio, portfolio, requirements and weekly schedule.": "Настрой профила си на татуист, студиото, портфолиото, изискванията и седмичния график.",
+  "Watch the full InkRoute workflow": "Виж целия процес в InkRoute",
+  "See the complete process from the client's first request to the artist's calendar.": "Виж целия процес от първото запитване на клиента до календара на татуиста.",
+  "Open the video menu to choose subtitles in your preferred language.": "Отвори менюто на видеото, за да избереш субтитри на предпочитания от теб език.",
   "Open profile settings": "Отвори настройките на профила",
   "Open navigation menu": "Отвори навигационното меню",
   "Close navigation menu": "Затвори навигационното меню",
@@ -130,6 +139,7 @@ const BG = {
   "Last name": "Фамилия",
   "Already have an account?": "Вече имаш профил?",
   "Verification code": "Код за потвърждение",
+  "Change registration details": "Промени данните за регистрация",
   "Verify email": "Потвърди имейла",
   "Verify code": "Потвърди кода",
   "Resend code": "Изпрати кода отново",
@@ -155,6 +165,9 @@ const BG = {
   "Create your client profile": "Създай своя клиентски профил",
   "Add your contact and location so we can recommend artists near you.": "Добави контакт и местоположение, за да ти препоръчаме татуисти наблизо.",
   "Phone number": "Телефонен номер",
+  "Show phone number on public profile": "Показвай телефонния номер в публичния профил",
+  "Clients can call you if they need help with their tattoo request or appointment.": "Клиентите могат да ти се обадят при проблем със запитването или запазения час.",
+  "View your registered phone number, control its public visibility and keep your location up to date.": "Виж регистрирания си телефон, управлявай публичната му видимост и поддържай местоположението си актуално.",
   "City": "Град",
   "Country": "Държава",
   "Create Client Profile": "Създай клиентски профил",
@@ -1017,31 +1030,35 @@ const BG = {
 };
 
 export const translations = {
-  bg: { ...BG, ...cancellationTranslations.bg, ...artistResponseWorkflowTranslations.bg },
+  bg: { ...BG, ...cancellationTranslations.bg, ...artistResponseWorkflowTranslations.bg, ...publicLinkTranslations.bg },
   de: {
     ...DE,
     ...germanSupplementalTranslations,
     ...workflowApiTranslationsDe,
     ...cancellationTranslations.de,
     ...artistResponseWorkflowTranslations.de,
+    ...publicLinkTranslations.de,
   },
   fr: {
     ...FR,
     ...workflowApiTranslationsFr,
     ...cancellationTranslations.fr,
     ...artistResponseWorkflowTranslations.fr,
+    ...publicLinkTranslations.fr,
   },
   es: {
     ...ES,
     ...workflowApiTranslationsEs,
     ...cancellationTranslations.es,
     ...artistResponseWorkflowTranslations.es,
+    ...publicLinkTranslations.es,
   },
   it: {
     ...IT,
     ...workflowApiTranslationsIt,
     ...cancellationTranslations.it,
     ...artistResponseWorkflowTranslations.it,
+    ...publicLinkTranslations.it,
   },
 };
 

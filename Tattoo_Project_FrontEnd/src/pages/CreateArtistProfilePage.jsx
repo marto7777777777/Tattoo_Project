@@ -42,6 +42,7 @@ function CreateArtistProfilePage() {
   const [artistForm, setArtistForm] = useState({
     description: "",
     phoneNumber: "",
+    showPhoneNumberOnPublicProfile: true,
     consultationDurationMinutes: "30",
     offersOnlineConsultation: false,
     requiresDeposit: false,
@@ -248,6 +249,7 @@ function CreateArtistProfilePage() {
     const payload = {
       description: artistForm.description.trim(),
       phoneNumber: artistForm.phoneNumber.trim(),
+      showPhoneNumberOnPublicProfile: Boolean(artistForm.showPhoneNumberOnPublicProfile),
       consultationDurationMinutes: Number(artistForm.consultationDurationMinutes),
       offersOnlineConsultation: Boolean(artistForm.offersOnlineConsultation),
       requiresDeposit: Boolean(artistForm.requiresDeposit),
@@ -387,6 +389,11 @@ function CreateArtistProfilePage() {
                   <label>Phone number</label>
                   <input type="tel" autoComplete="tel" value={artistForm.phoneNumber} onChange={(event) => setArtistField("phoneNumber", event.target.value)} placeholder="+359 ..." maxLength={40} />
                 </div>
+
+                <label className={`onboarding-toggle-card onboarding-toggle-card-single ${artistForm.showPhoneNumberOnPublicProfile ? "active" : ""}`}>
+                  <input type="checkbox" checked={artistForm.showPhoneNumberOnPublicProfile} onChange={(event) => setArtistField("showPhoneNumberOnPublicProfile", event.target.checked)} />
+                  <span><strong>Show phone number on public profile</strong><small>Clients can call you if they need help with their tattoo request or appointment.</small></span>
+                </label>
 
                 <label className={`onboarding-toggle-card onboarding-toggle-card-single ${artistForm.offersOnlineConsultation ? "active" : ""}`}>
                   <input type="checkbox" checked={artistForm.offersOnlineConsultation} onChange={(event) => setArtistField("offersOnlineConsultation", event.target.checked)} />

@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
@@ -29,21 +30,29 @@ import CreateAiTattooPage from "./pages/CreateAiTattooPage";
 import AiTattooProjectPage from "./pages/AiTattooProjectPage";
 import AdminPage from "./pages/AdminPage";
 import StudioProfilePage from "./pages/StudioProfilePage";
+import PublicArtistPage from "./pages/PublicArtistPage";
+import HelpGuidesPage from "./pages/HelpGuidesPage";
 import NativePlatformSetup from "./components/NativePlatformSetup";
 import NetworkStatus from "./components/NetworkStatus";
 import DomTranslator from "./i18n/DomTranslator";
 import { useLanguage } from "./i18n/LanguageContext";
 
+const LandingPage = lazy(() => import("./landing/LandingPage"));
+
 function App() {
   const { language } = useLanguage();
+  const location = useLocation();
+  const normalizedPath = location.pathname.replace(/\/+$/, "") || "/";
+  const isLandingPage = normalizedPath === "/for-artists";
 
   return (
     <>
       <NativePlatformSetup />
       <NetworkStatus />
       <DomTranslator />
-      <Navbar />
+      {!isLandingPage && <Navbar />}
       <Routes data-language={language}>
+        <Route path="/for-artists" element={<Suspense fallback={<main className="landing-loading">Loading InkRoute...</main>}><LandingPage /></Suspense>} />
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -53,9 +62,11 @@ function App() {
         <Route path="/create-artist-profile" element={<ProtectedRoute><CreateArtistProfilePage /></ProtectedRoute>} />
         <Route path="/profile/:section" element={<ProtectedRoute><ProfileSectionPage /></ProtectedRoute>} />
         <Route path="/profile" element={<Navigate to="/profile/user" replace />} />
+        <Route path="/help-guides" element={<ProtectedRoute><HelpGuidesPage /></ProtectedRoute>} />
 
         <Route path="/explore" element={<ArtistsPage />} />
         <Route path="/studios/:studioId" element={<StudioProfilePage />} />
+        <Route path="/artist/:slug" element={<PublicArtistPage />} />
         <Route path="/admin" element={<ProtectedRoute roles={["Admin"]}><AdminPage /></ProtectedRoute>} />
         <Route path="/ai-studio" element={<ProtectedRoute roles={["Client", "TattooArtist"]}><AiStudioPage /></ProtectedRoute>} />
         <Route path="/ai-studio/new" element={<ProtectedRoute roles={["Client", "TattooArtist"]}><CreateAiTattooPage /></ProtectedRoute>} />

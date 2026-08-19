@@ -1,4 +1,9 @@
 import { API_BASE_URL } from "./apiConfig";
+import { requestJson } from "./http";
+
+export function getPublicArtist(slug) {
+  return requestJson(`/api/TattooArtist/public/${encodeURIComponent(slug)}`);
+}
 
 export async function createArtistProfile(artistData) {
   const token = localStorage.getItem("token");

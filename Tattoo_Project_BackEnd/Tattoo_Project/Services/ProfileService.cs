@@ -66,6 +66,7 @@ namespace Tattoo_Project.Services
                     HasPendingStudioJoinRequest = hasPendingJoinRequest,
                     ConsultationDurationMinutes = artist.ConsultationDurationMinutes,
                     OffersOnlineConsultation = artist.OffersOnlineConsultation,
+                    ShowPhoneNumberOnPublicProfile = artist.ShowPhoneNumberOnPublicProfile,
                     RequiresDeposit = artist.RequiresDeposit,
                     DepositAmount = artist.DepositAmount,
                     SpecialtyStyles = artist.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList(),
@@ -241,6 +242,15 @@ namespace Tattoo_Project.Services
             var artist = await FindArtist(userId);
             if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
             artist.OffersOnlineConsultation = value;
+            await context.SaveChangesAsync();
+            return ResultService.Ok();
+        }
+
+        public async Task<ResultService> UpdatePhoneNumberVisibilityAsync(string userId, bool value)
+        {
+            var artist = await FindArtist(userId);
+            if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
+            artist.ShowPhoneNumberOnPublicProfile = value;
             await context.SaveChangesAsync();
             return ResultService.Ok();
         }

@@ -107,6 +107,7 @@ namespace Tattoo_Project.Services
                 return ResultService<MyStudioDto>.Ok(new MyStudioDto
                 {
                     CurrentArtistId = artist.Id,
+                    CurrentArtistPublicSlug = artist.PublicProfileSlug,
                     HasStudio = false,
                     IsOwner = false,
                     PendingJoinRequest = latestRequest?.Status == StudioJoinRequestStatus.Pending ? MapJoinRequest(latestRequest) : null,
@@ -139,6 +140,7 @@ namespace Tattoo_Project.Services
             return ResultService<MyStudioDto>.Ok(new MyStudioDto
             {
                 CurrentArtistId = artist.Id,
+                CurrentArtistPublicSlug = artist.PublicProfileSlug,
                 HasStudio = true,
                 IsOwner = isOwner,
                 Studio = MapStudio(studio),

@@ -21,6 +21,7 @@ namespace Tattoo_Project.Services.Interfaces
 
         Task<ResultService> UpdateConsultationDurationAsync(string userId, int value);
         Task<ResultService> UpdateOffersOnlineConsultationAsync(string userId, bool value);
+        Task<ResultService> UpdatePhoneNumberVisibilityAsync(string userId, bool value);
         Task<ResultService> UpdateRequiresDepositAsync(string userId, bool value);
         Task<ResultService> UpdateDepositAmountAsync(string userId, decimal? value);
 

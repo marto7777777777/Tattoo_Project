@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../api/authApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
+import { getPendingArtistRequestPath } from "../utils/pendingArtistRequest";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -20,7 +21,10 @@ function LoginPage() {
       if (!response.ok) { setError(typeof data === "string" ? data : "Invalid login credentials."); return; }
       saveAuthToken(data.token);
       const roles = data.user?.roles || data.user?.Roles || [];
-      if (roles.length === 0) navigate("/choose-profile");
+      const pendingRequest = getPendingArtistRequestPath();
+      if (pendingRequest && roles.includes("Client")) navigate(pendingRequest);
+      else if (pendingRequest) navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(pendingRequest)}`);
+      else if (roles.length === 0) navigate("/choose-profile");
       else navigate("/explore");
     } catch { setError("Server connection failed. Please try again."); }
   }

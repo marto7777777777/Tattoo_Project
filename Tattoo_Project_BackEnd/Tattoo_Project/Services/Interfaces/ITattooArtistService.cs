@@ -8,6 +8,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService<ICollection<GetTattooArtistDto>>> GetAllTattooArtistsAsync();
 
         Task<ResultService<GetTattooArtistDto>> GetTattooArtistByIdAsync(int id);
+        Task<ResultService<PublicTattooArtistDto>> GetPublicTattooArtistAsync(string slug);
 
         Task<ResultService> CreateTattooArtistProfileAsync(
             CreateTattooArtistDto dto,

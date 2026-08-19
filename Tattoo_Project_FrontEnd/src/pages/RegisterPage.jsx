@@ -3,13 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { registerUser, resendRegisterCode, verifyRegisterCode } from "../api/authApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
+import { getPendingArtistRequestPath } from "../utils/pendingArtistRequest";
 
 function RegisterPage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
-  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: "", password: "" });
+  const pendingEmail = sessionStorage.getItem("inkroute.pendingRegistrationEmail") || "";
+  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: pendingEmail, password: "" });
   const [code, setCode] = useState("");
-  const [step, setStep] = useState("register");
+  const [step, setStep] = useState(pendingEmail ? "verify" : "register");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +34,7 @@ function RegisterPage() {
       }
 
       setSuccessMessage("We sent a 6-digit code to your email. It expires in 10 minutes. If you do not see it, check your Spam folder.");
+      sessionStorage.setItem("inkroute.pendingRegistrationEmail", form.email.trim());
       setStep("verify");
     } catch {
       setError("Server connection failed. Please try again.");
@@ -48,14 +51,26 @@ function RegisterPage() {
 
     try {
       const data = await verifyRegisterCode(form.email, code);
+      sessionStorage.removeItem("inkroute.pendingRegistrationEmail");
       saveAuthToken(data.token);
       setSuccessMessage("Email verified successfully. Redirecting...");
-      setTimeout(() => navigate("/choose-profile"), 3000);
+      const pendingRequest = getPendingArtistRequestPath();
+      setTimeout(() => navigate(pendingRequest
+        ? `/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(pendingRequest)}`
+        : "/choose-profile"), 3000);
     } catch (err) {
       setError(err.message || "Invalid or expired verification code.");
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function restartRegistration() {
+    sessionStorage.removeItem("inkroute.pendingRegistrationEmail");
+    setCode("");
+    setError("");
+    setSuccessMessage("");
+    setStep("register");
   }
 
   async function handleResendCode() {
@@ -112,6 +127,7 @@ function RegisterPage() {
             {error && <p className="error">{error}</p>}{successMessage && <p className="success">{successMessage}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting || code.length !== 6}>{isSubmitting ? "Verifying..." : "Verify email"}</button>
             <button className="secondary-button" type="button" onClick={handleResendCode}>Resend code</button>
+            <button className="secondary-button" type="button" onClick={restartRegistration}>Change registration details</button>
           </form>
         )}
 

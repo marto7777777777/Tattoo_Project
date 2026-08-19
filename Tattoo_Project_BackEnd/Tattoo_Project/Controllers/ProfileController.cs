@@ -108,6 +108,19 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [HttpPatch("artist/show-phone-number")]
+        public async Task<IActionResult> UpdatePhoneNumberVisibility(UpdateBoolValueDto dto)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var result = await service.UpdatePhoneNumberVisibilityAsync(userId, dto.Value);
+            if (!result.Success) return BadRequest(result.ErrorMessage);
+
+            return Ok("Phone number visibility updated successfully.");
+        }
+
+        [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [HttpPatch("consultation/duration")]
         public async Task<IActionResult> UpdateConsultationDuration(UpdateIntValueDto dto)
         {

@@ -31,7 +31,7 @@ namespace Tattoo_Project.Controllers
             return Ok(result.Data);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetTattooArtistById(int id)
         {
             var result = await service.GetTattooArtistByIdAsync(id);
@@ -41,6 +41,15 @@ namespace Tattoo_Project.Controllers
                 return NotFound(result.ErrorMessage);
             }
 
+            return Ok(result.Data);
+        }
+
+        [AllowAnonymous]
+        [HttpGet("public/{slug}")]
+        public async Task<IActionResult> GetPublicTattooArtist(string slug)
+        {
+            var result = await service.GetPublicTattooArtistAsync(slug);
+            if (!result.Success) return NotFound(result.ErrorMessage);
             return Ok(result.Data);
         }
 

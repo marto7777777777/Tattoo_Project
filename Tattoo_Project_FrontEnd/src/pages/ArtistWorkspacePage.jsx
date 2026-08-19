@@ -36,6 +36,7 @@ function ArtistWorkspacePage() {
   const [studioCrop, setStudioCrop] = useState(null);
   const [newStudioCoverFile, setNewStudioCoverFile] = useState(null);
   const [newStudioLogoFile, setNewStudioLogoFile] = useState(null);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   async function refresh() {
     setLoading(true);
@@ -150,6 +151,42 @@ function ArtistWorkspacePage() {
     }
   }
 
+  const publicAppUrl = (import.meta.env.VITE_PUBLIC_APP_URL?.trim() || window.location.origin).replace(/\/+$/, "");
+  const publicArtistUrl = data?.currentArtistPublicSlug
+    ? `${publicAppUrl}/artist/${data.currentArtistPublicSlug}`
+    : "";
+
+  async function copyPublicLink() {
+    if (!publicArtistUrl) return;
+    try {
+      await navigator.clipboard.writeText(publicArtistUrl);
+    } catch {
+      const input = document.createElement("textarea");
+      input.value = publicArtistUrl;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+    }
+    setLinkCopied(true);
+    window.setTimeout(() => setLinkCopied(false), 2200);
+  }
+
+  async function sharePublicLink() {
+    if (!publicArtistUrl) return;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "My InkRoute artist profile", text: "Send me your tattoo idea through InkRoute.", url: publicArtistUrl });
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
+    }
+    await copyPublicLink();
+  }
+
   if (loading) return <main className="page-shell"><section className="container"><p className="message">Loading your studio...</p></section></main>;
 
   if (!data?.hasStudio) {
@@ -205,6 +242,13 @@ function ArtistWorkspacePage() {
             </div>
           ) : null}
         </div>
+
+        {publicArtistUrl && <section className="card form-card public-link-card">
+          <div className="public-link-card-copy"><p className="subtitle inline-subtitle">Your public link</p><h2>Receive requests directly</h2><p>Send this link to a client or add it to your bio to receive structured requests directly in InkRoute.</p></div>
+          <div className="public-link-value" title={publicArtistUrl}>{publicArtistUrl}</div>
+          <div className="public-link-actions"><button className="primary-button" type="button" onClick={copyPublicLink}>Copy link</button><button className="secondary-button" type="button" onClick={sharePublicLink}>Share</button></div>
+          <div className={`public-link-confirmation ${linkCopied ? "visible" : ""}`} role="status" aria-live="polite">Link copied</div>
+        </section>}
 
         {error && <p className="error">{error}</p>}
         {success && <p className="success">{success}</p>}

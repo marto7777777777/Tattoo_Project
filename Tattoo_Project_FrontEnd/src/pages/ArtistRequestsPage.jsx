@@ -627,18 +627,20 @@ function ArtistRequestsPage() {
               <div className="action-panel artist-workspace-action-panel">
                 <h3>Complete consultation</h3>
                 <p className="muted">Set price and duration for each tattoo session the client should book.</p>
-                {sessions.map((session, index) => (
-                  <div className="form-row" key={index}>
-                    <div className="form-group">
-                      <label>{`Session ${index + 1} price`}</label>
-                      <input type="number" step="0.01" value={session.price} onChange={(event) => updateSessionList(setSessions, index, "price", event.target.value)} />
+                <div className="artist-session-fields artist-inline-session-fields">
+                  {sessions.map((session, index) => (
+                    <div className="form-row" key={index}>
+                      <div className="form-group">
+                        <label>{`Session ${index + 1} price`}</label>
+                        <input type="number" step="0.01" value={session.price} onChange={(event) => updateSessionList(setSessions, index, "price", event.target.value)} />
+                      </div>
+                      <div className="form-group">
+                        <label>Duration hours</label>
+                        <input type="number" value={session.durationHours} onChange={(event) => updateSessionList(setSessions, index, "durationHours", event.target.value)} />
+                      </div>
                     </div>
-                    <div className="form-group">
-                      <label>Duration hours</label>
-                      <input type="number" value={session.durationHours} onChange={(event) => updateSessionList(setSessions, index, "durationHours", event.target.value)} />
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
                 <div className="action-row">
                   <button className="secondary-button" type="button" onClick={() => setSessions([...sessions, createEmptySession()])}>Add session</button>
                   <button className="primary-button" type="button" onClick={() => runAction("complete-consultation")}>Complete consultation</button>
