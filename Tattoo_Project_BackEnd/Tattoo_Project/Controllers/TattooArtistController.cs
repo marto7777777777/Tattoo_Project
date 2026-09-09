@@ -127,6 +127,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateTattooArtistProfile(
             UpdateArtistDto dto)

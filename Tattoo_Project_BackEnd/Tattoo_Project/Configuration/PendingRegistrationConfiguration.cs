@@ -18,6 +18,8 @@ namespace Tattoo_Project.Configuration
             builder.Property(p => p.NormalizedEmail).HasMaxLength(256).IsRequired();
             builder.Property(p => p.PasswordHash).IsRequired();
             builder.Property(p => p.VerificationCodeHash).HasMaxLength(64).IsRequired();
+            builder.Property(p => p.TermsVersion).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.PrivacyVersion).HasMaxLength(50).IsRequired();
 
             builder.HasIndex(p => p.NormalizedEmail).IsUnique();
             builder.HasIndex(p => p.NormalizedUserName).IsUnique();

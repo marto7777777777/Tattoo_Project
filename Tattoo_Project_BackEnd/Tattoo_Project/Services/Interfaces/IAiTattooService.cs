@@ -1,5 +1,6 @@
 using Tattoo_Project.DTOs.AiTattooDTOs;
 using Tattoo_Project.Services.Results;
+using Stripe;
 namespace Tattoo_Project.Services.Interfaces;
 public interface IAiTattooService
 {
@@ -10,5 +11,5 @@ public interface IAiTattooService
  Task<ResultService<AiTattooProjectDto>> GetProjectAsync(int id,string userId);
  Task<ResultService<AiTattooProjectDto>> EditProjectAsync(int id,EditAiTattooProjectDto dto,string userId);
  Task<ResultService<CheckoutSessionDto>> CreateCheckoutAsync(int projectId,string userId);
- Task<ResultService> ProcessStripeWebhookAsync(string payload,string signature);
+ Task<ResultService> ProcessVerifiedStripeEventAsync(Event stripeEvent);
 }

@@ -592,10 +592,20 @@ namespace Tattoo_Project.Services
 
             await context.SaveChangesAsync();
 
+            var completedCount = await context.TattooRequests.CountAsync(r => r.TattooArtistId == tattooArtist.Id && r.Status == RequestStatus.Completed);
+            context.AnalyticsOutboxEvents.Add(new AnalyticsOutboxEvent { TattooArtistId = tattooArtist.Id, Name = "project_completed", CompletedProjectCount = completedCount, CreatedAt = DateTime.UtcNow });
+            var milestoneName = completedCount == 1 ? AnalyticsMilestones.FirstProjectCompleted : completedCount == 10 ? AnalyticsMilestones.TenthProjectCompleted : null;
+            if (milestoneName != null && !await context.ArtistAnalyticsMilestones.AnyAsync(x => x.TattooArtistId == tattooArtist.Id && x.Name == milestoneName))
+            {
+                context.ArtistAnalyticsMilestones.Add(new ArtistAnalyticsMilestone { TattooArtistId = tattooArtist.Id, Name = milestoneName, OccurredAt = DateTime.UtcNow });
+                context.AnalyticsOutboxEvents.Add(new AnalyticsOutboxEvent { TattooArtistId = tattooArtist.Id, Name = milestoneName, CompletedProjectCount = completedCount, CreatedAt = DateTime.UtcNow });
+            }
+            await context.SaveChangesAsync();
+
             return ResultService.Ok();
         }
 
-        public async Task<ResultService> ContinueTattooAsync(int tattooRequestId)
+        public async Task<ResultService> ContinueTattooAsync(int tattooRequestId, string userId)
         {
             var tattooRequest = await context.TattooRequests
                 .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
@@ -604,6 +614,10 @@ namespace Tattoo_Project.Services
             {
                 return ResultService.Fail("Tattoo request was not found.");
             }
+
+            var artistId = await context.TattooArtists.Where(x => x.UserId == userId).Select(x => (int?)x.Id).FirstOrDefaultAsync();
+            if (artistId == null || tattooRequest.TattooArtistId != artistId)
+                return ResultService.Fail("You can continue only tattoo requests assigned to you.");
 
             if (tattooRequest.Status != RequestStatus.Completed)
             {

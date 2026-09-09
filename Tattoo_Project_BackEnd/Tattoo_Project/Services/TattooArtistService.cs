@@ -41,7 +41,7 @@ namespace Tattoo_Project.Services
                     .ThenInclude(r => r.ArtistResponse)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Consultation)
-                .Where(a => a.StudioId != null)
+                .Where(a => a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
                 .ToListAsync();
 
             var result = artists
@@ -69,7 +69,7 @@ namespace Tattoo_Project.Services
                     .ThenInclude(r => r.ArtistResponse)
                 .Include(a => a.TattooRequests!)
                     .ThenInclude(r => r.Consultation)
-                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null);
+                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active));
 
             if (artist == null)
             {
@@ -94,7 +94,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.SpecialtyStyles)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null);
+                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active));
 
             if (artist == null)
                 return ResultService<PublicTattooArtistDto>.Fail("Tattoo artist was not found.");
@@ -144,7 +144,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null)
+                .Where(a => a.StudioId != null && a.Studio != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
                 .AsSplitQuery()
                 .ToListAsync();
 
@@ -296,6 +296,14 @@ namespace Tattoo_Project.Services
                 await transaction.RollbackAsync();
                 return ResultService.Fail("Phone number or email is already registered to another account.");
             }
+
+            context.ArtistSubscriptions.Add(new ArtistSubscription
+            {
+                TattooArtistId = tattooArtist.Id,
+                Status = ArtistSubscriptionStatuses.Pending,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            });
 
             if (dto.StudioSetupMode == StudioSetupMode.CreateStudio)
             {
@@ -504,7 +512,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null)
+                .Where(a => a.StudioId != null && a.Studio != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
                 .AsQueryable();
 
             if (await artistsQuery.AnyAsync(a => a.Studio!.Country.ToLower() == clientCountry))

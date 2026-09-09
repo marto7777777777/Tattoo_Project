@@ -36,6 +36,14 @@ import NativePlatformSetup from "./components/NativePlatformSetup";
 import NetworkStatus from "./components/NetworkStatus";
 import DomTranslator from "./i18n/DomTranslator";
 import { useLanguage } from "./i18n/LanguageContext";
+import CookieConsent from "./components/CookieConsent";
+import SiteFooter from "./components/SiteFooter";
+import LegalPage from "./pages/LegalPage";
+import PricingPage from "./pages/PricingPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
+import AccountDeletionPage from "./pages/AccountDeletionPage";
+import AnalyticsSync from "./components/AnalyticsSync";
+import SubscriptionGuard from "./components/SubscriptionGuard";
 
 const LandingPage = lazy(() => import("./landing/LandingPage"));
 
@@ -50,11 +58,16 @@ function App() {
       <NativePlatformSetup />
       <NetworkStatus />
       <DomTranslator />
+      <CookieConsent />
+      <AnalyticsSync />
       {!isLandingPage && <Navbar />}
       <Routes data-language={language}>
         <Route path="/for-artists" element={<Suspense fallback={<main className="landing-loading">Loading InkRoute...</main>}><LandingPage /></Suspense>} />
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/legal/:page" element={<LegalPage />} />
+        <Route path="/account-deletion" element={<AccountDeletionPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/choose-profile" element={<ProtectedRoute><ChooseProfileTypePage /></ProtectedRoute>} />
@@ -63,6 +76,7 @@ function App() {
         <Route path="/profile/:section" element={<ProtectedRoute><ProfileSectionPage /></ProtectedRoute>} />
         <Route path="/profile" element={<Navigate to="/profile/user" replace />} />
         <Route path="/help-guides" element={<ProtectedRoute><HelpGuidesPage /></ProtectedRoute>} />
+        <Route path="/subscription" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionPage /></ProtectedRoute>} />
 
         <Route path="/explore" element={<ArtistsPage />} />
         <Route path="/studios/:studioId" element={<StudioProfilePage />} />
@@ -82,19 +96,20 @@ function App() {
         <Route path="/book-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><CreateConsultationPage /></ProtectedRoute>} />
         <Route path="/book-session/:tattooRequestId?" element={<ProtectedRoute roles={["Client"]}><BookTattooSessionPage /></ProtectedRoute>} />
 
-        <Route path="/my-studio" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistWorkspacePage /></ProtectedRoute>} />
+        <Route path="/my-studio" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><ArtistWorkspacePage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="/artist-workspace" element={<Navigate to="/my-studio" replace />} />
-        <Route path="/my-studio/requests" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistRequestsPage /></ProtectedRoute>} />
+        <Route path="/my-studio/requests" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><ArtistRequestsPage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="/artist-requests" element={<Navigate to="/my-studio/requests" replace />} />
-        <Route path="/my-studio/calendar" element={<ProtectedRoute roles={["TattooArtist"]}><ArtistSchedulePage /></ProtectedRoute>} />
+        <Route path="/my-studio/calendar" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><ArtistSchedulePage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="/artist-schedule" element={<Navigate to="/my-studio/calendar" replace />} />
 
-        <Route path="/artist-response/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CreateArtistResponsePage /></ProtectedRoute>} />
-        <Route path="/complete-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CompleteConsultationPage /></ProtectedRoute>} />
-        <Route path="/add-more-sessions/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><AddMoreSessionsPage /></ProtectedRoute>} />
-        <Route path="/complete-tattoo/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><CompleteTattooPage /></ProtectedRoute>} />
+        <Route path="/artist-response/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><CreateArtistResponsePage /></SubscriptionGuard></ProtectedRoute>} />
+        <Route path="/complete-consultation/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><CompleteConsultationPage /></SubscriptionGuard></ProtectedRoute>} />
+        <Route path="/add-more-sessions/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><AddMoreSessionsPage /></SubscriptionGuard></ProtectedRoute>} />
+        <Route path="/complete-tattoo/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><CompleteTattooPage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      {!isLandingPage && <SiteFooter />}
     </>
   );
 }

@@ -9,6 +9,8 @@ import { WeeklyScheduleBuilder } from "../components/WeeklyScheduleBuilder";
 import SpecialtyStyleSelector from "../components/SpecialtyStyleSelector";
 import ImageCropModal from "../components/ImageCropModal";
 import StudioImageSetupFields from "../components/StudioImageSetupFields";
+import { startSubscriptionCheckout } from "../api/subscriptionApi";
+import { trackEvent } from "../services/analyticsService";
 
 const DEFAULT_AVAILABILITY = {
   consultation: [
@@ -37,6 +39,8 @@ function uniqueFiles(existingFiles, incomingFiles) {
 function CreateArtistProfilePage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
+
+  useEffect(() => { trackEvent("artist_signup_started"); }, []);
 
   const [setupMode, setSetupMode] = useState(null); // 0 = create studio, 1 = join studio
   const [artistForm, setArtistForm] = useState({
@@ -285,6 +289,7 @@ function CreateArtistProfilePage() {
 
       const token = data?.token || data?.Token;
       if (token) saveAuthToken(token);
+      trackEvent("artist_profile_created");
 
       const uploadWarnings = [];
       if (profileImageFile) {
@@ -313,7 +318,14 @@ function CreateArtistProfilePage() {
           ? `Artist profile created and your join request was sent to ${selectedStudio.name}. Some images can be added again from Settings.`
           : `Artist profile created. Your join request was sent to ${selectedStudio.name}.`);
       }
-      setTimeout(() => navigate("/my-studio"), uploadWarnings.length ? 1800 : 700);
+      try {
+        const checkout = await startSubscriptionCheckout();
+        trackEvent("subscription_checkout_started");
+        window.location.assign(checkout.url);
+      } catch (checkoutError) {
+        setError(checkoutError.message || "Artist profile created, but Stripe Checkout could not be opened.");
+        setTimeout(() => navigate("/subscription"), 1200);
+      }
     } catch (err) {
       setError(err.message || "Server connection failed. Please try again.");
     } finally {

@@ -41,6 +41,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpGet("mine")]
         public async Task<IActionResult> GetMyStudio()
         {
@@ -53,6 +54,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("mine/create")]
         public async Task<IActionResult> CreateMyStudio([FromBody] CreateStudioDto dto)
         {
@@ -65,6 +67,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("{studioId:int}/join")]
         public async Task<IActionResult> RequestJoin(int studioId)
         {
@@ -77,6 +80,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("join-requests/{requestId:int}/accept")]
         public async Task<IActionResult> AcceptJoinRequest(int requestId)
         {
@@ -89,6 +93,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("join-requests/{requestId:int}/reject")]
         public async Task<IActionResult> RejectJoinRequest(int requestId)
         {
@@ -101,6 +106,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpDelete("members/{artistId:int}")]
         public async Task<IActionResult> RemoveMember(int artistId)
         {
@@ -113,6 +119,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPatch("open-for-join-requests")]
         public async Task<IActionResult> SetOpenForJoinRequests(UpdateStudioOpenStateDto dto)
         {
@@ -125,6 +132,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("mine")]
         public async Task<IActionResult> UpdateMyStudio(UpdateStudioDto dto)
         {

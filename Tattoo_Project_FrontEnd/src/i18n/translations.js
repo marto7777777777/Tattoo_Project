@@ -13,6 +13,16 @@ import { artistResponseWorkflowTranslations } from "./artistResponseWorkflowTran
 import { publicLinkTranslations } from "./publicLinkTranslations";
 
 const BG = {
+  "Pricing": "Цени",
+  "month": "месец",
+  "First 3 months free": "Първите 3 месеца безплатно",
+  "InkRoute is completely free for clients.": "InkRoute е напълно безплатен за клиентите.",
+  "A card is required when the trial starts.": "Карта се изисква при започване на trial периода.",
+  "No charge during the first 3 months from the start of the subscription.": "Няма таксуване през първите 3 месеца от стартирането на абонамента.",
+  "Automatic monthly renewal after the trial.": "След това абонаментът се подновява автоматично всеки месец.",
+  "Applicable taxes are calculated and shown in Stripe Checkout.": "Приложимите данъци се изчисляват и показват в Stripe Checkout.",
+  "Cancel before the first payment.": "Можеш да прекратиш преди първото плащане.",
+  "Start free": "Започни безплатно",
   "Image position": "Позиция на снимката",
   "Adjust image": "Намести снимката",
   "Adjust profile picture": "Намести профилната снимка",

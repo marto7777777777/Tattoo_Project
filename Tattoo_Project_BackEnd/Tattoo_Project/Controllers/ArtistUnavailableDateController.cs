@@ -10,6 +10,7 @@ namespace Tattoo_Project.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+    [Authorize(Policy = "ActiveArtistSubscription")]
     public class ArtistUnavailableDateController : ControllerBase
     {
         private readonly IArtistUnavailableDateService artistUnavailableDateService;

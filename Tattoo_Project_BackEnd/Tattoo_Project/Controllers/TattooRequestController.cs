@@ -32,6 +32,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpGet("my-artist-requests")]
         public async Task<IActionResult> GetMyArtistTattooRequests(
             [FromQuery] RequestStatus? status)
@@ -217,6 +218,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("{id}/reject-by-artist")]
         public async Task<IActionResult> RejectTattooRequestByArtist(int id)
         {

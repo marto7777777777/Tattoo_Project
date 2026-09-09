@@ -335,6 +335,7 @@ function ProfileSectionPage() {
               <span><strong>Working schedule</strong><small>Edit working days, hours and time off.</small></span>
             </Link>
           )}
+          {isArtist && <Link className="profile-schedule-link" to="/subscription"><span className="settings-nav-icon">€</span><span><strong>Subscription</strong><small>Manage card, invoices and cancellation in Stripe.</small></span></Link>}
         </aside>
 
         <section ref={settingsContentRef} className="card profile-section-card profile-settings-content">
@@ -425,6 +426,7 @@ function ProfileSectionPage() {
                   )}
                 </div>
               )}
+              {section === "user" && <div className="profile-field-row danger-zone"><div><span className="field-label">Delete account</span><strong>Permanently delete your InkRoute account and related personal data.</strong></div><Link className="danger-button compact-button" to="/account-deletion">Delete account</Link></div>}
             </div>
           )}
 

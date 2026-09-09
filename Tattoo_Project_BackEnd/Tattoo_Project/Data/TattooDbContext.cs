@@ -45,6 +45,11 @@ namespace Tattoo_Project.Data
         public DbSet<AiTattooProject> AiTattooProjects { get; set; }
         public DbSet<AiTattooVersion> AiTattooVersions { get; set; }
         public DbSet<AiProjectPayment> AiProjectPayments { get; set; }
+        public DbSet<ArtistSubscription> ArtistSubscriptions { get; set; }
+        public DbSet<StripeWebhookEvent> StripeWebhookEvents { get; set; }
+        public DbSet<ArtistAnalyticsMilestone> ArtistAnalyticsMilestones { get; set; }
+        public DbSet<AnalyticsOutboxEvent> AnalyticsOutboxEvents { get; set; }
+        public DbSet<AccountDeletionAudit> AccountDeletionAudits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,6 +75,11 @@ namespace Tattoo_Project.Data
                 .HasDatabaseName("PhoneNumberIndex")
                 .IsUnique()
                 .HasFilter("[PhoneNumber] IS NOT NULL");
+
+            modelBuilder.Entity<ApplicationUser>().Property(x => x.TermsVersion).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<ApplicationUser>().Property(x => x.PrivacyVersion).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<AccountDeletionAudit>().HasKey(x => x.Id);
+            modelBuilder.Entity<AccountDeletionAudit>().Property(x => x.RetentionNote).HasMaxLength(200).IsRequired();
 
             modelBuilder.ApplyConfigurationsFromAssembly(
                 Assembly.GetExecutingAssembly());

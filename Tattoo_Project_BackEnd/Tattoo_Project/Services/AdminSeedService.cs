@@ -41,7 +41,11 @@ public static class AdminSeedService
                 UserName = string.IsNullOrWhiteSpace(userName) ? "inkroute-admin" : userName,
                 FirstName = string.IsNullOrWhiteSpace(firstName) ? "InkRoute" : firstName,
                 LastName = string.IsNullOrWhiteSpace(lastName) ? "Admin" : lastName,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                TermsAcceptedAt = DateTime.UtcNow,
+                PrivacyAcceptedAt = DateTime.UtcNow,
+                TermsVersion = configuration["Legal:TermsVersion"] ?? "TODO-LEGAL-REVIEW",
+                PrivacyVersion = configuration["Legal:PrivacyVersion"] ?? "TODO-LEGAL-REVIEW"
             };
 
             var createResult = await userManager.CreateAsync(user, password);

@@ -4,12 +4,13 @@ import { registerUser, resendRegisterCode, verifyRegisterCode } from "../api/aut
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 import { getPendingArtistRequestPath } from "../utils/pendingArtistRequest";
+import { LEGAL_VERSIONS } from "../config/businessInfo";
 
 function RegisterPage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
   const pendingEmail = sessionStorage.getItem("inkroute.pendingRegistrationEmail") || "";
-  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: pendingEmail, password: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: pendingEmail, password: "", acceptTermsAndPrivacy: false, termsVersion: LEGAL_VERSIONS.terms, privacyVersion: LEGAL_VERSIONS.privacy });
   const [code, setCode] = useState("");
   const [step, setStep] = useState(pendingEmail ? "verify" : "register");
   const [error, setError] = useState("");
@@ -107,6 +108,7 @@ function RegisterPage() {
             <div className="form-group"><label>Username</label><input name="userName" autoComplete="username" value={form.userName} onChange={handleChange} /></div>
             <div className="form-group"><label>Email</label><input name="email" type="email" autoComplete="email" value={form.email} onChange={handleChange} /></div>
             <div className="form-group"><label>Password</label><input name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} /></div>
+            <label className="legal-acceptance"><input name="acceptTermsAndPrivacy" type="checkbox" checked={form.acceptTermsAndPrivacy} onChange={event=>setForm({...form,acceptTermsAndPrivacy:event.target.checked})} required/><span>I accept the <Link to="/legal/terms" target="_blank">Terms of Service</Link> and <Link to="/legal/privacy" target="_blank">Privacy Policy</Link>.</span></label>
             {error && <p className="error">{error}</p>}{successMessage && <p className="success">{successMessage}</p>}
             <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Sending code..." : "Register"}</button>
           </form>

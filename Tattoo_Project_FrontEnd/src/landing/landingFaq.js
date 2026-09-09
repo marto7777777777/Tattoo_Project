@@ -8,6 +8,8 @@ const faq = {
     ["Can bookings overlap?","No. Bookings, time off, past times and gaps that are too short are automatically excluded."],
     ["What appears on my public profile?","Name, photo, studio, location, styles, portfolio, description and requirements. You choose whether your phone number is visible; your email stays private."],
     ["Does InkRoute collect deposits?","No. You can show whether a deposit is required and its amount, but InkRoute does not collect it."],
+    ["Do I need to stop using Instagram or other social media?","No. Keep using your existing channels. Add your InkRoute link to your bio or send it when someone contacts you about a tattoo."],
+    ["How do my clients start using InkRoute?","Send them your permanent link. It opens your public profile, so they can send the request directly to you without searching for you again."],
   ],
   bg:[
     ["InkRoute безплатен ли е за клиентите?","Да. Клиентите изпращат запитвания, запазват часове и следят проектите си напълно безплатно."],
@@ -18,6 +20,8 @@ const faq = {
     ["Могат ли резервациите да се застъпят?","Не. Заетите часове, почивките, миналите часове и кратките интервали се изключват автоматично."],
     ["Какво се показва в публичния ми профил?","Име, снимка, студио, локация, стилове, портфолио, описание и изисквания. Ти избираш дали телефонът ти да се вижда; имейлът остава личен."],
     ["InkRoute събира ли депозитите?","Не. Можеш да покажеш дали изискваш депозит и размера му, но InkRoute не го събира."],
+    ["Трябва ли да спра да използвам Instagram или други социални мрежи?","Не. Продължаваш да използваш сегашните си канали. Добавяш InkRoute линка в биото си или го изпращаш, когато някой ти пише за татус."],
+    ["Как клиентите ми започват да използват InkRoute?","Изпращаш им постоянния си линк. Той отваря директно публичния ти профил, откъдето изпращат запитване към теб, без да те търсят отново."],
   ],
   de:[
     ["Ist InkRoute für Kunden kostenlos?","Ja. Kunden können Anfragen senden, Termine buchen und Projekte kostenlos verfolgen."],
@@ -28,6 +32,8 @@ const faq = {
     ["Können sich Buchungen überschneiden?","Nein. Buchungen, Auszeiten, vergangene Termine und zu kurze Lücken werden ausgeschlossen."],
     ["Was zeigt mein öffentliches Profil?","Name, Foto, Studio, Standort, Stile, Portfolio, Beschreibung und Anforderungen. Du entscheidest, ob deine Telefonnummer sichtbar ist; deine E-Mail bleibt privat."],
     ["Zieht InkRoute Kautionen ein?","Nein. Anforderung und Betrag können angezeigt werden, aber InkRoute zieht sie nicht ein."],
+    ["Muss ich Instagram oder andere soziale Netzwerke aufgeben?","Nein. Nutze deine bisherigen Kanäle weiter. Füge den InkRoute-Link zur Bio hinzu oder sende ihn bei einer Tattoo-Anfrage."],
+    ["Wie beginnen meine Kunden mit InkRoute?","Sende ihnen deinen dauerhaften Link. Er öffnet direkt dein öffentliches Profil, über das sie die Anfrage an dich schicken."],
   ],
   fr:[
     ["InkRoute est-il gratuit pour les clients ?","Oui. Les clients envoient des demandes, réservent et suivent leurs projets gratuitement."],
@@ -38,6 +44,8 @@ const faq = {
     ["Les réservations peuvent-elles se chevaucher ?","Non. Réservations, absences, heures passées et intervalles trop courts sont exclus."],
     ["Que montre mon profil public ?","Nom, photo, studio, localisation, styles, portfolio, description et exigences. Vous choisissez si votre téléphone est visible ; votre e-mail reste privé."],
     ["InkRoute encaisse-t-il les acomptes ?","Non. L’exigence et le montant peuvent être affichés, mais InkRoute ne les encaisse pas."],
+    ["Dois-je arrêter d’utiliser Instagram ou d’autres réseaux ?","Non. Gardez vos canaux actuels. Ajoutez votre lien InkRoute à votre bio ou envoyez-le lorsqu’un client vous contacte pour un tatouage."],
+    ["Comment mes clients commencent-ils à utiliser InkRoute ?","Envoyez-leur votre lien permanent. Il ouvre directement votre profil public, depuis lequel ils vous adressent leur demande."],
   ],
   es:[
     ["¿InkRoute es gratis para clientes?","Sí. Los clientes envían solicitudes, reservan y siguen sus proyectos gratis."],
@@ -48,6 +56,8 @@ const faq = {
     ["¿Pueden solaparse las reservas?","No. Reservas, descansos, horas pasadas e intervalos demasiado cortos se excluyen."],
     ["¿Qué muestra mi perfil público?","Nombre, foto, estudio, ubicación, estilos, portfolio, descripción y requisitos. Tú eliges si se muestra tu teléfono; tu correo sigue siendo privado."],
     ["¿InkRoute cobra los depósitos?","No. Puedes mostrar el requisito y el importe, pero InkRoute no lo cobra."],
+    ["¿Tengo que dejar de usar Instagram u otras redes?","No. Sigue usando tus canales actuales. Añade tu enlace de InkRoute a la bio o envíalo cuando alguien te contacte por un tatuaje."],
+    ["¿Cómo empiezan mis clientes a usar InkRoute?","Envíales tu enlace permanente. Abre directamente tu perfil público, desde donde pueden mandarte la solicitud."],
   ],
   it:[
     ["InkRoute è gratuito per i clienti?","Sì. I clienti inviano richieste, prenotano e seguono i progetti gratuitamente."],
@@ -58,7 +68,14 @@ const faq = {
     ["Le prenotazioni possono sovrapporsi?","No. Prenotazioni, pause, orari passati e intervalli troppo brevi vengono esclusi."],
     ["Cosa mostra il mio profilo pubblico?","Nome, foto, studio, posizione, stili, portfolio, descrizione e requisiti. Scegli tu se mostrare il telefono; l’e-mail resta privata."],
     ["InkRoute incassa i depositi?","No. Puoi mostrare requisito e importo, ma InkRoute non li incassa."],
+    ["Devo smettere di usare Instagram o altri social?","No. Continua a usare i tuoi canali. Aggiungi il link InkRoute alla bio o invialo quando qualcuno ti contatta per un tatuaggio."],
+    ["Come iniziano i miei clienti a usare InkRoute?","Invia loro il tuo link permanente. Apre direttamente il profilo pubblico da cui possono mandarti la richiesta."],
   ],
 };
 
-export function getLandingFaq(language) { return faq[language] || faq.en; }
+const salesFaqIndexes = [0, 1, 2, 6, 7, 8, 9];
+
+export function getLandingFaq(language) {
+  const localizedFaq = faq[language] || faq.en;
+  return salesFaqIndexes.map((index) => localizedFaq[index]);
+}

@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +11,7 @@ using Tattoo_Project.DTOs.AiTattooDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 using Tattoo_Project.Services.Results;
+using Stripe;
 
 namespace Tattoo_Project.Services;
 
@@ -185,20 +185,21 @@ public class AiTattooService(
         return ResultService<CheckoutSessionDto>.Ok(new CheckoutSessionDto { Url=url });
     }
 
-    public async Task<ResultService> ProcessStripeWebhookAsync(string payload, string signature)
+    public async Task<ResultService> ProcessVerifiedStripeEventAsync(Event stripeEvent)
     {
-        var webhookSecret = configuration["Stripe:WebhookSecret"];
-        if (string.IsNullOrWhiteSpace(webhookSecret) || !VerifyStripeSignature(payload, signature, webhookSecret)) return ResultService.Fail("Invalid Stripe signature.");
-        using var doc = JsonDocument.Parse(payload);
-        if (doc.RootElement.GetProperty("type").GetString() != "checkout.session.completed") return ResultService.Ok();
-        var session = doc.RootElement.GetProperty("data").GetProperty("object");
-        var sessionId = session.GetProperty("id").GetString()!;
-        var payment = await context.AiProjectPayments.Include(x=>x.AiTattooProject).FirstOrDefaultAsync(x=>x.StripeCheckoutSessionId==sessionId);
+        if (stripeEvent.Type != "checkout.session.completed" || stripeEvent.Data.Object is not Stripe.Checkout.Session session)
+            return ResultService.Ok();
+        var payment = await context.AiProjectPayments.Include(x => x.AiTattooProject).FirstOrDefaultAsync(x => x.StripeCheckoutSessionId == session.Id);
         if (payment == null || payment.Status == "paid") return ResultService.Ok();
-        payment.Status="paid"; payment.PaidAt=DateTime.UtcNow; payment.StripePaymentIntentId=session.TryGetProperty("payment_intent",out var pi)?pi.GetString():null;
+        payment.Status = "paid";
+        payment.PaidAt = DateTime.UtcNow;
+        payment.StripePaymentIntentId = session.PaymentIntentId;
         var startsAt = payment.AiTattooProject.EditingAccessUntil > DateTime.UtcNow ? payment.AiTattooProject.EditingAccessUntil.Value : DateTime.UtcNow;
-        payment.AccessGrantedUntil=startsAt.AddDays(30); payment.AiTattooProject.EditingAccessUntil=payment.AccessGrantedUntil; payment.AiTattooProject.UpdatedAt=DateTime.UtcNow;
-        await context.SaveChangesAsync(); return ResultService.Ok();
+        payment.AccessGrantedUntil = startsAt.AddDays(30);
+        payment.AiTattooProject.EditingAccessUntil = payment.AccessGrantedUntil;
+        payment.AiTattooProject.UpdatedAt = DateTime.UtcNow;
+        await context.SaveChangesAsync();
+        return ResultService.Ok();
     }
 
     private async Task<bool> IsAdminAsync(string userId)
@@ -272,20 +273,19 @@ public class AiTattooService(
     }
     private async Task<ResultService<string>> EditImageAsync(string physicalPath,string prompt)
     {
-        var key=configuration["OpenAI:ApiKey"]; if(string.IsNullOrWhiteSpace(key)) return ResultService<string>.Fail("OpenAI is not configured."); if(!File.Exists(physicalPath)) return ResultService<string>.Fail("Source image file was not found.");
+        var key=configuration["OpenAI:ApiKey"]; if(string.IsNullOrWhiteSpace(key)) return ResultService<string>.Fail("OpenAI is not configured."); if(!System.IO.File.Exists(physicalPath)) return ResultService<string>.Fail("Source image file was not found.");
         using var req=new HttpRequestMessage(HttpMethod.Post,"https://api.openai.com/v1/images/edits"); req.Headers.Authorization=new AuthenticationHeaderValue("Bearer",key);
         using var form=new MultipartFormDataContent(); form.Add(new StringContent(configuration["OpenAI:ImageModel"]??"gpt-image-2"),"model"); form.Add(new StringContent(prompt),"prompt"); form.Add(new StringContent("1024x1024"),"size"); form.Add(new StringContent("medium"),"quality"); form.Add(new StringContent("png"),"output_format");
-        var bytes=await File.ReadAllBytesAsync(physicalPath); var image=new ByteArrayContent(bytes); image.Headers.ContentType=new MediaTypeHeaderValue("image/png"); form.Add(image,"image",Path.GetFileName(physicalPath)); req.Content=form;
+        var bytes=await System.IO.File.ReadAllBytesAsync(physicalPath); var image=new ByteArrayContent(bytes); image.Headers.ContentType=new MediaTypeHeaderValue("image/png"); form.Add(image,"image",Path.GetFileName(physicalPath)); req.Content=form;
         return await SendOpenAiImageRequest(req);
     }
     private async Task<ResultService<string>> SendOpenAiImageRequest(HttpRequestMessage req)
     {
         var response=await httpClientFactory.CreateClient().SendAsync(req); var body=await response.Content.ReadAsStringAsync(); if(!response.IsSuccessStatusCode) return ResultService<string>.Fail("AI image request failed: "+body);
         using var doc=JsonDocument.Parse(body); var b64=doc.RootElement.GetProperty("data")[0].GetProperty("b64_json").GetString(); if(string.IsNullOrWhiteSpace(b64)) return ResultService<string>.Fail("The AI did not return an image.");
-        var folder=Path.Combine(environment.WebRootPath??Path.Combine(environment.ContentRootPath,"wwwroot"),"uploads","ai-tattoos"); Directory.CreateDirectory(folder); var name=$"{Guid.NewGuid():N}.png"; await File.WriteAllBytesAsync(Path.Combine(folder,name),Convert.FromBase64String(b64)); return ResultService<string>.Ok($"/uploads/ai-tattoos/{name}");
+        var folder=Path.Combine(environment.WebRootPath??Path.Combine(environment.ContentRootPath,"wwwroot"),"uploads","ai-tattoos"); Directory.CreateDirectory(folder); var name=$"{Guid.NewGuid():N}.png"; await System.IO.File.WriteAllBytesAsync(Path.Combine(folder,name),Convert.FromBase64String(b64)); return ResultService<string>.Ok($"/uploads/ai-tattoos/{name}");
     }
     private ResultService ValidateImage(Microsoft.AspNetCore.Http.IFormFile f){ if(f.Length==0||f.Length>10*1024*1024)return ResultService.Fail("Reference image must be between 1 byte and 10 MB."); if(!allowedExtensions.Contains(Path.GetExtension(f.FileName).ToLowerInvariant()))return ResultService.Fail("Only JPG, PNG and WebP images are allowed."); return ResultService.Ok(); }
-    private async Task<string> SaveUploadedImageAsync(Microsoft.AspNetCore.Http.IFormFile f){var folder=Path.Combine(environment.WebRootPath??Path.Combine(environment.ContentRootPath,"wwwroot"),"uploads","ai-tattoos");Directory.CreateDirectory(folder);var name=$"ref-{Guid.NewGuid():N}{Path.GetExtension(f.FileName).ToLowerInvariant()}";await using var stream=File.Create(Path.Combine(folder,name));await f.CopyToAsync(stream);return $"/uploads/ai-tattoos/{name}";}
+    private async Task<string> SaveUploadedImageAsync(Microsoft.AspNetCore.Http.IFormFile f){var folder=Path.Combine(environment.WebRootPath??Path.Combine(environment.ContentRootPath,"wwwroot"),"uploads","ai-tattoos");Directory.CreateDirectory(folder);var name=$"ref-{Guid.NewGuid():N}{Path.GetExtension(f.FileName).ToLowerInvariant()}";await using var stream=System.IO.File.Create(Path.Combine(folder,name));await f.CopyToAsync(stream);return $"/uploads/ai-tattoos/{name}";}
     private string ToPhysicalPath(string url)=>Path.Combine(environment.WebRootPath??Path.Combine(environment.ContentRootPath,"wwwroot"),url.TrimStart('/').Replace('/',Path.DirectorySeparatorChar));
-    private static bool VerifyStripeSignature(string payload,string header,string secret){try{var parts=header.Split(',').Select(x=>x.Split('=',2)).Where(x=>x.Length==2).ToDictionary(x=>x[0],x=>x[1]);if(!parts.TryGetValue("t",out var t)||!parts.TryGetValue("v1",out var sig))return false;if(Math.Abs(DateTimeOffset.UtcNow.ToUnixTimeSeconds()-long.Parse(t))>300)return false;using var h=new HMACSHA256(Encoding.UTF8.GetBytes(secret));var expected=Convert.ToHexString(h.ComputeHash(Encoding.UTF8.GetBytes($"{t}.{payload}"))).ToLowerInvariant();return CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(expected),Encoding.UTF8.GetBytes(sig));}catch{return false;}}
 }

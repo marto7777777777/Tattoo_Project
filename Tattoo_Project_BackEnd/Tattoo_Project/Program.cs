@@ -12,6 +12,9 @@ using Tattoo_Project.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Stripe;
+using Tattoo_Project.Authorization;
 
 namespace Tattoo_Project
 {
@@ -37,7 +40,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IArtistResponseService, ArtistResponseService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
             builder.Services.AddScoped<ITattooSessionService, TattooSessionService>();
-            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<ITokenService, Tattoo_Project.Services.TokenService>();
             builder.Services.AddScoped<IArtistReviewService, ArtistReviewService>();
             builder.Services.AddScoped<IClientFavoriteStudioService, ClientFavoriteStudioService>();
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
@@ -46,10 +49,16 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             builder.Services.AddScoped<IAiTattooService, AiTattooService>();
+            builder.Services.AddScoped<IArtistSubscriptionService, ArtistSubscriptionService>();
+            builder.Services.AddScoped<IStripeWebhookService, StripeWebhookService>();
+            builder.Services.AddScoped<IAccountDeletionService, AccountDeletionService>();
+            builder.Services.AddScoped<IAuthorizationHandler, ActiveArtistSubscriptionHandler>();
+            builder.Services.AddAuthorization(options => options.AddPolicy("ActiveArtistSubscription", policy => policy.Requirements.Add(new ActiveArtistSubscriptionRequirement())));
             builder.Services.AddSingleton<IPromptFileProvider, PromptFileProvider>();
             builder.Services.AddScoped<IAiTattooPromptBuilder, AiTattooPromptBuilder>();
             builder.Services.AddScoped<IAiTattooPlanner, AiTattooPlanner>();
             builder.Services.AddHttpClient();
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
             builder.Services.AddDbContext<TattooDbContext>(options => 
             options.UseSqlServer(

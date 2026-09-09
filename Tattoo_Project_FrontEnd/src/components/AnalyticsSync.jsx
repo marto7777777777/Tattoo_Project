@@ -1,0 +1,2 @@
+import{useEffect}from"react";import{requestJson}from"../api/http";import{useAuth}from"../context/AuthContext";import{trackEvent}from"../services/analyticsService";
+export default function AnalyticsSync(){const{isArtist}=useAuth();useEffect(()=>{if(!isArtist)return;requestJson("/api/analytics/pending-events/consume",{method:"POST"}).then(events=>events.forEach(item=>trackEvent(item.name,item.completedProjectCount==null?{}:{completed_project_count:item.completedProjectCount}))).catch(()=>{});},[isArtist]);return null;}

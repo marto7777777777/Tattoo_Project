@@ -134,6 +134,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("complete-consultation/{tattooRequestId}")]
         public async Task<IActionResult> CompleteConsultation(
             int tattooRequestId,
@@ -162,6 +163,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("reject-consultation/{tattooRequestId}")]
         public async Task<IActionResult> RejectConsultation(int tattooRequestId)
         {

@@ -37,6 +37,6 @@ namespace Tattoo_Project.Services.Interfaces
             int tattooRequestId,
             string userId);
 
-        Task<ResultService> ContinueTattooAsync(int tattooRequestId);
+        Task<ResultService> ContinueTattooAsync(int tattooRequestId, string userId);
     }
 }

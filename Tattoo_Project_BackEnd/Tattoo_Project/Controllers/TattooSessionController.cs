@@ -135,6 +135,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("add-more-sessions/{tattooRequestId}")]
         public async Task<IActionResult> AddMoreSessions(
             int tattooRequestId,
@@ -163,6 +164,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("complete-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> CompleteTattoo(int tattooRequestId)
         {
@@ -185,10 +187,14 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo completed successfully.");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("continue-tattoo/{tattooRequestId}")]
         public async Task<IActionResult> ContinueTattoo(int tattooRequestId)
         {
-            var result = await service.ContinueTattooAsync(tattooRequestId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.ContinueTattooAsync(tattooRequestId, userId);
 
             if (!result.Success)
             {

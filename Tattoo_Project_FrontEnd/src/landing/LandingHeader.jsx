@@ -9,7 +9,7 @@ export default function LandingHeader({ copy, cta }) {
     document.addEventListener("keydown", close);
     return () => document.removeEventListener("keydown", close);
   }, []);
-  const links = [["how-it-works", copy.navHow], ["workflow", copy.navWorkflow], ["schedule", copy.navSchedule], ["profile", copy.navProfile], ["faq", copy.navFaq]];
+  const links = [["how-it-works", copy.navHow], ["workflow", copy.navWorkflow], ["profile", copy.navProfile], ["schedule", copy.navSchedule], ["faq", copy.navFaq]];
   return <header className="landing-header">
     <a href="#top" className="landing-brand" aria-label="InkRoute"><img src="/inkroute-app-icon.png" alt="" width="42" height="42" /><strong>InkRoute</strong></a>
     <button className="landing-menu-button" type="button" aria-expanded={open} aria-controls="landing-navigation" onClick={() => setOpen(!open)}><span /><span /><span /><span className="sr-only">Menu</span></button>

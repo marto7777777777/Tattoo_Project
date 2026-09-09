@@ -279,6 +279,7 @@ public class AdminService(
         await context.Schedules.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Set<ArtistRequirement>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Set<PortfolioImage>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
+        await context.AnalyticsOutboxEvents.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
 
         context.TattooArtists.Remove(artist);
         await context.SaveChangesAsync();

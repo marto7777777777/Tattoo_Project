@@ -5,10 +5,29 @@ import { translateUiText } from "./translate";
 const STORAGE_KEY = "inkroute-language";
 const LanguageContext = createContext(null);
 
+function isSupportedLanguage(code) {
+  return supportedLanguages.some((language) => language.code === code);
+}
+
+function getUrlLanguage() {
+  if (typeof window === "undefined") return null;
+
+  const requestedLanguage = new URLSearchParams(window.location.search)
+    .get("lang")
+    ?.trim()
+    .toLowerCase()
+    .split("-")[0];
+
+  return isSupportedLanguage(requestedLanguage) ? requestedLanguage : null;
+}
+
 function detectInitialLanguage() {
+  const urlLanguage = getUrlLanguage();
+  if (urlLanguage) return urlLanguage;
+
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (supportedLanguages.some((language) => language.code === saved)) return saved;
+    if (isSupportedLanguage(saved)) return saved;
   } catch {
     // Private browsing can disable storage. Device detection still works.
   }
@@ -19,7 +38,7 @@ function detectInitialLanguage() {
 
   const deviceLanguage = deviceLanguages
     .map((item) => item?.toLowerCase().split("-")[0])
-    .find((item) => supportedLanguages.some((language) => language.code === item));
+    .find((item) => isSupportedLanguage(item));
 
   return deviceLanguage || "en";
 }
@@ -28,8 +47,14 @@ export function LanguageProvider({ children }) {
   const [language, setLanguageState] = useState(detectInitialLanguage);
 
   const setLanguage = (nextLanguage) => {
-    if (!supportedLanguages.some((item) => item.code === nextLanguage)) return;
+    if (!isSupportedLanguage(nextLanguage)) return;
     setLanguageState(nextLanguage);
+
+    if (typeof window !== "undefined" && window.location.pathname.replace(/\/+$/, "") === "/for-artists") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", nextLanguage);
+      window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    }
   };
 
   useEffect(() => {

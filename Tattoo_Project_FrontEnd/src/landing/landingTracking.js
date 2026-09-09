@@ -4,6 +4,7 @@ export function trackLandingEvent(name, detail = {}) {
   if (!allowedEvents.has(name)) return;
   window.dispatchEvent(new CustomEvent("inkroute:landing", { detail: { name, ...detail } }));
   if (typeof window.inkrouteTrack === "function") window.inkrouteTrack(name, detail);
+  if (name === "landing_page_view") trackEvent(name);
 }
 
 const eventAliases = { page_view: "landing_page_view", cta_click: "primary_cta_click" };
@@ -11,3 +12,4 @@ const eventAliases = { page_view: "landing_page_view", cta_click: "primary_cta_c
 export function trackLanding(name, detail = {}) {
   trackLandingEvent(eventAliases[name] || name, detail);
 }
+import { trackEvent } from "../services/analyticsService";

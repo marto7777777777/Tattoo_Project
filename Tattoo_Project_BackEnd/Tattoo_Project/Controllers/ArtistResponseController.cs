@@ -32,6 +32,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetArtistResponseById(int id)
         {
@@ -55,6 +56,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpGet("my-responses")]
         public async Task<IActionResult> GetMyArtistResponses()
         {
@@ -78,6 +80,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost]
         public async Task<IActionResult> CreateArtistResponse(
             CreateArtistResponseDto dto)
@@ -102,6 +105,7 @@ namespace Tattoo_Project.Controllers
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPut("reject-tattoo-request/{tattooRequestId}")]
         public async Task<IActionResult> RejectTattooRequest(int tattooRequestId)
         {

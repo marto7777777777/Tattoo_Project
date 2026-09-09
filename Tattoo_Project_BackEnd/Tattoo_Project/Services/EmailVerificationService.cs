@@ -15,13 +15,20 @@ namespace Tattoo_Project.Services
         TattooDbContext context,
         UserManager<ApplicationUser> userManager,
         IEmailService emailService,
-        ITokenService tokenService)
+        ITokenService tokenService,
+        IConfiguration configuration)
         : IEmailVerificationService
     {
         private const int CodeLifetimeMinutes = 10;
 
         public async Task<ResultService> StartRegistrationAsync(RegisterDto dto)
         {
+            var currentTermsVersion = configuration["Legal:TermsVersion"];
+            var currentPrivacyVersion = configuration["Legal:PrivacyVersion"];
+            if (!dto.AcceptTermsAndPrivacy || string.IsNullOrWhiteSpace(currentTermsVersion) || string.IsNullOrWhiteSpace(currentPrivacyVersion) ||
+                !string.Equals(dto.TermsVersion, currentTermsVersion, StringComparison.Ordinal) ||
+                !string.Equals(dto.PrivacyVersion, currentPrivacyVersion, StringComparison.Ordinal))
+                return ResultService.Fail("You must accept the current Terms of Service and Privacy Policy.");
             dto.Email = dto.Email.Trim();
             dto.UserName = dto.UserName.Trim();
             dto.FirstName = dto.FirstName.Trim();
@@ -125,6 +132,10 @@ namespace Tattoo_Project.Services
             pending.VerificationCodeHash = HashPendingCode(pending.Id, code);
             pending.CreatedAt = now;
             pending.ExpiresAt = now.AddMinutes(CodeLifetimeMinutes);
+            pending.TermsAcceptedAt = now;
+            pending.PrivacyAcceptedAt = now;
+            pending.TermsVersion = currentTermsVersion;
+            pending.PrivacyVersion = currentPrivacyVersion;
 
             await context.SaveChangesAsync();
 
@@ -208,7 +219,11 @@ namespace Tattoo_Project.Services
                 UserName = pending.UserName,
                 Email = pending.Email,
                 EmailConfirmed = true,
-                PasswordHash = pending.PasswordHash
+                PasswordHash = pending.PasswordHash,
+                TermsAcceptedAt = pending.TermsAcceptedAt,
+                PrivacyAcceptedAt = pending.PrivacyAcceptedAt,
+                TermsVersion = pending.TermsVersion,
+                PrivacyVersion = pending.PrivacyVersion
             };
 
             await using var transaction = await context.Database.BeginTransactionAsync();
