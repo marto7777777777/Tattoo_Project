@@ -1,3 +1,4 @@
+import "../styles/publicLegalPages.css";
 import {useEffect,useState} from "react";
 import {applyConsent,defaultConsent,initializeConsent,readConsent} from "../services/consentService";
 import {useLanguage} from "../i18n/LanguageContext";
