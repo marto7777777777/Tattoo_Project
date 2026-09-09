@@ -43,6 +43,7 @@ import PricingPage from "./pages/PricingPage";
 import SubscriptionPage from "./pages/SubscriptionPage";
 import AccountDeletionPage from "./pages/AccountDeletionPage";
 import AnalyticsSync from "./components/AnalyticsSync";
+import MetaPixelSync from "./components/MetaPixelSync";
 import SubscriptionGuard from "./components/SubscriptionGuard";
 
 const LandingPage = lazy(() => import("./landing/LandingPage"));
@@ -60,6 +61,7 @@ function App() {
       <DomTranslator />
       <CookieConsent />
       <AnalyticsSync />
+      <MetaPixelSync />
       {!isLandingPage && <Navbar />}
       <Routes data-language={language}>
         <Route path="/for-artists" element={<Suspense fallback={<main className="landing-loading">Loading InkRoute...</main>}><LandingPage /></Suspense>} />
