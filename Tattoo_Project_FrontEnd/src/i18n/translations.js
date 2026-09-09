@@ -21,7 +21,7 @@ const BG = {
   "No charge during the first 3 months from the start of the subscription.": "Няма таксуване през първите 3 месеца от стартирането на абонамента.",
   "Automatic monthly renewal after the trial.": "След това абонаментът се подновява автоматично всеки месец.",
   "Applicable taxes are calculated and shown in Stripe Checkout.": "Приложимите данъци се изчисляват и показват в Stripe Checkout.",
-  "Cancel before the first payment.": "Можеш да прекратиш преди първото плащане.",
+  "Cancel anytime. Access continues until the end of your current trial or paid billing period.": "Можеш да прекратиш абонамента си по всяко време. Достъпът остава активен до края на текущия безплатен или платен период.",
   "Start free": "Започни безплатно",
   "Image position": "Позиция на снимката",
   "Adjust image": "Намести снимката",
