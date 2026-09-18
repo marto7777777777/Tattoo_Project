@@ -366,7 +366,7 @@ namespace Tattoo_Project.Services
                     var sanitized = await imageSanitizer.SanitizeAsync(image, 5 * 1024 * 1024, 30_000_000);
                     if (!sanitized.Success)
                     {
-                        foreach (var key in storedKeys) await storage.DeleteAsync(key);
+                        foreach (var storedKey in storedKeys) await storage.DeleteAsync(storedKey);
                         return ResultService<int>.Fail(sanitized.ErrorMessage!);
                     }
                     var key = await storage.SaveAsync(sanitized.Data!.Bytes, "tattoo-request-images", sanitized.Data.Extension, StoredFileVisibility.Private);

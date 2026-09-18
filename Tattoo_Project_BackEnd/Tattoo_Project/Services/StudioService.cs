@@ -484,13 +484,19 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        internal StudioDto MapStudio(Studio studio) => MapStudio(studio, mediaUrls);
+        internal StudioDto MapStudio(Studio studio) =>
+    MapStudio(
+        studio,
+        mediaUrls,
+        timeProvider.GetUtcNow().UtcDateTime);
 
-        internal static StudioDto MapStudio(Studio studio, IPrivateMediaUrlService mediaUrls)
+        internal static StudioDto MapStudio(
+            Studio studio,
+            IPrivateMediaUrlService mediaUrls,
+            DateTime now)
         {
-            var now = timeProvider.GetUtcNow().UtcDateTime;
             var artists = studio.Artists
-                .Where(a => a.Subscription != null && SubscriptionEntitlementRules.HasAccess(a.Subscription, now))
+                        .Where(a => a.Subscription != null && SubscriptionEntitlementRules.HasAccess(a.Subscription, now))
                 .OrderBy(a => a.Id == studio.OwnerArtistId ? 0 : 1)
                 .ThenBy(a => a.JoinedStudioOn ?? DateTime.MaxValue)
                 .ThenBy(a => a.Id)

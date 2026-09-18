@@ -69,8 +69,12 @@ namespace Tattoo_Project.Services
 
             var studios = favorites.Select(x => x.Studio).ToList();
 
+            var now = timeProvider.GetUtcNow().UtcDateTime;
+
             return ResultService<ICollection<StudioDto>>.Ok(
-                studios.Select(s => StudioService.MapStudio(s, mediaUrls)).ToList());
+                studios
+                    .Select(s => StudioService.MapStudio(s, mediaUrls, now))
+                    .ToList());
         }
     }
 }
