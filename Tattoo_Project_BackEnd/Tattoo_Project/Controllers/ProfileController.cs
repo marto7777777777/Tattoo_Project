@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.DTOs.ProfileDTOs;
@@ -38,8 +39,27 @@ namespace Tattoo_Project.Controllers
             => await RunStringUpdate(dto, service.UpdateLastNameAsync);
 
         [HttpPatch("user/email")]
-        public async Task<IActionResult> UpdateEmail(UpdateStringValueDto dto)
-            => await RunStringUpdate(dto, service.UpdateEmailAsync);
+        [Obsolete("Use POST user/email/request-change and POST user/email/confirm-change.")]
+        public IActionResult UpdateEmail(UpdateStringValueDto dto)
+            => Conflict(new { code = "email_change_verification_required", message = "Use the verified email-change flow." });
+
+        [EnableRateLimiting("sensitive")]
+        [HttpPost("user/email/request-change")]
+        public async Task<IActionResult> RequestEmailChange(RequestEmailChangeDto dto)
+        {
+            var userId = GetUserId(); if (userId == null) return Unauthorized();
+            var result = await emailVerificationService.RequestEmailChangeAsync(userId, dto.NewEmail);
+            return result.Success ? Ok(new { message = "Verification code sent to the new email address." }) : BadRequest(result.ErrorMessage);
+        }
+
+        [EnableRateLimiting("sensitive")]
+        [HttpPost("user/email/confirm-change")]
+        public async Task<IActionResult> ConfirmEmailChange(ConfirmEmailChangeDto dto)
+        {
+            var userId = GetUserId(); if (userId == null) return Unauthorized();
+            var result = await emailVerificationService.ConfirmEmailChangeAsync(userId, dto.NewEmail, dto.Code);
+            return result.Success ? Ok(new { message = "Email changed successfully. Please sign in again." }) : BadRequest(result.ErrorMessage);
+        }
 
 
         [HttpPost("user/password/send-code")]
@@ -222,6 +242,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("portfolio/images")]
         public async Task<IActionResult> AddPortfolioImage(IFormFile image)
         {
@@ -235,6 +256,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpDelete("portfolio/images/{id}")]
         public async Task<IActionResult> DeletePortfolioImage(int id)
         {

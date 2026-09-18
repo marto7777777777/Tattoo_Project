@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,7 +10,8 @@ namespace Tattoo_Project.Services
 {
     public class TokenService(
     IConfiguration configuration,
-    UserManager<ApplicationUser> userManager)
+    UserManager<ApplicationUser> userManager,
+    TimeProvider timeProvider)
     : ITokenService
     {
         public async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
@@ -21,7 +22,8 @@ namespace Tattoo_Project.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName!),
-                new Claim(ClaimTypes.Email, user.Email!)
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim("token_version", user.TokenVersion.ToString())
             };
 
             foreach (var role in roles)
@@ -43,7 +45,7 @@ namespace Tattoo_Project.Services
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(expiresInMinutes),
+                expires: timeProvider.GetUtcNow().UtcDateTime.AddMinutes(expiresInMinutes),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

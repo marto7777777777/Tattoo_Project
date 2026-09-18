@@ -31,6 +31,15 @@ namespace Tattoo_Project.DTOs.TattooRequestDTOs
         public int TattooRequestId { get; set; }
         public string BookingType { get; set; } = null!;
         public int DurationMinutes { get; set; }
+        public string TimeZoneId { get; set; } = "Europe/Sofia";
         public ICollection<BookingAvailabilityDayDto> Days { get; set; } = new List<BookingAvailabilityDayDto>();
+    }
+}
+
+namespace Tattoo_Project.DTOs.TattooRequestDTOs
+{
+    public class CancelTattooRequestDto
+    {
+        public string? Reason { get; set; }
     }
 }

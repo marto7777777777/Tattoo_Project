@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getMyTattooRequests } from "../api/tattooRequestApi";
+import { cancelTattooRequest, getMyTattooRequests } from "../api/tattooRequestApi";
 import { cancelConsultation } from "../api/consultationApi";
 import { cancelTattooSession } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
@@ -9,12 +9,18 @@ import { getImageUrl } from "../utils/images";
 import RequestWorkflowTimeline from "../components/RequestWorkflowTimeline";
 
 const STATUS = {
+  SUBMITTED: 0,
+  UNDER_REVIEW: 1,
   WAITING_FOR_CONSULTATION: 3,
   CONSULTATION_COMPLETED: 4,
   TATTOO_BOOKED: 5,
   IN_PROGRESS: 6,
   COMPLETED: 7,
+  REJECTED: 8,
+  CANCELLED: 9,
 };
+
+const isClosed = (request) => [STATUS.COMPLETED, STATUS.REJECTED, STATUS.CANCELLED].includes(request.status);
 
 function canBookConsultation(request) {
   return request.status === STATUS.WAITING_FOR_CONSULTATION && request.artistResponse && !request.consultation;
@@ -57,6 +63,8 @@ function MyTattooRequestsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [appointmentToCancel, setAppointmentToCancel] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [projectToCancel, setProjectToCancel] = useState(null);
+  const [cancellationReason, setCancellationReason] = useState("");
 
   useEffect(() => { loadRequests(); }, []);
 
@@ -108,6 +116,21 @@ function MyTattooRequestsPage() {
     } finally {
       setIsCancelling(false);
     }
+  }
+
+  async function confirmProjectCancellation() {
+    if (!projectToCancel || isCancelling) return;
+    setError(""); setIsCancelling(true);
+    try {
+      const response = await cancelTattooRequest(getEntityId(projectToCancel), cancellationReason);
+      const data = await readResponse(response);
+      if (!response.ok) { setError(typeof data === "string" ? data : data?.detail || data?.message || JSON.stringify(data)); return; }
+      const requestId = getEntityId(projectToCancel);
+      const updatedRequests = await loadRequests();
+      setSelectedRequest(updatedRequests.find((request) => getEntityId(request) === requestId) || null);
+      setProjectToCancel(null); setCancellationReason("");
+    } catch (err) { setError(err.message || "Server connection failed. Please try again."); }
+    finally { setIsCancelling(false); }
   }
 
   function openRequest(request) {
@@ -162,12 +185,13 @@ function MyTattooRequestsPage() {
         {!isLoading && !error && requests.length === 0 && <p className="message">You do not have any bookings yet.</p>}
 
         <div className="filter-tabs client-project-tabs">
-          <button type="button" className={`filter-tab ${viewMode === "active" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("active")}>Active projects <span>{requests.filter((r) => r.status !== STATUS.COMPLETED && r.status !== "Completed").length}</span></button>
+          <button type="button" className={`filter-tab ${viewMode === "active" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("active")}>Active projects <span>{requests.filter((r) => !isClosed(r)).length}</span></button>
           <button type="button" className={`filter-tab ${viewMode === "completed" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("completed")}>Completed tattoos <span>{requests.filter((r) => r.status === STATUS.COMPLETED || r.status === "Completed").length}</span></button>
+          <button type="button" className={`filter-tab ${viewMode === "closed" ? "filter-tab-active" : ""}`} onClick={() => setViewMode("closed")}>Closed <span>{requests.filter((r) => [STATUS.REJECTED, STATUS.CANCELLED].includes(r.status)).length}</span></button>
         </div>
 
         <div className="request-card-list">
-          {requests.filter((request) => viewMode === "completed" ? (request.status === STATUS.COMPLETED || request.status === "Completed") : (request.status !== STATUS.COMPLETED && request.status !== "Completed")).map((request, index) => (
+          {requests.filter((request) => viewMode === "completed" ? request.status === STATUS.COMPLETED : viewMode === "closed" ? [STATUS.REJECTED, STATUS.CANCELLED].includes(request.status) : !isClosed(request)).map((request, index) => (
             <article className="card structured-request-card" key={getEntityId(request, index)}>
               <div className="request-card-main">
                 <div className="card-head">
@@ -300,6 +324,7 @@ function MyTattooRequestsPage() {
                   </div>
                   <div className="modal-next-action">{renderNextAction(selectedRequest)}</div>
                 </section>
+                {![STATUS.SUBMITTED, STATUS.UNDER_REVIEW, STATUS.COMPLETED, STATUS.REJECTED, STATUS.CANCELLED].includes(selectedRequest.status) && <section className="request-danger-zone"><div><p className="request-project-section-label">Danger zone</p><h3>Cancel this tattoo project</h3><p>Future appointments will be cancelled. Clients cannot cancel when an appointment starts within the next 24 hours.</p></div><button className="danger-button" type="button" onClick={() => setProjectToCancel(selectedRequest)}>Cancel project</button></section>}
               </div>
             )}
 
@@ -396,6 +421,17 @@ function MyTattooRequestsPage() {
               <button className="secondary-button" type="button" disabled={isCancelling} onClick={() => setAppointmentToCancel(null)}>Keep appointment</button>
               <button className="danger-button" type="button" disabled={isCancelling} onClick={confirmAppointmentCancellation}>{isCancelling ? "Cancelling..." : "Cancel appointment"}</button>
             </div>
+          </section>
+        </div>
+      )}
+
+      {projectToCancel && (
+        <div className="modal-backdrop studio-confirm-backdrop" onClick={() => !isCancelling && setProjectToCancel(null)}>
+          <section className="modal-card studio-confirm-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="studio-confirm-icon">!</div><p className="subtitle inline-subtitle">Confirm cancellation</p><h2>Cancel the entire tattoo project?</h2>
+            <p>The project will become <strong>Cancelled</strong> and all future appointments will be cancelled.</p>
+            <textarea rows="3" value={cancellationReason} onChange={(event) => setCancellationReason(event.target.value)} maxLength="500" placeholder="Reason (optional)" />
+            <div className="studio-confirm-actions"><button className="secondary-button" type="button" disabled={isCancelling} onClick={() => setProjectToCancel(null)}>Keep project</button><button className="danger-button" type="button" disabled={isCancelling} onClick={confirmProjectCancellation}>{isCancelling ? "Cancelling..." : "Cancel project"}</button></div>
           </section>
         </div>
       )}

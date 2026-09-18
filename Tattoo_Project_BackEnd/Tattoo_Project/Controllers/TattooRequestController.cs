@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -215,6 +215,27 @@ namespace Tattoo_Project.Controllers
             return Ok("Tattoo request updated successfully.");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
+        [HttpPost("{id:int}/under-review")]
+        public async Task<IActionResult> MarkUnderReview(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.MarkUnderReviewAsync(id, userId);
+            return result.Success ? Ok("Tattoo request marked as under review.") : Conflict(result.ErrorMessage);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Client + "," + UserRoles.TattooArtist)]
+        [HttpPost("{id:int}/cancel")]
+        public async Task<IActionResult> Cancel(int id, CancelTattooRequestDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.CancelTattooRequestAsync(id, userId, dto.Reason);
+            return result.Success ? Ok("Tattoo request cancelled.") : Conflict(result.ErrorMessage);
+        }
+
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = UserRoles.TattooArtist)]
@@ -236,7 +257,7 @@ namespace Tattoo_Project.Controllers
                 return BadRequest(result.ErrorMessage);
             }
 
-            return Ok("Tattoo request rejected and all appointments cancelled successfully.");
+            return Ok("Tattoo request rejected successfully.");
         }
     }
 }

@@ -132,16 +132,12 @@ public sealed class AiTattooPlanner(
         if (!response.IsSuccessStatusCode)
         {
             logger.LogError(
-                "Tattoo planner request failed. " +
-                "Model: {Model}. " +
-                "Status: {StatusCode}. " +
-                "Response: {ResponseBody}",
+                "Tattoo planner request failed. Model: {Model}. Status: {StatusCode}.",
                 model,
-                response.StatusCode,
-                responseBody);
+                response.StatusCode);
 
             throw new InvalidOperationException(
-                $"Tattoo planner request failed: {responseBody}");
+                "Tattoo planner request failed.");
         }
 
         var prompt = ExtractText(responseBody).Trim();
@@ -149,10 +145,8 @@ public sealed class AiTattooPlanner(
         if (string.IsNullOrWhiteSpace(prompt))
         {
             logger.LogError(
-                "Tattoo planner returned an empty prompt. " +
-                "Model: {Model}. Response: {ResponseBody}",
-                model,
-                responseBody);
+                "Tattoo planner returned an empty prompt. Model: {Model}.",
+                model);
 
             throw new InvalidOperationException(
                 "The tattoo planner returned an empty image prompt.");
@@ -164,16 +158,6 @@ public sealed class AiTattooPlanner(
             "Final prompt length: {PromptLength} characters.",
             model,
             prompt.Length);
-
-        // Показва пълния prompt в конзолата без сложни logger placeholders.
-        Console.WriteLine();
-        Console.WriteLine("========== FINAL IMAGE PROMPT ==========");
-        Console.WriteLine($"Planner model: {model}");
-        Console.WriteLine($"Prompt length: {prompt.Length} characters");
-        Console.WriteLine();
-        Console.WriteLine(prompt);
-        Console.WriteLine("========================================");
-        Console.WriteLine();
 
         return prompt;
     }

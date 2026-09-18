@@ -10,5 +10,3 @@ export const BUSINESS_INFO = Object.freeze({
   addressEn: "3 Stoyan Dzhansazov St., Entrance B, Floor 5, Apartment 42, 4230 Asenovgrad, Bulgaria",
   phone: import.meta.env.VITE_BUSINESS_PHONE?.trim() || "",
 });
-
-export const LEGAL_VERSIONS = Object.freeze({ terms: "2026-09-09", privacy: "2026-09-09" });

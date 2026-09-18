@@ -27,5 +27,6 @@ namespace Tattoo_Project.Models
         public string TermsVersion { get; set; } = null!;
         public DateTime PrivacyAcceptedAt { get; set; }
         public string PrivacyVersion { get; set; } = null!;
+        public int FailedVerificationAttempts { get; set; }
     }
 }

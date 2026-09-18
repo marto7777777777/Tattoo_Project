@@ -28,9 +28,7 @@ function AiStudioPage() {
           {isAdmin ? (
             <Link className="primary-button" to="/ai-studio/new">Create admin project</Link>
           ) : freeUsed ? (
-            <button className="primary-button" type="button" disabled title="The one free AI project has already been used">
-              Free project used
-            </button>
+            <Link className="primary-button" to="/ai-studio/new?paid=1">Create new AI project — €12.49</Link>
           ) : (
             <Link className="primary-button" to="/ai-studio/new">Create free project</Link>
           )}

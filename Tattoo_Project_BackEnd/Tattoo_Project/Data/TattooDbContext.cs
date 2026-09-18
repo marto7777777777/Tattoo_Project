@@ -41,15 +41,25 @@ namespace Tattoo_Project.Data
         public DbSet<EmailVerificationCode> EmailVerificationCodes { get; set; }
 
         public DbSet<PendingRegistration> PendingRegistrations { get; set; }
+        public DbSet<PendingEmailChange> PendingEmailChanges { get; set; }
 
         public DbSet<AiTattooProject> AiTattooProjects { get; set; }
         public DbSet<AiTattooVersion> AiTattooVersions { get; set; }
+        public DbSet<AiGenerationOperation> AiGenerationOperations { get; set; }
         public DbSet<AiProjectPayment> AiProjectPayments { get; set; }
+        public DbSet<AiProjectCheckoutAttempt> AiProjectCheckoutAttempts { get; set; }
         public DbSet<ArtistSubscription> ArtistSubscriptions { get; set; }
         public DbSet<StripeWebhookEvent> StripeWebhookEvents { get; set; }
+        public DbSet<ProviderSubscription> ProviderSubscriptions { get; set; }
+        public DbSet<ProviderWebhookEvent> ProviderWebhookEvents { get; set; }
+        public DbSet<AiProjectStorePurchase> AiProjectStorePurchases { get; set; }
+        public DbSet<StorePurchaseBinding> StorePurchaseBindings { get; set; }
         public DbSet<ArtistAnalyticsMilestone> ArtistAnalyticsMilestones { get; set; }
         public DbSet<AnalyticsOutboxEvent> AnalyticsOutboxEvents { get; set; }
         public DbSet<AccountDeletionAudit> AccountDeletionAudits { get; set; }
+        public DbSet<AccountDeletionRequest> AccountDeletionRequests { get; set; }
+        public DbSet<FileCleanupTask> FileCleanupTasks { get; set; }
+        public DbSet<LegalConsentAudit> LegalConsentAudits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,8 +88,18 @@ namespace Tattoo_Project.Data
 
             modelBuilder.Entity<ApplicationUser>().Property(x => x.TermsVersion).HasMaxLength(50).IsRequired();
             modelBuilder.Entity<ApplicationUser>().Property(x => x.PrivacyVersion).HasMaxLength(50).IsRequired();
+            modelBuilder.Entity<ApplicationUser>().Property(x => x.GoogleBillingObfuscatedAccountId).HasMaxLength(64);
+            modelBuilder.Entity<ApplicationUser>().HasIndex(x=>x.GoogleBillingObfuscatedAccountId).IsUnique().HasFilter("[GoogleBillingObfuscatedAccountId] IS NOT NULL");
+            modelBuilder.Entity<ApplicationUser>().HasIndex(x=>x.AppleBillingAppAccountToken).IsUnique().HasFilter("[AppleBillingAppAccountToken] IS NOT NULL");
             modelBuilder.Entity<AccountDeletionAudit>().HasKey(x => x.Id);
             modelBuilder.Entity<AccountDeletionAudit>().Property(x => x.RetentionNote).HasMaxLength(200).IsRequired();
+            modelBuilder.Entity<AccountDeletionRequest>(entity =>
+            {
+                entity.HasKey(x => x.Id);
+                entity.Property(x => x.UserId).HasMaxLength(450);
+                entity.Property(x => x.LastErrorCode).HasMaxLength(80);
+                entity.HasIndex(x => x.UserId).IsUnique().HasFilter("[UserId] IS NOT NULL");
+            });
 
             modelBuilder.ApplyConfigurationsFromAssembly(
                 Assembly.GetExecutingAssembly());

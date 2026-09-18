@@ -6,17 +6,22 @@ using Tattoo_Project.DTOs.StudioDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 using Tattoo_Project.Services.Results;
+using Tattoo_Project.Security;
 
 namespace Tattoo_Project.Services
 {
-    public class StudioService(TattooDbContext context, IWebHostEnvironment environment) : IStudioService
+    public class StudioService(TattooDbContext context, IWebHostEnvironment environment, IFileStorage storage, IImageSanitizer imageSanitizer, IPrivateMediaUrlService mediaUrls, TimeProvider timeProvider) : IStudioService
     {
         public async Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null)
         {
             var studiosQuery = BaseStudioQuery();
+            var now = timeProvider.GetUtcNow().UtcDateTime;
 
             var studios = await studiosQuery
-                .Where(s => s.Artists.Any())
+                .Where(s => s.Artists.Any(a => a.Subscription != null &&
+                    ((a.Subscription.Status == ArtistSubscriptionStatuses.Trialing && a.Subscription.TrialEndsAt > now) ||
+                     (a.Subscription.Status == ArtistSubscriptionStatuses.GracePeriod && a.Subscription.CurrentPeriodEndsAt > now) ||
+                     (a.Subscription.Status == ArtistSubscriptionStatuses.Active && a.Subscription.CurrentPeriodEndsAt > now))))
                 .OrderBy(s => s.Name)
                 .ThenBy(s => s.City)
                 .ToListAsync();
@@ -74,7 +79,11 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService<StudioDto>> GetStudioByIdAsync(int studioId)
         {
-            var studio = await BaseStudioQuery().FirstOrDefaultAsync(s => s.Id == studioId);
+            var now = timeProvider.GetUtcNow().UtcDateTime;
+            var studio = await BaseStudioQuery().FirstOrDefaultAsync(s => s.Id == studioId && s.Artists.Any(a => a.Subscription != null &&
+                ((a.Subscription.Status == ArtistSubscriptionStatuses.Trialing && a.Subscription.TrialEndsAt > now) ||
+                 (a.Subscription.Status == ArtistSubscriptionStatuses.GracePeriod && a.Subscription.CurrentPeriodEndsAt > now) ||
+                 (a.Subscription.Status == ArtistSubscriptionStatuses.Active && a.Subscription.CurrentPeriodEndsAt > now))));
             if (studio == null)
             {
                 return ResultService<StudioDto>.Fail("Studio was not found.");
@@ -171,7 +180,7 @@ namespace Tattoo_Project.Services
             if (duplicateStudio) return ResultService.Fail("A studio with the same name and address already exists.");
 
             await using var transaction = await context.Database.BeginTransactionAsync();
-            var now = DateTime.UtcNow;
+            var now = timeProvider.GetUtcNow().UtcDateTime;
             var studio = new Studio
             {
                 Name = name, Description = dto.Description.Trim(), Address = address, City = city,
@@ -189,6 +198,7 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService> RequestJoinAsync(int studioId, string userId)
         {
+            await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var artist = await context.TattooArtists.FirstOrDefaultAsync(a => a.UserId == userId);
             if (artist == null)
             {
@@ -224,16 +234,30 @@ namespace Tattoo_Project.Services
                 StudioId = studioId,
                 TattooArtistId = artist.Id,
                 Status = StudioJoinRequestStatus.Pending,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             });
 
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return ResultService.Ok();
+        }
+
+        public async Task<ResultService> CancelPendingJoinRequestAsync(int requestId, string userId)
+        {
+            var artist = await context.TattooArtists.FirstOrDefaultAsync(a => a.UserId == userId);
+            if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
+            var request = await context.StudioJoinRequests.FirstOrDefaultAsync(r => r.Id == requestId && r.TattooArtistId == artist.Id);
+            if (request == null) return ResultService.Fail("Join request was not found.");
+            if (request.Status != StudioJoinRequestStatus.Pending) return ResultService.Fail("Only a pending join request can be cancelled.");
+            request.Status = StudioJoinRequestStatus.Cancelled;
+            request.RespondedOn = timeProvider.GetUtcNow().UtcDateTime;
             await context.SaveChangesAsync();
             return ResultService.Ok();
         }
 
         public async Task<ResultService> AcceptJoinRequestAsync(int requestId, string ownerUserId)
         {
-            await using var transaction = await context.Database.BeginTransactionAsync();
+            await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
 
             var request = await context.StudioJoinRequests
                 .Include(r => r.Studio).ThenInclude(s => s.OwnerArtist)
@@ -242,6 +266,10 @@ namespace Tattoo_Project.Services
 
             if (request == null)
                 return ResultService.Fail("Join request was not found.");
+
+            var artistLock = $"InkRoute:StudioJoinArtist:{request.TattooArtistId}";
+            await context.Database.ExecuteSqlInterpolatedAsync($"EXEC sp_getapplock @Resource={artistLock}, @LockMode='Exclusive', @LockOwner='Transaction', @LockTimeout=10000");
+            await context.Entry(request.TattooArtist).ReloadAsync();
 
             if (request.Studio.OwnerArtist?.UserId != ownerUserId)
                 return ResultService.Fail("Only the studio owner can approve join requests.");
@@ -252,16 +280,16 @@ namespace Tattoo_Project.Services
             if (request.TattooArtist.StudioId != null)
             {
                 request.Status = StudioJoinRequestStatus.Cancelled;
-                request.RespondedOn = DateTime.UtcNow;
+                request.RespondedOn = timeProvider.GetUtcNow().UtcDateTime;
                 await context.SaveChangesAsync();
                 await transaction.CommitAsync();
                 return ResultService.Fail("This artist already belongs to a studio.");
             }
 
             request.TattooArtist.StudioId = request.StudioId;
-            request.TattooArtist.JoinedStudioOn = DateTime.UtcNow;
+            request.TattooArtist.JoinedStudioOn = timeProvider.GetUtcNow().UtcDateTime;
             request.Status = StudioJoinRequestStatus.Accepted;
-            request.RespondedOn = DateTime.UtcNow;
+            request.RespondedOn = timeProvider.GetUtcNow().UtcDateTime;
 
             // Defensive cleanup in case older data contains more than one pending request.
             var otherPending = await context.StudioJoinRequests
@@ -273,7 +301,7 @@ namespace Tattoo_Project.Services
             foreach (var other in otherPending)
             {
                 other.Status = StudioJoinRequestStatus.Cancelled;
-                other.RespondedOn = DateTime.UtcNow;
+                other.RespondedOn = timeProvider.GetUtcNow().UtcDateTime;
             }
 
             await context.SaveChangesAsync();
@@ -297,7 +325,7 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("This join request has already been handled.");
 
             request.Status = StudioJoinRequestStatus.Rejected;
-            request.RespondedOn = DateTime.UtcNow;
+            request.RespondedOn = timeProvider.GetUtcNow().UtcDateTime;
             await context.SaveChangesAsync();
             return ResultService.Ok();
         }
@@ -373,6 +401,7 @@ namespace Tattoo_Project.Services
                 .Include(s => s.Artists).ThenInclude(a => a.Reviews)
                 .Include(s => s.Artists).ThenInclude(a => a.PortfolioImages)
                 .Include(s => s.Artists).ThenInclude(a => a.SpecialtyStyles)
+                .Include(s => s.Artists).ThenInclude(a => a.Subscription)
                 .AsSplitQuery();
 
         private async Task<Studio?> FindOwnedStudioAsync(string ownerUserId)
@@ -394,47 +423,26 @@ namespace Tattoo_Project.Services
             if (studio == null)
                 return ResultService<string>.Fail("Only the studio owner can update studio images.");
 
-            var validation = ValidateImage(image);
-            if (!validation.Success) return ResultService<string>.Fail(validation.ErrorMessage!);
-
-            var oldUrl = isCover ? studio.CoverImageUrl : studio.LogoImageUrl;
-            var imageUrl = await SaveImageAsync(image, isCover ? "studio-covers" : "studio-logos");
-            if (isCover) studio.CoverImageUrl = imageUrl;
-            else studio.LogoImageUrl = imageUrl;
-            await context.SaveChangesAsync();
-            DeleteOldFileIfLocal(oldUrl);
-            return ResultService<string>.Ok(imageUrl);
+            var sanitized = await imageSanitizer.SanitizeAsync(image, 8 * 1024 * 1024, 40_000_000);
+            if (!sanitized.Success) return ResultService<string>.Fail(sanitized.ErrorMessage!);
+            var oldKey = isCover ? studio.CoverImageUrl : studio.LogoImageUrl;
+            var imageKey = await storage.SaveAsync(sanitized.Data!.Bytes, isCover ? "studio-covers" : "studio-logos", sanitized.Data.Extension, StoredFileVisibility.Public);
+            if (isCover) studio.CoverImageUrl = imageKey; else studio.LogoImageUrl = imageKey;
+            try { await context.SaveChangesAsync(); }
+            catch { await storage.DeleteAsync(imageKey); throw; }
+            await DeleteStoredFileAsync(oldKey);
+            return ResultService<string>.Ok(mediaUrls.CreateReadUrl(imageKey));
         }
 
-        private static ResultService ValidateImage(IFormFile image)
+        private async Task DeleteStoredFileAsync(string? imageKey)
         {
-            if (image == null || image.Length == 0) return ResultService.Fail("Choose an image.");
-            if (image.Length > 8 * 1024 * 1024) return ResultService.Fail("Studio image cannot exceed 8 MB.");
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-            if (extension is not ".jpg" and not ".jpeg" and not ".png" and not ".webp")
-                return ResultService.Fail("Only JPG, PNG and WebP images are allowed.");
-            return ResultService.Ok();
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image, string folder)
-        {
+            if (string.IsNullOrWhiteSpace(imageKey)) return;
+            if (storage.IsManagedKey(imageKey)) { await storage.DeleteAsync(imageKey); return; }
+            if (!imageKey.StartsWith("/uploads/", StringComparison.Ordinal)) return;
             var webRoot = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
-            var directory = Path.Combine(webRoot, "uploads", folder);
-            Directory.CreateDirectory(directory);
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-            var fileName = $"{Guid.NewGuid():N}{extension}";
-            await using var stream = File.Create(Path.Combine(directory, fileName));
-            await image.CopyToAsync(stream);
-            return $"/uploads/{folder}/{fileName}";
-        }
-
-        private void DeleteOldFileIfLocal(string? imageUrl)
-        {
-            if (string.IsNullOrWhiteSpace(imageUrl) || !imageUrl.StartsWith("/uploads/", StringComparison.Ordinal))
-                return;
-            var webRoot = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
-            var path = Path.Combine(webRoot, imageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
-            if (File.Exists(path)) File.Delete(path);
+            var root = Path.GetFullPath(webRoot) + Path.DirectorySeparatorChar;
+            var path = Path.GetFullPath(Path.Combine(webRoot, imageKey.TrimStart('/').Replace('/', Path.DirectorySeparatorChar)));
+            if (path.StartsWith(root, StringComparison.Ordinal) && File.Exists(path)) File.Delete(path);
         }
 
         internal static string NormalizeSearch(string value)
@@ -476,9 +484,13 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        internal static StudioDto MapStudio(Studio studio)
+        internal StudioDto MapStudio(Studio studio) => MapStudio(studio, mediaUrls);
+
+        internal static StudioDto MapStudio(Studio studio, IPrivateMediaUrlService mediaUrls)
         {
+            var now = timeProvider.GetUtcNow().UtcDateTime;
             var artists = studio.Artists
+                .Where(a => a.Subscription != null && SubscriptionEntitlementRules.HasAccess(a.Subscription, now))
                 .OrderBy(a => a.Id == studio.OwnerArtistId ? 0 : 1)
                 .ThenBy(a => a.JoinedStudioOn ?? DateTime.MaxValue)
                 .ThenBy(a => a.Id)
@@ -487,19 +499,22 @@ namespace Tattoo_Project.Services
                     Id = a.Id,
                     FirstName = a.FirstName,
                     LastName = a.LastName,
-                    ProfileImageUrl = a.User?.ProfileImageUrl,
+                    ProfileImageUrl = string.IsNullOrWhiteSpace(a.User?.ProfileImageUrl) ? null : mediaUrls.CreateReadUrl(a.User.ProfileImageUrl),
                     Description = a.Description,
-                    PhoneNumber = a.PhoneNumber,
+                    PhoneNumber = a.ShowPhoneNumberOnPublicProfile ? a.PhoneNumber : string.Empty,
                     IsVerified = a.IsVerified,
                     AverageRating = a.Reviews.Any() ? Math.Round(a.Reviews.Average(r => r.Rating), 1) : 0,
                     ReviewCount = a.Reviews.Count,
                     JoinedStudioOn = a.JoinedStudioOn,
-                    PortfolioImageUrls = a.PortfolioImages.OrderBy(p => p.Id).Select(p => p.ImageUrl).ToList(),
+                    PortfolioImageUrls = a.PortfolioImages.OrderBy(p => p.Id).Select(p => mediaUrls.CreateReadUrl(p.ImageUrl)).ToList(),
                     SpecialtyStyles = a.SpecialtyStyles.OrderBy(x => x.Name).Select(x => x.Name).ToList()
                 })
                 .ToList();
 
-            var reviews = studio.Artists.SelectMany(a => a.Reviews).ToList();
+            var reviewCount = artists.Sum(a => a.ReviewCount);
+            var weightedRating = reviewCount == 0
+                ? (double?)null
+                : Math.Round(artists.Sum(a => a.AverageRating * a.ReviewCount) / reviewCount, 1);
 
             return new StudioDto
             {
@@ -512,11 +527,11 @@ namespace Tattoo_Project.Services
                 Latitude = studio.Latitude,
                 Longitude = studio.Longitude,
                 IsOpenForJoinRequests = studio.IsOpenForJoinRequests,
-                CoverImageUrl = studio.CoverImageUrl,
-                LogoImageUrl = studio.LogoImageUrl,
+                CoverImageUrl = string.IsNullOrWhiteSpace(studio.CoverImageUrl) ? null : mediaUrls.CreateReadUrl(studio.CoverImageUrl),
+                LogoImageUrl = string.IsNullOrWhiteSpace(studio.LogoImageUrl) ? null : mediaUrls.CreateReadUrl(studio.LogoImageUrl),
                 ArtistCount = artists.Count,
-                AverageRating = reviews.Count > 0 ? Math.Round(reviews.Average(x => x.Rating), 1) : null,
-                ReviewCount = reviews.Count,
+                AverageRating = weightedRating,
+                ReviewCount = reviewCount,
                 SpecialtyStyles = artists.SelectMany(a => a.SpecialtyStyles)
                     .Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x).ToList(),
                 Artists = artists,
@@ -524,7 +539,7 @@ namespace Tattoo_Project.Services
             };
         }
 
-        private static StudioJoinRequestDto MapJoinRequest(StudioJoinRequest request)
+        private StudioJoinRequestDto MapJoinRequest(StudioJoinRequest request)
         {
             return new StudioJoinRequestDto
             {
@@ -535,7 +550,7 @@ namespace Tattoo_Project.Services
                 ArtistName = $"{request.TattooArtist.FirstName} {request.TattooArtist.LastName}",
                 ArtistDescription = request.TattooArtist.Description,
                 ArtistPhoneNumber = request.TattooArtist.PhoneNumber,
-                ArtistProfileImageUrl = request.TattooArtist.User?.ProfileImageUrl,
+                ArtistProfileImageUrl = string.IsNullOrWhiteSpace(request.TattooArtist.User?.ProfileImageUrl) ? null : mediaUrls.CreateReadUrl(request.TattooArtist.User.ProfileImageUrl),
                 Status = request.Status,
                 CreatedOn = request.CreatedOn,
                 RespondedOn = request.RespondedOn

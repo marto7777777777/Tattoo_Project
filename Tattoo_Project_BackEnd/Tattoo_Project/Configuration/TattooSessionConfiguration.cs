@@ -15,6 +15,8 @@ namespace Tattoo_Project.Configuration
 
             builder.Property(x => x.EndTime)
                 .IsRequired();
+            builder.Property(x => x.CancelledByUserId).HasMaxLength(450);
+            builder.Property(x => x.CancellationReason).HasMaxLength(500);
 
             builder.HasOne(x => x.TattooRequest)
                 .WithMany(x => x.TattooSessions)

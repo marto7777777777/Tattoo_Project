@@ -1,4 +1,4 @@
-﻿namespace Tattoo_Project.Models
+namespace Tattoo_Project.Models
 {
     public class TattooSession
     {
@@ -13,6 +13,10 @@
         public decimal PriceForTheSession { get; set; }
 
         public int DurationHours { get; set; }
+        public bool IsCancelled { get; set; }
+        public DateTime? CancelledAt { get; set; }
+        public string? CancelledByUserId { get; set; }
+        public string? CancellationReason { get; set; }
 
         public TattooRequest TattooRequest { get; set; } = null!;
     }

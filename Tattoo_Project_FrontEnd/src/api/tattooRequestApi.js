@@ -67,3 +67,14 @@ export function rejectTattooRequestByArtist(id) {
     method: "PUT",
   });
 }
+
+export function markTattooRequestUnderReview(id) {
+  return apiRequest(`/api/TattooRequest/${id}/under-review`, { method: "POST" });
+}
+
+export function cancelTattooRequest(id, reason = "") {
+  return apiRequest(`/api/TattooRequest/${id}/cancel`, {
+    method: "POST",
+    body: JSON.stringify({ reason: reason.trim() || null }),
+  });
+}

@@ -4,6 +4,7 @@ namespace Tattoo_Project.Models
     {
         Register = 0,
         PasswordReset = 1,
-        PasswordChange = 2
+        PasswordChange = 2,
+        EmailChange = 3
     }
 }

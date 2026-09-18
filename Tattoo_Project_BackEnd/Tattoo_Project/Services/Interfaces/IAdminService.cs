@@ -10,6 +10,7 @@ public interface IAdminService
     Task<ResultService<ICollection<AdminTattooRequestDto>>> GetTattooRequestsAsync();
     Task<ResultService<ICollection<AdminAiProjectDto>>> GetAiProjectsAsync();
     Task<ResultService> DeleteUserAsync(string userId, string currentAdminUserId);
+    Task<ResultService> DeleteUserForDeletionWorkflowAsync(string userId, Guid deletionRequestId);
     Task<ResultService> DeleteClientProfileAsync(int clientId);
     Task<ResultService> DeleteArtistProfileAsync(int artistId);
     Task<ResultService> DeleteTattooRequestAsync(int tattooRequestId);

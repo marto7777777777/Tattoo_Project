@@ -61,6 +61,7 @@ namespace Tattoo_Project.Configuration
             builder
                 .HasIndex(a => a.UserId)
                 .IsUnique();
+            builder.Property(x => x.TimeZoneId).HasMaxLength(100).IsRequired().HasDefaultValue("Europe/Sofia");
         }
     }
 }

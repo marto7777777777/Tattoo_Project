@@ -66,7 +66,9 @@ export function editAiProject(id, instruction, baseVersionId) {
   });
 }
 
-// Stripe has been removed.
+export function startAiProjectCheckout(id) {
+  return requestJson(`/api/ai-tattoos/${id}/checkout`, { method: "POST" });
+}
 
 export async function downloadAiVersion(versionId) {
   const response = await apiRequest(

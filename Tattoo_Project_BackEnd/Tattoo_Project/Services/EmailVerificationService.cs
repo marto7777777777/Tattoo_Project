@@ -16,10 +16,12 @@ namespace Tattoo_Project.Services
         UserManager<ApplicationUser> userManager,
         IEmailService emailService,
         ITokenService tokenService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        TimeProvider timeProvider)
         : IEmailVerificationService
     {
         private const int CodeLifetimeMinutes = 10;
+        private DateTime UtcNow => timeProvider.GetUtcNow().UtcDateTime;
 
         public async Task<ResultService> StartRegistrationAsync(RegisterDto dto)
         {
@@ -36,39 +38,17 @@ namespace Tattoo_Project.Services
 
             var normalizedEmail = userManager.NormalizeEmail(dto.Email);
             var normalizedUserName = userManager.NormalizeName(dto.UserName);
-            var now = DateTime.UtcNow;
+            var now = UtcNow;
 
-            // Remove accounts left by the previous, incorrect flow. They were never
-            // verified and could never have been used to sign in.
+            // Never delete an existing Identity account during registration cleanup.
+            // Only PendingRegistration rows are eligible for expiry cleanup.
             var existingByEmail = await userManager.FindByEmailAsync(dto.Email);
             if (existingByEmail != null)
-            {
-                if (await userManager.IsEmailConfirmedAsync(existingByEmail))
-                {
-                    return ResultService.Fail("Email is already registered.");
-                }
-
-                var deleteResult = await userManager.DeleteAsync(existingByEmail);
-                if (!deleteResult.Succeeded)
-                {
-                    return ResultService.Fail(string.Join(" ", deleteResult.Errors.Select(e => e.Description)));
-                }
-            }
+                return ResultService.Fail("Email is already registered.");
 
             var existingByName = await userManager.FindByNameAsync(dto.UserName);
             if (existingByName != null)
-            {
-                if (await userManager.IsEmailConfirmedAsync(existingByName))
-                {
-                    return ResultService.Fail("Username is already taken.");
-                }
-
-                var deleteResult = await userManager.DeleteAsync(existingByName);
-                if (!deleteResult.Succeeded)
-                {
-                    return ResultService.Fail(string.Join(" ", deleteResult.Errors.Select(e => e.Description)));
-                }
-            }
+                return ResultService.Fail("Username is already taken.");
 
             var candidate = new ApplicationUser
             {
@@ -132,6 +112,7 @@ namespace Tattoo_Project.Services
             pending.VerificationCodeHash = HashPendingCode(pending.Id, code);
             pending.CreatedAt = now;
             pending.ExpiresAt = now.AddMinutes(CodeLifetimeMinutes);
+            pending.FailedVerificationAttempts = 0;
             pending.TermsAcceptedAt = now;
             pending.PrivacyAcceptedAt = now;
             pending.TermsVersion = currentTermsVersion;
@@ -159,7 +140,7 @@ namespace Tattoo_Project.Services
         public async Task<ResultService> SendCodeAsync(ApplicationUser user, EmailVerificationPurpose purpose)
         {
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-            var now = DateTime.UtcNow;
+            var now = UtcNow;
 
             var oldCodes = await context.EmailVerificationCodes
                 .Where(c => c.UserId == user.Id && c.Purpose == purpose && c.UsedAt == null)
@@ -195,10 +176,15 @@ namespace Tattoo_Project.Services
             var pending = await context.PendingRegistrations
                 .FirstOrDefaultAsync(p => p.NormalizedEmail == normalizedEmail);
 
-            if (pending == null ||
-                pending.ExpiresAt < DateTime.UtcNow ||
-                !IsPendingCodeValid(pending, code))
+            if (pending == null || pending.ExpiresAt < UtcNow)
             {
+                return ResultService<AuthResponseDto>.Fail("Invalid or expired verification code.");
+            }
+            if (!IsPendingCodeValid(pending, code))
+            {
+                pending.FailedVerificationAttempts++;
+                if (pending.FailedVerificationAttempts >= 5) context.PendingRegistrations.Remove(pending);
+                await context.SaveChangesAsync();
                 return ResultService<AuthResponseDto>.Fail("Invalid or expired verification code.");
             }
 
@@ -284,10 +270,11 @@ namespace Tattoo_Project.Services
             }
 
             var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
-            var now = DateTime.UtcNow;
+            var now = UtcNow;
             pending.VerificationCodeHash = HashPendingCode(pending.Id, code);
             pending.CreatedAt = now;
             pending.ExpiresAt = now.AddMinutes(CodeLifetimeMinutes);
+            pending.FailedVerificationAttempts = 0;
             await context.SaveChangesAsync();
 
             try
@@ -312,7 +299,10 @@ namespace Tattoo_Project.Services
             var user = await userManager.FindByEmailAsync(email.Trim());
             if (user == null)
             {
-                return ResultService.Fail("User was not found.");
+                // Keep the response indistinguishable from an existing account.
+                // This prevents the password-reset endpoint from becoming an
+                // account enumeration oracle.
+                return ResultService.Ok();
             }
 
             return await SendCodeAsync(user, EmailVerificationPurpose.PasswordReset);
@@ -355,6 +345,11 @@ namespace Tattoo_Project.Services
             {
                 return ResultService.Fail(string.Join(" ", result.Errors.Select(e => e.Description)));
             }
+            user.TokenVersion++;
+            var stampResult = await userManager.UpdateSecurityStampAsync(user);
+            if (!stampResult.Succeeded) return ResultService.Fail(string.Join(" ", stampResult.Errors.Select(e => e.Description)));
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) return ResultService.Fail(string.Join(" ", updateResult.Errors.Select(e => e.Description)));
 
             return ResultService.Ok();
         }
@@ -396,9 +391,105 @@ namespace Tattoo_Project.Services
             {
                 return ResultService.Fail(string.Join(" ", result.Errors.Select(e => e.Description)));
             }
+            user.TokenVersion++;
+            var stampResult = await userManager.UpdateSecurityStampAsync(user);
+            if (!stampResult.Succeeded) return ResultService.Fail(string.Join(" ", stampResult.Errors.Select(e => e.Description)));
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) return ResultService.Fail(string.Join(" ", updateResult.Errors.Select(e => e.Description)));
 
             return ResultService.Ok();
         }
+
+        public async Task<ResultService> RequestEmailChangeAsync(string userId, string newEmail)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return ResultService.Fail("User was not found.");
+            newEmail = (newEmail ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(newEmail)) return ResultService.Fail("Email is required.");
+            if (string.Equals(user.Email, newEmail, StringComparison.OrdinalIgnoreCase)) return ResultService.Fail("This is already your email address.");
+            var existing = await userManager.FindByEmailAsync(newEmail);
+            if (existing != null && existing.Id != userId) return ResultService.Fail("Email is already registered.");
+
+            var normalized = userManager.NormalizeEmail(newEmail);
+            var now = UtcNow;
+            var recent = await context.PendingEmailChanges
+                .Where(x => x.UserId == userId && x.UsedAt == null)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+            if (recent != null && recent.CreatedAt > now.AddSeconds(-60))
+                return ResultService.Fail("Please wait before requesting another email-change code.");
+
+            var stale = await context.PendingEmailChanges.Where(x => x.UserId == userId && x.UsedAt == null).ToListAsync();
+            foreach (var item in stale) item.UsedAt = now;
+
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            var request = new PendingEmailChange
+            {
+                UserId = userId,
+                NewEmail = newEmail,
+                NormalizedNewEmail = normalized,
+                CodeHash = HashEmailChangeCode(userId, normalized, code),
+                CreatedAt = now,
+                ExpiresAt = now.AddMinutes(CodeLifetimeMinutes)
+            };
+            context.PendingEmailChanges.Add(request);
+            await context.SaveChangesAsync();
+            await emailService.SendEmailAsync(newEmail, "Confirm your new InkRoute email", BuildEmailHtml(user.FirstName, code, EmailVerificationPurpose.EmailChange));
+            return ResultService.Ok();
+        }
+
+        public async Task<ResultService> ConfirmEmailChangeAsync(string userId, string newEmail, string code)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null) return ResultService.Fail("User was not found.");
+            newEmail = (newEmail ?? string.Empty).Trim();
+            var normalized = userManager.NormalizeEmail(newEmail);
+            var now = UtcNow;
+            var request = await context.PendingEmailChanges
+                .Where(x => x.UserId == userId && x.NormalizedNewEmail == normalized && x.UsedAt == null && x.ExpiresAt >= now)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+            if (request == null) return ResultService.Fail("Invalid or expired email-change code.");
+            if (request.FailedAttempts >= 5) return ResultService.Fail("Invalid or expired email-change code.");
+            if (string.IsNullOrWhiteSpace(code) || code.Trim().Length != 6 || !code.Trim().All(char.IsDigit))
+                return ResultService.Fail("Invalid or expired email-change code.");
+
+            var expected = Convert.FromHexString(request.CodeHash);
+            var actual = Convert.FromHexString(HashEmailChangeCode(userId, normalized, code.Trim()));
+            if (!CryptographicOperations.FixedTimeEquals(expected, actual))
+            {
+                request.FailedAttempts++;
+                if (request.FailedAttempts >= 5) request.UsedAt = now;
+                await context.SaveChangesAsync();
+                return ResultService.Fail("Invalid or expired email-change code.");
+            }
+
+            var existing = await userManager.FindByEmailAsync(newEmail);
+            if (existing != null && existing.Id != userId) return ResultService.Fail("Email is already registered.");
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+            var token = await userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var changed = await userManager.ChangeEmailAsync(user, newEmail, token);
+            if (!changed.Succeeded) return ResultService.Fail(string.Join(" ", changed.Errors.Select(e => e.Description)));
+            user.EmailConfirmed = true;
+            user.TokenVersion++;
+            var stampResult = await userManager.UpdateSecurityStampAsync(user);
+            if (!stampResult.Succeeded) return ResultService.Fail(string.Join(" ", stampResult.Errors.Select(e => e.Description)));
+            var updateResult = await userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) return ResultService.Fail(string.Join(" ", updateResult.Errors.Select(e => e.Description)));
+
+            var client = await context.Clients.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (client != null) client.Email = newEmail;
+            var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (artist != null) artist.Email = newEmail;
+            request.UsedAt = now;
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return ResultService.Ok();
+        }
+
+        private string HashEmailChangeCode(string userId, string normalizedEmail, string code)
+            => Convert.ToHexString(HashCodeWithApplicationSecret($"email-change:{userId}:{normalizedEmail}:{code}"));
 
         private async Task<ResultService> ValidateCodeAsync(ApplicationUser user, EmailVerificationPurpose purpose, string code)
         {
@@ -408,7 +499,7 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Invalid or expired verification code.");
             }
 
-            verificationCode.UsedAt = DateTime.UtcNow;
+            verificationCode.UsedAt = UtcNow;
             await context.SaveChangesAsync();
 
             return ResultService.Ok();
@@ -429,35 +520,41 @@ namespace Tattoo_Project.Services
                 return null;
             }
 
-            var codeHash = HashVerificationCode(user.Id, purpose, code.Trim());
-            var now = DateTime.UtcNow;
+            var now = UtcNow;
 
-            return await context.EmailVerificationCodes
+            var verificationCode = await context.EmailVerificationCodes
                 .Where(c =>
                     c.UserId == user.Id &&
                     c.Purpose == purpose &&
-                    c.CodeHash == codeHash &&
                     c.UsedAt == null &&
                     c.ExpiresAt >= now)
                 .OrderByDescending(c => c.CreatedAt)
                 .FirstOrDefaultAsync();
+            if (verificationCode == null) return null;
+            var expected = Convert.FromHexString(verificationCode.CodeHash);
+            var actual = Convert.FromHexString(HashVerificationCode(user.Id, purpose, code.Trim()));
+            if (CryptographicOperations.FixedTimeEquals(expected, actual)) return verificationCode;
+            verificationCode.FailedAttempts++;
+            if (verificationCode.FailedAttempts >= 5) verificationCode.UsedAt = now;
+            await context.SaveChangesAsync();
+            return null;
         }
 
-        private static string HashVerificationCode(string userId, EmailVerificationPurpose purpose, string code)
+        private string HashVerificationCode(string userId, EmailVerificationPurpose purpose, string code)
         {
             var raw = $"{userId}:{(int)purpose}:{code}";
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(raw));
+            var bytes = HashCodeWithApplicationSecret(raw);
             return Convert.ToHexString(bytes);
         }
 
-        private static string HashPendingCode(Guid pendingId, string code)
+        private string HashPendingCode(Guid pendingId, string code)
         {
             var raw = $"{pendingId:N}:{code}";
-            var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(raw));
+            var bytes = HashCodeWithApplicationSecret(raw);
             return Convert.ToHexString(bytes);
         }
 
-        private static bool IsPendingCodeValid(PendingRegistration pending, string code)
+        private bool IsPendingCodeValid(PendingRegistration pending, string code)
         {
             var normalizedCode = code?.Trim();
             if (normalizedCode == null || normalizedCode.Length != 6 || !normalizedCode.All(char.IsDigit))
@@ -470,12 +567,22 @@ namespace Tattoo_Project.Services
             return CryptographicOperations.FixedTimeEquals(expected, actual);
         }
 
+        private byte[] HashCodeWithApplicationSecret(string raw)
+        {
+            var secret = configuration["Verification:CodeHashSecret"];
+            if (string.IsNullOrWhiteSpace(secret) || secret.Length < 32)
+                throw new InvalidOperationException("Verification:CodeHashSecret must contain at least 32 characters.");
+            using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+            return hmac.ComputeHash(Encoding.UTF8.GetBytes(raw));
+        }
+
         private static string GetSubject(EmailVerificationPurpose purpose)
             => purpose switch
             {
                 EmailVerificationPurpose.Register => "Your InkRoute verification code",
                 EmailVerificationPurpose.PasswordReset => "Your InkRoute password reset code",
                 EmailVerificationPurpose.PasswordChange => "Your InkRoute password change code",
+                EmailVerificationPurpose.EmailChange => "Confirm your new InkRoute email",
                 _ => "Your InkRoute verification code"
             };
 
@@ -486,6 +593,7 @@ namespace Tattoo_Project.Services
                 EmailVerificationPurpose.Register => "Verify your email",
                 EmailVerificationPurpose.PasswordReset => "Reset your password",
                 EmailVerificationPurpose.PasswordChange => "Change your password",
+                EmailVerificationPurpose.EmailChange => "Confirm your new email",
                 _ => "Verify your email"
             };
 
@@ -494,6 +602,7 @@ namespace Tattoo_Project.Services
                 EmailVerificationPurpose.Register => "Use this code to finish creating your InkRoute account.",
                 EmailVerificationPurpose.PasswordReset => "Use this code to reset your InkRoute password.",
                 EmailVerificationPurpose.PasswordChange => "Use this code to confirm your InkRoute password change.",
+                EmailVerificationPurpose.EmailChange => "Use this code to confirm that you own this new email address.",
                 _ => "Use this code to continue with InkRoute."
             };
 

@@ -17,5 +17,7 @@ namespace Tattoo_Project.Models
         public DateTime ExpiresAt { get; set; }
 
         public DateTime? UsedAt { get; set; }
+
+        public int FailedAttempts { get; set; }
     }
 }

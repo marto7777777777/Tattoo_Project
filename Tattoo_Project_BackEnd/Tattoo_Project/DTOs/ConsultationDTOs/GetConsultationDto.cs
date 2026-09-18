@@ -1,4 +1,4 @@
-﻿namespace Tattoo_Project.DTOs.ConsultationDTOs
+namespace Tattoo_Project.DTOs.ConsultationDTOs
 {
     public class GetConsultationDto
     {
@@ -10,5 +10,7 @@
 
         public string? Notes { get; set; }
         public bool? IsCompleted { get; set; }
+        public bool IsCancelled { get; set; }
+        public DateTime? CancelledAt { get; set; }
     }
 }

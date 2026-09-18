@@ -33,6 +33,8 @@ namespace Tattoo_Project.Services.Interfaces
             AddAdditionalSessionsDto dto,
             string userId);
 
+        Task<ResultService> StartTattooAsync(int tattooRequestId, string userId);
+
         Task<ResultService> CompleteTattooAsync(
             int tattooRequestId,
             string userId);

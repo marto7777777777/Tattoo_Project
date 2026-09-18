@@ -7,6 +7,7 @@ namespace Tattoo_Project.Models
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public string Email { get; set; } = null!;
+        public string TimeZoneId { get; set; } = "Europe/Sofia";
 
         public string Description { get; set; } = null!;
 

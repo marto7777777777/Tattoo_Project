@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistResponceDTOs;
@@ -9,7 +9,7 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
-    public class ArtistResponseService(TattooDbContext context) : IArtistResponseService
+    public class ArtistResponseService(TattooDbContext context, TimeProvider timeProvider) : IArtistResponseService
     {
         public async Task<ResultService<ICollection<GetArtistResponseDto>>> GetAllArtistResponsesAsync()
         {
@@ -102,6 +102,7 @@ namespace Tattoo_Project.Services
             CreateArtistResponseDto dto,
             string userId)
         {
+            await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var tattooArtist = await context.TattooArtists
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
@@ -110,7 +111,9 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo artist profile was not found.");
             }
 
+            await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:TattooRequest:{dto.TattooRequestId}","request_concurrency_conflict","The tattoo request is being updated by another operation. Refresh and retry.");
             var tattooRequest = await context.TattooRequests
+                .Include(r => r.ArtistResponse)
                 .FirstOrDefaultAsync(r => r.Id == dto.TattooRequestId);
 
             if (tattooRequest == null)
@@ -124,14 +127,13 @@ namespace Tattoo_Project.Services
                     "You can respond only to tattoo requests assigned to you.");
             }
 
-            if (tattooRequest.Status != RequestStatus.Submitted)
+            if (tattooRequest.Status is not (RequestStatus.Submitted or RequestStatus.UnderReview))
             {
                 return ResultService.Fail(
-                    "Artist response can be created only for submitted tattoo requests.");
+                    "Artist response can be created only for submitted or under-review tattoo requests.");
             }
 
-            var alreadyHasResponse = await context.ArtistResponses
-                .AnyAsync(r => r.TattooRequestId == dto.TattooRequestId);
+            var alreadyHasResponse = tattooRequest.ArtistResponse != null;
 
             if (alreadyHasResponse)
             {
@@ -167,19 +169,20 @@ namespace Tattoo_Project.Services
                 EstimatedPrice = directToSessions ? dto.PriceForSession!.Sum() : dto.EstimatedPrice,
                 EstimatedHours = directToSessions ? dto.DurationHoursForSession!.Sum() : dto.EstimatedHours,
                 WorkflowPath = dto.WorkflowPath.Value,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             };
+
+            var transition = TattooRequestStateMachine.Transition(tattooRequest, RequestStatus.Approved);
+            if (!transition.Success) return transition;
 
             if (directToSessions)
             {
-                tattooRequest.Status = RequestStatus.ConsultationCompleted;
                 tattooRequest.RemainingSessionsToBook = dto.SessionsToBook;
                 tattooRequest.PriceForSession = dto.PriceForSession!.ToList();
                 tattooRequest.DurationHoursForSession = dto.DurationHoursForSession!.ToList();
             }
             else
             {
-                tattooRequest.Status = RequestStatus.WaitingForConsultation;
                 tattooRequest.RemainingSessionsToBook = null;
                 tattooRequest.PriceForSession = null;
                 tattooRequest.DurationHoursForSession = null;
@@ -187,7 +190,9 @@ namespace Tattoo_Project.Services
 
             context.ArtistResponses.Add(artistResponse);
 
-            await context.SaveChangesAsync();
+            try { await context.SaveChangesAsync(); }
+            catch (DbUpdateException) { throw new DomainConflictException("artist_response_conflict","Another operation changed this tattoo request. Refresh and retry."); }
+            await transaction.CommitAsync();
 
             return ResultService.Ok();
         }
@@ -250,10 +255,10 @@ namespace Tattoo_Project.Services
                     "You can reject only tattoo requests assigned to you.");
             }
 
-            if (tattooRequest.Status != RequestStatus.Submitted)
+            if (tattooRequest.Status is not (RequestStatus.Submitted or RequestStatus.UnderReview))
             {
                 return ResultService.Fail(
-                    "Only submitted tattoo requests can be rejected before artist response.");
+                    "Only pre-approval tattoo requests can be rejected before artist response.");
             }
 
             var alreadyHasResponse = await context.ArtistResponses
@@ -265,7 +270,8 @@ namespace Tattoo_Project.Services
                     "Tattoo request already has an artist response.");
             }
 
-            tattooRequest.Status = RequestStatus.Rejected;
+            var transition = TattooRequestStateMachine.Transition(tattooRequest, RequestStatus.Rejected);
+            if (!transition.Success) return transition;
 
             await context.SaveChangesAsync();
 

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistUnavailableDateDTOs;
 using Tattoo_Project.Models;
@@ -10,14 +10,17 @@ namespace Tattoo_Project.Services
     public class ArtistUnavailableDateService : IArtistUnavailableDateService
     {
         private readonly TattooDbContext context;
+        private readonly TimeProvider timeProvider;
 
-        public ArtistUnavailableDateService(TattooDbContext context)
+        public ArtistUnavailableDateService(TattooDbContext context, TimeProvider timeProvider)
         {
             this.context = context;
+            this.timeProvider = timeProvider;
         }
 
         public async Task<ResultService> CreateUnavailableDateAsync(CreateArtistUnavailableDateDto dto, string userId)
         {
+            await using var bookingTransaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var tattooArtist = await context.TattooArtists
                 .FirstOrDefaultAsync(a => a.UserId == userId);
 
@@ -26,12 +29,21 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo artist profile not found.");
             }
 
-            if (dto.StartDateTime >= dto.EndDateTime)
+            await BookingConcurrency.AcquireArtistLockAsync(context, tattooArtist.Id);
+
+            var startResult = TimeZoneSupport.ToUtc(dto.StartDateTime, tattooArtist.TimeZoneId);
+            var endResult = TimeZoneSupport.ToUtc(dto.EndDateTime, tattooArtist.TimeZoneId);
+            if (!startResult.Success) return ResultService.Fail(startResult.ErrorMessage!);
+            if (!endResult.Success) return ResultService.Fail(endResult.ErrorMessage!);
+            var startTime = startResult.Data;
+            var endTime = endResult.Data;
+
+            if (startTime >= endTime)
             {
                 return ResultService.Fail("Start date must be before end date.");
             }
 
-            if (dto.StartDateTime < DateTime.UtcNow)
+            if (startTime < timeProvider.GetUtcNow().UtcDateTime)
             {
                 return ResultService.Fail("You cannot mark past time as unavailable.");
             }
@@ -39,8 +51,8 @@ namespace Tattoo_Project.Services
             var hasExistingUnavailablePeriod = await context.ArtistUnavailableDates
                 .AnyAsync(u =>
                     u.TattooArtistId == tattooArtist.Id &&
-                    dto.StartDateTime < u.EndDateTime &&
-                    dto.EndDateTime > u.StartDateTime);
+                    startTime < u.EndDateTime &&
+                    endTime > u.StartDateTime);
 
             if (hasExistingUnavailablePeriod)
             {
@@ -49,9 +61,9 @@ namespace Tattoo_Project.Services
 
             var hasConsultationConflict = await context.Consultations
                 .AnyAsync(c =>
-                    c.TattooRequest.TattooArtistId == tattooArtist.Id &&
-                    dto.StartDateTime < c.EndTime &&
-                    dto.EndDateTime > c.StartTime);
+                    !c.IsCancelled && c.TattooRequest.TattooArtistId == tattooArtist.Id &&
+                    startTime < c.EndTime &&
+                    endTime > c.StartTime);
 
             if (hasConsultationConflict)
             {
@@ -60,9 +72,9 @@ namespace Tattoo_Project.Services
 
             var hasTattooSessionConflict = await context.TattooSessions
                 .AnyAsync(s =>
-                    s.TattooRequest.TattooArtistId == tattooArtist.Id &&
-                    dto.StartDateTime < s.EndTime &&
-                    dto.EndDateTime > s.StartTime);
+                    !s.IsCancelled && s.TattooRequest.TattooArtistId == tattooArtist.Id &&
+                    startTime < s.EndTime &&
+                    endTime > s.StartTime);
 
             if (hasTattooSessionConflict)
             {
@@ -71,13 +83,14 @@ namespace Tattoo_Project.Services
 
             var unavailableDate = new ArtistUnavailableDate
             {
-                StartDateTime = dto.StartDateTime,
-                EndDateTime = dto.EndDateTime,
+                StartDateTime = startTime,
+                EndDateTime = endTime,
                 TattooArtistId = tattooArtist.Id
             };
 
             await context.ArtistUnavailableDates.AddAsync(unavailableDate);
             await context.SaveChangesAsync();
+            await bookingTransaction.CommitAsync();
 
             return ResultService.Ok();
         }
@@ -92,7 +105,7 @@ namespace Tattoo_Project.Services
                 return ResultService<ICollection<GetArtistUnavailableDateDto>>.Fail("Tattoo artist profile not found.");
             }
 
-            var currentDateTime = DateTime.UtcNow;
+            var currentDateTime = timeProvider.GetUtcNow().UtcDateTime;
 
             var unavailableDates = await context.ArtistUnavailableDates
                 .AsNoTracking()

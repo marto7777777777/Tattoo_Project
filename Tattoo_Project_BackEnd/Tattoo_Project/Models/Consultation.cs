@@ -1,4 +1,4 @@
-﻿namespace Tattoo_Project.Models
+namespace Tattoo_Project.Models
 {
     public class Consultation
     {
@@ -12,6 +12,10 @@
 
         public bool IsOnline { get; set; }
         public bool IsCompleted { get; set; }
+        public bool IsCancelled { get; set; }
+        public DateTime? CancelledAt { get; set; }
+        public string? CancelledByUserId { get; set; }
+        public string? CancellationReason { get; set; }
 
         public string? Notes { get; set; }
 

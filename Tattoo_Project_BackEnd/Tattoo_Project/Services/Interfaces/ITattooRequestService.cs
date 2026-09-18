@@ -45,5 +45,8 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> RejectTattooRequestByArtistAsync(
             int id,
             string userId);
+
+        Task<ResultService> MarkUnderReviewAsync(int id, string userId);
+        Task<ResultService> CancelTattooRequestAsync(int id, string userId, string? reason);
     }
 }

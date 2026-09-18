@@ -24,7 +24,7 @@ export async function apiRequest(path, options = {}) {
 
   try {
     return await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-  } catch (error) {
+  } catch {
     throw new Error(`Cannot reach the backend at ${API_BASE_URL}. Make sure the API is running.`);
   }
 }

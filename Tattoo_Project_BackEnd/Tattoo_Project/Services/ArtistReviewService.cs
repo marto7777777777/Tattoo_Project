@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ArtistReviewDTOs;
 using Tattoo_Project.Models;
@@ -10,10 +10,12 @@ namespace Tattoo_Project.Services
     public class ArtistReviewService : IArtistReviewService
     {
         private readonly TattooDbContext context;
+        private readonly TimeProvider timeProvider;
 
-        public ArtistReviewService(TattooDbContext context)
+        public ArtistReviewService(TattooDbContext context, TimeProvider timeProvider)
         {
             this.context = context;
+            this.timeProvider = timeProvider;
         }
 
         public async Task<ResultService> CreateArtistReviewAsync(CreateArtistReviewDto dto, string userId)
@@ -59,7 +61,7 @@ namespace Tattoo_Project.Services
             {
                 Rating = dto.Rating,
                 Comment = dto.Comment,
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime,
                 TattooRequestId = tattooRequest.Id,
                 ClientId = client.Id,
                 TattooArtistId = tattooRequest.TattooArtistId

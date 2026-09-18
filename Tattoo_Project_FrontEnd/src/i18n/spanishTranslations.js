@@ -450,7 +450,6 @@ export const ES = {
   "Start new AI project": "Iniciar nuevo proyecto de IA",
   "How it works": "Cómo funciona",
   "1 free project": "1 proyecto gratuito",
-  "2 free improvements": "2 mejoras gratuitas",
   "Style and placement stay fixed": "El estilo y la zona permanecen fijos",
   "Download versions": "Descargar versiones",
   "Your workspace": "Tu espacio",

@@ -9,7 +9,7 @@ import { WeeklyScheduleBuilder } from "../components/WeeklyScheduleBuilder";
 import SpecialtyStyleSelector from "../components/SpecialtyStyleSelector";
 import ImageCropModal from "../components/ImageCropModal";
 import StudioImageSetupFields from "../components/StudioImageSetupFields";
-import { startSubscriptionCheckout } from "../api/subscriptionApi";
+import { billingPlatform, purchaseArtistSubscription } from "../services/billingService";
 import { trackEvent } from "../services/analyticsService";
 
 const DEFAULT_AVAILABILITY = {
@@ -318,13 +318,16 @@ function CreateArtistProfilePage() {
           ? `Artist profile created and your join request was sent to ${selectedStudio.name}. Some images can be added again from Settings.`
           : `Artist profile created. Your join request was sent to ${selectedStudio.name}.`);
       }
-      try {
-        const checkout = await startSubscriptionCheckout();
-        trackEvent("subscription_checkout_started");
-        window.location.assign(checkout.url);
-      } catch (checkoutError) {
-        setError(checkoutError.message || "Artist profile created, but Stripe Checkout could not be opened.");
-        setTimeout(() => navigate("/subscription"), 1200);
+      if (billingPlatform() === "web") {
+        try {
+          trackEvent("subscription_checkout_started");
+          await purchaseArtistSubscription();
+        } catch (checkoutError) {
+          setError(checkoutError.message || "Artist profile created, but subscription checkout could not be opened.");
+          setTimeout(() => navigate("/subscription"), 1200);
+        }
+      } else {
+        navigate("/subscription", { replace: true });
       }
     } catch (err) {
       setError(err.message || "Server connection failed. Please try again.");

@@ -23,5 +23,8 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService> SendPasswordChangeCodeAsync(string userId);
 
         Task<ResultService> ChangePasswordWithCodeAsync(string userId, string code, string newPassword, string confirmNewPassword);
+
+        Task<ResultService> RequestEmailChangeAsync(string userId, string newEmail);
+        Task<ResultService> ConfirmEmailChangeAsync(string userId, string newEmail, string code);
     }
 }

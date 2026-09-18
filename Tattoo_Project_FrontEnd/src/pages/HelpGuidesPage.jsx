@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "../styles/helpGuides.css";
 
 const guides = [
@@ -14,6 +15,7 @@ const guides = [
 ];
 
 export default function HelpGuidesPage() {
+  const [started, setStarted] = useState({});
   return (
     <main className="help-guides-page">
       <header className="help-guides-header">
@@ -26,13 +28,13 @@ export default function HelpGuidesPage() {
         {guides.map((guide) => (
           <article className="help-guide-card" key={guide.id}>
             <div className="help-guide-video">
-              <iframe
+              {started[guide.id] ? <iframe
                 src={`https://www.youtube-nocookie.com/embed/${guide.id}?rel=0`}
                 title={guide.title}
                 loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
-              />
+              /> : <button type="button" className="help-guide-placeholder" onClick={() => setStarted((value) => ({ ...value, [guide.id]: true }))} aria-label={`Play ${guide.title}`}><img src="/inkroute-app-icon.png" width="96" height="96" alt="" /><span>▶ Play tutorial</span></button>}
             </div>
             <div className="help-guide-copy">
               <h2>{guide.title}</h2>

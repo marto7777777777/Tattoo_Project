@@ -1,5 +1,8 @@
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.AdminDTOs;
 using Tattoo_Project.Models;
@@ -10,7 +13,11 @@ namespace Tattoo_Project.Services;
 
 public class AdminService(
     TattooDbContext context,
-    UserManager<ApplicationUser> userManager) : IAdminService
+    UserManager<ApplicationUser> userManager,
+    IFileStorage storage,
+    IConfiguration configuration,
+    TimeProvider timeProvider,
+    ILogger<AdminService> logger) : IAdminService
 {
     public async Task<ResultService<AdminOverviewDto>> GetOverviewAsync()
     {
@@ -129,48 +136,136 @@ public class AdminService(
         return ResultService<ICollection<AdminAiProjectDto>>.Ok(projects);
     }
 
-    public async Task<ResultService> DeleteUserAsync(string userId, string currentAdminUserId)
+    public Task<ResultService> DeleteUserAsync(string userId, string currentAdminUserId)
+        => DeleteUserCoreAsync(userId, currentAdminUserId, null);
+
+    public Task<ResultService> DeleteUserForDeletionWorkflowAsync(string userId, Guid deletionRequestId)
+        => DeleteUserCoreAsync(userId, "self-service-account-deletion", deletionRequestId);
+
+    private async Task<ResultService> DeleteUserCoreAsync(string userId, string currentAdminUserId, Guid? deletionRequestId)
     {
         if (userId == currentAdminUserId)
             return ResultService.Fail("You cannot delete the admin account you are currently using.");
 
         var user = await userManager.FindByIdAsync(userId);
-        if (user == null)
+        if (user == null && !deletionRequestId.HasValue)
             return ResultService.Fail("User was not found.");
-
-        if (await userManager.IsInRoleAsync(user, UserRoles.Admin))
+        if (user != null && await userManager.IsInRoleAsync(user, UserRoles.Admin))
             return ResultService.Fail("Admin accounts cannot be deleted from the admin panel.");
-
-        var client = await context.Clients.FirstOrDefaultAsync(x => x.UserId == userId);
-        if (client != null)
+        if (user == null && deletionRequestId.HasValue)
         {
-            var result = await DeleteClientProfileInternalAsync(client.Id, removeRole: false);
-            if (!result.Success) return result;
+            var durableState = await context.AccountDeletionRequests.AsNoTracking().FirstOrDefaultAsync(x => x.Id == deletionRequestId.Value);
+            if (durableState == null || durableState.UserId != userId) return ResultService.Fail("Account deletion workflow state is invalid.");
+            if ((int)durableState.State >= (int)AccountDeletionState.LocalDeletionCompleted) return ResultService.Ok();
+            if (durableState.State != AccountDeletionState.ExternalSubscriptionsClosed) return ResultService.Fail("Account deletion workflow state is invalid.");
+            // Recovery is allowed to continue deleting business rows by UserId even when the
+            // Identity row disappeared in an older interrupted deployment.
         }
 
-        var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.UserId == userId);
-        if (artist != null)
+        // Provider HTTP calls are deliberately outside the SQL transaction.
+        // Self-service deletion closes them before entering this method; admin deletion does it here.
+        if (!deletionRequestId.HasValue)
         {
-            var result = await DeleteArtistProfileInternalAsync(artist.Id, removeRole: false);
-            if (!result.Success) return result;
+            var subscription = await context.ArtistSubscriptions.AsNoTracking().FirstOrDefaultAsync(x => x.TattooArtist.UserId == userId);
+            var externalClosure = await CloseExternalBillingForDeletionAsync(subscription);
+            if (!externalClosure.Success) return externalClosure;
         }
 
-        await context.EmailVerificationCodes
-            .Where(x => x.UserId == userId)
-            .ExecuteDeleteAsync();
+        var deferredMedia = new List<string>();
+        await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        try
+        {
+            if (deletionRequestId.HasValue)
+            {
+                await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:AccountDeletion:{deletionRequestId.Value:N}","account_deletion_concurrency_conflict","Account deletion is already being processed.");
+                var workflow = await context.AccountDeletionRequests.FirstOrDefaultAsync(x => x.Id == deletionRequestId.Value);
+                if (workflow == null || workflow.UserId != userId || (int)workflow.State < (int)AccountDeletionState.ExternalSubscriptionsClosed)
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail("Account deletion workflow state is invalid.");
+                }
+                if ((int)workflow.State >= (int)AccountDeletionState.LocalDeletionCompleted)
+                {
+                    await transaction.CommitAsync();
+                    return ResultService.Ok();
+                }
+            }
 
-        var aiProjectIds = await context.AiTattooProjects
-            .Where(x => x.UserId == userId)
-            .Select(x => x.Id)
-            .ToListAsync();
+            var client = await context.Clients.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (client != null)
+            {
+                var result = await DeleteClientProfileInternalAsync(client.Id, removeRole: false, deferredMedia);
+                if (!result.Success) { await transaction.RollbackAsync(); return result; }
+            }
 
-        foreach (var aiProjectId in aiProjectIds)
-            await DeleteAiProjectGraphAsync(aiProjectId);
+            var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.UserId == userId);
+            if (artist != null)
+            {
+                var result = await DeleteArtistProfileInternalAsync(artist.Id, removeRole: false, deferredMedia);
+                if (!result.Success) { await transaction.RollbackAsync(); return result; }
+            }
 
-        var identityResult = await userManager.DeleteAsync(user);
-        if (!identityResult.Succeeded)
-            return ResultService.Fail(string.Join(" ", identityResult.Errors.Select(x => x.Description)));
+            await context.EmailVerificationCodes.Where(x => x.UserId == userId).ExecuteDeleteAsync();
+            await context.PendingEmailChanges.Where(x => x.UserId == userId).ExecuteDeleteAsync();
 
+            var aiProjectIds = await context.AiTattooProjects.Where(x => x.UserId == userId).Select(x => x.Id).ToListAsync();
+            foreach (var aiProjectId in aiProjectIds)
+                await DeleteAiProjectGraphAsync(aiProjectId, deferredMedia);
+
+            var pseudonym = "deleted:" + Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(userId)))[..32].ToLowerInvariant();
+            await context.AiProjectStorePurchases.Where(x => x.UserId == userId)
+                .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.UserId, pseudonym));
+
+            if (!string.IsNullOrWhiteSpace(user?.ProfileImageUrl)) deferredMedia.Add(user.ProfileImageUrl);
+
+            // Transactional outbox for physical media cleanup. If the process dies immediately
+            // after the DB commit, the FileCleanupHostedService still owns these tasks.
+            var now = timeProvider.GetUtcNow().UtcDateTime;
+            foreach (var key in deferredMedia.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal))
+            {
+                context.FileCleanupTasks.Add(new FileCleanupTask
+                {
+                    StorageKey = key,
+                    Reason = "account_deletion",
+                    RetryCount = 0,
+                    CreatedAt = now,
+                    UpdatedAt = now
+                });
+            }
+
+            if (user != null)
+            {
+                user.TokenVersion++;
+                var identityResult = await userManager.DeleteAsync(user);
+                if (!identityResult.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail(string.Join(" ", identityResult.Errors.Select(x => x.Description)));
+                }
+            }
+
+            if (deletionRequestId.HasValue)
+            {
+                var workflow = await context.AccountDeletionRequests.FirstAsync(x => x.Id == deletionRequestId.Value);
+                workflow.State = AccountDeletionState.LocalDeletionCompleted;
+                workflow.LastErrorCode = null;
+                workflow.UpdatedAt = now;
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                await context.SaveChangesAsync();
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+
+        await CleanupDeferredFilesAsync(deferredMedia, "account_deletion");
         return ResultService.Ok();
     }
 
@@ -209,7 +304,7 @@ public class AdminService(
         return ResultService.Ok();
     }
 
-    private async Task<ResultService> DeleteClientProfileInternalAsync(int clientId, bool removeRole)
+    private async Task<ResultService> DeleteClientProfileInternalAsync(int clientId, bool removeRole, List<string>? deferredMedia = null)
     {
         var client = await context.Clients.FirstOrDefaultAsync(x => x.Id == clientId);
         if (client == null) return ResultService.Fail("Client profile was not found.");
@@ -220,7 +315,7 @@ public class AdminService(
             .ToListAsync();
 
         foreach (var requestId in requestIds)
-            await DeleteTattooRequestGraphAsync(requestId);
+            await DeleteTattooRequestGraphAsync(requestId, deferredMedia);
 
         await context.ArtistReviews.Where(x => x.ClientId == clientId).ExecuteDeleteAsync();
         await context.ClientFavoriteStudios.Where(x => x.ClientId == clientId).ExecuteDeleteAsync();
@@ -238,7 +333,7 @@ public class AdminService(
         return ResultService.Ok();
     }
 
-    private async Task<ResultService> DeleteArtistProfileInternalAsync(int artistId, bool removeRole)
+    private async Task<ResultService> DeleteArtistProfileInternalAsync(int artistId, bool removeRole, List<string>? deferredMedia = null)
     {
         var artist = await context.TattooArtists.FirstOrDefaultAsync(x => x.Id == artistId);
         if (artist == null) return ResultService.Fail("Tattoo artist profile was not found.");
@@ -258,11 +353,15 @@ public class AdminService(
             }
             else
             {
+                var studioCover = ownedStudio.CoverImageUrl;
+                var studioLogo = ownedStudio.LogoImageUrl;
                 ownedStudio.OwnerArtistId = null;
                 artist.StudioId = null;
                 await context.SaveChangesAsync();
                 context.Studios.Remove(ownedStudio);
                 await context.SaveChangesAsync();
+                if (!string.IsNullOrWhiteSpace(studioCover)) { if (deferredMedia != null) deferredMedia.Add(studioCover); else await storage.DeleteAsync(studioCover); }
+                if (!string.IsNullOrWhiteSpace(studioLogo)) { if (deferredMedia != null) deferredMedia.Add(studioLogo); else await storage.DeleteAsync(studioLogo); }
             }
         }
 
@@ -272,17 +371,26 @@ public class AdminService(
             .ToListAsync();
 
         foreach (var requestId in requestIds)
-            await DeleteTattooRequestGraphAsync(requestId);
+            await DeleteTattooRequestGraphAsync(requestId, deferredMedia);
 
         await context.ArtistReviews.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.ArtistUnavailableDates.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Schedules.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.Set<ArtistRequirement>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
+        var portfolioMedia = await context.Set<PortfolioImage>()
+            .Where(x => x.TattooArtistId == artistId)
+            .Select(x => x.ImageUrl)
+            .ToListAsync();
         await context.Set<PortfolioImage>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
         await context.AnalyticsOutboxEvents.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
 
         context.TattooArtists.Remove(artist);
         await context.SaveChangesAsync();
+
+        foreach (var media in portfolioMedia)
+        {
+            if (deferredMedia != null) deferredMedia.Add(media); else await storage.DeleteAsync(media);
+        }
 
         if (removeRole)
         {
@@ -295,8 +403,20 @@ public class AdminService(
     }
 
 
-    private async Task DeleteAiProjectGraphAsync(int projectId)
+    private async Task DeleteAiProjectGraphAsync(int projectId, List<string>? deferredMedia = null)
     {
+        var project = await context.AiTattooProjects
+            .AsNoTracking()
+            .Where(x => x.Id == projectId)
+            .Select(x => new { x.InitialReferenceImageUrl })
+            .FirstOrDefaultAsync();
+        var versionMedia = await context.AiTattooVersions
+            .AsNoTracking()
+            .Where(x => x.AiTattooProjectId == projectId)
+            .Select(x => x.ImageUrl)
+            .ToListAsync();
+
+        // Anti-replay store purchase rows use SET NULL and intentionally survive project deletion.
         await context.AiTattooVersions
             .Where(x => x.AiTattooProjectId == projectId && x.ParentVersionId != null)
             .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.ParentVersionId, (int?)null));
@@ -304,15 +424,112 @@ public class AdminService(
         await context.AiProjectPayments.Where(x => x.AiTattooProjectId == projectId).ExecuteDeleteAsync();
         await context.AiTattooVersions.Where(x => x.AiTattooProjectId == projectId).ExecuteDeleteAsync();
         await context.AiTattooProjects.Where(x => x.Id == projectId).ExecuteDeleteAsync();
+
+        if (!string.IsNullOrWhiteSpace(project?.InitialReferenceImageUrl))
+        {
+            if (deferredMedia != null) deferredMedia.Add(project.InitialReferenceImageUrl); else await storage.DeleteAsync(project.InitialReferenceImageUrl);
+        }
+        foreach (var media in versionMedia)
+        {
+            if (deferredMedia != null) deferredMedia.Add(media); else await storage.DeleteAsync(media);
+        }
     }
 
-    private async Task DeleteTattooRequestGraphAsync(int tattooRequestId)
+    private async Task DeleteTattooRequestGraphAsync(int tattooRequestId, List<string>? deferredMedia = null)
     {
+        var referenceMedia = await context.TattooReferenceImages
+            .AsNoTracking()
+            .Where(x => x.TattooRequestId == tattooRequestId)
+            .Select(x => x.ImageUrl)
+            .ToListAsync();
+
         await context.ArtistReviews.Where(x => x.TattooRequestId == tattooRequestId).ExecuteDeleteAsync();
         await context.TattooSessions.Where(x => x.TattooRequestId == tattooRequestId).ExecuteDeleteAsync();
         await context.Consultations.Where(x => x.TattooRequestId == tattooRequestId).ExecuteDeleteAsync();
         await context.ArtistResponses.Where(x => x.TattooRequestId == tattooRequestId).ExecuteDeleteAsync();
         await context.TattooReferenceImages.Where(x => x.TattooRequestId == tattooRequestId).ExecuteDeleteAsync();
         await context.TattooRequests.Where(x => x.Id == tattooRequestId).ExecuteDeleteAsync();
+
+        foreach (var media in referenceMedia)
+        {
+            if (deferredMedia != null) deferredMedia.Add(media); else await storage.DeleteAsync(media);
+        }
     }
+    private async Task<ResultService> CloseExternalBillingForDeletionAsync(ArtistSubscription? subscription)
+    {
+        if (subscription == null) return ResultService.Ok();
+        var now = timeProvider.GetUtcNow().UtcDateTime;
+        if (subscription.ActiveProvider is SubscriptionProviders.GooglePlay or SubscriptionProviders.Apple &&
+            SubscriptionEntitlementRules.HasAccess(subscription, now) && !subscription.CancelAtPeriodEnd)
+            return ResultService.Fail("The active App Store or Google Play subscription must be cancelled before account deletion.");
+
+        if (string.IsNullOrWhiteSpace(subscription.StripeSubscriptionId) && string.IsNullOrWhiteSpace(subscription.StripeCustomerId))
+            return ResultService.Ok();
+        var secret = configuration["Stripe:SecretKey"];
+        if (string.IsNullOrWhiteSpace(secret))
+            return ResultService.Fail("Stripe account deletion cannot be completed because billing is not configured.");
+        StripeConfiguration.ApiKey = secret;
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(subscription.StripeSubscriptionId))
+                await new SubscriptionService().CancelAsync(subscription.StripeSubscriptionId);
+            if (!string.IsNullOrWhiteSpace(subscription.StripeCustomerId))
+                await new CustomerService().DeleteAsync(subscription.StripeCustomerId);
+            return ResultService.Ok();
+        }
+        catch (StripeException ex) when (ex.HttpStatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return ResultService.Ok();
+        }
+        catch (StripeException ex)
+        {
+            logger.LogWarning(ex, "Admin account-deletion billing closure failed; deletion remains retryable.");
+            return ResultService.Fail("Billing closure could not be completed. Retry account deletion.");
+        }
+    }
+
+    private async Task CleanupDeferredFilesAsync(IEnumerable<string> media, string reason)
+    {
+        foreach (var key in media.Where(x => !string.IsNullOrWhiteSpace(x)).Distinct(StringComparer.Ordinal))
+        {
+            var task = await context.FileCleanupTasks
+                .Where(x => x.CompletedAt == null && x.StorageKey == key && x.Reason == reason)
+                .OrderBy(x => x.Id)
+                .FirstOrDefaultAsync();
+            if (task == null)
+            {
+                var now = timeProvider.GetUtcNow().UtcDateTime;
+                task = new FileCleanupTask { StorageKey = key, Reason = reason, CreatedAt = now, UpdatedAt = now };
+                context.FileCleanupTasks.Add(task);
+                try { await context.SaveChangesAsync(); }
+                catch (Exception persistenceError)
+                {
+                    logger.LogCritical(persistenceError,"Failed to persist deferred file cleanup task for reason {Reason}; physical media may require manual reconciliation.",reason);
+                    continue;
+                }
+            }
+
+            try
+            {
+                await storage.DeleteAsync(key);
+                task.CompletedAt = timeProvider.GetUtcNow().UtcDateTime;
+                task.UpdatedAt = task.CompletedAt.Value;
+                task.LastError = null;
+                await context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                task.RetryCount++;
+                task.UpdatedAt = timeProvider.GetUtcNow().UtcDateTime;
+                task.LastError = ex.GetType().Name;
+                try { await context.SaveChangesAsync(); }
+                catch (Exception persistenceError)
+                {
+                    logger.LogCritical(persistenceError,"Failed to persist file cleanup retry state for cleanup task {CleanupTaskId}.",task.Id);
+                }
+                logger.LogWarning(ex,"Post-commit physical file deletion failed for cleanup task {CleanupTaskId}; it remains retryable.",task.Id);
+            }
+        }
+    }
+
 }

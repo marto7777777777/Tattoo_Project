@@ -7,7 +7,7 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
-    public class ClientFavoriteStudioService(TattooDbContext context) : IClientFavoriteStudioService
+    public class ClientFavoriteStudioService(TattooDbContext context, IPrivateMediaUrlService mediaUrls, TimeProvider timeProvider) : IClientFavoriteStudioService
     {
         public async Task<ResultService> AddAsync(int studioId, string userId)
         {
@@ -22,7 +22,7 @@ namespace Tattoo_Project.Services
             {
                 ClientId = client.Id,
                 StudioId = studioId,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             });
             await context.SaveChangesAsync();
             return ResultService.Ok();
@@ -60,6 +60,9 @@ namespace Tattoo_Project.Services
                 .Include(x => x.Studio)
                     .ThenInclude(x => x.Artists)
                         .ThenInclude(x => x.SpecialtyStyles)
+                .Include(x => x.Studio)
+                    .ThenInclude(x => x.Artists)
+                        .ThenInclude(x => x.Subscription)
                 .OrderByDescending(x => x.CreatedOn)
                 .AsSplitQuery()
                 .ToListAsync();
@@ -67,7 +70,7 @@ namespace Tattoo_Project.Services
             var studios = favorites.Select(x => x.Studio).ToList();
 
             return ResultService<ICollection<StudioDto>>.Ok(
-                studios.Select(StudioService.MapStudio).ToList());
+                studios.Select(s => StudioService.MapStudio(s, mediaUrls)).ToList());
         }
     }
 }

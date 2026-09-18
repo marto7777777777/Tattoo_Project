@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -159,6 +159,17 @@ namespace Tattoo_Project.Controllers
             }
 
             return Ok("More sessions added successfully.");
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
+        [HttpPost("start-tattoo/{tattooRequestId:int}")]
+        public async Task<IActionResult> StartTattoo(int tattooRequestId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.StartTattooAsync(tattooRequestId, userId);
+            return result.Success ? Ok("Tattoo started.") : Conflict(result.ErrorMessage);
         }
 
         [Authorize(

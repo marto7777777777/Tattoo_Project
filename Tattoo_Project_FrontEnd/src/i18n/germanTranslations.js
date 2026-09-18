@@ -534,7 +534,6 @@ export const DE = {
   "Start new AI project": "Neues KI-Projekt starten",
   "How it works": "So funktioniert es",
   "1 free project": "1 kostenloses Projekt",
-  "2 free improvements": "2 kostenlose Verbesserungen",
   "Style and placement stay fixed": "Stil und Körperstelle bleiben fest",
   "Download versions": "Versionen herunterladen",
   "Keep every generated result": "Jedes generierte Ergebnis behalten",

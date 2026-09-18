@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
 using Tattoo_Project.DTOs.ClientDTOs;
@@ -101,9 +101,16 @@ namespace Tattoo_Project.Services
                 user.PhoneNumber = normalizedPhone;
             }
 
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
             if (!await roleManager.RoleExistsAsync(UserRoles.Client))
             {
-                await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
+                var createRoleResult = await roleManager.CreateAsync(new IdentityRole(UserRoles.Client));
+                if (!createRoleResult.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail("Client role could not be created.");
+                }
             }
 
             Client client = new()
@@ -127,8 +134,7 @@ namespace Tattoo_Project.Services
                 exception.InnerException is Microsoft.Data.SqlClient.SqlException sqlException &&
                 sqlException.Number is 2601 or 2627)
             {
-                // The unique user phone index is the final guard against two
-                // simultaneous requests claiming the same number.
+                await transaction.RollbackAsync();
                 return ResultService.Fail("Phone number or email is already registered to another account.");
             }
 
@@ -136,9 +142,13 @@ namespace Tattoo_Project.Services
             {
                 var roleResult = await userManager.AddToRoleAsync(user, UserRoles.Client);
                 if (!roleResult.Succeeded)
-                    return ResultService.Fail("Client profile was created, but the Client role could not be assigned.");
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail("Client role could not be assigned; no client profile was created.");
+                }
             }
 
+            await transaction.CommitAsync();
             return ResultService.Ok();
         }
 

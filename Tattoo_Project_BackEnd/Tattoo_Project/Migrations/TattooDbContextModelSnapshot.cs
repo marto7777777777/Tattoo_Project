@@ -174,6 +174,72 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("AccountDeletionAudits");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.AccountDeletionRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastErrorCode")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("State")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("AccountDeletionRequests");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectCheckoutAttempt", b =>
+                {
+                    b.Property<Guid>("Id").HasColumnType("uniqueidentifier");
+                    b.Property<int>("AiTattooProjectId").HasColumnType("int");
+                    b.Property<DateTime?>("CompletedAtUtc").HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
+                    b.Property<string>("Currency").IsRequired().HasMaxLength(3).HasColumnType("nvarchar(3)");
+                    b.Property<DateTime?>("ExpiresAtUtc").HasColumnType("datetime2");
+                    b.Property<long>("ExpectedBaseAmountMinor").HasColumnType("bigint");
+                    b.Property<string>("FailureCode").HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<string>("PriceSemantics").IsRequired().HasMaxLength(20).HasColumnType("nvarchar(20)");
+                    b.Property<string>("Product").IsRequired().HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<byte[]>("RowVersion").IsRowVersion().IsConcurrencyToken().ValueGeneratedOnAddOrUpdate().HasColumnType("rowversion");
+                    b.Property<string>("Status").IsRequired().HasMaxLength(30).HasColumnType("nvarchar(30)");
+                    b.Property<string>("StripeCheckoutSessionId").HasMaxLength(255).HasColumnType("nvarchar(255)");
+                    b.Property<string>("StripeCheckoutUrl").HasMaxLength(2048).HasColumnType("nvarchar(2048)");
+                    b.Property<string>("StripeIdempotencyKey").IsRequired().HasMaxLength(255).HasColumnType("nvarchar(255)");
+                    b.Property<DateTime>("UpdatedAtUtc").HasColumnType("datetime2");
+                    b.Property<string>("UserId").IsRequired().HasMaxLength(450).HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
+                    b.HasIndex("AiTattooProjectId");
+                    b.HasIndex("Status", "UpdatedAtUtc");
+                    b.HasIndex("StripeCheckoutSessionId").IsUnique().HasFilter("[StripeCheckoutSessionId] IS NOT NULL");
+                    b.HasIndex("StripeIdempotencyKey").IsUnique();
+                    b.HasIndex("UserId", "AiTattooProjectId", "Product").IsUnique().HasFilter("[Status] IN ('Creating','SessionCreated','PaymentConfirmed','GrantPending')");
+                    b.ToTable("AiProjectCheckoutAttempts");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.AiProjectPayment", b =>
                 {
                     b.Property<int>("Id")
@@ -185,7 +251,7 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime?>("AccessGrantedUntil")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("AiTattooProjectId")
+                    b.Property<int?>("AiTattooProjectId")
                         .HasColumnType("int");
 
                     b.Property<long>("AmountInMinorUnits")
@@ -229,6 +295,117 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("AiProjectPayments");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.AiGenerationOperation", b =>
+                {
+                    b.Property<long>("Id").ValueGeneratedOnAdd().HasColumnType("bigint");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    b.Property<int>("AiTattooProjectId").HasColumnType("int");
+                    b.Property<int?>("BaseVersionId").HasColumnType("int");
+                    b.Property<DateTime?>("CompletedAtUtc").HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("FailureCode").HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<string>("Instruction").HasMaxLength(3000).HasColumnType("nvarchar(3000)");
+                    b.Property<DateTime>("LeaseExpiresAtUtc").HasColumnType("datetime2");
+                    b.Property<long>("OperationEpoch").HasColumnType("bigint");
+                    b.Property<Guid>("OperationId").HasColumnType("uniqueidentifier");
+                    b.Property<string>("OperationType").IsRequired().HasMaxLength(20).HasColumnType("nvarchar(20)");
+                    b.Property<string>("RequestKey").IsRequired().HasMaxLength(64).HasColumnType("nvarchar(64)");
+                    b.Property<int?>("ResultVersionId").HasColumnType("int");
+                    b.Property<DateTime>("StartedAtUtc").HasColumnType("datetime2");
+                    b.Property<string>("Status").IsRequired().HasMaxLength(20).HasColumnType("nvarchar(20)");
+                    b.Property<DateTime>("UpdatedAt").HasColumnType("datetime2");
+                    b.Property<string>("UserId").IsRequired().HasMaxLength(450).HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
+                    b.HasIndex("AiTattooProjectId", "Status");
+                    b.HasIndex("OperationId").IsUnique();
+                    b.HasIndex("Status", "LeaseExpiresAtUtc");
+                    b.ToTable("AiGenerationOperations");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectStorePurchase", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("AccessGrantedUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeadLetteredAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("AiTattooProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EncryptedPurchasePayload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExternalTransactionId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsSandbox")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastAttemptAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastErrorCode")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime?>("NextRetryAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("ProcessingState")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("PurchasePayloadHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("VerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AiTattooProjectId");
+
+                    b.HasIndex("PurchasePayloadHash")
+                        .IsUnique();
+
+                    b.HasIndex("Provider", "ExternalTransactionId")
+                        .IsUnique();
+
+                    b.HasIndex("ProcessingState", "NextRetryAtUtc");
+
+                    b.ToTable("AiProjectStorePurchases");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.AiTattooProject", b =>
                 {
                     b.Property<int>("Id")
@@ -236,6 +413,12 @@ namespace Tattoo_Project.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("ActiveOperationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ConsecutiveGenerationFailures")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -245,6 +428,9 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<int>("FreeEditsUsed")
                         .HasColumnType("int");
+
+                    b.Property<long>("OperationEpoch")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("InitialDescription")
                         .IsRequired()
@@ -368,6 +554,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("AppleBillingAppAccountToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -382,6 +571,10 @@ namespace Tattoo_Project.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GoogleBillingObfuscatedAccountId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -428,6 +621,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime>("TermsAcceptedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("TokenVersion")
+                        .HasColumnType("int");
+
                     b.Property<string>("TermsVersion")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -441,6 +637,14 @@ namespace Tattoo_Project.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppleBillingAppAccountToken")
+                        .IsUnique()
+                        .HasFilter("[AppleBillingAppAccountToken] IS NOT NULL");
+
+                    b.HasIndex("GoogleBillingObfuscatedAccountId")
+                        .IsUnique()
+                        .HasFilter("[GoogleBillingObfuscatedAccountId] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .IsUnique()
@@ -617,6 +821,13 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ActiveProvider")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<Guid?>("AppleAppAccountToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("CancelAtPeriodEnd")
                         .HasColumnType("bit");
 
@@ -629,6 +840,26 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("FirstActivatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GoogleObfuscatedAccountId")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<bool>("HasUsedTrial")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastVerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PendingProvider")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("PendingProviderExpiresAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -637,6 +868,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<string>("StripeCheckoutSessionId")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<Guid?>("StripeCheckoutAttemptToken")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("StripeCustomerId")
                         .HasMaxLength(255)
@@ -659,6 +893,14 @@ namespace Tattoo_Project.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppleAppAccountToken")
+                        .IsUnique()
+                        .HasFilter("[AppleAppAccountToken] IS NOT NULL");
+
+                    b.HasIndex("GoogleObfuscatedAccountId")
+                        .IsUnique()
+                        .HasFilter("[GoogleObfuscatedAccountId] IS NOT NULL");
 
                     b.HasIndex("StripeCheckoutSessionId")
                         .IsUnique()
@@ -785,8 +1027,22 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancelledByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
@@ -830,6 +1086,9 @@ namespace Tattoo_Project.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("FailedAttempts")
+                        .HasColumnType("int");
+
                     b.Property<int>("Purpose")
                         .HasColumnType("int");
 
@@ -863,6 +1122,9 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("FailedVerificationAttempts")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -950,6 +1212,211 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("PortfolioImage");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.LegalConsentAudit", b =>
+                {
+                    b.Property<long>("Id").ValueGeneratedOnAdd().HasColumnType("bigint");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    b.Property<DateTime>("AcceptedAt").HasColumnType("datetime2");
+                    b.Property<string>("PrivacyVersion").IsRequired().HasMaxLength(50).HasColumnType("nvarchar(50)");
+                    b.Property<string>("TermsVersion").IsRequired().HasMaxLength(50).HasColumnType("nvarchar(50)");
+                    b.Property<string>("UserId").IsRequired().HasMaxLength(450).HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
+                    b.HasIndex("UserId", "AcceptedAt");
+                    b.ToTable("LegalConsentAudits");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.FileCleanupTask", b =>
+                {
+                    b.Property<long>("Id").ValueGeneratedOnAdd().HasColumnType("bigint");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+                    b.Property<DateTime?>("CompletedAt").HasColumnType("datetime2");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<string>("LastError").HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<string>("Reason").IsRequired().HasMaxLength(80).HasColumnType("nvarchar(80)");
+                    b.Property<int>("RetryCount").HasColumnType("int");
+                    b.Property<string>("StorageKey").IsRequired().HasMaxLength(500).HasColumnType("nvarchar(500)");
+                    b.Property<DateTime>("UpdatedAt").HasColumnType("datetime2");
+                    b.HasKey("Id");
+                    b.HasIndex("CompletedAt", "UpdatedAt");
+                    b.ToTable("FileCleanupTasks");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.PendingEmailChange", b =>
+                {
+                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("CodeHash").IsRequired().HasMaxLength(128).HasColumnType("nvarchar(128)");
+                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime2");
+                    b.Property<DateTime>("ExpiresAt").HasColumnType("datetime2");
+                    b.Property<int>("FailedAttempts").HasColumnType("int");
+                    b.Property<string>("NewEmail").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
+                    b.Property<string>("NormalizedNewEmail").IsRequired().HasMaxLength(256).HasColumnType("nvarchar(256)");
+                    b.Property<DateTime?>("UsedAt").HasColumnType("datetime2");
+                    b.Property<string>("UserId").IsRequired().HasColumnType("nvarchar(450)");
+                    b.HasKey("Id");
+                    b.HasIndex("NormalizedNewEmail");
+                    b.HasIndex("UserId", "UsedAt");
+                    b.ToTable("PendingEmailChanges");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ProviderSubscription", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("ArtistSubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("CancelAtPeriodEnd")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CurrentPeriodEndsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CurrentPeriodStartsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EncryptedPurchasePayload")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExternalSubscriptionId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ExternalTransactionId")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("FirstVerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsSandbox")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastAttemptAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastErrorCode")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime?>("NextRetryAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("LastVerifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastProviderEventAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastProviderEventId")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("PurchaseTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime?>("TrialEndsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TrialStartsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtistSubscriptionId");
+
+                    b.HasIndex("PurchaseTokenHash")
+                        .IsUnique()
+                        .HasFilter("[PurchaseTokenHash] IS NOT NULL");
+
+                    b.HasIndex("Provider", "ExternalSubscriptionId")
+                        .IsUnique();
+
+                    b.HasIndex("Provider", "ExternalTransactionId")
+                        .IsUnique()
+                        .HasFilter("[ExternalTransactionId] IS NOT NULL");
+
+                    b.ToTable("ProviderSubscriptions");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ProviderWebhookEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("ExternalEventId")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PayloadHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProcessingStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "ExternalEventId")
+                        .IsUnique();
+
+                    b.ToTable("ProviderWebhookEvents");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Schedule", b =>
                 {
                     b.Property<int>("Id")
@@ -978,6 +1445,38 @@ namespace Tattoo_Project.Migrations
                     b.HasIndex("TattooArtistId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.StorePurchaseBinding", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("BindingKeyHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("OriginalArtistSubscriptionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Provider", "BindingKeyHash")
+                        .IsUnique();
+
+                    b.ToTable("StorePurchaseBindings");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.StripeWebhookEvent", b =>
@@ -1078,6 +1577,13 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<int?>("OwnerArtistId")
                         .HasColumnType("int");
+
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("Europe/Sofia");
 
                     b.HasKey("Id");
 
@@ -1186,6 +1692,13 @@ namespace Tattoo_Project.Migrations
                     b.Property<int?>("StudioId")
                         .HasColumnType("int");
 
+                    b.Property<string>("TimeZoneId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasDefaultValue("Europe/Sofia");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -1234,6 +1747,17 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancelledByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
@@ -1258,6 +1782,11 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<int?>("RemainingSessionsToBook")
                         .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -1287,11 +1816,25 @@ namespace Tattoo_Project.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CancelledByUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int>("DurationHours")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCancelled")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("PriceForTheSession")
                         .HasColumnType("decimal(18,2)");
@@ -1360,6 +1903,16 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectCheckoutAttempt", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
+                        .WithMany()
+                        .HasForeignKey("AiTattooProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                    b.Navigation("AiTattooProject");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.AiProjectPayment", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
@@ -1367,6 +1920,27 @@ namespace Tattoo_Project.Migrations
                         .HasForeignKey("AiTattooProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AiTattooProject");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiGenerationOperation", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
+                        .WithMany()
+                        .HasForeignKey("AiTattooProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AiTattooProject");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.AiProjectStorePurchase", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.AiTattooProject", "AiTattooProject")
+                        .WithMany()
+                        .HasForeignKey("AiTattooProjectId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("AiTattooProject");
                 });
@@ -1556,6 +2130,28 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("TattooArtist");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.PendingEmailChange", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ProviderSubscription", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ArtistSubscription", "ArtistSubscription")
+                        .WithMany("ProviderSubscriptions")
+                        .HasForeignKey("ArtistSubscriptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ArtistSubscription");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.Schedule", b =>
                 {
                     b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist")
@@ -1660,6 +2256,11 @@ namespace Tattoo_Project.Migrations
                     b.Navigation("Payments");
 
                     b.Navigation("Versions");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistSubscription", b =>
+                {
+                    b.Navigation("ProviderSubscriptions");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.Client", b =>

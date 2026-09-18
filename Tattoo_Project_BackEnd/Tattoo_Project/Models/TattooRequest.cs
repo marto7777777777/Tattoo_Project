@@ -19,6 +19,10 @@ namespace Tattoo_Project.Models
         public TattooArtist TattooArtist { get; set; } = null!;
         public ICollection<TattooReferenceImage> Images { get; set; } = new List<TattooReferenceImage>();
         public ArtistResponse? ArtistResponse { get; set; }
+        public DateTime? CancelledAt { get; set; }
+        public string? CancelledByUserId { get; set; }
+        public string? CancellationReason { get; set; }
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
         public ArtistReview? ArtistReview { get; set; }
     }

@@ -4,10 +4,12 @@ import {
   addPortfolioImage,
   addRequirement,
   changePasswordWithCode,
+  confirmEmailChange,
   deletePortfolioImage,
   deleteRequirement,
   getMyProfile,
   sendPasswordChangeCode,
+  requestEmailChange,
   updateBoolField,
   updateNumberField,
   updateProfileImage,
@@ -50,7 +52,7 @@ const sectionIcons = {
 
 function ProfileSectionPage() {
   const { section = "user" } = useParams();
-  const { isArtist } = useAuth();
+  const { isArtist, logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,6 +64,8 @@ function ProfileSectionPage() {
   const [profileCropFile, setProfileCropFile] = useState(null);
   const [passwordStep, setPasswordStep] = useState("idle");
   const [passwordForm, setPasswordForm] = useState({ code: "", newPassword: "", confirmNewPassword: "" });
+  const [emailStep, setEmailStep] = useState("idle");
+  const [emailForm, setEmailForm] = useState({ newEmail: "", code: "" });
   const settingsContentRef = useRef(null);
 
   const allowedSections = useMemo(() => {
@@ -181,6 +185,27 @@ function ProfileSectionPage() {
     } catch (err) {
       setError(err.message || "Password could not be changed.");
     }
+  }
+
+  async function handleRequestEmailChange() {
+    const newEmail = emailForm.newEmail.trim();
+    if (!/^\S+@\S+\.\S+$/.test(newEmail)) { setError("Enter a valid new email address."); return; }
+    setError(""); setSuccess("");
+    try {
+      await requestEmailChange(newEmail);
+      setEmailStep("code");
+      setSuccess("A verification code was sent to the new email address.");
+    } catch (err) { setError(err.message || "The verification code could not be sent."); }
+  }
+
+  async function handleConfirmEmailChange() {
+    if (emailForm.code.length !== 6) { setError("Enter the 6-digit verification code."); return; }
+    setError(""); setSuccess("");
+    try {
+      await confirmEmailChange(emailForm.newEmail.trim(), emailForm.code);
+      logout();
+      window.location.assign("/login?emailChanged=1");
+    } catch (err) { setError(err.message || "The email address could not be changed."); }
   }
 
   async function handleAddRequirement() {
@@ -335,7 +360,7 @@ function ProfileSectionPage() {
               <span><strong>Working schedule</strong><small>Edit working days, hours and time off.</small></span>
             </Link>
           )}
-          {isArtist && <Link className="profile-schedule-link" to="/subscription"><span className="settings-nav-icon">€</span><span><strong>Subscription</strong><small>Manage card, invoices and cancellation in Stripe.</small></span></Link>}
+          {isArtist && <Link className="profile-schedule-link" to="/subscription"><span className="settings-nav-icon">€</span><span><strong>Subscription</strong><small>Manage billing, renewal and cancellation with your purchase provider.</small></span></Link>}
         </aside>
 
         <section ref={settingsContentRef} className="card profile-section-card profile-settings-content">
@@ -384,6 +409,26 @@ function ProfileSectionPage() {
                   )}
                 </div>
               ))}
+
+              {section === "user" && (
+                <div className="profile-field-row">
+                  <div>
+                    <span className="field-label">Change email</span>
+                    {emailStep === "idle" ? <strong>Verification is required</strong> : (
+                      <div className="inline-form-row">
+                        <input type="email" value={emailForm.newEmail} disabled={emailStep === "code"} onChange={(event) => setEmailForm({ ...emailForm, newEmail: event.target.value })} placeholder="New email" />
+                        {emailStep === "code" && <input value={emailForm.code} onChange={(event) => setEmailForm({ ...emailForm, code: event.target.value.replace(/\D/g, "").slice(0, 6) })} inputMode="numeric" maxLength="6" placeholder="6-digit code" />}
+                      </div>
+                    )}
+                  </div>
+                  <div className="inline-actions">
+                    {emailStep === "idle" && <button className="secondary-button compact-button" type="button" onClick={() => { setEmailStep("email"); setEmailForm({ newEmail: "", code: "" }); }}>Change</button>}
+                    {emailStep === "email" && <button className="primary-button compact-button" type="button" onClick={handleRequestEmailChange}>Send code</button>}
+                    {emailStep === "code" && <button className="primary-button compact-button" type="button" onClick={handleConfirmEmailChange}>Confirm</button>}
+                    {emailStep !== "idle" && <button className="secondary-button compact-button" type="button" onClick={() => setEmailStep("idle")}>Cancel</button>}
+                  </div>
+                </div>
+              )}
 
               {section === "user" && (
                 <div className="profile-field-row">
@@ -524,7 +569,7 @@ function getFieldsForSection(section, profile) {
     return [
       { key: "firstName", label: "First name", value: profile.firstName, path: "/api/Profile/user/first-name" },
       { key: "lastName", label: "Last name", value: profile.lastName, path: "/api/Profile/user/last-name" },
-      { key: "email", label: "Email", value: profile.email, path: "/api/Profile/user/email" },
+      { key: "email", label: "Email", value: profile.email, readOnly: true },
     ];
   }
 

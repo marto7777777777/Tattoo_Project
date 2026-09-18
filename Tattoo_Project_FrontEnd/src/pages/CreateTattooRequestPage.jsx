@@ -149,7 +149,7 @@ function CreateTattooRequestPage() {
       })
       .catch(() => {});
     return () => { cancelled = true; };
-  }, []);
+  }, [aiReference?.imageUrl]);
 
   const previews = useMemo(
     () => imageFiles.map((file) => ({ file, url: URL.createObjectURL(file) })),

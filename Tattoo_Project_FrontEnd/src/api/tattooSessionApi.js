@@ -32,3 +32,15 @@ export function completeTattoo(tattooRequestId) {
     method: "PUT",
   });
 }
+
+export function startTattoo(tattooRequestId) {
+  return apiRequest(`/api/TattooSession/start-tattoo/${tattooRequestId}`, {
+    method: "POST",
+  });
+}
+
+export function continueTattoo(tattooRequestId) {
+  return apiRequest(`/api/TattooSession/continue-tattoo/${tattooRequestId}`, {
+    method: "PUT",
+  });
+}

@@ -37,7 +37,7 @@ ADMIN CAPABILITIES ADDED
 - Admin can enter role-protected frontend routes.
 - Admin has unlimited AI projects and unlimited AI improvements.
 - Normal users receive exactly 1 free AI generation and no free improvements.
-- No Stripe checkout/payment endpoints were added or enabled.
+- Artist billing endpoints support Stripe web Checkout/Portal and server-verified Google Play/Apple entitlements. Use sandbox/test credentials until production approval.
 
 DATABASE
 No new database columns or tables were added, so no new EF migration is required for the Admin feature itself.

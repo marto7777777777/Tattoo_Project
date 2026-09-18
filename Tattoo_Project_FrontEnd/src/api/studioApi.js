@@ -47,6 +47,10 @@ export function rejectStudioJoinRequest(requestId) {
   return requestJson(`/api/Studio/join-requests/${requestId}/reject`, { method: "POST" });
 }
 
+export function cancelStudioJoinRequest(requestId) {
+  return requestJson(`/api/Studio/join-requests/${requestId}/cancel`, { method: "POST" });
+}
+
 export function removeStudioMember(artistId) {
   return requestJson(`/api/Studio/members/${artistId}`, { method: "DELETE" });
 }

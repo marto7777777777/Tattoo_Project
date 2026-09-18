@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createArtistResponse } from "../api/artistResponseApi";
 import { cancelConsultation, completeConsultation } from "../api/consultationApi";
-import { getMyArtistTattooRequests, rejectTattooRequestByArtist } from "../api/tattooRequestApi";
-import { addMoreSessions, cancelTattooSession, completeTattoo } from "../api/tattooSessionApi";
+import { cancelTattooRequest, getMyArtistTattooRequests, markTattooRequestUnderReview, rejectTattooRequestByArtist } from "../api/tattooRequestApi";
+import { addMoreSessions, cancelTattooSession, completeTattoo, continueTattoo, startTattoo } from "../api/tattooSessionApi";
 import { readResponse } from "../api/http";
 import {
   formatDate,
@@ -29,6 +29,7 @@ const STATUS = {
   IN_PROGRESS: 6,
   COMPLETED: 7,
   REJECTED: 8,
+  CANCELLED: 9,
 };
 
 const REQUEST_FILTERS = [
@@ -39,6 +40,7 @@ const REQUEST_FILTERS = [
   { label: "Tattoo active", value: "tattoo-active" },
   { label: "Completed projects", value: "completed" },
   { label: "Rejected", value: "rejected" },
+  { label: "Cancelled", value: "cancelled" },
 ];
 
 function createEmptySession() {
@@ -51,6 +53,7 @@ function getRequestTitle(request) {
 
 function getWorkflowStep(request) {
   if (request.status === STATUS.REJECTED) return "Rejected";
+  if (request.status === STATUS.CANCELLED) return "Cancelled";
   if (request.status === STATUS.COMPLETED) return "Completed project";
   if (!request.artistResponse || request.status === STATUS.SUBMITTED) return "Needs artist response";
   if (request.status === STATUS.WAITING_FOR_CONSULTATION && !request.consultation) {
@@ -109,6 +112,7 @@ function matchesFilter(request, filter) {
   }
   if (filter === "completed") return request.status === STATUS.COMPLETED;
   if (filter === "rejected") return request.status === STATUS.REJECTED;
+  if (filter === "cancelled") return request.status === STATUS.CANCELLED;
 
   return true;
 }
@@ -132,6 +136,7 @@ function ArtistRequestsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [cancelTarget, setCancelTarget] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
 
   const [responseForm, setResponseForm] = useState(createArtistResponseForm);
 
@@ -213,11 +218,6 @@ function ArtistRequestsPage() {
     setExtraSessions([createEmptySession()]);
   }
 
-  function openRequestAction(request, action) {
-    openRequest(request);
-    setActiveAction(action);
-  }
-
   function closeRequest() {
     setSelectedRequest(null);
     setActiveAction("");
@@ -240,22 +240,6 @@ function ArtistRequestsPage() {
       priceForSession: sessionList.map((session) => Number(session.price)),
       durationHoursForSession: sessionList.map((session) => Number(session.durationHours)),
     };
-  }
-
-  async function completeTattooFromCard(request) {
-    setError("");
-    try {
-      const response = await completeTattoo(request.id);
-      const data = await readResponse(response);
-      if (!response.ok) {
-        setError(typeof data === "string" ? data : JSON.stringify(data));
-        return;
-      }
-      setSuccess("Tattoo project completed successfully.");
-      await loadRequests();
-    } catch {
-      setError("Server connection failed. Please try again.");
-    }
   }
 
   async function runAction(action) {
@@ -291,6 +275,10 @@ function ArtistRequestsPage() {
         response = await completeTattoo(selectedRequest.id);
       }
 
+      if (action === "under-review") response = await markTattooRequestUnderReview(selectedRequest.id);
+      if (action === "start-tattoo") response = await startTattoo(selectedRequest.id);
+      if (action === "continue-tattoo") response = await continueTattoo(selectedRequest.id);
+
       const data = await readResponse(response);
 
       if (!response.ok) {
@@ -317,7 +305,8 @@ function ArtistRequestsPage() {
     setIsCancelling(true);
     try {
       let response;
-      if (cancelTarget.type === "request") response = await rejectTattooRequestByArtist(selectedRequest.id);
+      if (cancelTarget.type === "reject-request") response = await rejectTattooRequestByArtist(selectedRequest.id);
+      if (cancelTarget.type === "cancel-request") response = await cancelTattooRequest(selectedRequest.id, cancellationReason);
       if (cancelTarget.type === "consultation") response = await cancelConsultation(cancelTarget.id);
       if (cancelTarget.type === "session") response = await cancelTattooSession(cancelTarget.id);
 
@@ -331,8 +320,11 @@ function ArtistRequestsPage() {
       const updatedSelected = updatedRequests?.find((item) => item.id === selectedRequest.id);
       setSelectedRequest(updatedSelected || null);
       setCancelTarget(null);
-      setSuccess(cancelTarget.type === "request"
-        ? "Tattoo request rejected and all appointments cancelled."
+      setCancellationReason("");
+      setSuccess(cancelTarget.type === "reject-request"
+        ? "Tattoo request rejected."
+        : cancelTarget.type === "cancel-request"
+          ? "Tattoo project cancelled and future appointments cancelled."
         : "Appointment cancelled. The client can book a new available time.");
     } catch {
       setError("Server connection failed. Please try again.");
@@ -342,13 +334,14 @@ function ArtistRequestsPage() {
   }
 
   function renderActionButtons(request) {
-    if (request.status === STATUS.REJECTED || request.status === STATUS.COMPLETED) {
+    if (request.status === STATUS.REJECTED || request.status === STATUS.CANCELLED) {
       return <p className="muted">No active actions for this request.</p>;
     }
 
-    if (request.status === STATUS.SUBMITTED && !request.artistResponse) {
+    if ([STATUS.SUBMITTED, STATUS.UNDER_REVIEW].includes(request.status) && !request.artistResponse) {
       return (
         <div className="action-row">
+          {request.status === STATUS.SUBMITTED && <button className="secondary-button" type="button" onClick={() => runAction("under-review")}>Start review</button>}
           <button className="primary-button" type="button" onClick={() => setActiveAction("response")}>
             Respond
           </button>
@@ -368,20 +361,24 @@ function ArtistRequestsPage() {
 
     if ([STATUS.CONSULTATION_COMPLETED, STATUS.TATTOO_BOOKED, STATUS.IN_PROGRESS].includes(request.status)) {
       const readyToComplete = canCompleteTattoo(request);
+      const firstSessionStarted = (request.tattooSessions || []).some((session) => new Date(session.startTime) <= new Date());
       return (
         <div className="action-row request-action-cluster">
           <button className="secondary-button" type="button" onClick={() => setActiveAction("add-sessions")}>
             Add more sessions
           </button>
-          {readyToComplete && (
+          {request.status === STATUS.TATTOO_BOOKED && firstSessionStarted && <button className="primary-button" type="button" onClick={() => runAction("start-tattoo")}>Start tattoo</button>}
+          {request.status === STATUS.IN_PROGRESS && readyToComplete && (
             <button className="primary-button" type="button" onClick={() => runAction("complete-tattoo")}>
               Complete tattoo
             </button>
           )}
-          {!readyToComplete && <span className="action-hint">Complete tattoo becomes available after all booked sessions have ended.</span>}
+          {request.status === STATUS.IN_PROGRESS && !readyToComplete && <span className="action-hint">Complete tattoo becomes available after all booked sessions have ended.</span>}
         </div>
       );
     }
+
+    if (request.status === STATUS.COMPLETED) return <button className="secondary-button" type="button" onClick={() => runAction("continue-tattoo")}>Continue tattoo</button>;
 
     return <p className="muted">Waiting for the client to take the next step.</p>;
   }
@@ -767,14 +764,14 @@ function ArtistRequestsPage() {
               </div>
             )}
 
-            {selectedRequest.status !== STATUS.REJECTED && selectedRequest.status !== STATUS.COMPLETED && (
+            {![STATUS.REJECTED, STATUS.COMPLETED, STATUS.CANCELLED].includes(selectedRequest.status) && (
               <section className="request-danger-zone">
                 <div>
                   <p className="request-project-section-label">Danger zone</p>
-                  <h3>Reject this tattoo request</h3>
-                  <p>This closes the entire project, cancels every consultation and session, and prevents the client from booking again.</p>
+                  <h3>{[STATUS.SUBMITTED, STATUS.UNDER_REVIEW].includes(selectedRequest.status) ? "Reject this tattoo request" : "Cancel this tattoo project"}</h3>
+                  <p>{[STATUS.SUBMITTED, STATUS.UNDER_REVIEW].includes(selectedRequest.status) ? "Reject this request before approval." : "This closes the active project and cancels its future appointments."}</p>
                 </div>
-                <button className="danger-button" type="button" onClick={() => setCancelTarget({ type: "request", label: "tattoo request" })}>Reject entire request</button>
+                <button className="danger-button" type="button" onClick={() => setCancelTarget({ type: [STATUS.SUBMITTED, STATUS.UNDER_REVIEW].includes(selectedRequest.status) ? "reject-request" : "cancel-request", label: "tattoo request" })}>{[STATUS.SUBMITTED, STATUS.UNDER_REVIEW].includes(selectedRequest.status) ? "Reject request" : "Cancel project"}</button>
               </section>
             )}
           </section>
@@ -786,19 +783,23 @@ function ArtistRequestsPage() {
           <section className="modal-card studio-confirm-modal request-cancel-confirm" onClick={(event) => event.stopPropagation()}>
             <div className="studio-confirm-icon">!</div>
             <p className="subtitle inline-subtitle">Confirm cancellation</p>
-            <h2>{cancelTarget.type === "request"
-              ? "Reject the entire tattoo request?"
+            <h2>{cancelTarget.type === "reject-request"
+              ? "Reject the tattoo request?"
+              : cancelTarget.type === "cancel-request"
+                ? "Cancel the tattoo project?"
               : cancelTarget.type === "consultation"
                 ? "Cancel consultation?"
                 : "Cancel tattoo session?"}</h2>
-            {cancelTarget.type === "request" ? (
-              <p>The request will become <strong>Rejected</strong>. Every booked consultation and tattoo session will be removed, and the client will lose all booking rights for this project. This cannot be undone.</p>
+            {cancelTarget.type === "reject-request" ? (
+              <p>The request will become <strong>Rejected</strong>. This cannot be undone.</p>
+            ) : cancelTarget.type === "cancel-request" ? (
+              <div><p>The project will become <strong>Cancelled</strong> and future appointments will be cancelled.</p><textarea rows="3" value={cancellationReason} onChange={(event) => setCancellationReason(event.target.value)} maxLength="500" placeholder="Reason (optional)" /></div>
             ) : (
               <p>Only this booked time will be removed. The tattoo request will remain active and the client will be able to book a new available time.</p>
             )}
             <div className="studio-confirm-actions">
               <button className="secondary-button" type="button" disabled={isCancelling} onClick={() => setCancelTarget(null)}>Go back</button>
-              <button className="danger-button" type="button" disabled={isCancelling} onClick={confirmCancellation}>{isCancelling ? "Cancelling..." : cancelTarget.type === "request" ? "Reject request" : "Cancel appointment"}</button>
+              <button className="danger-button" type="button" disabled={isCancelling} onClick={confirmCancellation}>{isCancelling ? "Cancelling..." : cancelTarget.type === "reject-request" ? "Reject request" : cancelTarget.type === "cancel-request" ? "Cancel project" : "Cancel appointment"}</button>
             </div>
           </section>
         </div>

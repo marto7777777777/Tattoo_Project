@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getBookingAvailability } from "../api/tattooRequestApi";
 import { createConsultation } from "../api/consultationApi";
@@ -34,16 +34,7 @@ function BookingSlotPage() {
   const [periodStart, setPeriodStart] = useState(todayDateValue);
   const periodDays = useResponsiveBookingPeriod();
 
-  useEffect(() => {
-    if (!requestId) {
-      setError("Open this page from a booking card. The request id is handled automatically.");
-      setIsLoading(false);
-      return;
-    }
-    loadAvailability();
-  }, [requestId, periodStart, periodDays]);
-
-  async function loadAvailability() {
+  const loadAvailability = useCallback(async () => {
     setIsLoading(true);
     setError("");
     try {
@@ -67,7 +58,16 @@ function BookingSlotPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [requestId, periodStart, periodDays]);
+
+  useEffect(() => {
+    if (!requestId) {
+      setError("Open this page from a booking card. The request id is handled automatically.");
+      setIsLoading(false);
+      return;
+    }
+    loadAvailability();
+  }, [requestId, loadAvailability]);
 
   const selectedDay = useMemo(() => {
     return availability?.days?.find((day) => day.date === selectedDate);

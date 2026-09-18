@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   acceptStudioJoinRequest,
+  cancelStudioJoinRequest,
   getMyStudio,
   rejectStudioJoinRequest,
   removeStudioMember,
@@ -37,6 +38,7 @@ function ArtistWorkspacePage() {
   const [newStudioCoverFile, setNewStudioCoverFile] = useState(null);
   const [newStudioLogoFile, setNewStudioLogoFile] = useState(null);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [joinCancellationPending, setJoinCancellationPending] = useState(false);
 
   async function refresh() {
     setLoading(true);
@@ -196,7 +198,7 @@ function ArtistWorkspacePage() {
         <div className="header"><p className="subtitle">My Studio</p><h1>{pending ? "Waiting for studio approval" : "Choose what you want to do"}</h1>
           <p>{pending ? `Your request to join ${pending.studioName} is pending.` : "You currently do not belong to a studio. Create your own studio or join an existing one."}</p></div>
         {error && <p className="error">{error}</p>}{success && <p className="success">{success}</p>}
-        {pending ? <article className="card form-card pending-studio-card"><p className="subtitle inline-subtitle">Pending request</p><h2>{pending.studioName}</h2><p className="muted">Sent {new Date(pending.createdOn).toLocaleString(getUiLocale())}</p><span className="status-badge status-pending">Pending</span></article> : <>
+        {pending ? <><article className="card form-card pending-studio-card"><p className="subtitle inline-subtitle">Pending request</p><h2>{pending.studioName}</h2><p className="muted">Sent {new Date(pending.createdOn).toLocaleString(getUiLocale())}</p><span className="status-badge status-pending">Pending</span><button className="danger-button compact-button" type="button" onClick={() => setJoinCancellationPending(true)}>Cancel request</button></article>{joinCancellationPending && <div className="modal-backdrop studio-confirm-backdrop" onClick={() => setJoinCancellationPending(false)}><section className="modal-card studio-confirm-modal" onClick={(event) => event.stopPropagation()}><div className="studio-confirm-icon">!</div><p className="subtitle inline-subtitle">Confirm cancellation</p><h2>Cancel request to join {pending.studioName}?</h2><p>You can search for another studio or create your own after cancellation.</p><div className="studio-confirm-actions"><button className="secondary-button" type="button" onClick={() => setJoinCancellationPending(false)}>Keep request</button><button className="danger-button" type="button" onClick={async () => { setJoinCancellationPending(false); await doAction(() => cancelStudioJoinRequest(pending.id), "Join request cancelled."); }}>Cancel request</button></div></section></div>}</> : <>
           <div className="studio-choice-grid">
             <button type="button" aria-pressed={noStudioMode === "create"} className={`studio-choice-card ${noStudioMode === "create" ? "selected" : ""}`} onClick={() => { setNoStudioMode("create"); setSelectedStudio(null); }}><strong>Create My Studio</strong><span>Start a new studio and become its owner.</span></button>
             <button type="button" aria-pressed={noStudioMode === "join"} className={`studio-choice-card ${noStudioMode === "join" ? "selected" : ""}`} onClick={() => setNoStudioMode("join")}><strong>Join Studio</strong><span>Find an existing studio and request to join.</span></button>

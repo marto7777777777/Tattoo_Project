@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Tattoo_Project.Data;
@@ -13,60 +12,88 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
-    public class TattooRequestService(TattooDbContext context, IWebHostEnvironment environment)
+    public class TattooRequestService(TattooDbContext context, IPrivateMediaUrlService privateMedia, TimeProvider timeProvider, IFileStorage storage, IImageSanitizer imageSanitizer)
         : ITattooRequestService
     {
-        public async Task<ResultService> RejectTattooRequestByArtistAsync(
-            int id,
-            string userId)
+        public async Task<ResultService> RejectTattooRequestByArtistAsync(int id, string userId)
         {
-            var tattooArtist = await context.TattooArtists
-                .FirstOrDefaultAsync(a => a.UserId == userId);
+            await using var transaction=await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            var tattooArtist=await context.TattooArtists.FirstOrDefaultAsync(a=>a.UserId==userId);
+            if(tattooArtist==null)return ResultService.Fail("Tattoo artist profile was not found.");
+            await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:TattooRequest:{id}","request_concurrency_conflict","The tattoo request is being updated by another operation. Refresh and retry.");
+            var tattooRequest=await context.TattooRequests.Include(r=>r.ArtistResponse).FirstOrDefaultAsync(r=>r.Id==id);
+            if(tattooRequest==null||tattooRequest.TattooArtistId!=tattooArtist.Id)return ResultService.Fail("Tattoo request was not found.");
+            if(tattooRequest.Status is not (RequestStatus.Submitted or RequestStatus.UnderReview)||tattooRequest.ArtistResponse!=null)return ResultService.Fail("Only a pre-approval tattoo request can be rejected. Use cancellation after approval.");
+            var transition=TattooRequestStateMachine.Transition(tattooRequest,RequestStatus.Rejected);if(!transition.Success)return transition;
+            tattooRequest.RemainingSessionsToBook=0;await context.SaveChangesAsync();await transaction.CommitAsync();return ResultService.Ok();
+        }
 
-            if (tattooArtist == null)
-            {
-                return ResultService.Fail("Tattoo artist profile was not found.");
-            }
+        public async Task<ResultService> MarkUnderReviewAsync(int id, string userId)
+        {
+            await using var transaction=await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            var artist=await context.TattooArtists.FirstOrDefaultAsync(a=>a.UserId==userId);if(artist==null)return ResultService.Fail("Tattoo artist profile was not found.");
+            await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:TattooRequest:{id}","request_concurrency_conflict","The tattoo request is being updated by another operation. Refresh and retry.");
+            var request=await context.TattooRequests.FirstOrDefaultAsync(r=>r.Id==id&&r.TattooArtistId==artist.Id);if(request==null)return ResultService.Fail("Tattoo request was not found.");
+            var transition=TattooRequestStateMachine.Transition(request,RequestStatus.UnderReview);if(!transition.Success)return transition;
+            await context.SaveChangesAsync();await transaction.CommitAsync();return ResultService.Ok();
+        }
 
-            var tattooRequest = await context.TattooRequests
+        public async Task<ResultService> CancelTattooRequestAsync(int id, string userId, string? reason)
+        {
+            await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+            var requestArtistId=await context.TattooRequests.Where(r=>r.Id==id).Select(r=>(int?)r.TattooArtistId).FirstOrDefaultAsync();
+            if(requestArtistId==null)return ResultService.Fail("Tattoo request was not found.");
+            await BookingConcurrency.AcquireArtistLockAsync(context,requestArtistId.Value);
+            await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:TattooRequest:{id}","request_concurrency_conflict","The tattoo request is being updated by another operation. Refresh and retry.");
+            var request = await context.TattooRequests
                 .Include(r => r.Consultation)
                 .Include(r => r.TattooSessions)
                 .FirstOrDefaultAsync(r => r.Id == id);
+            if (request == null) return ResultService.Fail("Tattoo request was not found.");
 
-            if (tattooRequest == null)
+            var clientId = await context.Clients.Where(c => c.UserId == userId).Select(c => (int?)c.Id).FirstOrDefaultAsync();
+            var artistId = await context.TattooArtists.Where(a => a.UserId == userId).Select(a => (int?)a.Id).FirstOrDefaultAsync();
+            var isClient = clientId == request.ClientId;
+            var isArtist = artistId == request.TattooArtistId;
+            if (!isClient && !isArtist) return ResultService.Fail("Tattoo request was not found.");
+            if (request.Status is RequestStatus.Submitted or RequestStatus.UnderReview)
+                return ResultService.Fail("Pre-approval requests must be rejected instead of cancelled.");
+            if (request.Status is RequestStatus.Completed or RequestStatus.Rejected or RequestStatus.Cancelled)
+                return ResultService.Fail("This tattoo request cannot be cancelled from its current status.");
+
+            var now = timeProvider.GetUtcNow().UtcDateTime;
+            if (isClient && !isArtist)
             {
-                return ResultService.Fail("Tattoo request was not found.");
+                var cutoff = now.AddHours(24);
+                var blockedByConsultation = request.Consultation is { IsCancelled: false } c && c.StartTime > now && c.StartTime <= cutoff;
+                var blockedBySession = request.TattooSessions.Any(s => !s.IsCancelled && s.StartTime > now && s.StartTime <= cutoff);
+                if (blockedByConsultation || blockedBySession)
+                    return ResultService.Fail("Clients can cancel a tattoo request only when no appointment starts within the next 24 hours.");
             }
 
-            if (tattooRequest.TattooArtistId != tattooArtist.Id)
-            {
-                return ResultService.Fail("You can reject only tattoo requests assigned to you.");
-            }
+            var transition = TattooRequestStateMachine.Transition(request, RequestStatus.Cancelled);
+            if (!transition.Success) return transition;
+            request.CancelledAt = now;
+            request.CancelledByUserId = userId;
+            request.CancellationReason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim()[..Math.Min(reason.Trim().Length, 500)];
 
-            if (tattooRequest.Status == RequestStatus.Rejected)
+            if (request.Consultation is { IsCancelled: false, IsCompleted: false } consultation && consultation.StartTime > now)
             {
-                return ResultService.Fail("Tattoo request is already rejected.");
+                consultation.IsCancelled = true;
+                consultation.CancelledAt = now;
+                consultation.CancelledByUserId = userId;
+                consultation.CancellationReason = "Cancelled with tattoo request.";
             }
-
-            if (tattooRequest.Status == RequestStatus.Completed)
+            foreach (var session in request.TattooSessions.Where(s => !s.IsCancelled && s.StartTime > now))
             {
-                return ResultService.Fail("A completed tattoo request cannot be rejected.");
+                session.IsCancelled = true;
+                session.CancelledAt = now;
+                session.CancelledByUserId = userId;
+                session.CancellationReason = "Cancelled with tattoo request.";
             }
-
-            if (tattooRequest.Consultation != null)
-            {
-                context.Consultations.Remove(tattooRequest.Consultation);
-            }
-
-            if (tattooRequest.TattooSessions != null && tattooRequest.TattooSessions.Count > 0)
-            {
-                context.TattooSessions.RemoveRange(tattooRequest.TattooSessions);
-            }
-
-            tattooRequest.RemainingSessionsToBook = 0;
-            tattooRequest.Status = RequestStatus.Rejected;
 
             await context.SaveChangesAsync();
+            await transaction.CommitAsync();
             return ResultService.Ok();
         }
 
@@ -231,12 +258,16 @@ namespace Tattoo_Project.Services
             }
 
             var tattooArtist = await context.TattooArtists
+                .Include(a => a.Subscription)
                 .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
 
             if (tattooArtist == null || tattooArtist.StudioId == null)
             {
                 return ResultService.Fail("Tattoo artist was not found or is not currently part of a studio.");
             }
+
+            if (tattooArtist.Subscription == null || !SubscriptionEntitlementRules.HasAccess(tattooArtist.Subscription, timeProvider.GetUtcNow().UtcDateTime))
+                return ResultService.Fail("Tattoo artist is not currently available for new requests.");
 
             if (string.IsNullOrWhiteSpace(dto.Description))
             {
@@ -253,9 +284,9 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo style is required.");
             }
 
-            if (dto.Images.Any(i => string.IsNullOrWhiteSpace(i.ImageUrl)))
+            if (dto.Images.Count > 0)
             {
-                return ResultService.Fail("Every reference image must have a valid image URL.");
+                return ResultService.Fail("External image URLs are no longer accepted. Use POST /api/TattooRequest/with-images with multipart uploads.");
             }
 
             TattooRequest tattooRequest = new()
@@ -266,11 +297,7 @@ namespace Tattoo_Project.Services
                 Placement = dto.Placement,
                 TattooStyle = dto.TattooStyle.Trim(),
                 Status = RequestStatus.Submitted,
-                CreatedOn = DateTime.UtcNow,
-                Images = dto.Images.Select(i => new TattooReferenceImage
-                {
-                    ImageUrl = i.ImageUrl
-                }).ToList()
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             };
 
             context.TattooRequests.Add(tattooRequest);
@@ -294,12 +321,16 @@ namespace Tattoo_Project.Services
             }
 
             var tattooArtist = await context.TattooArtists
+                .Include(a => a.Subscription)
                 .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
 
-            if (tattooArtist == null)
+            if (tattooArtist == null || tattooArtist.StudioId == null)
             {
-                return ResultService<int>.Fail("Tattoo artist was not found.");
+                return ResultService<int>.Fail("Tattoo artist was not found or is not currently part of a studio.");
             }
+
+            if (tattooArtist.Subscription == null || !SubscriptionEntitlementRules.HasAccess(tattooArtist.Subscription, timeProvider.GetUtcNow().UtcDateTime))
+                return ResultService<int>.Fail("Tattoo artist is not currently available for new requests.");
 
             if (string.IsNullOrWhiteSpace(dto.Description))
             {
@@ -324,30 +355,37 @@ namespace Tattoo_Project.Services
                 Placement = dto.Placement.Trim(),
                 TattooStyle = dto.TattooStyle.Trim(),
                 Status = RequestStatus.Submitted,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             };
 
+            var storedKeys = new List<string>();
             if (dto.Images != null)
             {
                 foreach (var image in dto.Images)
                 {
-                    var validation = ValidateImage(image);
-                    if (!validation.Success)
+                    var sanitized = await imageSanitizer.SanitizeAsync(image, 5 * 1024 * 1024, 30_000_000);
+                    if (!sanitized.Success)
                     {
-                        return ResultService<int>.Fail(validation.ErrorMessage!);
+                        foreach (var key in storedKeys) await storage.DeleteAsync(key);
+                        return ResultService<int>.Fail(sanitized.ErrorMessage!);
                     }
-
-                    tattooRequest.Images.Add(new TattooReferenceImage
-                    {
-                        ImageUrl = await SaveImageAsync(image, "tattoo-request-images")
-                    });
+                    var key = await storage.SaveAsync(sanitized.Data!.Bytes, "tattoo-request-images", sanitized.Data.Extension, StoredFileVisibility.Private);
+                    storedKeys.Add(key);
+                    tattooRequest.Images.Add(new TattooReferenceImage { ImageUrl = key });
                 }
             }
 
-            context.TattooRequests.Add(tattooRequest);
-            await context.SaveChangesAsync();
-
-            return ResultService<int>.Ok(tattooRequest.Id);
+            try
+            {
+                context.TattooRequests.Add(tattooRequest);
+                await context.SaveChangesAsync();
+                return ResultService<int>.Ok(tattooRequest.Id);
+            }
+            catch
+            {
+                foreach (var key in storedKeys) await storage.DeleteAsync(key);
+                throw;
+            }
         }
 
         public async Task<ResultService<BookingAvailabilityDto>> GetBookingAvailabilityAsync(
@@ -357,31 +395,21 @@ namespace Tattoo_Project.Services
             DateTime? startDate = null,
             int days = 14)
         {
-            var client = await context.Clients.FirstOrDefaultAsync(c => c.UserId == userId);
+            var client = await context.Clients.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == userId);
             if (client == null)
-            {
                 return ResultService<BookingAvailabilityDto>.Fail("Client profile was not found.");
-            }
 
             var tattooRequest = await context.TattooRequests
-                .Include(r => r.TattooArtist)
-                    .ThenInclude(a => a.Schedules)
-                .Include(r => r.TattooArtist)
-                    .ThenInclude(a => a.Studio)
+                .AsNoTracking()
+                .Include(r => r.TattooArtist).ThenInclude(a => a.Schedules)
+                .Include(r => r.TattooArtist).ThenInclude(a => a.Studio)
                 .Include(r => r.TattooSessions)
                 .Include(r => r.ArtistResponse)
                 .Include(r => r.Consultation)
                 .FirstOrDefaultAsync(r => r.Id == tattooRequestId);
 
-            if (tattooRequest == null)
-            {
+            if (tattooRequest == null || tattooRequest.ClientId != client.Id)
                 return ResultService<BookingAvailabilityDto>.Fail("Tattoo request was not found.");
-            }
-
-            if (tattooRequest.ClientId != client.Id)
-            {
-                return ResultService<BookingAvailabilityDto>.Fail("You can view availability only for your own tattoo requests.");
-            }
 
             var normalizedType = bookingType.Trim().ToLowerInvariant();
             ScheduleType scheduleType;
@@ -389,29 +417,22 @@ namespace Tattoo_Project.Services
 
             if (normalizedType == "consultation")
             {
-                if (tattooRequest.Status != RequestStatus.WaitingForConsultation || tattooRequest.ArtistResponse == null || tattooRequest.Consultation != null)
-                {
+                if (tattooRequest.Status != RequestStatus.Approved ||
+                    tattooRequest.ArtistResponse?.WorkflowPath != ArtistResponseWorkflowPath.ConsultationFirst ||
+                    tattooRequest.Consultation != null)
                     return ResultService<BookingAvailabilityDto>.Fail("Consultation cannot be booked for the current request state.");
-                }
-
                 scheduleType = ScheduleType.Consultation;
                 durationMinutes = tattooRequest.TattooArtist.ConsultationDurationMinutes;
             }
-            else if (normalizedType == "session" || normalizedType == "tattoo-session")
+            else if (normalizedType is "session" or "tattoo-session")
             {
-                if (tattooRequest.Status != RequestStatus.ConsultationCompleted &&
-                    tattooRequest.Status != RequestStatus.TattooBooked &&
-                    tattooRequest.Status != RequestStatus.InProgress)
-                {
+                var approvedDirect = tattooRequest.Status == RequestStatus.Approved &&
+                                     tattooRequest.ArtistResponse?.WorkflowPath == ArtistResponseWorkflowPath.DirectToSessions;
+                if (!approvedDirect && tattooRequest.Status is not (RequestStatus.ConsultationCompleted or RequestStatus.TattooBooked or RequestStatus.InProgress))
                     return ResultService<BookingAvailabilityDto>.Fail("Tattoo session cannot be booked for the current request state.");
-                }
-
                 var existingSessionsCount = tattooRequest.TattooSessions?.Count ?? 0;
                 if (tattooRequest.DurationHoursForSession == null || existingSessionsCount >= tattooRequest.DurationHoursForSession.Count)
-                {
                     return ResultService<BookingAvailabilityDto>.Fail("No remaining session duration was found.");
-                }
-
                 scheduleType = ScheduleType.TattooSession;
                 durationMinutes = tattooRequest.DurationHoursForSession[existingSessionsCount] * 60;
             }
@@ -421,35 +442,64 @@ namespace Tattoo_Project.Services
             }
 
             if (durationMinutes <= 0)
-            {
                 return ResultService<BookingAvailabilityDto>.Fail("Booking duration is invalid.");
-            }
+
+            var zoneId = string.IsNullOrWhiteSpace(tattooRequest.TattooArtist.TimeZoneId)
+                ? TimeZoneSupport.DefaultTimeZoneId
+                : tattooRequest.TattooArtist.TimeZoneId;
+            var zoneResult = TimeZoneSupport.Get(zoneId);
+            if (!zoneResult.Success)
+                return ResultService<BookingAvailabilityDto>.Fail(zoneResult.ErrorMessage!);
+            var zone = zoneResult.Data!;
+
+            var nowUtc = timeProvider.GetUtcNow().UtcDateTime;
+            var todayLocal = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, zone).Date;
+            var periodStart = (startDate ?? todayLocal).Date;
+            if (periodStart < todayLocal) periodStart = todayLocal;
+            if (periodStart > todayLocal.AddYears(1))
+                return ResultService<BookingAvailabilityDto>.Fail("Availability can be viewed up to one year in advance.");
+
+            var periodDays = Math.Clamp(days, 1, 31);
+            var periodEndLocal = periodStart.AddDays(periodDays);
+            var rangeStartResult = TimeZoneSupport.ToUtc(periodStart, zoneId);
+            var rangeEndResult = TimeZoneSupport.ToUtc(periodEndLocal, zoneId);
+            if (!rangeStartResult.Success || !rangeEndResult.Success)
+                return ResultService<BookingAvailabilityDto>.Fail("The requested availability period crosses an invalid timezone boundary.");
+            var rangeStartUtc = rangeStartResult.Data;
+            var rangeEndUtc = rangeEndResult.Data;
+
+            // Load all conflicts for the requested period once; slot generation below is in-memory.
+            var consultations = await context.Consultations.AsNoTracking()
+                .Where(c => !c.IsCancelled && c.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
+                            c.StartTime < rangeEndUtc && c.EndTime > rangeStartUtc)
+                .Select(c => new { c.StartTime, c.EndTime })
+                .ToListAsync();
+            var sessions = await context.TattooSessions.AsNoTracking()
+                .Where(t => !t.IsCancelled && t.TattooRequest.TattooArtistId == tattooRequest.TattooArtistId &&
+                            t.StartTime < rangeEndUtc && t.EndTime > rangeStartUtc)
+                .Select(t => new { t.StartTime, t.EndTime })
+                .ToListAsync();
+            var unavailable = await context.ArtistUnavailableDates.AsNoTracking()
+                .Where(u => u.TattooArtistId == tattooRequest.TattooArtistId &&
+                            u.StartDateTime < rangeEndUtc && u.EndDateTime > rangeStartUtc)
+                .Select(u => new { StartTime = u.StartDateTime, EndTime = u.EndDateTime })
+                .ToListAsync();
+
+            bool Conflicts(DateTime startUtc, DateTime endUtc) =>
+                consultations.Any(x => startUtc < x.EndTime && endUtc > x.StartTime) ||
+                sessions.Any(x => startUtc < x.EndTime && endUtc > x.StartTime) ||
+                unavailable.Any(x => startUtc < x.EndTime && endUtc > x.StartTime);
 
             var result = new BookingAvailabilityDto
             {
                 TattooRequestId = tattooRequest.Id,
                 BookingType = normalizedType,
-                DurationMinutes = durationMinutes
+                DurationMinutes = durationMinutes,
+                TimeZoneId = zoneId
             };
-
-            var today = DateTime.Today;
-            var periodStart = (startDate ?? today).Date;
-
-            if (periodStart < today)
-            {
-                periodStart = today;
-            }
-
-            if (periodStart > today.AddYears(1))
-            {
-                return ResultService<BookingAvailabilityDto>.Fail(
-                    "Availability can be viewed up to one year in advance.");
-            }
-
-            var periodDays = Math.Clamp(days, 1, 31);
-            var schedules = tattooRequest.TattooArtist.Schedules
-                .Where(s => s.ScheduleType == scheduleType)
-                .ToList();
+            var schedules = tattooRequest.TattooArtist.Schedules.Where(s => s.ScheduleType == scheduleType).ToList();
+            var bookingDuration = TimeSpan.FromMinutes(durationMinutes);
+            var slotIncrement = TimeSpan.FromMinutes(30);
 
             for (var i = 0; i < periodDays; i++)
             {
@@ -458,40 +508,39 @@ namespace Tattoo_Project.Services
                 var dayDto = new BookingAvailabilityDayDto
                 {
                     Date = day.ToString("yyyy-MM-dd"),
-                    IsAvailableDay = daySchedules.Any(),
-                    Reason = daySchedules.Any() ? null : "Outside the artist schedule."
+                    IsAvailableDay = daySchedules.Count > 0,
+                    Reason = daySchedules.Count > 0 ? null : "Outside the artist schedule."
                 };
 
                 foreach (var schedule in daySchedules)
                 {
-                    var cursor = day.Add(schedule.StartTime.ToTimeSpan());
-                    var scheduleEnd = day.Add(schedule.EndTime.ToTimeSpan());
-                    var bookingDuration = TimeSpan.FromMinutes(durationMinutes);
-                    var slotIncrement = TimeSpan.FromMinutes(30);
-
-                    while (cursor.Add(bookingDuration) <= scheduleEnd)
+                    var cursorLocal = DateTime.SpecifyKind(day.Add(schedule.StartTime.ToTimeSpan()), DateTimeKind.Unspecified);
+                    var scheduleEndLocal = DateTime.SpecifyKind(day.Add(schedule.EndTime.ToTimeSpan()), DateTimeKind.Unspecified);
+                    while (cursorLocal.Add(bookingDuration) <= scheduleEndLocal)
                     {
-                        var end = cursor.Add(bookingDuration);
-
-                        if (cursor > DateTime.Now && !await HasBookingConflictAsync(tattooRequest.TattooArtistId, cursor, end))
+                        var endLocal = cursorLocal.Add(bookingDuration);
+                        var startUtcResult = TimeZoneSupport.ToUtc(cursorLocal, zoneId);
+                        var endUtcResult = TimeZoneSupport.ToUtc(endLocal, zoneId);
+                        if (startUtcResult.Success && endUtcResult.Success)
                         {
-                            dayDto.Slots.Add(new BookingAvailabilitySlotDto
+                            var startUtc = startUtcResult.Data;
+                            var endUtc = endUtcResult.Data;
+                            if (startUtc > nowUtc && !Conflicts(startUtc, endUtc))
                             {
-                                StartTime = cursor,
-                                EndTime = end,
-                                Label = cursor.ToString("HH:mm")
-                            });
+                                dayDto.Slots.Add(new BookingAvailabilitySlotDto
+                                {
+                                    StartTime = DateTime.SpecifyKind(startUtc, DateTimeKind.Utc),
+                                    EndTime = DateTime.SpecifyKind(endUtc, DateTimeKind.Utc),
+                                    Label = cursorLocal.ToString("HH:mm")
+                                });
+                            }
                         }
-
-                        cursor = cursor.Add(slotIncrement);
+                        cursorLocal = cursorLocal.Add(slotIncrement);
                     }
                 }
 
-                if (dayDto.IsAvailableDay && !dayDto.Slots.Any())
-                {
+                if (dayDto.IsAvailableDay && dayDto.Slots.Count == 0)
                     dayDto.Reason = "No free slots for this day.";
-                }
-
                 result.Days.Add(dayDto);
             }
 
@@ -503,6 +552,7 @@ namespace Tattoo_Project.Services
             UpdateTattooRequestDto dto,
             string userId)
         {
+            await using var transaction = await context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
             var client = await context.Clients
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
@@ -511,6 +561,7 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Client profile was not found.");
             }
 
+            await DatabaseApplicationLock.AcquireAsync(context,$"InkRoute:TattooRequest:{id}","request_concurrency_conflict","The tattoo request is being updated by another operation. Refresh and retry.");
             var tattooRequest = await context.TattooRequests
                 .Include(r => r.Client)
                 .Include(r => r.TattooArtist)
@@ -539,24 +590,13 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Tattoo request description is required.");
             }
 
-            if (dto.Images.Any(i => string.IsNullOrWhiteSpace(i.ImageUrl)))
-            {
-                return ResultService.Fail("Every reference image must have a valid image URL.");
-            }
+            if (dto.Images.Count > 0)
+                return ResultService.Fail("Reference images cannot be replaced by URL. Use the multipart media flow.");
 
-            tattooRequest.Description = dto.Description;
-
-            tattooRequest.Images.Clear();
-
-            foreach (var image in dto.Images)
-            {
-                tattooRequest.Images.Add(new TattooReferenceImage
-                {
-                    ImageUrl = image.ImageUrl
-                });
-            }
+            tattooRequest.Description = dto.Description.Trim();
 
             await context.SaveChangesAsync();
+            await transaction.CommitAsync();
 
             return ResultService.Ok();
         }
@@ -565,7 +605,7 @@ namespace Tattoo_Project.Services
         private async Task<bool> HasBookingConflictAsync(int tattooArtistId, DateTime startTime, DateTime endTime)
         {
             var hasConsultationConflict = await context.Consultations.AnyAsync(c =>
-                c.TattooRequest.TattooArtistId == tattooArtistId &&
+                !c.IsCancelled && c.TattooRequest.TattooArtistId == tattooArtistId &&
                 startTime < c.EndTime &&
                 endTime > c.StartTime);
 
@@ -575,7 +615,7 @@ namespace Tattoo_Project.Services
             }
 
             var hasSessionConflict = await context.TattooSessions.AnyAsync(s =>
-                s.TattooRequest.TattooArtistId == tattooArtistId &&
+                !s.IsCancelled && s.TattooRequest.TattooArtistId == tattooArtistId &&
                 startTime < s.EndTime &&
                 endTime > s.StartTime);
 
@@ -590,53 +630,7 @@ namespace Tattoo_Project.Services
                 endTime > u.StartDateTime);
         }
 
-        private static readonly string[] AllowedImageExtensions = { ".jpg", ".jpeg", ".png", ".webp" };
-        private const long MaxImageSize = 5 * 1024 * 1024;
-
-        private static ResultService ValidateImage(IFormFile image)
-        {
-            if (image == null || image.Length == 0)
-            {
-                return ResultService.Fail("Image is required.");
-            }
-
-            if (image.Length > MaxImageSize)
-            {
-                return ResultService.Fail("Image size cannot be bigger than 5MB.");
-            }
-
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-            if (!AllowedImageExtensions.Contains(extension))
-            {
-                return ResultService.Fail("Only JPG, JPEG, PNG and WEBP images are allowed.");
-            }
-
-            return ResultService.Ok();
-        }
-
-        private async Task<string> SaveImageAsync(IFormFile image, string folderName)
-        {
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-            var webRootPath = environment.WebRootPath;
-
-            if (string.IsNullOrWhiteSpace(webRootPath))
-            {
-                webRootPath = Path.Combine(environment.ContentRootPath, "wwwroot");
-            }
-
-            var folderPath = Path.Combine(webRootPath, "uploads", folderName);
-            Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await image.CopyToAsync(stream);
-
-            return $"/uploads/{folderName}/{fileName}";
-        }
-
-        private static GetTattooRequestDto MapToGetTattooRequestDto(
+        private GetTattooRequestDto MapToGetTattooRequestDto(
             TattooRequest tattooRequest)
         {
             return new GetTattooRequestDto
@@ -665,13 +659,13 @@ namespace Tattoo_Project.Services
                 Status = tattooRequest.Status,
 
                 UpcomingConsultationStartTime = tattooRequest.Consultation != null &&
-                                                tattooRequest.Consultation.StartTime >= DateTime.UtcNow
+                                                tattooRequest.Consultation.StartTime >= timeProvider.GetUtcNow().UtcDateTime
                     ? tattooRequest.Consultation.StartTime
                     : null,
 
                 UpcomingTattooSessionStartTime = tattooRequest.TattooSessions != null
                     ? tattooRequest.TattooSessions
-                        .Where(s => s.StartTime >= DateTime.UtcNow)
+                        .Where(s => s.StartTime >= timeProvider.GetUtcNow().UtcDateTime)
                         .OrderBy(s => s.StartTime)
                         .Select(s => (DateTime?)s.StartTime)
                         .FirstOrDefault()
@@ -679,7 +673,7 @@ namespace Tattoo_Project.Services
 
                 Images = tattooRequest.Images.Select(i => new TattooReferenceImageDto
                 {
-                    ImageUrl = i.ImageUrl
+                    ImageUrl = privateMedia.CreateReadUrl(i.ImageUrl)
                 }).ToList(),
 
                 TattooSessions = tattooRequest.TattooSessions == null ||

@@ -12,6 +12,7 @@ namespace Tattoo_Project.Services.Interfaces
         Task<ResultService<MyStudioDto>> GetMyStudioAsync(string userId);
         Task<ResultService> CreateStudioForExistingArtistAsync(CreateStudioDto dto, string userId);
         Task<ResultService> RequestJoinAsync(int studioId, string userId);
+        Task<ResultService> CancelPendingJoinRequestAsync(int requestId, string userId);
         Task<ResultService> AcceptJoinRequestAsync(int requestId, string ownerUserId);
         Task<ResultService> RejectJoinRequestAsync(int requestId, string ownerUserId);
         Task<ResultService> RemoveMemberAsync(int artistId, string ownerUserId);

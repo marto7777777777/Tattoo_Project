@@ -15,6 +15,9 @@ public class AiTattooProject
     public DateTime? EditingAccessUntil { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
+    public Guid? ActiveOperationId { get; set; }
+    public long OperationEpoch { get; set; }
+    public int ConsecutiveGenerationFailures { get; set; }
     public ICollection<AiTattooVersion> Versions { get; set; } = new List<AiTattooVersion>();
     public ICollection<AiProjectPayment> Payments { get; set; } = new List<AiProjectPayment>();
 }

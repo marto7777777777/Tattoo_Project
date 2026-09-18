@@ -1,21 +1,33 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser, resendRegisterCode, verifyRegisterCode } from "../api/authApi";
+import { getLegalVersions, registerUser, resendRegisterCode, verifyRegisterCode } from "../api/authApi";
 import { readResponse } from "../api/http";
 import { useAuth } from "../context/AuthContext";
 import { getPendingArtistRequestPath } from "../utils/pendingArtistRequest";
-import { LEGAL_VERSIONS } from "../config/businessInfo";
 
 function RegisterPage() {
   const navigate = useNavigate();
   const { saveAuthToken } = useAuth();
   const pendingEmail = sessionStorage.getItem("inkroute.pendingRegistrationEmail") || "";
-  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: pendingEmail, password: "", acceptTermsAndPrivacy: false, termsVersion: LEGAL_VERSIONS.terms, privacyVersion: LEGAL_VERSIONS.privacy });
+  const [form, setForm] = useState({ firstName: "", lastName: "", userName: "", email: pendingEmail, password: "", acceptTermsAndPrivacy: false, termsVersion: "", privacyVersion: "" });
+  const [legalState, setLegalState] = useState("loading");
   const [code, setCode] = useState("");
   const [step, setStep] = useState(pendingEmail ? "verify" : "register");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const loadLegalVersions = useCallback(async () => {
+    setLegalState("loading"); setError("");
+    try {
+      const versions = await getLegalVersions();
+      if (!versions?.termsVersion || !versions?.privacyVersion) throw new Error("Legal versions are unavailable.");
+      setForm((current) => ({ ...current, termsVersion: versions.termsVersion, privacyVersion: versions.privacyVersion }));
+      setLegalState("ready");
+    } catch (loadError) { setLegalState("error"); setError(loadError.message || "Could not load the current legal documents."); }
+  }, []);
+
+  useEffect(() => { if (step === "register") loadLegalVersions(); }, [loadLegalVersions, step]);
 
   function handleChange(event) { setForm({ ...form, [event.target.name]: event.target.value }); }
 
@@ -23,6 +35,7 @@ function RegisterPage() {
     event.preventDefault();
     setError("");
     setSuccessMessage("");
+    if (legalState !== "ready") { setError("The current legal documents must be loaded before registration."); return; }
     setIsSubmitting(true);
 
     try {
@@ -109,8 +122,8 @@ function RegisterPage() {
             <div className="form-group"><label>Email</label><input name="email" type="email" autoComplete="email" value={form.email} onChange={handleChange} /></div>
             <div className="form-group"><label>Password</label><input name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} /></div>
             <label className="legal-acceptance"><input name="acceptTermsAndPrivacy" type="checkbox" checked={form.acceptTermsAndPrivacy} onChange={event=>setForm({...form,acceptTermsAndPrivacy:event.target.checked})} required/><span>I accept the <Link to="/legal/terms" target="_blank">Terms of Service</Link> and <Link to="/legal/privacy" target="_blank">Privacy Policy</Link>.</span></label>
-            {error && <p className="error">{error}</p>}{successMessage && <p className="success">{successMessage}</p>}
-            <button className="primary-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Sending code..." : "Register"}</button>
+            {error && <p className="error">{error}</p>}{legalState === "error" && <button className="secondary-button" type="button" onClick={loadLegalVersions}>Retry loading legal documents</button>}{successMessage && <p className="success">{successMessage}</p>}
+            <button className="primary-button" type="submit" disabled={isSubmitting || legalState !== "ready"}>{isSubmitting ? "Sending code..." : legalState === "loading" ? "Loading legal documents..." : "Register"}</button>
           </form>
         ) : (
           <form className="form" onSubmit={handleVerifyCode}>

@@ -78,3 +78,6 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
         public ICollection<string> Values { get; set; } = new List<string>();
     }
 }
+
+public class RequestEmailChangeDto { public string NewEmail { get; set; } = null!; }
+public class ConfirmEmailChangeDto { public string NewEmail { get; set; } = null!; public string Code { get; set; } = null!; }

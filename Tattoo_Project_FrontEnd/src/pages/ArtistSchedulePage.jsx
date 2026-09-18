@@ -37,8 +37,6 @@ function schedulesToAvailability(schedules = []) {
     tattoo: build(0, "tattoo-edit", { id: "tattoo-edit-default", days: [], startTime: "13:00", endTime: "18:00" }),
   };
 }
-const emptySchedule = { dayOfWeek: "", startTime: "", endTime: "", scheduleType: "" };
-
 function startOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }

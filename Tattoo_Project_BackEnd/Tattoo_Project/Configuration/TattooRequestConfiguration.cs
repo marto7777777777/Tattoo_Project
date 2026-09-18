@@ -34,6 +34,9 @@ namespace Tattoo_Project.Configuration
                 .WithOne(x => x.TattooRequest)
                 .HasForeignKey<ArtistResponse>(x => x.TattooRequestId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.CancellationReason).HasMaxLength(500);
+            builder.Property(x => x.CancelledByUserId).HasMaxLength(450);
+            builder.Property(x => x.RowVersion).IsRowVersion();
         }
     }
 }

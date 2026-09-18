@@ -6,10 +6,11 @@ const STATUS = {
   IN_PROGRESS: 6,
   COMPLETED: 7,
   REJECTED: 8,
+  CANCELLED: 9,
 };
 
 function getStepState(request, step) {
-  if (request.status === STATUS.REJECTED) {
+  if (request.status === STATUS.REJECTED || request.status === STATUS.CANCELLED) {
     return step === "request" ? "completed" : "rejected";
   }
 

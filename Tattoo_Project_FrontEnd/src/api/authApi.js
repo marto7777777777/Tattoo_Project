@@ -1,5 +1,17 @@
 import { apiRequest, requestJson } from "./http";
 
+export function getLegalVersions() {
+  return requestJson("/api/legal/versions");
+}
+
+export function getLegalConsentStatus() {
+  return requestJson("/api/legal/consent-status");
+}
+
+export function acceptCurrentLegalVersions() {
+  return requestJson("/api/legal/consent", { method: "POST" });
+}
+
 export function registerUser(registerData) {
   return apiRequest("/api/Auth/register", {
     method: "POST",

@@ -1,4 +1,4 @@
-const META_PIXEL_ID = "1114860724395523";
+const META_PIXEL_ID = import.meta.env.VITE_META_DATASET_ID?.trim();
 
 let initialized = false;
 
@@ -35,7 +35,7 @@ function bootstrapMetaPixel() {
 }
 
 export function enableMetaPixel() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || !META_PIXEL_ID) return;
 
   bootstrapMetaPixel();
 

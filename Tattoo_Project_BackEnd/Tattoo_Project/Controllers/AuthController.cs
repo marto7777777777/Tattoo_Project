@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Tattoo_Project.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting("auth")]
     public class AuthController(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,

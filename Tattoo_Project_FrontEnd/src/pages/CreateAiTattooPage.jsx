@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { createFreeAiProject } from "../api/aiTattooApi";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { createFreeAiProject, createPaidAiDraft } from "../api/aiTattooApi";
+import { purchaseAiProjectPass } from "../services/billingService";
 import {
   PLACEMENTS,
   TATTOO_STYLES,
@@ -88,6 +89,8 @@ function Selector({
 
 function CreateAiTattooPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const paid = searchParams.get("paid") === "1";
 
   const placementRef = useRef(null);
   const styleRef = useRef(null);
@@ -117,12 +120,14 @@ function CreateAiTattooPage() {
     setBusy(true);
 
     try {
-      const project = await createFreeAiProject(
+      const project = await (paid ? createPaidAiDraft : createFreeAiProject)(
         form,
         file
       );
-
-      navigate(`/ai-studio/${project.id}`);
+      if (paid) {
+        const purchase = await purchaseAiProjectPass(project.id);
+        if (!purchase?.redirected) navigate(`/ai-studio/${project.id}`);
+      } else navigate(`/ai-studio/${project.id}`);
     } catch (submitError) {
       setError(
         submitError.message ||
@@ -279,8 +284,8 @@ function CreateAiTattooPage() {
             disabled={busy}
           >
             {busy
-              ? "Creating your tattoo concept..."
-              : "Generate tattoo concept"}
+              ? paid ? "Creating paid draft..." : "Creating your tattoo concept..."
+              : paid ? "Create project and continue to payment — €12.49" : "Generate tattoo concept"}
           </button>
         </form>
       </section>

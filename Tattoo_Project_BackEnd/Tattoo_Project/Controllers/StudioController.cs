@@ -81,6 +81,18 @@ namespace Tattoo_Project.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
         [Authorize(Policy = "ActiveArtistSubscription")]
+        [HttpPost("join-requests/{requestId:int}/cancel")]
+        public async Task<IActionResult> CancelPendingJoinRequest(int requestId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.CancelPendingJoinRequestAsync(requestId, userId);
+            if (!result.Success) return Conflict(result.ErrorMessage);
+            return Ok("Join request cancelled.");
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("join-requests/{requestId:int}/accept")]
         public async Task<IActionResult> AcceptJoinRequest(int requestId)
         {
@@ -145,6 +157,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("mine/cover")]
         public async Task<IActionResult> UpdateCover(IFormFile image)
         {
@@ -156,6 +169,7 @@ namespace Tattoo_Project.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = UserRoles.Admin + "," + UserRoles.TattooArtist)]
+        [Authorize(Policy = "ActiveArtistSubscription")]
         [HttpPost("mine/logo")]
         public async Task<IActionResult> UpdateLogo(IFormFile image)
         {

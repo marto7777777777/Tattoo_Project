@@ -20,7 +20,8 @@ namespace Tattoo_Project.Services
     public class TattooArtistService(
         TattooDbContext context,
         UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+        RoleManager<IdentityRole> roleManager,
+        TimeProvider timeProvider)
         : ITattooArtistService
     {
         public async Task<ResultService<ICollection<GetTattooArtistDto>>> GetAllTattooArtistsAsync()
@@ -33,15 +34,8 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Requirements)
                 .Include(a => a.Reviews)
                 .Include(a => a.SpecialtyStyles)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.Images)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.TattooSessions)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.ArtistResponse)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.Consultation)
-                .Where(a => a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
+                .Where(a => a.StudioId != null)
+                .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .ToListAsync();
 
             var result = artists
@@ -61,15 +55,8 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.Images)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.TattooSessions)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.ArtistResponse)
-                .Include(a => a.TattooRequests!)
-                    .ThenInclude(r => r.Consultation)
-                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active));
+                .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
+                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null);
 
             if (artist == null)
             {
@@ -94,7 +81,8 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.SpecialtyStyles)
                 .AsSplitQuery()
-                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active));
+                .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
+                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null);
 
             if (artist == null)
                 return ResultService<PublicTattooArtistDto>.Fail("Tattoo artist was not found.");
@@ -144,7 +132,8 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
+                .Where(a => a.StudioId != null && a.Studio != null)
+                .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .AsSplitQuery()
                 .ToListAsync();
 
@@ -301,8 +290,8 @@ namespace Tattoo_Project.Services
             {
                 TattooArtistId = tattooArtist.Id,
                 Status = ArtistSubscriptionStatuses.Pending,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = timeProvider.GetUtcNow().UtcDateTime,
+                UpdatedAt = timeProvider.GetUtcNow().UtcDateTime
             });
 
             if (dto.StudioSetupMode == StudioSetupMode.CreateStudio)
@@ -317,7 +306,7 @@ namespace Tattoo_Project.Services
                     Latitude = dto.Studio.Latitude,
                     Longitude = dto.Studio.Longitude,
                     IsOpenForJoinRequests = true,
-                    CreatedOn = DateTime.UtcNow,
+                    CreatedOn = timeProvider.GetUtcNow().UtcDateTime,
                     OwnerArtistId = tattooArtist.Id
                 };
                 context.Studios.Add(studio);
@@ -333,20 +322,44 @@ namespace Tattoo_Project.Services
                     StudioId = selectedStudio!.Id,
                     TattooArtistId = tattooArtist.Id,
                     Status = StudioJoinRequestStatus.Pending,
-                    CreatedOn = DateTime.UtcNow
+                    CreatedOn = timeProvider.GetUtcNow().UtcDateTime
                 });
             }
 
             await context.SaveChangesAsync();
-            await transaction.CommitAsync();
 
-            await EnsureRoleExists(UserRoles.Client);
-            await EnsureRoleExists(UserRoles.TattooArtist);
+            var ensureClientRole = await EnsureRoleExists(UserRoles.Client);
+            if (!ensureClientRole.Success)
+            {
+                await transaction.RollbackAsync();
+                return ensureClientRole;
+            }
+            var ensureArtistRole = await EnsureRoleExists(UserRoles.TattooArtist);
+            if (!ensureArtistRole.Success)
+            {
+                await transaction.RollbackAsync();
+                return ensureArtistRole;
+            }
             if (!await userManager.IsInRoleAsync(user, UserRoles.Client))
-                await userManager.AddToRoleAsync(user, UserRoles.Client);
+            {
+                var roleResult = await userManager.AddToRoleAsync(user, UserRoles.Client);
+                if (!roleResult.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail("Client role could not be assigned; artist profile creation was rolled back.");
+                }
+            }
             if (!await userManager.IsInRoleAsync(user, UserRoles.TattooArtist))
-                await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
+            {
+                var roleResult = await userManager.AddToRoleAsync(user, UserRoles.TattooArtist);
+                if (!roleResult.Succeeded)
+                {
+                    await transaction.RollbackAsync();
+                    return ResultService.Fail("TattooArtist role could not be assigned; artist profile creation was rolled back.");
+                }
+            }
 
+            await transaction.CommitAsync();
             return ResultService.Ok();
         }
 
@@ -394,7 +407,7 @@ namespace Tattoo_Project.Services
 
             if (HasOverlappingSchedules(dto.Schedules))
             {
-                return ResultService.Fail("Working hours cannot overlap on the same day, including consultation and tattoo session hours.");
+                return ResultService.Fail("Working hours cannot overlap within the same schedule type on the same day.");
             }
 
             if (!dto.Schedules.Any(s => s.ScheduleType == ScheduleType.Consultation))
@@ -512,7 +525,8 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null && a.Subscription != null && (a.Subscription.Status == ArtistSubscriptionStatuses.Trialing || a.Subscription.Status == ArtistSubscriptionStatuses.Active))
+                .Where(a => a.StudioId != null && a.Studio != null)
+                .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .AsQueryable();
 
             if (await artistsQuery.AnyAsync(a => a.Studio!.Country.ToLower() == clientCountry))
@@ -557,7 +571,7 @@ namespace Tattoo_Project.Services
                 .GroupBy(s => new { s.DayOfWeek, s.StartTime, s.EndTime, s.ScheduleType })
                 .Any(g => g.Count() > 1);
             if (duplicateSchedules) return ResultService.Fail("Duplicate schedules are not allowed.");
-            if (HasOverlappingSchedules(schedules)) return ResultService.Fail("Working hours cannot overlap on the same day, including consultation and tattoo session hours.");
+            if (HasOverlappingSchedules(schedules)) return ResultService.Fail("Working hours cannot overlap within the same schedule type on the same day.");
 
             if (requirements != null)
             {
@@ -573,7 +587,7 @@ namespace Tattoo_Project.Services
 
         private static bool HasOverlappingSchedules(IEnumerable<TattooArtistScheduleDto> schedules)
         {
-            foreach (var dayGroup in schedules.GroupBy(s => s.DayOfWeek))
+            foreach (var dayGroup in schedules.GroupBy(s => new { s.DayOfWeek, s.ScheduleType }))
             {
                 var ordered = dayGroup.OrderBy(s => s.StartTime).ThenBy(s => s.EndTime).ToList();
                 for (var i = 1; i < ordered.Count; i++)
@@ -584,12 +598,13 @@ namespace Tattoo_Project.Services
             return false;
         }
 
-        private async Task EnsureRoleExists(string role)
+        private async Task<ResultService> EnsureRoleExists(string role)
         {
-            if (!await roleManager.RoleExistsAsync(role))
-            {
-                await roleManager.CreateAsync(new IdentityRole(role));
-            }
+            if (await roleManager.RoleExistsAsync(role)) return ResultService.Ok();
+            var result = await roleManager.CreateAsync(new IdentityRole(role));
+            return result.Succeeded
+                ? ResultService.Ok()
+                : ResultService.Fail($"Role {role} could not be created.");
         }
 
         private static GetTattooArtistDto MapToGetTattooArtistDto(TattooArtist artist)
@@ -600,7 +615,9 @@ namespace Tattoo_Project.Services
                 PublicProfileSlug = artist.PublicProfileSlug,
                 FirstName = artist.FirstName,
                 LastName = artist.LastName,
-                Email = artist.Email,
+                // Discovery endpoints are public. Account email is never part of
+                // their response; the owner receives it through ProfileController.
+                Email = string.Empty,
                 ProfileImageUrl = artist.User?.ProfileImageUrl,
                 IsVerified = artist.IsVerified,
 
@@ -612,7 +629,7 @@ namespace Tattoo_Project.Services
                 StudioCountry = artist.Studio?.Country ?? string.Empty,
                 StudioLatitude = artist.Studio?.Latitude,
                 StudioLongitude = artist.Studio?.Longitude,
-                PhoneNumber = artist.PhoneNumber,
+                PhoneNumber = artist.ShowPhoneNumberOnPublicProfile ? artist.PhoneNumber : string.Empty,
                 ShowPhoneNumberOnPublicProfile = artist.ShowPhoneNumberOnPublicProfile,
 
                 OffersOnlineConsultation = artist.OffersOnlineConsultation,
@@ -648,55 +665,9 @@ namespace Tattoo_Project.Services
                     Description = r.Description
                 }).ToList(),
 
-                TattooRequests = artist.TattooRequests == null || !artist.TattooRequests.Any()
-                    ? null
-                    : artist.TattooRequests.Select(r => new TattooRequestDto
-                    {
-                        Description = r.Description,
-                        Placement = r.Placement,
-                        TattooStyle = r.TattooStyle,
-                        CreatedOn = r.CreatedOn,
-                        Status = r.Status,
-                        ClientId = r.ClientId,
-                        TattooArtistId = r.TattooArtistId,
-
-                        Images = r.Images.Select(i => new TattooReferenceImageDto
-                        {
-                            ImageUrl = i.ImageUrl
-                        }).ToList(),
-
-                        TattooSessions = r.TattooSessions == null || !r.TattooSessions.Any()
-                            ? null
-                            : r.TattooSessions.Select(s => new TattooSessionDto
-                            {
-                                Id = s.Id,
-                                StartTime = s.StartTime,
-                                EndTime = s.EndTime,
-                                DurationHours = s.DurationHours,
-                                PriceForTheSession = s.PriceForTheSession
-                            }).ToList(),
-
-                        ArtistResponse = r.ArtistResponse == null
-                            ? null
-                            : new ArtistResponseDto
-                            {
-                                CreatedOn = r.ArtistResponse.CreatedOn,
-                                EstimatedHours = r.ArtistResponse.EstimatedHours,
-                                EstimatedPrice = r.ArtistResponse.EstimatedPrice,
-                                ResponseMessage = r.ArtistResponse.ResponseMessage,
-                                WorkflowPath = r.ArtistResponse.WorkflowPath
-                            },
-
-                        Consultation = r.Consultation == null
-                            ? null
-                            : new ConsultationDto
-                            {
-                                Id = r.Consultation.Id,
-                                StartTime = r.Consultation.StartTime,
-                                EndTime = r.Consultation.EndTime,
-                                Notes = r.Consultation.Notes
-                            }
-                    }).ToList()
+                // Client projects, images, private notes and session pricing are
+                // only returned by authenticated request endpoints with ownership checks.
+                TattooRequests = null
             };
         }
 

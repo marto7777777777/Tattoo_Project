@@ -8,6 +8,7 @@ namespace Tattoo_Project.Models
         public string Address { get; set; } = null!;
         public string City { get; set; } = null!;
         public string Country { get; set; } = null!;
+        public string TimeZoneId { get; set; } = "Europe/Sofia";
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public bool IsOpenForJoinRequests { get; set; } = true;

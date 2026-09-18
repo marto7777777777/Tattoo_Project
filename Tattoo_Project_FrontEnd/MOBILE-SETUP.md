@@ -6,8 +6,10 @@ InkRoute uses the existing React application in three forms:
 2. Installable Progressive Web App (PWA).
 3. Native Android and iOS projects powered by Capacitor.
 
-No business workflow, AI limit, Stripe rule, booking rule, or backend endpoint is
+No business workflow, AI limit, payment rule, booking rule, or backend endpoint is
 duplicated in the mobile projects.
+
+Digital purchases are platform-aware: Stripe Checkout on web/PWA, Google Play Billing on Android and StoreKit 2 on iOS. Product IDs, trial eligibility and account-binding values are loaded from the backend. The native bridge never grants entitlement locally and finishes/acknowledges a transaction only after successful server verification.
 
 ## API configuration
 
@@ -46,6 +48,8 @@ npm run mobile:android
 This rebuilds React, synchronizes it into the native Android project, and opens
 the project in Android Studio.
 
+Before release, create the monthly subscription and consumable AI Project Pass in Google Play Console, configure their IDs in the backend, upload an Internal Testing build and test purchase, pending, cancellation, restore and renewal flows with license testers.
+
 ## iOS
 
 iOS native builds require macOS with Xcode. On that Mac run:
@@ -56,6 +60,8 @@ npm run mobile:ios
 ```
 
 Then choose your Apple signing team and the connected iPhone in Xcode.
+
+The Xcode target includes `InkRouteBillingPlugin.swift` and `InkRouteBridgeViewController.swift`. Create the auto-renewable subscription and consumable AI Project Pass in App Store Connect, configure their IDs in the backend and validate the flows in Sandbox/TestFlight before release.
 
 ## After every frontend change
 

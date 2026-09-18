@@ -2,51 +2,21 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-import HomePage from "./pages/HomePage";
-import RegisterPage from "./pages/RegisterPage";
-import LoginPage from "./pages/LoginPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ChooseProfileTypePage from "./pages/ChooseProfileTypePage";
-import CreateClientProfilePage from "./pages/CreateClientProfilePage";
-import CreateArtistProfilePage from "./pages/CreateArtistProfilePage";
-import ArtistsPage from "./pages/ArtistsPage";
-import CreateTattooRequestPage from "./pages/CreateTattooRequestPage";
-import MyTattooRequestsPage from "./pages/MyTattooRequestsPage";
-import CreateConsultationPage from "./pages/CreateConsultationPage";
-import BookTattooSessionPage from "./pages/BookTattooSessionPage";
-import ArtistWorkspacePage from "./pages/ArtistWorkspacePage";
-import CreateArtistResponsePage from "./pages/CreateArtistResponsePage";
-import CompleteConsultationPage from "./pages/CompleteConsultationPage";
-import AddMoreSessionsPage from "./pages/AddMoreSessionsPage";
-import CompleteTattooPage from "./pages/CompleteTattooPage";
-import FavoriteStudiosPage from "./pages/FavoriteStudiosPage";
-import CreateArtistReviewPage from "./pages/CreateArtistReviewPage";
-import ArtistRequestsPage from "./pages/ArtistRequestsPage";
-import ArtistSchedulePage from "./pages/ArtistSchedulePage";
-import ProfileSectionPage from "./pages/ProfileSectionPage";
-import ArtistPortfolioPage from "./pages/ArtistPortfolioPage";
-import AiStudioPage from "./pages/AiStudioPage";
-import CreateAiTattooPage from "./pages/CreateAiTattooPage";
-import AiTattooProjectPage from "./pages/AiTattooProjectPage";
-import AdminPage from "./pages/AdminPage";
-import StudioProfilePage from "./pages/StudioProfilePage";
-import PublicArtistPage from "./pages/PublicArtistPage";
-import HelpGuidesPage from "./pages/HelpGuidesPage";
 import NativePlatformSetup from "./components/NativePlatformSetup";
 import NetworkStatus from "./components/NetworkStatus";
 import DomTranslator from "./i18n/DomTranslator";
 import { useLanguage } from "./i18n/LanguageContext";
 import CookieConsent from "./components/CookieConsent";
 import SiteFooter from "./components/SiteFooter";
-import LegalPage from "./pages/LegalPage";
-import PricingPage from "./pages/PricingPage";
-import SubscriptionPage from "./pages/SubscriptionPage";
-import AccountDeletionPage from "./pages/AccountDeletionPage";
 import AnalyticsSync from "./components/AnalyticsSync";
 import MetaPixelSync from "./components/MetaPixelSync";
 import SubscriptionGuard from "./components/SubscriptionGuard";
+import LegalReconsentGate from "./components/LegalReconsentGate";
 
 const LandingPage = lazy(() => import("./landing/LandingPage"));
+const pages = import.meta.glob("./pages/*.jsx");
+const page = (name) => lazy(pages[`./pages/${name}.jsx`]);
+const HomePage=page("HomePage"),RegisterPage=page("RegisterPage"),LoginPage=page("LoginPage"),ForgotPasswordPage=page("ForgotPasswordPage"),ChooseProfileTypePage=page("ChooseProfileTypePage"),CreateClientProfilePage=page("CreateClientProfilePage"),CreateArtistProfilePage=page("CreateArtistProfilePage"),ArtistsPage=page("ArtistsPage"),CreateTattooRequestPage=page("CreateTattooRequestPage"),MyTattooRequestsPage=page("MyTattooRequestsPage"),CreateConsultationPage=page("CreateConsultationPage"),BookTattooSessionPage=page("BookTattooSessionPage"),ArtistWorkspacePage=page("ArtistWorkspacePage"),CreateArtistResponsePage=page("CreateArtistResponsePage"),CompleteConsultationPage=page("CompleteConsultationPage"),AddMoreSessionsPage=page("AddMoreSessionsPage"),CompleteTattooPage=page("CompleteTattooPage"),FavoriteStudiosPage=page("FavoriteStudiosPage"),CreateArtistReviewPage=page("CreateArtistReviewPage"),ArtistRequestsPage=page("ArtistRequestsPage"),ArtistSchedulePage=page("ArtistSchedulePage"),ProfileSectionPage=page("ProfileSectionPage"),ArtistPortfolioPage=page("ArtistPortfolioPage"),AiStudioPage=page("AiStudioPage"),CreateAiTattooPage=page("CreateAiTattooPage"),AiTattooProjectPage=page("AiTattooProjectPage"),AdminPage=page("AdminPage"),StudioProfilePage=page("StudioProfilePage"),PublicArtistPage=page("PublicArtistPage"),HelpGuidesPage=page("HelpGuidesPage"),LegalPage=page("LegalPage"),PricingPage=page("PricingPage"),SubscriptionPage=page("SubscriptionPage"),AccountDeletionPage=page("AccountDeletionPage");
 
 function App() {
   const { language } = useLanguage();
@@ -62,8 +32,9 @@ function App() {
       <CookieConsent />
       <AnalyticsSync />
       <MetaPixelSync />
+      <LegalReconsentGate />
       {!isLandingPage && <Navbar />}
-      <Routes data-language={language}>
+      <Suspense fallback={<main className="page-shell"><p>Loading InkRoute...</p></main>}><Routes data-language={language}>
         <Route path="/for-artists" element={<Suspense fallback={<main className="landing-loading">Loading InkRoute...</main>}><LandingPage /></Suspense>} />
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -110,7 +81,7 @@ function App() {
         <Route path="/add-more-sessions/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><AddMoreSessionsPage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="/complete-tattoo/:tattooRequestId?" element={<ProtectedRoute roles={["TattooArtist"]}><SubscriptionGuard><CompleteTattooPage /></SubscriptionGuard></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      </Routes></Suspense>
       {!isLandingPage && <SiteFooter />}
     </>
   );

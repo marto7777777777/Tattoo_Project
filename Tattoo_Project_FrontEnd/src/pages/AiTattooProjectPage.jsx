@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -6,6 +7,7 @@ import {
   Link,
   useNavigate,
   useParams,
+  useSearchParams,
 } from "react-router-dom";
 import {
   downloadAiVersion,
@@ -17,11 +19,16 @@ import { getImageUrl } from "../utils/images";
 import ImageLightbox from "../components/ImageLightbox";
 import { useAuth } from "../context/AuthContext";
 import { getUiLocale } from "../i18n/locale";
+import { billingPlatform, getAiPassProductDetails, purchaseAiProjectPass, restoreAiProjectPass } from "../services/billingService";
+import { useLanguage } from "../i18n/LanguageContext";
 
 function AiTattooProjectPage() {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isAdmin } = useAuth();
+  const { language } = useLanguage();
+  const bg = language === "bg";
 
   const [project, setProject] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -31,8 +38,11 @@ function AiTattooProjectPage() {
   const [error, setError] = useState("");
   const [lightbox, setLightbox] =
     useState(null);
+  const [passProduct, setPassProduct] = useState(null);
 
-  const load = async () => {
+  useEffect(() => { getAiPassProductDetails().then(setPassProduct).catch(() => {}); }, []);
+
+  const load = useCallback(async () => {
     try {
       const loadedProject =
         await getAiProject(projectId);
@@ -48,11 +58,23 @@ function AiTattooProjectPage() {
           "The AI project could not be loaded."
       );
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
-    load();
-  }, [projectId]);
+    let cancelled = false;
+    (async () => {
+      const returned = searchParams.get("payment") === "success";
+      for (let attempt = 0; attempt < (returned ? 6 : 1); attempt += 1) {
+        await load();
+        if (!returned || cancelled) break;
+        const latest = await getAiProject(projectId);
+        if (latest.canEdit) { if (!cancelled) { setProject(latest); setSelected(latest.versions?.at(-1) || null); } break; }
+        await new Promise((resolve) => setTimeout(resolve, 1500 * (attempt + 1)));
+      }
+      if (!cancelled && searchParams.has("payment")) setSearchParams({}, { replace: true });
+    })();
+    return () => { cancelled = true; };
+  }, [load, projectId, searchParams, setSearchParams]);
 
   const edit = async (event) => {
     event.preventDefault();
@@ -171,6 +193,23 @@ function AiTattooProjectPage() {
     navigate("/explore");
   };
 
+  const unlock = async () => {
+    setBusy(true); setError("");
+    try {
+      const result = await purchaseAiProjectPass(project.id);
+      if (result?.pending) setError(bg ? "Покупката чака потвърждение. Не купувай повторно." : "The purchase is pending. Do not purchase again.");
+      else if (!result?.redirected) await load();
+    } catch (purchaseError) { setError(purchaseError.message); }
+    finally { setBusy(false); }
+  };
+
+  const restore = async () => {
+    setBusy(true); setError("");
+    try { await restoreAiProjectPass(project.id); await load(); }
+    catch (restoreError) { setError(restoreError.message); }
+    finally { setBusy(false); }
+  };
+
   if (!project) {
     return (
       <main className="page-shell">
@@ -226,15 +265,17 @@ function AiTattooProjectPage() {
                 ? "Admin unlimited access"
                 : project.canEdit
                   ? "Paid AI editing available"
-                  : "Payment required for improvements"}
+                  : project.needsPayment ? "Payment required for improvements" : "Generate the first version"}
             </strong>
 
             <small>
               {isAdmin
                 ? "Project and edit limits are bypassed for development testing"
                 : project.canEdit
-                  ? "Paid editing access is active"
-                  : "The free generation does not include edits"}
+                  ? `Paid editing access is active${project.editingAccessUntil ? ` until ${new Date(project.editingAccessUntil).toLocaleDateString(getUiLocale())}` : ""}`
+                  : project.isFreeProject
+                    ? "The free project includes one generation and no free edits"
+                    : project.needsPayment ? "Unlock this project before generation and editing" : "Generate the first version to begin"}
             </small>
           </div>
         </div>
@@ -355,7 +396,7 @@ function AiTattooProjectPage() {
                   type="button"
                   className="primary-button"
                   disabled={
-                    !project.canEdit || busy
+                    !project.canGenerate || busy
                   }
                   onClick={generate}
                 >
@@ -442,7 +483,7 @@ function AiTattooProjectPage() {
                     : "Create improvement"}
                 </button>
               </form>
-            ) : (
+            ) : project.needsPayment ? (
               <div className="ai-upgrade-box">
                 <span>🤖</span>
 
@@ -451,11 +492,17 @@ function AiTattooProjectPage() {
                 </h3>
 
                 <p>
-                  Your free generation is complete.
-                  Further AI changes require paid
-                  project access.
+                  {project.isFreeProject
+                    ? (bg ? "Безплатният проект включва едно изображение и няма безплатни редакции. AI Project Pass е еднократна покупка, важи само за този проект и отключва редакции за 30 дни." : "The free project includes one image and no free edits. AI Project Pass is a one-time purchase valid only for this project and unlocks editing for 30 days.")
+                    : (bg ? "Отключи този платен проект за първоначална генерация и редакции за 30 дни." : "Unlock this paid project for its initial generation and 30 days of editing.")}
                 </p>
+                <button type="button" className="primary-button" disabled={busy} onClick={unlock}>
+                  {busy ? (bg ? "Обработване..." : "Processing...") : `${bg ? "Отключи 30 дни за" : "Unlock 30 days for"} ${passProduct?.formattedPrice || "€12.49"}`}
+                </button>
+                {billingPlatform() !== "web" && <button type="button" className="secondary-button" disabled={busy} onClick={restore}>{bg ? "Възстанови незавършена покупка" : "Restore unfinished purchase"}</button>}
               </div>
+            ) : (
+              <div className="ai-upgrade-box"><span>🤖</span><h3>Generate the first version</h3><p>After the initial image is ready, editing controls will appear here.</p></div>
             )}
           </aside>
         </div>

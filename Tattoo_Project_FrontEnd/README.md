@@ -1,16 +1,25 @@
-# Tattoo Project Frontend - Premium Design Polish
+# InkRoute frontend
 
-Updated frontend with a premium dark marketplace/dashboard visual style.
+Production frontend for InkRoute web/PWA, Android and iOS. The backend is the source of truth for authentication, subscription entitlement, AI access and purchase verification.
 
 ## Run
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
 ## Notes
 
-- No Leaflet dependency is used.
-- `package-lock.json`, `node_modules`, and `dist` are intentionally not included.
-- Navigation is organized as: Explore, Bookings, Favorites, My Studio.
+## Production checks
+
+```bash
+npm run lint
+npm run build
+npm audit
+npx cap sync
+```
+
+Only public `VITE_` values belong in frontend environment files. Store product IDs come from the backend. Never add Stripe secrets, Apple keys, Google service-account credentials, JWT keys or OpenAI keys here.
+
+Cloudflare builds with `npm ci && npm run build` and serves `dist`; `wrangler.jsonc` provides the SPA fallback.

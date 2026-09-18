@@ -6,13 +6,17 @@ using Tattoo_Project.DTOs.ProfileDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 using Tattoo_Project.Services.Results;
+using Tattoo_Project.Security;
 
 namespace Tattoo_Project.Services
 {
     public class ProfileService(
         TattooDbContext context,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IFileStorage storage,
+        IImageSanitizer imageSanitizer,
+        IPrivateMediaUrlService mediaUrls)
         : IProfileService
     {
         private static readonly string[] AllowedImageExtensions = [".jpg", ".jpeg", ".png", ".webp"];
@@ -49,7 +53,7 @@ namespace Tattoo_Project.Services
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email ?? string.Empty,
-                ProfileImageUrl = user.ProfileImageUrl,
+                ProfileImageUrl = string.IsNullOrWhiteSpace(user.ProfileImageUrl) ? null : mediaUrls.CreateReadUrl(user.ProfileImageUrl),
                 PhoneNumber = artist?.PhoneNumber ?? client?.PhoneNumber,
                 City = client?.City,
                 Country = client?.Country,
@@ -78,7 +82,7 @@ namespace Tattoo_Project.Services
                     PortfolioImages = artist.PortfolioImages.Select(p => new ProfilePortfolioImageDto
                     {
                         Id = p.Id,
-                        ImageUrl = p.ImageUrl
+                        ImageUrl = mediaUrls.CreateReadUrl(p.ImageUrl)
                     }).ToList(),
                     Schedules = artist.Schedules.Select(s => new Tattoo_Project.DTOs.TattooArtistDTOs.TattooArtistScheduleDto
                     {
@@ -125,35 +129,11 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        public async Task<ResultService> UpdateEmailAsync(string userId, string value)
+        public Task<ResultService> UpdateEmailAsync(string userId, string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return ResultService.Fail("Email is required.");
-            }
-
-            var user = await FindUser(userId);
-            if (user == null) return ResultService.Fail("User was not found.");
-
-            var email = value.Trim();
-            var existingUser = await userManager.FindByEmailAsync(email);
-            if (existingUser != null && existingUser.Id != user.Id)
-            {
-                return ResultService.Fail("Email is already taken.");
-            }
-
-            user.Email = email;
-            user.UserName = email;
-            user.EmailConfirmed = false;
-            var updateResult = await userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-            {
-                return ResultService.Fail(string.Join(" ", updateResult.Errors.Select(e => e.Description)));
-            }
-
-            await SyncEmailAsync(userId, email);
-            return ResultService.Ok();
+            // Direct email mutation is intentionally disabled. Changing Email/UserName
+            // without proving ownership of the new mailbox can lock out or weaken an account.
+            return Task.FromResult(ResultService.Fail("Direct email change is disabled. Use the verified email-change flow."));
         }
 
         public async Task<ResultService<string>> UpdateProfileImageAsync(string userId, IFormFile image)
@@ -161,16 +141,19 @@ namespace Tattoo_Project.Services
             var user = await FindUser(userId);
             if (user == null) return ResultService<string>.Fail("User was not found.");
 
-            var validation = ValidateImage(image);
-            if (!validation.Success) return ResultService<string>.Fail(validation.ErrorMessage!);
-
-            var imageUrl = await SaveImageAsync(image, "profile-images");
-
-            DeleteOldFileIfLocal(user.ProfileImageUrl);
-            user.ProfileImageUrl = imageUrl;
-            await userManager.UpdateAsync(user);
-
-            return ResultService<string>.Ok(imageUrl);
+            var sanitized = await imageSanitizer.SanitizeAsync(image, MaxImageSize, 30_000_000);
+            if (!sanitized.Success) return ResultService<string>.Fail(sanitized.ErrorMessage!);
+            var imageKey = await storage.SaveAsync(sanitized.Data!.Bytes, "profile-images", sanitized.Data.Extension, StoredFileVisibility.Public);
+            var oldKey = user.ProfileImageUrl;
+            user.ProfileImageUrl = imageKey;
+            var identityResult = await userManager.UpdateAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                await storage.DeleteAsync(imageKey);
+                return ResultService<string>.Fail(string.Join("; ", identityResult.Errors.Select(e => e.Description)));
+            }
+            await DeleteStoredFileAsync(oldKey);
+            return ResultService<string>.Ok(mediaUrls.CreateReadUrl(imageKey));
         }
 
         public async Task<ResultService> UpdateCityAsync(string userId, string value)
@@ -341,23 +324,24 @@ namespace Tattoo_Project.Services
             var artist = await FindArtist(userId);
             if (artist == null) return ResultService<ProfilePortfolioImageDto>.Fail("Tattoo artist profile was not found.");
 
-            var validation = ValidateImage(image);
-            if (!validation.Success) return ResultService<ProfilePortfolioImageDto>.Fail(validation.ErrorMessage!);
-
-            var imageUrl = await SaveImageAsync(image, "portfolio-images");
-            var portfolioImage = new PortfolioImage
+            var sanitized = await imageSanitizer.SanitizeAsync(image, MaxImageSize, 30_000_000);
+            if (!sanitized.Success) return ResultService<ProfilePortfolioImageDto>.Fail(sanitized.ErrorMessage!);
+            var imageKey = await storage.SaveAsync(sanitized.Data!.Bytes, "portfolio-images", sanitized.Data.Extension, StoredFileVisibility.Public);
+            var portfolioImage = new PortfolioImage { TattooArtistId = artist.Id, ImageUrl = imageKey };
+            try
             {
-                TattooArtistId = artist.Id,
-                ImageUrl = imageUrl
-            };
-
-            context.Add(portfolioImage);
-            await context.SaveChangesAsync();
-
+                context.Add(portfolioImage);
+                await context.SaveChangesAsync();
+            }
+            catch
+            {
+                await storage.DeleteAsync(imageKey);
+                throw;
+            }
             return ResultService<ProfilePortfolioImageDto>.Ok(new ProfilePortfolioImageDto
             {
                 Id = portfolioImage.Id,
-                ImageUrl = portfolioImage.ImageUrl
+                ImageUrl = mediaUrls.CreateReadUrl(portfolioImage.ImageUrl)
             });
         }
 
@@ -371,9 +355,10 @@ namespace Tattoo_Project.Services
 
             if (image == null) return ResultService.Fail("Portfolio image was not found.");
 
-            DeleteOldFileIfLocal(image.ImageUrl);
+            var imageKey = image.ImageUrl;
             context.Remove(image);
             await context.SaveChangesAsync();
+            await DeleteStoredFileAsync(imageKey);
             return ResultService.Ok();
         }
 
@@ -440,52 +425,25 @@ namespace Tattoo_Project.Services
             {
                 return ResultService.Fail("Only JPG, JPEG, PNG and WEBP images are allowed.");
             }
+            if (!ImageUploadSignatureValidator.MatchesExtension(image, extension))
+                return ResultService.Fail("The uploaded file is not a valid image of the selected type.");
 
             return ResultService.Ok();
         }
 
-        private async Task<string> SaveImageAsync(IFormFile image, string folderName)
+        private async Task DeleteStoredFileAsync(string? imageKey)
         {
-            var extension = Path.GetExtension(image.FileName).ToLowerInvariant();
-            var webRootPath = environment.WebRootPath;
-
-            if (string.IsNullOrWhiteSpace(webRootPath))
+            if (string.IsNullOrWhiteSpace(imageKey)) return;
+            if (storage.IsManagedKey(imageKey))
             {
-                webRootPath = Path.Combine(environment.ContentRootPath, "wwwroot");
-            }
-
-            var folderPath = Path.Combine(webRootPath, "uploads", folderName);
-            Directory.CreateDirectory(folderPath);
-
-            var fileName = $"{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            await using var stream = new FileStream(filePath, FileMode.Create);
-            await image.CopyToAsync(stream);
-
-            return $"/uploads/{folderName}/{fileName}";
-        }
-
-        private void DeleteOldFileIfLocal(string? imageUrl)
-        {
-            if (string.IsNullOrWhiteSpace(imageUrl) || !imageUrl.StartsWith("/uploads/"))
-            {
+                await storage.DeleteAsync(imageKey);
                 return;
             }
-
-            var webRootPath = environment.WebRootPath;
-            if (string.IsNullOrWhiteSpace(webRootPath))
-            {
-                webRootPath = Path.Combine(environment.ContentRootPath, "wwwroot");
-            }
-
-            var relativePath = imageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-            var filePath = Path.Combine(webRootPath, relativePath);
-
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-            }
+            if (!imageKey.StartsWith("/uploads/", StringComparison.Ordinal)) return;
+            var webRootPath = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+            var root = Path.GetFullPath(webRootPath) + Path.DirectorySeparatorChar;
+            var path = Path.GetFullPath(Path.Combine(webRootPath, imageKey.TrimStart('/').Replace('/', Path.DirectorySeparatorChar)));
+            if (path.StartsWith(root, StringComparison.Ordinal) && File.Exists(path)) File.Delete(path);
         }
     }
 }

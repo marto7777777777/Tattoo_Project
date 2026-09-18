@@ -1,4 +1,4 @@
-﻿using Tattoo_Project.Models;
+using Tattoo_Project.Models;
 
 namespace Tattoo_Project.DTOs.TattooSessionDTOs
 {
@@ -14,5 +14,7 @@ namespace Tattoo_Project.DTOs.TattooSessionDTOs
         public decimal PriceForTheSession { get; set; }
 
         public int DurationHours { get; set; }
+        public bool IsCancelled { get; set; }
+        public DateTime? CancelledAt { get; set; }
     }
 }

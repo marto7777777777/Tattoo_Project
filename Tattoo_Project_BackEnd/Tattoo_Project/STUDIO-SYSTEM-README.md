@@ -244,6 +244,6 @@ The existing AI implementation was not changed.
 
 The existing tattoo workflow stays artist-based.
 
-Stripe/payment logic was not added.
+Artist subscription billing is implemented separately through the common server-verified entitlement aggregate.
 
 Phone verification was not implemented yet; the individual artist phone field is preserved so verification can be added later.

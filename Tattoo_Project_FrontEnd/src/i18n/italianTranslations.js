@@ -389,7 +389,6 @@ export const IT = {
   "Reference image": "Immagine di riferimento",
   "Locked after generation": "Bloccato dopo la generazione",
   "Free project": "Progetto gratuito",
-  "Payment required": "Pagamento richiesto",
   "Access expires": "L'accesso scade",
   "Reviews": "Recensioni",
   "Write a review": "Scrivi una recensione",

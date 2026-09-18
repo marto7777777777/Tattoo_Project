@@ -36,10 +36,14 @@ namespace Tattoo_Project
                     [new OpenApiSecuritySchemeReference("Bearer", document)] = []
                 };
 
-                foreach (var operation in document.Paths.Values.SelectMany(path => path.Operations))
+                foreach (var operation in document.Paths.Values
+                             .OfType<OpenApiPathItem>()
+                             .SelectMany(path => path.Operations?.Values
+                                 ?? Enumerable.Empty<OpenApiOperation>())
+                             .OfType<OpenApiOperation>())
                 {
-                    operation.Value.Security ??= new List<OpenApiSecurityRequirement>();
-                    operation.Value.Security.Add(securityRequirement);
+                    operation.Security ??= new List<OpenApiSecurityRequirement>();
+                    operation.Security.Add(securityRequirement);
                 }
             }
         }

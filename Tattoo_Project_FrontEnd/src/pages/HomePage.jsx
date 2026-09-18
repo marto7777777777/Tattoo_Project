@@ -14,7 +14,7 @@ const overviewSlides = [
 ];
 
 function HomePage() {
-  const { isLoggedIn, isClient, isArtist } = useAuth();
+  const { isLoggedIn, isArtist } = useAuth();
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {

@@ -10,6 +10,7 @@ export const REQUEST_STATUS = {
   6: "In progress",
   7: "Completed",
   8: "Rejected",
+  9: "Cancelled",
 };
 
 export function getStatusName(status) {
@@ -27,6 +28,7 @@ export function getStatusClass(status) {
     6: "status-progress",
     7: "status-completed",
     8: "status-rejected",
+    9: "status-cancelled",
   };
 
   return classes[status] || "";

@@ -112,3 +112,17 @@ export function changePasswordWithCode(code, newPassword, confirmNewPassword) {
     body: JSON.stringify({ code, newPassword, confirmNewPassword }),
   });
 }
+
+export function requestEmailChange(newEmail) {
+  return requestJson("/api/Profile/user/email/request-change", {
+    method: "POST",
+    body: JSON.stringify({ newEmail }),
+  });
+}
+
+export function confirmEmailChange(newEmail, code) {
+  return requestJson("/api/Profile/user/email/confirm-change", {
+    method: "POST",
+    body: JSON.stringify({ newEmail, code }),
+  });
+}

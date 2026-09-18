@@ -30,6 +30,7 @@ namespace Tattoo_Project.Configuration
                 .WithOne(x => x.Studio)
                 .HasForeignKey(x => x.StudioId)
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.Property(x => x.TimeZoneId).HasMaxLength(100).IsRequired().HasDefaultValue("Europe/Sofia");
         }
     }
 }
