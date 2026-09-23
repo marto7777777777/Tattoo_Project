@@ -25,6 +25,7 @@ OpenAI__TextModel
 Stripe__SecretKey
 Stripe__WebhookSecret
 Stripe__ArtistMonthlyPriceId
+Stripe__AiProjectPassPriceId
 Stripe__CustomerPortalConfigurationId
 Stripe__Currency
 Stripe__AiProjectPassAmount
@@ -61,7 +62,7 @@ list only the immediate trusted proxy IP addresses under `Proxy__KnownProxies__N
 Do not trust forwarded headers from arbitrary internet clients. When the hosting
 provider changes its proxy addresses, update this allow-list before routing traffic.
 
-`Stripe__AiProjectPassAmount` is `1249` EUR cents. It is a one-time 30-day pass for one AI project, never the artist subscription. The committed configuration intentionally contains blank values.
+`Stripe__AiProjectPassPriceId` must reference an active, one-time (non-recurring) EUR 12.49 Price. `Stripe__AiProjectPassAmount` remains `1249` EUR cents as an independent server-side check. It is a one-time 30-day pass for one AI project, never the artist subscription. The committed configuration intentionally contains blank values.
 
 ## Frontend public environment variables
 
@@ -83,7 +84,7 @@ The retired personal Meta Pixel must not be used. GA4 and Meta tags belong in GT
 
 ## Stripe Sandbox
 
-1. Enable test mode and create a recurring EUR 14.99 monthly artist Price with exclusive tax behavior.
+1. Enable test mode and create two separate Prices: a recurring EUR 14.99 monthly artist Price and a one-time EUR 12.49 AI Project Pass Price. Use exclusive tax behavior for both.
 2. Configure Customer Portal for payment method, invoices, cancel-at-period-end and reactivation.
 3. Add `/api/stripe/webhook` with `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.paid`, and `invoice.payment_failed`.
 4. Store the signing secret only in User Secrets/environment variables.

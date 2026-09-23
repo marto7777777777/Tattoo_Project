@@ -301,10 +301,42 @@ public class AiTattooService(
     {
         var secret = configuration["Stripe:SecretKey"];
         if (string.IsNullOrWhiteSpace(secret)) return ResultService<CheckoutSessionDto>.Fail("Stripe is not configured.");
+        var priceId = configuration["Stripe:AiProjectPassPriceId"];
+        if (string.IsNullOrWhiteSpace(priceId)) return ResultService<CheckoutSessionDto>.Fail("The Stripe AI Project Pass price is not configured.");
         const long amount = 1249;
         const string currency = "eur";
         const string product = "ai_project_pass";
         var frontendUrl = configuration["FrontendUrl"] ?? "http://localhost:5173";
+
+        // Fail closed before creating a durable checkout: this must remain a
+        // one-time EUR price for exactly the configured AI pass amount. A
+        // recurring Stripe Price must never be accepted by this flow.
+        Stripe.Price stripePrice;
+        try
+        {
+            stripePrice = await new PriceService().GetAsync(priceId);
+        }
+        catch (StripeException ex)
+        {
+            logger.LogWarning(ex,
+    "Stripe AI price lookup failed. StripeCode={StripeCode}.",
+    ex.StripeError?.Code);
+            return ResultService<CheckoutSessionDto>.Fail("The Stripe AI Project Pass price could not be verified.");
+        }
+        if (!AiStripePriceRules.IsValidOneTimePrice(
+                stripePrice.Active,
+                stripePrice.Recurring != null,
+                stripePrice.UnitAmount,
+                stripePrice.Currency,
+                stripePrice.TaxBehavior,
+                amount,
+                currency))
+        {
+            logger.LogError(
+                "Stripe AI Price {PriceId} is inactive, recurring, or does not match the required amount/currency.",
+                priceId);
+            return ResultService<CheckoutSessionDto>.Fail("The Stripe AI Project Pass price is configured incorrectly.");
+        }
 
         // At most one retry of the outer loop is needed: it is used only when an
         // existing Stripe session is server-confirmed expired and a fresh durable
@@ -400,49 +432,50 @@ public class AiTattooService(
             // call uses the same Stripe idempotency key and therefore recovers the
             // same Stripe operation after a timeout/crash instead of creating a
             // second uncontrolled Checkout Session.
-            using var request = new HttpRequestMessage(HttpMethod.Post, "https://api.stripe.com/v1/checkout/sessions");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", secret);
-            request.Headers.TryAddWithoutValidation("Idempotency-Key", attempt.StripeIdempotencyKey);
-            request.Content = new FormUrlEncodedContent(new Dictionary<string,string>
+            var checkoutOptions = new Stripe.Checkout.SessionCreateOptions
             {
-                ["mode"]="payment",
-                ["success_url"]=$"{frontendUrl}/ai-studio/{projectId}?payment=success",
-                ["cancel_url"]=$"{frontendUrl}/ai-studio/{projectId}?payment=cancelled",
-                ["line_items[0][price_data][currency]"]=attempt.Currency,
-                ["line_items[0][price_data][unit_amount]"]=attempt.ExpectedBaseAmountMinor.ToString(),
-                ["line_items[0][price_data][tax_behavior]"]="exclusive",
-                ["line_items[0][price_data][product_data][name]"]="InkRoute AI Project — 30 Day Pass",
-                ["line_items[0][quantity]"]="1",
-                ["automatic_tax[enabled]"]="true",
-                ["billing_address_collection"]="required",
-                ["metadata[purpose]"]=product,
-                ["metadata[checkoutAttemptId]"]=attempt.Id.ToString("D"),
-                ["metadata[projectId]"]=projectId.ToString(),
-                ["metadata[amount_minor]"]=attempt.ExpectedBaseAmountMinor.ToString(),
-                ["metadata[price_semantics]"]=attempt.PriceSemantics
-            });
+                Mode = AiStripePriceRules.CheckoutMode,
+                SuccessUrl = $"{frontendUrl}/ai-studio/{projectId}?payment=success",
+                CancelUrl = $"{frontendUrl}/ai-studio/{projectId}?payment=cancelled",
+                ClientReferenceId = attempt.Id.ToString("D"),
+                LineItems =
+                [
+                    new Stripe.Checkout.SessionLineItemOptions
+                    {
+                        Price = priceId,
+                        Quantity = 1
+                    }
+                ],
+                AutomaticTax = new Stripe.Checkout.SessionAutomaticTaxOptions { Enabled = true },
+                BillingAddressCollection = "required",
+                Metadata = new Dictionary<string, string>
+                {
+                    ["purpose"] = product,
+                    ["checkoutAttemptId"] = attempt.Id.ToString("D"),
+                    ["projectId"] = projectId.ToString(),
+                    ["amount_minor"] = attempt.ExpectedBaseAmountMinor.ToString(),
+                    ["price_semantics"] = attempt.PriceSemantics,
+                    ["price_id"] = priceId
+                }
+            };
 
-            HttpResponseMessage response;
-            try { response = await httpClientFactory.CreateClient().SendAsync(request); }
-            catch (Exception ex)
+            Stripe.Checkout.Session session;
+            try
             {
-                logger.LogWarning(ex, "Stripe AI checkout creation failed for attempt {AttemptId}; the durable attempt remains retryable.", attempt.Id);
+                session = await new Stripe.Checkout.SessionService().CreateAsync(
+                    checkoutOptions,
+                    new RequestOptions { IdempotencyKey = attempt.StripeIdempotencyKey });
+            }
+            catch (StripeException ex)
+            {
+                logger.LogWarning(ex,
+    "Stripe AI checkout creation failed for attempt {AttemptId}. StripeCode={StripeCode}; the durable attempt remains retryable.",
+    attempt.Id, ex.StripeError?.Code);
                 return ResultService<CheckoutSessionDto>.Fail("Stripe checkout could not be created.");
             }
-            using var responseDispose = response;
-            var json = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogWarning("Stripe AI checkout returned HTTP {StatusCode} for attempt {AttemptId}.", (int)response.StatusCode, attempt.Id);
-                return ResultService<CheckoutSessionDto>.Fail("Stripe checkout could not be created.");
-            }
-
-            using var doc = JsonDocument.Parse(json);
-            var sessionId = doc.RootElement.GetProperty("id").GetString();
-            var url = doc.RootElement.GetProperty("url").GetString();
-            DateTime? expiresAt = null;
-            if (doc.RootElement.TryGetProperty("expires_at", out var expiresElement) && expiresElement.TryGetInt64(out var expiresUnix))
-                expiresAt = DateTimeOffset.FromUnixTimeSeconds(expiresUnix).UtcDateTime;
+            var sessionId = session.Id;
+            var url = session.Url;
+            DateTime? expiresAt = session.ExpiresAt;
             if (string.IsNullOrWhiteSpace(sessionId) || string.IsNullOrWhiteSpace(url))
                 return ResultService<CheckoutSessionDto>.Fail("Stripe checkout returned an invalid session.");
 
@@ -505,6 +538,13 @@ public class AiTattooService(
             if (attempt == null) return ResultService.Fail("Stripe checkout attempt no longer exists.");
             if (attempt.Status == AiProjectCheckoutAttemptStatuses.Granted) { await transaction.CommitAsync(); return ResultService.Ok(); }
             if (attempt.Product != "ai_project_pass") return ResultService.Fail("Stripe checkout product binding is invalid.");
+            // New sessions are bound to the configured Stripe Price. Sessions
+            // created by the immediately preceding release did not include this
+            // metadata, so they retain the existing session/amount/currency
+            // verification path and are not stranded after deployment.
+            if (session.Metadata.TryGetValue("price_id", out var metadataPriceId) &&
+                !string.Equals(metadataPriceId, configuration["Stripe:AiProjectPassPriceId"], StringComparison.Ordinal))
+                return ResultService.Fail("Stripe checkout price binding is invalid.");
             if (!session.Metadata.TryGetValue("projectId", out var metadataProjectId) || metadataProjectId != attempt.AiTattooProjectId.ToString())
                 return ResultService.Fail("Stripe checkout project metadata is invalid.");
             if (!string.IsNullOrWhiteSpace(attempt.StripeCheckoutSessionId) && attempt.StripeCheckoutSessionId != session.Id)

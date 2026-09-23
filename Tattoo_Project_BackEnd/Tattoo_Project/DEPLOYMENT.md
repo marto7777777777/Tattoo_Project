@@ -9,7 +9,7 @@ Copy `appsettings.example.json` and provide secrets through environment variable
 Production requires SQL, JWT, verification secret, frontend/backend HTTPS URLs, SMTP, legal versions, durable Data Protection keys and durable media storage. Provider settings are required only when the corresponding `PaymentProviders:*Enabled` flag is true.
 
 ### Stripe
-Keep `Stripe:AiProjectPassAmount` at exactly `1249` euro cents. Configure the backend webhook secret and artist monthly price. Never grant entitlement from a success/return URL.
+Create a separate active, one-time (non-recurring) EUR 12.49 Stripe Price for the AI Project Pass and configure its ID as `Stripe:AiProjectPassPriceId`. Keep `Stripe:AiProjectPassAmount` at exactly `1249` euro cents as an independent server-side verification value. Configure the backend webhook secret and the separate recurring artist monthly Price. Never grant entitlement from a success/return URL; AI access is granted only after a verified paid webhook.
 
 ### Google Play
 Configure package name, artist subscription product, `ArtistBasePlanId`, deterministic trial offer ID, AI consumable product, service-account file, Pub/Sub audience and Pub/Sub service-account email.

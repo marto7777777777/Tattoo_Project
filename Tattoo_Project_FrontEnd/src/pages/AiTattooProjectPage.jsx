@@ -40,6 +40,11 @@ function AiTattooProjectPage() {
     useState(null);
   const [passProduct, setPassProduct] = useState(null);
 
+  const applyProject = useCallback((updatedProject) => {
+    setProject(updatedProject);
+    setSelected(updatedProject.versions?.at(-1) || null);
+  }, []);
+
   useEffect(() => { getAiPassProductDetails().then(setPassProduct).catch(() => {}); }, []);
 
   const load = useCallback(async () => {
@@ -47,18 +52,35 @@ function AiTattooProjectPage() {
       const loadedProject =
         await getAiProject(projectId);
 
-      setProject(loadedProject);
-
-      setSelected(
-        loadedProject.versions?.at(-1) || null
-      );
+      applyProject(loadedProject);
+      return loadedProject;
     } catch (loadError) {
       setError(
         loadError.message ||
           "The AI project could not be loaded."
       );
     }
-  }, [projectId]);
+  }, [applyProject, projectId]);
+
+  const reconcileAiOperation = useCallback(async (previousVersionCount) => {
+    // OpenAI image operations can outlive an individual browser/Azure request.
+    // If that request is interrupted (or a duplicate receives 409), reload the
+    // durable project until the backend publishes the completed version.
+    for (let attempt = 0; attempt < 45; attempt += 1) {
+      const latest = await getAiProject(projectId);
+      if ((latest.versions?.length || 0) > previousVersionCount) {
+        applyProject(latest);
+        return latest;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    }
+    return null;
+  }, [applyProject, projectId]);
+
+  const canReconcile = (operationError) =>
+    operationError?.networkError ||
+    operationError?.status === 409 ||
+    operationError?.code === "ai_operation_in_progress";
 
   useEffect(() => {
     let cancelled = false;
@@ -85,6 +107,7 @@ function AiTattooProjectPage() {
 
     setBusy(true);
     setError("");
+    const previousVersionCount = project.versions?.length || 0;
 
     try {
       const updatedProject =
@@ -94,12 +117,22 @@ function AiTattooProjectPage() {
           selected.id
         );
 
-      setProject(updatedProject);
-      setSelected(
-        updatedProject.versions.at(-1)
-      );
+      applyProject(updatedProject);
       setInstruction("");
     } catch (editError) {
+      if (canReconcile(editError)) {
+        setError(bg ? "Проверяваме завършването на AI операцията..." : "Checking whether the AI operation completed...");
+        try {
+          const recovered = await reconcileAiOperation(previousVersionCount);
+          if (recovered) {
+            setInstruction("");
+            setError("");
+            return;
+          }
+        } catch {
+          // Preserve the original actionable error below.
+        }
+      }
       setError(
         editError.message ||
           "The tattoo could not be edited."
@@ -112,16 +145,26 @@ function AiTattooProjectPage() {
   const generate = async () => {
     setBusy(true);
     setError("");
+    const previousVersionCount = project.versions?.length || 0;
 
     try {
       const updatedProject =
         await generateAiProject(project.id);
 
-      setProject(updatedProject);
-      setSelected(
-        updatedProject.versions.at(-1)
-      );
+      applyProject(updatedProject);
     } catch (generateError) {
+      if (canReconcile(generateError)) {
+        setError(bg ? "Генерирането продължава. Проверяваме резултата..." : "Generation is still running. Checking for the result...");
+        try {
+          const recovered = await reconcileAiOperation(previousVersionCount);
+          if (recovered) {
+            setError("");
+            return;
+          }
+        } catch {
+          // Preserve the original actionable error below.
+        }
+      }
       setError(
         generateError.message ||
           "The tattoo could not be generated."

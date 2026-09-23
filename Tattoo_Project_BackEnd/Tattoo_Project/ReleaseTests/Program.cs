@@ -81,6 +81,22 @@ False("Sofia fall-back ambiguous local time rejected", ambiguousDst.Success);
 var invalidZone = TimeZoneSupport.Get("Not/A-TimeZone");
 False("invalid IANA timezone rejected", invalidZone.Success);
 
+// The web AI pass is a one-time purchase. Never accept a recurring Price,
+// even when its amount and currency happen to match the configured pass.
+Equal("AI Stripe Checkout uses payment mode", "payment", AiStripePriceRules.CheckoutMode);
+True("AI Stripe one-time price accepted",
+    AiStripePriceRules.IsValidOneTimePrice(true, false, 1249, "eur", "exclusive", 1249, "eur"));
+False("AI Stripe recurring price rejected",
+    AiStripePriceRules.IsValidOneTimePrice(true, true, 1249, "eur", "exclusive", 1249, "eur"));
+False("AI Stripe inactive price rejected",
+    AiStripePriceRules.IsValidOneTimePrice(false, false, 1249, "eur", "exclusive", 1249, "eur"));
+False("AI Stripe wrong amount rejected",
+    AiStripePriceRules.IsValidOneTimePrice(true, false, 1499, "eur", "exclusive", 1249, "eur"));
+False("AI Stripe wrong currency rejected",
+    AiStripePriceRules.IsValidOneTimePrice(true, false, 1249, "usd", "exclusive", 1249, "eur"));
+False("AI Stripe inclusive tax price rejected",
+    AiStripePriceRules.IsValidOneTimePrice(true, false, 1249, "eur", "inclusive", 1249, "eur"));
+
 // Half-open interval rule used by booking conflict queries.
 static bool Overlaps(DateTime start, DateTime end, DateTime existingStart, DateTime existingEnd) =>
     start < existingEnd && end > existingStart;

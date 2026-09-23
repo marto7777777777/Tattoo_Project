@@ -12,6 +12,17 @@ export function clearToken() {
   localStorage.removeItem("token");
 }
 
+export class ApiError extends Error {
+  constructor(message, { status = 0, code = "", data = null, networkError = false } = {}) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.code = code;
+    this.data = data;
+    this.networkError = networkError;
+  }
+}
+
 export async function apiRequest(path, options = {}) {
   const token = getToken();
   const headers = {
@@ -24,8 +35,12 @@ export async function apiRequest(path, options = {}) {
 
   try {
     return await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-  } catch {
-    throw new Error(`Cannot reach the backend at ${API_BASE_URL}. Make sure the API is running.`);
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(
+      "The connection was interrupted. InkRoute will check whether the operation completed.",
+      { networkError: true }
+    );
   }
 }
 
@@ -51,7 +66,11 @@ export async function requestJson(path, options = {}) {
   const data = await readResponse(response);
 
   if (!response.ok) {
-    throw new Error(getErrorMessage(data, response));
+    throw new ApiError(getErrorMessage(data, response), {
+      status: response.status,
+      code: data?.code || "",
+      data,
+    });
   }
 
   return data;

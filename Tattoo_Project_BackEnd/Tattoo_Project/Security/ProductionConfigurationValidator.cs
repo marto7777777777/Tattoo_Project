@@ -27,7 +27,7 @@ public static class ProductionConfigurationValidator
 
         if (aiEnabled) Require(configuration, missing, "OpenAI:ApiKey");
         if (stripeEnabled) Require(configuration, missing,
-            "Stripe:SecretKey", "Stripe:WebhookSecret", "Stripe:ArtistMonthlyPriceId");
+            "Stripe:SecretKey", "Stripe:WebhookSecret", "Stripe:ArtistMonthlyPriceId", "Stripe:AiProjectPassPriceId");
         if (googleEnabled) Require(configuration, missing,
             "Billing:AccountObfuscationSecret", "GooglePlay:PackageName", "GooglePlay:ArtistSubscriptionProductId",
             "GooglePlay:ArtistBasePlanId", "GooglePlay:ArtistTrialOfferId", "GooglePlay:AiProjectPassProductId",
