@@ -50,12 +50,22 @@ function AiStudioPage() {
         <div className="ai-project-grid">
           {projects.map((project) => {
             const last = project.versions?.at(-1);
+            const status = project.canEdit
+              ? "Active"
+              : project.isFreeProject && last
+                ? "Free project complete"
+                : project.needsPayment
+                  ? "Payment required"
+                  : "Ready to generate";
+            const statusClass = project.canEdit || (!project.needsPayment && !last)
+              ? "active"
+              : "paused";
             return (
               <Link className="ai-project-card" to={`/ai-studio/${project.id}`} key={project.id}>
                 <div className="ai-project-cover">
                   {last ? <img src={getImageUrl(last.imageUrl)} alt="" /> : <span>No generated version</span>}
-                  <em className={project.canEdit ? "active" : "paused"}>
-                    {project.canEdit ? "Active" : "Payment required"}
+                  <em className={statusClass}>
+                    {status}
                   </em>
                 </div>
                 <div>

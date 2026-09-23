@@ -308,7 +308,11 @@ function AiTattooProjectPage() {
                 ? "Admin unlimited access"
                 : project.canEdit
                   ? "Paid AI editing available"
-                  : project.needsPayment ? "Payment required for improvements" : "Generate the first version"}
+                  : selected && project.isFreeProject
+                    ? "Free project completed"
+                    : project.needsPayment
+                      ? "Payment required for improvements"
+                      : "Generate the first version"}
             </strong>
 
             <small>
@@ -316,9 +320,11 @@ function AiTattooProjectPage() {
                 ? "Project and edit limits are bypassed for development testing"
                 : project.canEdit
                   ? `Paid editing access is active${project.editingAccessUntil ? ` until ${new Date(project.editingAccessUntil).toLocaleDateString(getUiLocale())}` : ""}`
-                  : project.isFreeProject
-                    ? "The free project includes one generation and no free edits"
-                    : project.needsPayment ? "Unlock this project before generation and editing" : "Generate the first version to begin"}
+                  : selected && project.isFreeProject
+                    ? "The included generation has been used; create a paid project for refinements"
+                    : project.needsPayment
+                      ? "Unlock this project before generation and editing"
+                      : "Generate the first version to begin"}
             </small>
           </div>
         </div>
@@ -526,6 +532,26 @@ function AiTattooProjectPage() {
                     : "Create improvement"}
                 </button>
               </form>
+            ) : selected && project.isFreeProject ? (
+              <div className="ai-upgrade-box">
+                <span>✓</span>
+
+                <h3>
+                  {bg ? "Безплатният проект е завършен" : "Free project completed"}
+                </h3>
+
+                <p>
+                  {bg
+                    ? "Този безплатен проект включва едно генерирано изображение и няма безплатни редакции. За нов дизайн с 30 дни редакции създай платен AI проект."
+                    : "This free project includes one generated image and no free edits. Create a paid AI project for a new design with 30 days of editing."}
+                </p>
+
+                <Link className="primary-button" to="/ai-studio/new?paid=1">
+                  {bg
+                    ? `Създай платен AI проект — ${passProduct?.formattedPrice || "€12.49"}`
+                    : `Create paid AI project — ${passProduct?.formattedPrice || "€12.49"}`}
+                </Link>
+              </div>
             ) : project.needsPayment ? (
               <div className="ai-upgrade-box">
                 <span>🤖</span>
@@ -535,9 +561,9 @@ function AiTattooProjectPage() {
                 </h3>
 
                 <p>
-                  {project.isFreeProject
-                    ? (bg ? "Безплатният проект включва едно изображение и няма безплатни редакции. AI Project Pass е еднократна покупка, важи само за този проект и отключва редакции за 30 дни." : "The free project includes one image and no free edits. AI Project Pass is a one-time purchase valid only for this project and unlocks editing for 30 days.")
-                    : (bg ? "Отключи този платен проект за първоначална генерация и редакции за 30 дни." : "Unlock this paid project for its initial generation and 30 days of editing.")}
+                  {bg
+                    ? "Отключи този платен проект за първоначална генерация и редакции за 30 дни."
+                    : "Unlock this paid project for its initial generation and 30 days of editing."}
                 </p>
                 <button type="button" className="primary-button" disabled={busy} onClick={unlock}>
                   {busy ? (bg ? "Обработване..." : "Processing...") : `${bg ? "Отключи 30 дни за" : "Unlock 30 days for"} ${passProduct?.formattedPrice || "€12.49"}`}
