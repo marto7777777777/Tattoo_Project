@@ -1,6 +1,7 @@
 import { apiRequest, requestJson } from "./http";
+import { optimizeImageForUpload } from "../utils/images";
 
-function projectForm(values, file) {
+async function projectForm(values, file) {
   const form = new FormData();
   form.append("title", values.title);
   form.append("tattooStyle", values.tattooStyle);
@@ -8,7 +9,12 @@ function projectForm(values, file) {
   form.append("description", values.description);
 
   if (file) {
-    form.append("referenceImage", file);
+    const optimizedFile = await optimizeImageForUpload(file, {
+      maxWidth: 2048,
+      maxHeight: 2048,
+      quality: 0.88,
+    });
+    form.append("referenceImage", optimizedFile);
   }
 
   return form;
@@ -25,7 +31,7 @@ export function getAiProject(id) {
 export async function createFreeAiProject(values, file) {
   const response = await apiRequest("/api/ai-tattoos", {
     method: "POST",
-    body: projectForm(values, file),
+    body: await projectForm(values, file),
     headers: {},
   });
 
@@ -39,7 +45,7 @@ export async function createFreeAiProject(values, file) {
 export async function createPaidAiDraft(values, file) {
   const response = await apiRequest("/api/ai-tattoos/paid-draft", {
     method: "POST",
-    body: projectForm(values, file),
+    body: await projectForm(values, file),
     headers: {},
   });
 

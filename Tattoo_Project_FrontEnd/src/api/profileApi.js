@@ -1,5 +1,5 @@
-import { API_BASE_URL } from "./apiConfig";
-import { getToken, requestJson, readResponse } from "./http";
+import { apiRequest, requestJson, readResponse } from "./http";
+import { optimizeImageForUpload } from "../utils/images";
 
 export function getMyProfile() {
   return requestJson("/api/Profile/me");
@@ -34,15 +34,16 @@ export function updateSpecialtyStyles(values) {
 }
 
 export async function updateProfileImage(file) {
-  const token = getToken();
   const formData = new FormData();
-  formData.append("image", file);
+  const optimizedFile = await optimizeImageForUpload(file, {
+    maxWidth: 1200,
+    maxHeight: 1200,
+    quality: 0.86,
+  });
+  formData.append("image", optimizedFile);
 
-  const response = await fetch(`${API_BASE_URL}/api/Profile/contact/profile-image`, {
+  const response = await apiRequest("/api/Profile/contact/profile-image", {
     method: "PATCH",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     body: formData,
   });
 
@@ -74,15 +75,16 @@ export function deleteRequirement(id) {
 }
 
 export async function addPortfolioImage(file) {
-  const token = getToken();
   const formData = new FormData();
-  formData.append("image", file);
+  const optimizedFile = await optimizeImageForUpload(file, {
+    maxWidth: 2048,
+    maxHeight: 2048,
+    quality: 0.86,
+  });
+  formData.append("image", optimizedFile);
 
-  const response = await fetch(`${API_BASE_URL}/api/Profile/portfolio/images`, {
+  const response = await apiRequest("/api/Profile/portfolio/images", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     body: formData,
   });
 

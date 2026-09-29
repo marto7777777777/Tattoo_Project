@@ -63,7 +63,7 @@ function AiStudioPage() {
             return (
               <Link className="ai-project-card" to={`/ai-studio/${project.id}`} key={project.id}>
                 <div className="ai-project-cover">
-                  {last ? <img src={getImageUrl(last.imageUrl)} alt="" /> : <span>No generated version</span>}
+                  {last ? <img src={getImageUrl(last.imageUrl)} alt="" loading="lazy" decoding="async" /> : <span>No generated version</span>}
                   <em className={statusClass}>
                     {status}
                   </em>

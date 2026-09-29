@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { createTattooRequestWithImages } from "../api/tattooRequestApi";
 import { readResponse } from "../api/http";
-import { getImageUrl } from "../utils/images";
+import { getImageUrl, optimizeImagesForUpload } from "../utils/images";
 import { readStoredJson } from "../utils/storage";
 import { useCarouselEdges } from "../hooks/useCarouselEdges";
 import { moveCarouselPage } from "../utils/carousel";
@@ -137,6 +137,7 @@ function CreateTattooRequestPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPreparingImages, setIsPreparingImages] = useState(false);
 
   useEffect(() => {
     if (!aiReference?.imageUrl) return;
@@ -161,10 +162,24 @@ function CreateTattooRequestPage() {
     return () => previews.forEach((preview) => URL.revokeObjectURL(preview.url));
   }, [previews]);
 
-  function handleImagesChange(event) {
+  async function handleImagesChange(event) {
     const files = Array.from(event.target.files || []);
-    setImageFiles((current) => [...current, ...files]);
     event.target.value = "";
+    if (!files.length) return;
+    setError("");
+    setIsPreparingImages(true);
+    try {
+      const optimized = await optimizeImagesForUpload(files, {
+        maxWidth: 2048,
+        maxHeight: 2048,
+        quality: 0.86,
+      });
+      setImageFiles((current) => [...current, ...optimized]);
+    } catch (imageError) {
+      setError(imageError?.message || "The selected images could not be prepared.");
+    } finally {
+      setIsPreparingImages(false);
+    }
   }
 
   function removeImage(index) {
@@ -269,14 +284,14 @@ function CreateTattooRequestPage() {
 
             <section className="section">
               <h2>Reference images</h2>
-              <label className="portfolio-upload-tile request-upload-zone"><input type="file" accept="image/*" multiple hidden onChange={handleImagesChange} /><span className="upload-zone-icon">＋</span><strong>Add reference images</strong><small>Click to browse JPG, PNG or WEBP files</small></label>
+              <label className="portfolio-upload-tile request-upload-zone"><input type="file" accept="image/jpeg,image/png,image/webp" multiple hidden onChange={handleImagesChange} disabled={isPreparingImages || isSubmitting} /><span className="upload-zone-icon">＋</span><strong>{isPreparingImages ? "Preparing images…" : "Add reference images"}</strong><small>JPG, PNG or WEBP · optimized before upload</small></label>
               {previews.length > 0 && <div className="portfolio-manage-grid">{previews.map((preview, index) => <div className="portfolio-manage-card" key={`${preview.file.name}-${index}`}><img src={preview.url} alt="Tattoo reference preview" /><button className="danger-button compact-button" type="button" onClick={() => removeImage(index)}>Remove</button></div>)}</div>}
             </section>
 
             {error && <p className="error">{error}</p>}
             {success && <p className="success">{success}</p>}
-            <button className="primary-button" type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
-              {isSubmitting ? "Sending Tattoo Request…" : "Send Tattoo Request"}
+            <button className="primary-button" type="submit" disabled={isSubmitting || isPreparingImages} aria-busy={isSubmitting || isPreparingImages}>
+              {isPreparingImages ? "Preparing Images…" : isSubmitting ? "Sending Tattoo Request…" : "Send Tattoo Request"}
             </button>
           </form>
         </section>

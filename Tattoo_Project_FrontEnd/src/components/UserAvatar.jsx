@@ -9,7 +9,7 @@ function UserAvatar({ firstName, lastName, email, imageUrl, size = "medium", cla
       className={`user-avatar user-avatar-${size} ${className}`}
       style={{ backgroundColor: imageUrl ? undefined : getAvatarColor(email || firstName) }}
     >
-      {imageUrl ? <img src={getImageUrl(imageUrl)} alt="Profile" /> : <span>{initials}</span>}
+      {imageUrl ? <img src={getImageUrl(imageUrl)} alt="Profile" decoding="async" /> : <span>{initials}</span>}
     </div>
   );
 }

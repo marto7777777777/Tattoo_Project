@@ -1,5 +1,8 @@
 import { API_BASE_URL } from "./apiConfig";
 
+const jsonResponseCache = new Map();
+const inFlightJsonRequests = new Map();
+
 export function getToken() {
   return localStorage.getItem("token");
 }
@@ -25,6 +28,7 @@ export class ApiError extends Error {
 
 export async function apiRequest(path, options = {}) {
   const token = getToken();
+  const method = (options.method || "GET").toUpperCase();
   const headers = {
     ...(options.body && !(options.body instanceof FormData)
       ? { "Content-Type": "application/json" }
@@ -32,6 +36,8 @@ export async function apiRequest(path, options = {}) {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(options.headers || {}),
   };
+
+  if (method !== "GET") jsonResponseCache.clear();
 
   try {
     return await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
@@ -62,16 +68,53 @@ function getErrorMessage(data, response) {
 }
 
 export async function requestJson(path, options = {}) {
-  const response = await apiRequest(path, options);
-  const data = await readResponse(response);
+  const method = (options.method || "GET").toUpperCase();
+  const { cacheTtlMs = 0, ...requestOptions } = options;
+  const isGet = method === "GET";
+  const cacheKey = isGet ? `${getToken() || "public"}:${path}` : null;
 
-  if (!response.ok) {
-    throw new ApiError(getErrorMessage(data, response), {
-      status: response.status,
-      code: data?.code || "",
-      data,
-    });
+  if (!isGet) {
+    // A successful mutation may affect several resources. Clearing the small
+    // in-memory cache is safer than maintaining brittle endpoint dependency
+    // lists and never affects browser/service-worker caches.
+    jsonResponseCache.clear();
+  } else if (cacheTtlMs > 0) {
+    const cached = jsonResponseCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) return cached.data;
+    if (cached) jsonResponseCache.delete(cacheKey);
   }
 
-  return data;
+  if (isGet && inFlightJsonRequests.has(cacheKey)) {
+    return inFlightJsonRequests.get(cacheKey);
+  }
+
+  const execute = async () => {
+    const response = await apiRequest(path, requestOptions);
+    const data = await readResponse(response);
+
+    if (!response.ok) {
+      throw new ApiError(getErrorMessage(data, response), {
+        status: response.status,
+        code: data?.code || "",
+        data,
+      });
+    }
+
+    if (isGet && cacheTtlMs > 0) {
+      jsonResponseCache.set(cacheKey, { data, expiresAt: Date.now() + cacheTtlMs });
+    }
+
+    return data;
+  };
+
+  const request = execute();
+  if (isGet) inFlightJsonRequests.set(cacheKey, request);
+
+  try {
+    return await request;
+  } finally {
+    if (isGet && inFlightJsonRequests.get(cacheKey) === request) {
+      inFlightJsonRequests.delete(cacheKey);
+    }
+  }
 }

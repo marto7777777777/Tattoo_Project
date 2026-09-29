@@ -399,7 +399,7 @@ function MyTattooRequestsPage() {
                   <div className="image-grid request-image-grid request-project-gallery">
                     {selectedRequest.images.map((image, index) => (
                       <button className="request-detail-image-button" type="button" key={index} onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}>
-                        <img src={getImageUrl(image.imageUrl)} alt={`Reference ${index + 1}`} />
+                        <img src={getImageUrl(image.imageUrl)} alt={`Reference ${index + 1}`} loading="lazy" decoding="async" />
                       </button>
                     ))}
                   </div>

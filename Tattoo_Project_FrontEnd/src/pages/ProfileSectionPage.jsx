@@ -532,7 +532,7 @@ function ProfileSectionPage() {
 
                 {(profile.artist?.portfolioImages || []).map((image) => (
                   <div className="portfolio-manage-card" key={image.id}>
-                    <img src={getImageUrl(image.imageUrl)} alt="Portfolio" />
+                    <img src={getImageUrl(image.imageUrl)} alt="Portfolio" loading="lazy" decoding="async" />
                     <button className="portfolio-delete-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>
                       Delete
                     </button>

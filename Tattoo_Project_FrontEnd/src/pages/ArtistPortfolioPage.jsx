@@ -110,7 +110,7 @@ function ArtistPortfolioPage() {
                       key={`${imageUrl}-${index}`}
                       onClick={() => setSelectedImage(imageUrl)}
                     >
-                      <img src={imageUrl} alt={`${artist?.studioName || "Artist"} portfolio ${index + 1}`} />
+                      <img src={imageUrl} alt={`${artist?.studioName || "Artist"} portfolio ${index + 1}`} loading="lazy" decoding="async" fetchPriority="low" />
                       <span className="artist-portfolio-tile-overlay"><strong>View image</strong><small>{String(index + 1).padStart(2, "0")}</small></span>
                     </button>
                   );

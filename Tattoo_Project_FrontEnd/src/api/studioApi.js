@@ -1,26 +1,27 @@
 import { apiRequest, readResponse, requestJson } from "./http";
 import { getSearchAliases } from "../utils/searchAliases";
+import { optimizeImageForUpload } from "../utils/images";
 
 async function searchStudiosWithAliases(path, query) {
   const aliases = getSearchAliases(query);
-  const results = await Promise.allSettled(
-    aliases.map((alias) => {
+  let firstError = null;
+
+  // The previous implementation fired every language alias at once. On a
+  // single-core App Service that multiplied identical database work. Try the
+  // user's exact query first and only fall back when it returns no matches.
+  for (const alias of aliases) {
+    try {
       const suffix = alias ? `?query=${encodeURIComponent(alias)}` : "";
-      return requestJson(`${path}${suffix}`);
-    }),
-  );
-
-  const successfulResults = results
-    .filter((result) => result.status === "fulfilled")
-    .flatMap((result) => Array.isArray(result.value) ? result.value : []);
-
-  if (!successfulResults.length && results.every((result) => result.status === "rejected")) {
-    throw results[0].reason;
+      const result = await requestJson(`${path}${suffix}`, { cacheTtlMs: 30_000 });
+      if (Array.isArray(result) && result.length > 0) return result;
+      if (aliases.length === 1) return Array.isArray(result) ? result : [];
+    } catch (error) {
+      firstError ||= error;
+    }
   }
 
-  return Array.from(
-    new Map(successfulResults.map((studio) => [Number(studio.id), studio])).values(),
-  );
+  if (firstError) throw firstError;
+  return [];
 }
 
 export function getStudios(query = "") {
@@ -28,7 +29,7 @@ export function getStudios(query = "") {
 }
 
 export function getStudioById(studioId) {
-  return requestJson(`/api/Studio/${studioId}`);
+  return requestJson(`/api/Studio/${studioId}`, { cacheTtlMs: 30_000 });
 }
 
 export function searchOpenStudiosForJoin(query) {
@@ -82,7 +83,13 @@ export function createMyStudio(studio) {
 
 export async function uploadStudioImage(kind, file) {
   const formData = new FormData();
-  formData.append("image", file);
+  const isLogo = kind === "logo";
+  const optimizedFile = await optimizeImageForUpload(file, {
+    maxWidth: isLogo ? 1200 : 2048,
+    maxHeight: isLogo ? 1200 : 2048,
+    quality: 0.86,
+  });
+  formData.append("image", optimizedFile);
   const response = await apiRequest(`/api/Studio/mine/${kind}`, { method: "POST", body: formData });
   const data = await readResponse(response);
   if (!response.ok) throw new Error(typeof data === "string" ? data : data?.message || "Could not upload studio image.");

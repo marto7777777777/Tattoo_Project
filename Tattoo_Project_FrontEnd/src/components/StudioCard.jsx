@@ -63,7 +63,7 @@ function StudioCard({
   return (
     <article className="studio-card studio-card-premium">
       <div className={`studio-card-cover ${coverUrl ? "" : "studio-card-cover-empty"}`}>
-        {coverUrl && <img src={getImageUrl(coverUrl)} alt={`${studio.name} studio`} />}
+        {coverUrl && <img src={getImageUrl(coverUrl)} alt={`${studio.name} studio`} loading="lazy" decoding="async" fetchPriority="low" />}
         <div className="studio-card-cover-shade" />
         {showFavoriteButton && !isMyStudio && (
           <button
@@ -79,7 +79,7 @@ function StudioCard({
 
       <div className="studio-card-identity">
         <div className="studio-card-logo">
-          {logoUrl ? <img src={getImageUrl(logoUrl)} alt="" /> : <span>{initials(studio.name)}</span>}
+          {logoUrl ? <img src={getImageUrl(logoUrl)} alt="" loading="lazy" decoding="async" /> : <span>{initials(studio.name)}</span>}
         </div>
         {verified && <span className="studio-verified-badge">✓ Verified</span>}
       </div>
@@ -100,7 +100,7 @@ function StudioCard({
             {canLeft && <button className="studio-carousel-arrow left" type="button" onClick={() => move(-1)} aria-label="Previous portfolio images">‹</button>}
             <div className="studio-portfolio-track" ref={trackRef} onScroll={syncArrows}>
               {previews.map((url, index) => (
-                <img className="studio-portfolio-slide" key={`${url}-${index}`} src={getImageUrl(url)} alt={`${studio.name} portfolio ${index + 1}`} />
+                <img className="studio-portfolio-slide" key={`${url}-${index}`} src={getImageUrl(url)} alt={`${studio.name} portfolio ${index + 1}`} loading="lazy" decoding="async" fetchPriority="low" />
               ))}
             </div>
             {canRight && <button className="studio-carousel-arrow right" type="button" onClick={() => move(1)} aria-label="Next portfolio images">›</button>}

@@ -138,7 +138,7 @@ function StudioProfilePage() {
 
                 <div className="studio-public-portfolio">
                   {(artist.portfolioImageUrls || []).slice(0, 3).map((url, index) => (
-                    <img key={`${url}-${index}`} src={getImageUrl(url)} alt={`${artist.firstName} portfolio ${index + 1}`} />
+                    <img key={`${url}-${index}`} src={getImageUrl(url)} alt={`${artist.firstName} portfolio ${index + 1}`} loading="lazy" decoding="async" fetchPriority="low" />
                   ))}
                 </div>
 

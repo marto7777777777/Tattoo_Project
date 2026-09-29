@@ -107,7 +107,7 @@ function ArtistCard({ artist, index, isFavorite = false, showFavoriteButton = fa
                       onClick={() => setPreviewImage(imageUrl)}
                       aria-label={`Open portfolio image ${imageIndex + 1}`}
                     >
-                      <img src={imageUrl} alt={`${artist.studioName || artist.firstName} portfolio ${imageIndex + 1}`} />
+                      <img src={imageUrl} alt={`${artist.studioName || artist.firstName} portfolio ${imageIndex + 1}`} loading="lazy" decoding="async" fetchPriority="low" />
                       <span className="artist-mini-portfolio-zoom">↗</span>
                     </button>
                   );

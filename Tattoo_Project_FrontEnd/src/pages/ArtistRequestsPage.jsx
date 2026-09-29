@@ -505,7 +505,7 @@ function ArtistRequestsPage() {
               </div>
               <button className="artist-request-preview" type="button" onClick={() => request.images?.[0]?.imageUrl && setPreviewImage(getImageUrl(request.images[0].imageUrl))} aria-label="Open reference image">
                 {request.images?.[0]?.imageUrl ? (
-                  <img src={getImageUrl(request.images[0].imageUrl)} alt={`${getRequestTitle(request)} reference`} />
+                  <img src={getImageUrl(request.images[0].imageUrl)} alt={`${getRequestTitle(request)} reference`} loading="lazy" decoding="async" />
                 ) : (
                   <span className="artist-request-placeholder"><span>IR</span><small>No reference image</small></span>
                 )}
@@ -754,7 +754,7 @@ function ArtistRequestsPage() {
                   <div className="image-grid request-image-grid request-project-gallery">
                     {selectedRequest.images.map((image, index) => (
                       <button className="request-detail-image-button" type="button" key={index} onClick={() => setPreviewImage(getImageUrl(image.imageUrl))}>
-                        <img src={getImageUrl(image.imageUrl)} alt={`Tattoo reference ${index + 1}`} />
+                        <img src={getImageUrl(image.imageUrl)} alt={`Tattoo reference ${index + 1}`} loading="lazy" decoding="async" />
                       </button>
                     ))}
                   </div>

@@ -70,7 +70,7 @@ function PublicArtistPage() {
           </section>
         </div>
 
-        {artist.portfolioImages?.length > 0 && <section className="public-portfolio-section"><div className="section-heading"><p className="subtitle inline-subtitle">Selected work</p><h2>Portfolio</h2></div><div className="public-portfolio-grid">{artist.portfolioImages.map((image, index) => <img key={image.id || image.imageUrl} src={getImageUrl(image.imageUrl)} alt={`${fullName} portfolio ${index + 1}`} loading="lazy" />)}</div></section>}
+        {artist.portfolioImages?.length > 0 && <section className="public-portfolio-section"><div className="section-heading"><p className="subtitle inline-subtitle">Selected work</p><h2>Portfolio</h2></div><div className="public-portfolio-grid">{artist.portfolioImages.map((image, index) => <img key={image.id || image.imageUrl} src={getImageUrl(image.imageUrl)} alt={`${fullName} portfolio ${index + 1}`} loading="lazy" decoding="async" fetchPriority="low" />)}</div></section>}
 
         {artist.requirements?.length > 0 && <section className="card form-card public-requirements"><p className="subtitle inline-subtitle">Before you send a request</p><h2>Artist requirements</h2><ul>{artist.requirements.map((requirement) => <li key={requirement.id || requirement.description}>{requirement.description}</li>)}</ul></section>}
 

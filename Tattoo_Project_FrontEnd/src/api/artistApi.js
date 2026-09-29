@@ -1,19 +1,12 @@
-import { API_BASE_URL } from "./apiConfig";
-import { requestJson } from "./http";
+import { apiRequest, requestJson } from "./http";
 
 export function getPublicArtist(slug) {
-  return requestJson(`/api/TattooArtist/public/${encodeURIComponent(slug)}`);
+  return requestJson(`/api/TattooArtist/public/${encodeURIComponent(slug)}`, { cacheTtlMs: 30_000 });
 }
 
 export async function createArtistProfile(artistData) {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE_URL}/api/TattooArtist/profile`, {
+  const response = await apiRequest("/api/TattooArtist/profile", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(artistData),
   });
 
@@ -21,53 +14,20 @@ export async function createArtistProfile(artistData) {
 }
 
 export async function getAllArtists() {
-  const response = await fetch(`${API_BASE_URL}/api/TattooArtist`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  return response;
+  return apiRequest("/api/TattooArtist");
 }
 
 export async function searchArtists(query) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/TattooArtist/search?query=${encodeURIComponent(query)}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  return response;
+  return apiRequest(`/api/TattooArtist/search?query=${encodeURIComponent(query)}`);
 }
 
 export async function getRecommendedArtists() {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE_URL}/api/TattooArtist/recommended`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return response;
+  return apiRequest("/api/TattooArtist/recommended");
 }
 
 export async function updateArtistProfile(artistData) {
-  const token = localStorage.getItem("token");
-
-  return fetch(`${API_BASE_URL}/api/TattooArtist/profile`, {
+  return apiRequest("/api/TattooArtist/profile", {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
     body: JSON.stringify(artistData),
   });
 }

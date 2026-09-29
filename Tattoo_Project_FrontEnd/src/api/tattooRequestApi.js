@@ -1,4 +1,5 @@
 import { apiRequest } from "./http";
+import { optimizeImagesForUpload } from "../utils/images";
 
 export function getAllTattooRequests() {
   return apiRequest("/api/TattooRequest");
@@ -40,7 +41,13 @@ export async function createTattooRequestWithImages(requestData, files = []) {
   formData.append("placement", requestData.placement);
   formData.append("tattooStyle", requestData.tattooStyle);
 
-  files.forEach((file) => {
+  const optimizedFiles = await optimizeImagesForUpload(files, {
+    maxWidth: 2048,
+    maxHeight: 2048,
+    quality: 0.86,
+  });
+
+  optimizedFiles.forEach((file) => {
     formData.append("images", file);
   });
 
