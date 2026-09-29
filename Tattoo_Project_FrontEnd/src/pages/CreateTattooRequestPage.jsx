@@ -136,6 +136,7 @@ function CreateTattooRequestPage() {
   const [imageFiles, setImageFiles] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!aiReference?.imageUrl) return;
@@ -172,13 +173,16 @@ function CreateTattooRequestPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (isSubmitting) return;
     setError("");
     setSuccess("");
 
     if (!artistId) return setError("Please choose an artist before creating a tattoo request.");
     if (!form.placement) return setError("Please choose a body placement.");
     if (!form.tattooStyle) return setError("Please choose a tattoo style.");
+    if (!form.description.trim()) return setError("Please describe your tattoo idea.");
 
+    setIsSubmitting(true);
     try {
       const response = await createTattooRequestWithImages(
         {
@@ -192,7 +196,11 @@ function CreateTattooRequestPage() {
       const data = await readResponse(response);
 
       if (!response.ok) {
-        const message = typeof data === "string" ? data : JSON.stringify(data);
+        const message = typeof data === "string"
+          ? data
+          : data?.detail || data?.message || data?.title ||
+            Object.values(data?.errors || {}).flat().join(" ") ||
+            `Tattoo request could not be sent (${response.status}).`;
         if (message.includes("Client profile")) {
           navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(`/create-tattoo-request/${artistId}`)}`);
           return;
@@ -204,8 +212,10 @@ function CreateTattooRequestPage() {
       localStorage.removeItem("aiTattooReference");
       setSuccess("Tattoo request created successfully.");
       setTimeout(() => navigate("/bookings"), 800);
-    } catch {
-      setError("Server connection failed. Please try again.");
+    } catch (submitError) {
+      setError(submitError?.message || "Server connection failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -236,7 +246,7 @@ function CreateTattooRequestPage() {
 
         <section className="card form-card request-form-wide create-request-form">
           <div className="header"><p className="subtitle">Tattoo Request</p><h1>Describe your tattoo idea</h1><p>Choose the placement and style, then add your description and reference images.</p></div>
-          <form className="form" onSubmit={handleSubmit}>
+          <form className="form" onSubmit={handleSubmit} noValidate>
             <HorizontalSelector title="Where do you want it?" subtitle="Placement" value={form.placement} scrollRef={placementTrackRef}>
               {PLACEMENTS.map((option) => (
                 <button key={option.value} type="button" aria-pressed={form.placement === option.value} className={`visual-carousel-card ${form.placement === option.value ? "visual-option-selected" : ""}`} onClick={() => setForm((current) => ({ ...current, placement: option.value }))}>
@@ -255,7 +265,7 @@ function CreateTattooRequestPage() {
               ))}
             </HorizontalSelector>
 
-            <div className="form-group"><label>Description</label><textarea name="description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} required /></div>
+            <div className="form-group"><label>Description</label><textarea name="description" value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></div>
 
             <section className="section">
               <h2>Reference images</h2>
@@ -265,7 +275,9 @@ function CreateTattooRequestPage() {
 
             {error && <p className="error">{error}</p>}
             {success && <p className="success">{success}</p>}
-            <button className="primary-button">Send Tattoo Request</button>
+            <button className="primary-button" type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+              {isSubmitting ? "Sending Tattoo Request…" : "Send Tattoo Request"}
+            </button>
           </form>
         </section>
       </section>

@@ -1,5 +1,4 @@
-import { API_BASE_URL } from "./apiConfig";
-import { apiRequest, getToken } from "./http";
+import { apiRequest } from "./http";
 
 export function getAllTattooRequests() {
   return apiRequest("/api/TattooRequest");
@@ -34,7 +33,6 @@ export function createTattooRequest(requestData) {
 }
 
 export async function createTattooRequestWithImages(requestData, files = []) {
-  const token = getToken();
   const formData = new FormData();
 
   formData.append("tattooArtistId", requestData.tattooArtistId);
@@ -46,11 +44,8 @@ export async function createTattooRequestWithImages(requestData, files = []) {
     formData.append("images", file);
   });
 
-  return fetch(`${API_BASE_URL}/api/TattooRequest/with-images`, {
+  return apiRequest("/api/TattooRequest/with-images", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
     body: formData,
   });
 }
