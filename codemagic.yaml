@@ -4,6 +4,9 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m2
 
+    integrations:
+      app_store_connect: Ink Route
+
     environment:
       ios_signing:
         distribution_type: app_store
@@ -43,3 +46,7 @@ workflows:
       - Tattoo_Project_FrontEnd/ios/App/build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        auth: integration
