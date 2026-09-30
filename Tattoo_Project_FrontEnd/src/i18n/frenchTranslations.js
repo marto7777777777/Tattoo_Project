@@ -47,6 +47,7 @@ export const FR = {
   "Create account": "Créer un compte",
   "Sign in": "Se connecter",
   "Log in": "Se connecter",
+  "Logging in...": "Connexion en cours...",
   "Login": "Connexion",
   "Log out": "Se déconnecter",
   "Register": "S’inscrire",

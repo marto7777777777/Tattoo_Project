@@ -47,6 +47,7 @@ export const IT = {
   "Create account": "Crea account",
   "Sign in": "Accedi",
   "Log in": "Accedi",
+  "Logging in...": "Accesso in corso...",
   "Login": "Accesso",
   "Log out": "Esci",
   "Register": "Registrati",

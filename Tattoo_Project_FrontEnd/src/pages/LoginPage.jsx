@@ -10,11 +10,16 @@ function LoginPage() {
   const { saveAuthToken } = useAuth();
   const [form, setForm] = useState({ login: "", password: "" });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function handleChange(event) { setForm({ ...form, [event.target.name]: event.target.value }); }
 
   async function handleSubmit(event) {
-    event.preventDefault(); setError("");
+    event.preventDefault();
+    if (isSubmitting) return;
+
+    setError("");
+    setIsSubmitting(true);
     try {
       const response = await loginUser(form);
       const data = await readResponse(response);
@@ -26,7 +31,11 @@ function LoginPage() {
       else if (pendingRequest) navigate(`/create-client-profile?profileRequired=1&returnTo=${encodeURIComponent(pendingRequest)}`);
       else if (roles.length === 0) navigate("/choose-profile");
       else navigate("/explore");
-    } catch { setError("Server connection failed. Please try again."); }
+    } catch {
+      setError("Server connection failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -37,7 +46,9 @@ function LoginPage() {
           <div className="form-group"><label>Email or username</label><input name="login" autoComplete="username" value={form.login} onChange={handleChange} /></div>
           <div className="form-group"><label>Password</label><input name="password" type="password" autoComplete="current-password" value={form.password} onChange={handleChange} /></div>
           {error && <p className="error">{error}</p>}
-          <button className="primary-button" type="submit">Log in</button>
+          <button className="primary-button" type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+            {isSubmitting ? "Logging in..." : "Log in"}
+          </button>
         </form>
         <p className="muted footer-link"><Link to="/forgot-password">Forgot password?</Link></p>
         <p className="muted footer-link">No account? <Link to="/register">Register</Link></p>

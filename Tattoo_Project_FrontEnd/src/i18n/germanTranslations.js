@@ -48,6 +48,7 @@ export const DE = {
   "Create account": "Konto erstellen",
   "Sign in": "Anmelden",
   "Log in": "Anmelden",
+  "Logging in...": "Anmeldung läuft...",
   "Login": "Anmeldung",
   "Log out": "Abmelden",
   "Register": "Registrieren",

@@ -47,6 +47,7 @@ export const ES = {
   "Create account": "Crear cuenta",
   "Sign in": "Iniciar sesión",
   "Log in": "Iniciar sesión",
+  "Logging in...": "Iniciando sesión...",
   "Login": "Inicio de sesión",
   "Log out": "Cerrar sesión",
   "Register": "Registrarse",

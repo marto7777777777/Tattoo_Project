@@ -76,6 +76,7 @@ const BG = {
   "Create account": "Създай профил",
   "Sign in": "Вход",
   "Log in": "Вход",
+  "Logging in...": "Влизане...",
   "Login": "Вход",
   "Log out": "Изход",
   "Register": "Регистрация",
