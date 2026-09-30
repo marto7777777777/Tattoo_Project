@@ -310,10 +310,11 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService<int>> CreateTattooRequestWithImagesAsync(
             CreateTattooRequestWithImagesDto dto,
-            string userId)
+            string userId,
+            CancellationToken cancellationToken = default)
         {
             var client = await context.Clients
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
             if (client == null)
             {
@@ -322,7 +323,7 @@ namespace Tattoo_Project.Services
 
             var tattooArtist = await context.TattooArtists
                 .Include(a => a.Subscription)
-                .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
+                .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId, cancellationToken);
 
             if (tattooArtist == null || tattooArtist.StudioId == null)
             {
@@ -363,13 +364,22 @@ namespace Tattoo_Project.Services
             {
                 foreach (var image in dto.Images)
                 {
-                    var sanitized = await imageSanitizer.SanitizeAsync(image, 5 * 1024 * 1024, 30_000_000);
+                    var sanitized = await imageSanitizer.SanitizeAsync(
+                        image,
+                        5 * 1024 * 1024,
+                        30_000_000,
+                        cancellationToken);
                     if (!sanitized.Success)
                     {
                         foreach (var storedKey in storedKeys) await storage.DeleteAsync(storedKey);
                         return ResultService<int>.Fail(sanitized.ErrorMessage!);
                     }
-                    var key = await storage.SaveAsync(sanitized.Data!.Bytes, "tattoo-request-images", sanitized.Data.Extension, StoredFileVisibility.Private);
+                    var key = await storage.SaveAsync(
+                        sanitized.Data!.Bytes,
+                        "tattoo-request-images",
+                        sanitized.Data.Extension,
+                        StoredFileVisibility.Private,
+                        cancellationToken);
                     storedKeys.Add(key);
                     tattooRequest.Images.Add(new TattooReferenceImage { ImageUrl = key });
                 }
@@ -378,7 +388,7 @@ namespace Tattoo_Project.Services
             try
             {
                 context.TattooRequests.Add(tattooRequest);
-                await context.SaveChangesAsync();
+                await context.SaveChangesAsync(cancellationToken);
                 return ResultService<int>.Ok(tattooRequest.Id);
             }
             catch

@@ -34,7 +34,16 @@ namespace Tattoo_Project.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
-            var result = await service.GetMineAsync(userId);
+            var result = await service.GetMineAsync(userId, HttpContext.RequestAborted);
+            return result.Success ? Ok(result.Data) : BadRequest(result.ErrorMessage);
+        }
+
+        [HttpGet("my-favorite-ids")]
+        public async Task<IActionResult> GetMineIds()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+            var result = await service.GetMineIdsAsync(userId, HttpContext.RequestAborted);
             return result.Success ? Ok(result.Data) : BadRequest(result.ErrorMessage);
         }
     }

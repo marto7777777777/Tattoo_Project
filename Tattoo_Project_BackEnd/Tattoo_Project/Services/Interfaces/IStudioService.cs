@@ -6,9 +6,9 @@ namespace Tattoo_Project.Services.Interfaces
 {
     public interface IStudioService
     {
-        Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null);
+        Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null, CancellationToken cancellationToken = default);
         Task<ResultService<ICollection<StudioDto>>> SearchOpenStudiosForJoinAsync(string? query, string userId);
-        Task<ResultService<StudioDto>> GetStudioByIdAsync(int studioId);
+        Task<ResultService<StudioDto>> GetStudioByIdAsync(int studioId, CancellationToken cancellationToken = default);
         Task<ResultService<MyStudioDto>> GetMyStudioAsync(string userId);
         Task<ResultService> CreateStudioForExistingArtistAsync(CreateStudioDto dto, string userId);
         Task<ResultService> RequestJoinAsync(int studioId, string userId);

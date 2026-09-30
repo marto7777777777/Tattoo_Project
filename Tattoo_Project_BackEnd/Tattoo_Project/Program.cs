@@ -90,6 +90,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IClientService, ClientService>();
             builder.Services.AddScoped<ITattooArtistService, TattooArtistService>();
             builder.Services.AddScoped<IStudioService, StudioService>();
+            builder.Services.AddScoped<StudioReadService>();
             builder.Services.AddScoped<ITattooRequestService, TattooRequestService>();
             builder.Services.AddScoped<IArtistResponseService, ArtistResponseService>();
             builder.Services.AddScoped<IConsultationService, ConsultationService>();
@@ -152,7 +153,7 @@ namespace Tattoo_Project
             }
             StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
-            builder.Services.AddDbContext<TattooDbContext>(options => 
+            builder.Services.AddDbContextPool<TattooDbContext>(options => 
             options.UseSqlServer(
                 builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -198,9 +199,18 @@ namespace Tattoo_Project
                                 context.Fail("Session token is no longer valid.");
                                 return;
                             }
-                            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-                            var user = await userManager.FindByIdAsync(userId);
-                            if (user == null || !int.TryParse(tokenVersion, out var parsed) || parsed != user.TokenVersion)
+                            if (!int.TryParse(tokenVersion, out var parsed))
+                            {
+                                context.Fail("Session token is no longer valid.");
+                                return;
+                            }
+                            var db = context.HttpContext.RequestServices.GetRequiredService<TattooDbContext>();
+                            var currentVersion = await db.Users
+                                .AsNoTracking()
+                                .Where(user => user.Id == userId)
+                                .Select(user => (int?)user.TokenVersion)
+                                .SingleOrDefaultAsync(context.HttpContext.RequestAborted);
+                            if (currentVersion == null || parsed != currentVersion.Value)
                                 context.Fail("Session token is no longer valid.");
                         }
                     };

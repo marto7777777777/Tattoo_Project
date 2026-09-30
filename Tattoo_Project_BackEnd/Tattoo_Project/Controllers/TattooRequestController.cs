@@ -145,7 +145,10 @@ namespace Tattoo_Project.Controllers
                 return Unauthorized();
             }
 
-            var result = await service.CreateTattooRequestWithImagesAsync(dto, userId);
+            var result = await service.CreateTattooRequestWithImagesAsync(
+                dto,
+                userId,
+                HttpContext.RequestAborted);
 
             if (!result.Success)
             {

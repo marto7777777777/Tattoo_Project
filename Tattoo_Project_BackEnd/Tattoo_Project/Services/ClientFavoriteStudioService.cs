@@ -7,20 +7,29 @@ using Tattoo_Project.Services.Results;
 
 namespace Tattoo_Project.Services
 {
-    public class ClientFavoriteStudioService(TattooDbContext context, IPrivateMediaUrlService mediaUrls, TimeProvider timeProvider) : IClientFavoriteStudioService
+    public class ClientFavoriteStudioService(TattooDbContext context, TimeProvider timeProvider, StudioReadService studioReader) : IClientFavoriteStudioService
     {
         public async Task<ResultService> AddAsync(int studioId, string userId)
         {
-            var client = await context.Clients.FirstOrDefaultAsync(x => x.UserId == userId);
-            if (client == null) return ResultService.Fail("Client profile not found.");
-            if (!await context.Studios.AnyAsync(x => x.Id == studioId && x.Artists.Any()))
+            var clientId = await context.Clients
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(x => (int?)x.Id)
+                .SingleOrDefaultAsync();
+            if (clientId == null) return ResultService.Fail("Client profile not found.");
+            var now = timeProvider.GetUtcNow().UtcDateTime;
+            if (!await context.Studios.AsNoTracking().AnyAsync(x =>
+                    x.Id == studioId && x.Artists.Any(a => a.Subscription != null &&
+                        ((a.Subscription.Status == ArtistSubscriptionStatuses.Trialing && a.Subscription.TrialEndsAt > now) ||
+                         (a.Subscription.Status == ArtistSubscriptionStatuses.GracePeriod && a.Subscription.CurrentPeriodEndsAt > now) ||
+                         (a.Subscription.Status == ArtistSubscriptionStatuses.Active && a.Subscription.CurrentPeriodEndsAt > now)))))
                 return ResultService.Fail("Studio not found.");
-            if (await context.ClientFavoriteStudios.AnyAsync(x => x.ClientId == client.Id && x.StudioId == studioId))
+            if (await context.ClientFavoriteStudios.AnyAsync(x => x.ClientId == clientId.Value && x.StudioId == studioId))
                 return ResultService.Fail("This studio is already in your favorites.");
 
             context.ClientFavoriteStudios.Add(new ClientFavoriteStudio
             {
-                ClientId = client.Id,
+                ClientId = clientId.Value,
                 StudioId = studioId,
                 CreatedOn = timeProvider.GetUtcNow().UtcDateTime
             });
@@ -30,8 +39,14 @@ namespace Tattoo_Project.Services
 
         public async Task<ResultService> RemoveAsync(int studioId, string userId)
         {
+            var clientId = await context.Clients
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(x => (int?)x.Id)
+                .SingleOrDefaultAsync();
+            if (clientId == null) return ResultService.Fail("Client profile not found.");
             var favorite = await context.ClientFavoriteStudios
-                .FirstOrDefaultAsync(x => x.Client.UserId == userId && x.StudioId == studioId);
+                .FirstOrDefaultAsync(x => x.ClientId == clientId.Value && x.StudioId == studioId);
             if (favorite == null) return ResultService.Fail("This studio is not in your favorites.");
 
             context.ClientFavoriteStudios.Remove(favorite);
@@ -39,42 +54,44 @@ namespace Tattoo_Project.Services
             return ResultService.Ok();
         }
 
-        public async Task<ResultService<ICollection<StudioDto>>> GetMineAsync(string userId)
+        public async Task<ResultService<ICollection<StudioDto>>> GetMineAsync(string userId, CancellationToken cancellationToken = default)
         {
-            var clientExists = await context.Clients.AnyAsync(x => x.UserId == userId);
-            if (!clientExists)
+            var clientId = await context.Clients
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(x => (int?)x.Id)
+                .SingleOrDefaultAsync(cancellationToken);
+            if (clientId == null)
                 return ResultService<ICollection<StudioDto>>.Fail("Client profile not found.");
 
-            var favorites = await context.ClientFavoriteStudios
+            var favoriteStudioIds = await context.ClientFavoriteStudios
                 .AsNoTracking()
-                .Where(x => x.Client.UserId == userId && x.Studio.Artists.Any())
-                .Include(x => x.Studio)
-                    .ThenInclude(x => x.Artists)
-                        .ThenInclude(x => x.User)
-                .Include(x => x.Studio)
-                    .ThenInclude(x => x.Artists)
-                        .ThenInclude(x => x.Reviews)
-                .Include(x => x.Studio)
-                    .ThenInclude(x => x.Artists)
-                        .ThenInclude(x => x.PortfolioImages)
-                .Include(x => x.Studio)
-                    .ThenInclude(x => x.Artists)
-                        .ThenInclude(x => x.SpecialtyStyles)
-                .Include(x => x.Studio)
-                    .ThenInclude(x => x.Artists)
-                        .ThenInclude(x => x.Subscription)
+                .Where(x => x.ClientId == clientId.Value)
                 .OrderByDescending(x => x.CreatedOn)
-                .AsSplitQuery()
-                .ToListAsync();
+                .Select(x => x.StudioId)
+                .ToListAsync(cancellationToken);
 
-            var studios = favorites.Select(x => x.Studio).ToList();
+            var studios = await studioReader.GetPublicStudiosByIdAsync(favoriteStudioIds, cancellationToken);
+            return ResultService<ICollection<StudioDto>>.Ok(studios);
+        }
 
-            var now = timeProvider.GetUtcNow().UtcDateTime;
+        public async Task<ResultService<ICollection<int>>> GetMineIdsAsync(string userId, CancellationToken cancellationToken = default)
+        {
+            var clientId = await context.Clients
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(x => (int?)x.Id)
+                .SingleOrDefaultAsync(cancellationToken);
+            if (clientId == null)
+                return ResultService<ICollection<int>>.Fail("Client profile not found.");
 
-            return ResultService<ICollection<StudioDto>>.Ok(
-                studios
-                    .Select(s => StudioService.MapStudio(s, mediaUrls, now))
-                    .ToList());
+            var ids = await context.ClientFavoriteStudios
+                .AsNoTracking()
+                .Where(x => x.ClientId == clientId.Value)
+                .OrderByDescending(x => x.CreatedOn)
+                .Select(x => x.StudioId)
+                .ToListAsync(cancellationToken);
+            return ResultService<ICollection<int>>.Ok(ids);
         }
     }
 }

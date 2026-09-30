@@ -5,5 +5,6 @@ namespace Tattoo_Project.Services.Interfaces
     public interface ITokenService
     {
         Task<string> GenerateJwtTokenAsync(ApplicationUser user);
+        Task<string> GenerateJwtTokenAsync(ApplicationUser user, IEnumerable<string> roles);
     }
 }

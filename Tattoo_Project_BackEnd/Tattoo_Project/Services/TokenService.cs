@@ -17,6 +17,11 @@ namespace Tattoo_Project.Services
         public async Task<string> GenerateJwtTokenAsync(ApplicationUser user)
         {
             var roles = await userManager.GetRolesAsync(user);
+            return await GenerateJwtTokenAsync(user, roles);
+        }
+
+        public Task<string> GenerateJwtTokenAsync(ApplicationUser user, IEnumerable<string> roles)
+        {
 
             var claims = new List<Claim>
             {
@@ -48,7 +53,7 @@ namespace Tattoo_Project.Services
                 expires: timeProvider.GetUtcNow().UtcDateTime.AddMinutes(expiresInMinutes),
                 signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Task.FromResult(new JwtSecurityTokenHandler().WriteToken(token));
         }
     }
 }

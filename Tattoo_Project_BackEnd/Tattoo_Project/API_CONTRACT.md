@@ -61,6 +61,7 @@
 | `POST` | `/api/[controller]/{studioId:int}` | Authorize | — | `Task<IActionResult>` | `ClientFavoriteStudioController.cs::Add` |
 | `DELETE` | `/api/[controller]/{studioId:int}` | Authorize | — | `Task<IActionResult>` | `ClientFavoriteStudioController.cs::Remove` |
 | `GET` | `/api/[controller]/my-favorites` | Authorize | — | `Task<IActionResult>` | `ClientFavoriteStudioController.cs::GetMine` |
+| `GET` | `/api/[controller]/my-favorite-ids` | Authorize | — | `Task<IActionResult>` | `ClientFavoriteStudioController.cs::GetMineIds` |
 | `GET` | `/api/[controller]` | Authorize | — | `Task<IActionResult>` | `ConsultationController.cs::GetAllConsultations` |
 | `GET` | `/api/[controller]/{id}` | Authorize | — | `Task<IActionResult>` | `ConsultationController.cs::GetConsultationById` |
 | `POST` | `/api/[controller]` | Authorize | CreateConsultationDto | `Task<IActionResult>` | `ConsultationController.cs::CreateConsultation` |

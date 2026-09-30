@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Tattoo_Project.Services.Interfaces;
 
 namespace Tattoo_Project.Services;
@@ -18,7 +19,20 @@ public sealed class LocalFileStorage(IConfiguration configuration, IWebHostEnvir
         var key = $"{prefix}/{safeCategory}/{Guid.NewGuid():N}{extension}";
         var path = ResolveManagedPath(key);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        await File.WriteAllBytesAsync(path, content.ToArray(), cancellationToken);
+        var timer = Stopwatch.StartNew();
+        await using (var destination = new FileStream(
+            path,
+            FileMode.CreateNew,
+            FileAccess.Write,
+            FileShare.None,
+            bufferSize: 64 * 1024,
+            options: FileOptions.Asynchronous | FileOptions.SequentialScan))
+        {
+            await destination.WriteAsync(content, cancellationToken);
+        }
+        logger.LogInformation(
+            "Stored {Bytes} media bytes in category {Category} in {ElapsedMs}ms.",
+            content.Length, safeCategory, timer.ElapsedMilliseconds);
         return key;
     }
 

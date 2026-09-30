@@ -15,7 +15,7 @@ namespace Tattoo_Project.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStudios([FromQuery] string? query = null)
         {
-            var result = await service.GetStudiosAsync(query);
+            var result = await service.GetStudiosAsync(query, HttpContext.RequestAborted);
             if (!result.Success) return BadRequest(result.ErrorMessage);
             return Ok(result.Data);
         }
@@ -23,7 +23,7 @@ namespace Tattoo_Project.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetStudio(int id)
         {
-            var result = await service.GetStudioByIdAsync(id);
+            var result = await service.GetStudioByIdAsync(id, HttpContext.RequestAborted);
             if (!result.Success) return NotFound(result.ErrorMessage);
             return Ok(result.Data);
         }

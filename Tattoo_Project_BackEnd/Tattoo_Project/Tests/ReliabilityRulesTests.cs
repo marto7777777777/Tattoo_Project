@@ -1,12 +1,58 @@
 using System.Text.Json;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services;
+using Tattoo_Project.Security;
+using System.Buffers.Binary;
 using Xunit;
 
 namespace InkRoute.Backend.Tests;
 
 public class ReliabilityRulesTests
 {
+    private static byte[] WebP(params (string Name, byte[] Data)[] chunks)
+    {
+        using var stream = new MemoryStream();
+        stream.Write("RIFF"u8);
+        stream.Write(new byte[4]);
+        stream.Write("WEBP"u8);
+        foreach (var (name, data) in chunks)
+        {
+            stream.Write(System.Text.Encoding.ASCII.GetBytes(name));
+            Span<byte> length = stackalloc byte[4];
+            BinaryPrimitives.WriteUInt32LittleEndian(length, (uint)data.Length);
+            stream.Write(length);
+            stream.Write(data);
+            if ((data.Length & 1) != 0) stream.WriteByte(0);
+        }
+        var bytes = stream.ToArray();
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(4, 4), (uint)bytes.Length - 8);
+        return bytes;
+    }
+
+    [Fact]
+    public void WebPFastPath_AcceptsCanonicalPixelsOnly()
+    {
+        Assert.True(WebPFastPathRules.IsSafeCanonicalWebP(WebP(("VP8 ", new byte[4]))));
+    }
+
+    [Theory]
+    [InlineData("EXIF")]
+    [InlineData("XMP ")]
+    [InlineData("ICCP")]
+    [InlineData("ANIM")]
+    public void WebPFastPath_RejectsMetadataAndAnimation(string chunk)
+    {
+        Assert.False(WebPFastPathRules.IsSafeCanonicalWebP(
+            WebP(("VP8 ", new byte[4]), (chunk, new byte[4]))));
+    }
+
+    [Fact]
+    public void WebPFastPath_RejectsTrailingPayload()
+    {
+        var canonical = WebP(("VP8 ", new byte[4]));
+        Assert.False(WebPFastPathRules.IsSafeCanonicalWebP([.. canonical, 0x01]));
+    }
+
     [Fact]
     public void ActiveAiPass_ExtendsFromExistingEnd()
     {

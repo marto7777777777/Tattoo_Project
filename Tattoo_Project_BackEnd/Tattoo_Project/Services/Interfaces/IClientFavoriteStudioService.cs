@@ -7,6 +7,7 @@ namespace Tattoo_Project.Services.Interfaces
     {
         Task<ResultService> AddAsync(int studioId, string userId);
         Task<ResultService> RemoveAsync(int studioId, string userId);
-        Task<ResultService<ICollection<StudioDto>>> GetMineAsync(string userId);
+        Task<ResultService<ICollection<StudioDto>>> GetMineAsync(string userId, CancellationToken cancellationToken = default);
+        Task<ResultService<ICollection<int>>> GetMineIdsAsync(string userId, CancellationToken cancellationToken = default);
     }
 }

@@ -4,6 +4,8 @@ using Tattoo_Project.DTOs.AuthDTOs;
 using Tattoo_Project.Models;
 using Tattoo_Project.Services.Interfaces;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tattoo_Project.Controllers
 {
@@ -13,7 +15,8 @@ namespace Tattoo_Project.Controllers
     public class AuthController(
         UserManager<ApplicationUser> userManager,
         ITokenService tokenService,
-        IEmailVerificationService emailVerificationService)
+        IEmailVerificationService emailVerificationService,
+        ILogger<AuthController> logger)
         : ControllerBase
     {
         [HttpPost("register")]
@@ -104,15 +107,28 @@ namespace Tattoo_Project.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var user = await userManager.FindByEmailAsync(dto.Login)
-                       ?? await userManager.FindByNameAsync(dto.Login);
+            var login = dto.Login.Trim();
+            var normalizedEmail = userManager.NormalizeEmail(login);
+            var normalizedUserName = userManager.NormalizeName(login);
+            var user = await userManager.Users
+                .Where(candidate =>
+                    candidate.NormalizedEmail == normalizedEmail ||
+                    candidate.NormalizedUserName == normalizedUserName)
+                .OrderByDescending(candidate => candidate.NormalizedEmail == normalizedEmail)
+                .FirstOrDefaultAsync(HttpContext.RequestAborted);
 
             if (user == null)
             {
                 return Unauthorized("Invalid login or password.");
             }
 
+            var passwordTimer = Stopwatch.StartNew();
             var isPasswordValid = await userManager.CheckPasswordAsync(user, dto.Password);
+            passwordTimer.Stop();
+            logger.LogInformation(
+                "Password verification completed in {ElapsedMs}ms (success: {Success}).",
+                passwordTimer.ElapsedMilliseconds,
+                isPasswordValid);
 
             if (!isPasswordValid)
             {
@@ -125,7 +141,7 @@ namespace Tattoo_Project.Controllers
             }
 
             var roles = await userManager.GetRolesAsync(user);
-            var token = await tokenService.GenerateJwtTokenAsync(user);
+            var token = await tokenService.GenerateJwtTokenAsync(user, roles);
 
             return Ok(new AuthResponseDto
             {

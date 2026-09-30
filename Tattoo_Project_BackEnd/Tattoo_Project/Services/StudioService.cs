@@ -10,41 +10,12 @@ using Tattoo_Project.Security;
 
 namespace Tattoo_Project.Services
 {
-    public class StudioService(TattooDbContext context, IWebHostEnvironment environment, IFileStorage storage, IImageSanitizer imageSanitizer, IPrivateMediaUrlService mediaUrls, TimeProvider timeProvider) : IStudioService
+    public class StudioService(TattooDbContext context, IWebHostEnvironment environment, IFileStorage storage, IImageSanitizer imageSanitizer, IPrivateMediaUrlService mediaUrls, TimeProvider timeProvider, StudioReadService studioReader) : IStudioService
     {
-        public async Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null)
+        public async Task<ResultService<ICollection<StudioDto>>> GetStudiosAsync(string? query = null, CancellationToken cancellationToken = default)
         {
-            var studiosQuery = BaseStudioQuery();
-            var now = timeProvider.GetUtcNow().UtcDateTime;
-
-            var studios = await studiosQuery
-                .Where(s => s.Artists.Any(a => a.Subscription != null &&
-                    ((a.Subscription.Status == ArtistSubscriptionStatuses.Trialing && a.Subscription.TrialEndsAt > now) ||
-                     (a.Subscription.Status == ArtistSubscriptionStatuses.GracePeriod && a.Subscription.CurrentPeriodEndsAt > now) ||
-                     (a.Subscription.Status == ArtistSubscriptionStatuses.Active && a.Subscription.CurrentPeriodEndsAt > now))))
-                .OrderBy(s => s.Name)
-                .ThenBy(s => s.City)
-                .ToListAsync();
-
-            if (!string.IsNullOrWhiteSpace(query))
-            {
-                var tokens = NormalizeSearch(query).Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                studios = studios.Where(studio =>
-                {
-                    var searchable = NormalizeSearch(string.Join(" ", new[]
-                    {
-                        studio.Name, studio.City, studio.Country, studio.Address,
-                        string.Join(" ", studio.Artists.SelectMany(a => new[]
-                        {
-                            a.FirstName, a.LastName,
-                            string.Join(" ", a.SpecialtyStyles.Select(x => x.Name))
-                        }))
-                    }));
-                    return tokens.All(token => searchable.Contains(token, StringComparison.Ordinal));
-                }).ToList();
-            }
-
-            return ResultService<ICollection<StudioDto>>.Ok(studios.Select(MapStudio).ToList());
+            var studios = await studioReader.GetPublicStudiosAsync(query, cancellationToken);
+            return ResultService<ICollection<StudioDto>>.Ok(studios);
         }
 
         public async Task<ResultService<ICollection<StudioDto>>> SearchOpenStudiosForJoinAsync(string? query, string userId)
@@ -77,19 +48,15 @@ namespace Tattoo_Project.Services
             return ResultService<ICollection<StudioDto>>.Ok(studios.Select(MapStudio).ToList());
         }
 
-        public async Task<ResultService<StudioDto>> GetStudioByIdAsync(int studioId)
+        public async Task<ResultService<StudioDto>> GetStudioByIdAsync(int studioId, CancellationToken cancellationToken = default)
         {
-            var now = timeProvider.GetUtcNow().UtcDateTime;
-            var studio = await BaseStudioQuery().FirstOrDefaultAsync(s => s.Id == studioId && s.Artists.Any(a => a.Subscription != null &&
-                ((a.Subscription.Status == ArtistSubscriptionStatuses.Trialing && a.Subscription.TrialEndsAt > now) ||
-                 (a.Subscription.Status == ArtistSubscriptionStatuses.GracePeriod && a.Subscription.CurrentPeriodEndsAt > now) ||
-                 (a.Subscription.Status == ArtistSubscriptionStatuses.Active && a.Subscription.CurrentPeriodEndsAt > now))));
+            var studio = await studioReader.GetPublicStudioAsync(studioId, cancellationToken);
             if (studio == null)
             {
                 return ResultService<StudioDto>.Fail("Studio was not found.");
             }
 
-            return ResultService<StudioDto>.Ok(MapStudio(studio));
+            return ResultService<StudioDto>.Ok(studio);
         }
 
         public async Task<ResultService<MyStudioDto>> GetMyStudioAsync(string userId)

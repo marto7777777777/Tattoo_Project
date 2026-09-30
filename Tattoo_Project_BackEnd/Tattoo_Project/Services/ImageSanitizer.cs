@@ -1,11 +1,13 @@
+using System.Diagnostics;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Webp;
 using Tattoo_Project.Services.Interfaces;
 using Tattoo_Project.Services.Results;
+using Tattoo_Project.Security;
 
 namespace Tattoo_Project.Services;
 
-public sealed class ImageSanitizer : IImageSanitizer
+public sealed class ImageSanitizer(ILogger<ImageSanitizer> logger) : IImageSanitizer
 {
     public async Task<ResultService<SanitizedImage>> SanitizeAsync(IFormFile file, long maxBytes, long maxPixels, CancellationToken cancellationToken = default)
     {
@@ -13,11 +15,33 @@ public sealed class ImageSanitizer : IImageSanitizer
         if (file.Length > maxBytes) return ResultService<SanitizedImage>.Fail("Image file is too large.");
         try
         {
-            await using var input = file.OpenReadStream();
+            var totalTimer = Stopwatch.StartNew();
+            await using var uploaded = file.OpenReadStream();
+            await using var input = new MemoryStream((int)Math.Min(file.Length, int.MaxValue));
+            await uploaded.CopyToAsync(input, cancellationToken);
+            var originalBytes = input.ToArray();
+            input.Position = 0;
+
+            var decodeTimer = Stopwatch.StartNew();
             using var image = await Image.LoadAsync(input, cancellationToken);
+            decodeTimer.Stop();
             var pixels = checked((long)image.Width * image.Height);
             if (image.Width <= 0 || image.Height <= 0 || pixels > maxPixels)
                 return ResultService<SanitizedImage>.Fail("Image dimensions are too large.");
+
+            // Browser-side uploads are already normalized WebP files. They still receive a
+            // complete server-side decode, dimension validation and strict RIFF inspection,
+            // but do not pay for a second lossy WebP encode when there is no metadata,
+            // animation or trailing payload to remove.
+            if (WebPFastPathRules.IsSafeCanonicalWebP(originalBytes))
+            {
+                logger.LogInformation(
+                    "Image validated through WebP fast path in {ElapsedMs}ms (decode {DecodeMs}ms, {Width}x{Height}, {Bytes} bytes).",
+                    totalTimer.ElapsedMilliseconds, decodeTimer.ElapsedMilliseconds,
+                    image.Width, image.Height, originalBytes.Length);
+                return ResultService<SanitizedImage>.Ok(
+                    new SanitizedImage(originalBytes, ".webp", "image/webp", image.Width, image.Height));
+            }
 
             // Strip metadata by clearing profiles and re-encoding. The original bytes are never served.
             image.Metadata.ExifProfile = null;
@@ -25,7 +49,13 @@ public sealed class ImageSanitizer : IImageSanitizer
             image.Metadata.IptcProfile = null;
             image.Metadata.XmpProfile = null;
             await using var output = new MemoryStream();
+            var encodeTimer = Stopwatch.StartNew();
             await image.SaveAsync(output, new WebpEncoder { Quality = 90 }, cancellationToken);
+            encodeTimer.Stop();
+            logger.LogInformation(
+                "Image sanitized through re-encode path in {ElapsedMs}ms (decode {DecodeMs}ms, encode {EncodeMs}ms, {Width}x{Height}).",
+                totalTimer.ElapsedMilliseconds, decodeTimer.ElapsedMilliseconds,
+                encodeTimer.ElapsedMilliseconds, image.Width, image.Height);
             return ResultService<SanitizedImage>.Ok(new SanitizedImage(output.ToArray(), ".webp", "image/webp", image.Width, image.Height));
         }
         catch (UnknownImageFormatException)
@@ -41,4 +71,5 @@ public sealed class ImageSanitizer : IImageSanitizer
             return ResultService<SanitizedImage>.Fail("Image dimensions are invalid.");
         }
     }
+
 }
