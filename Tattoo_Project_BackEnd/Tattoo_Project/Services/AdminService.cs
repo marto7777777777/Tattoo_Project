@@ -381,13 +381,19 @@ public class AdminService(
             .Where(x => x.TattooArtistId == artistId)
             .Select(x => x.ImageUrl)
             .ToListAsync();
+        var moderationMedia = await context.ArtistModerationSubmissionImages
+            .Where(x => x.Submission.TattooArtistId == artistId)
+            .Select(x => x.ImageUrl)
+            .ToListAsync();
         await context.Set<PortfolioImage>().Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
+        await context.ArtistModerationSubmissions.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
+        await context.ArtistReports.Where(x => x.ReportedArtistId == artistId).ExecuteDeleteAsync();
         await context.AnalyticsOutboxEvents.Where(x => x.TattooArtistId == artistId).ExecuteDeleteAsync();
 
         context.TattooArtists.Remove(artist);
         await context.SaveChangesAsync();
 
-        foreach (var media in portfolioMedia)
+        foreach (var media in portfolioMedia.Concat(moderationMedia).Distinct(StringComparer.Ordinal))
         {
             if (deferredMedia != null) deferredMedia.Add(media); else await storage.DeleteAsync(media);
         }

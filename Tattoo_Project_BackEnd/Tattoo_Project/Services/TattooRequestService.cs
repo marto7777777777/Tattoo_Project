@@ -261,9 +261,9 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Subscription)
                 .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId);
 
-            if (tattooArtist == null || tattooArtist.StudioId == null)
+            if (tattooArtist == null || tattooArtist.StudioId == null || tattooArtist.ModerationStatus != ArtistModerationStatus.Active)
             {
-                return ResultService.Fail("Tattoo artist was not found or is not currently part of a studio.");
+                return ResultService.Fail("Tattoo artist was not found or is not currently available for new requests.");
             }
 
             if (tattooArtist.Subscription == null || !SubscriptionEntitlementRules.HasAccess(tattooArtist.Subscription, timeProvider.GetUtcNow().UtcDateTime))
@@ -325,9 +325,9 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Subscription)
                 .FirstOrDefaultAsync(a => a.Id == dto.TattooArtistId, cancellationToken);
 
-            if (tattooArtist == null || tattooArtist.StudioId == null)
+            if (tattooArtist == null || tattooArtist.StudioId == null || tattooArtist.ModerationStatus != ArtistModerationStatus.Active)
             {
-                return ResultService<int>.Fail("Tattoo artist was not found or is not currently part of a studio.");
+                return ResultService<int>.Fail("Tattoo artist was not found or is not currently available for new requests.");
             }
 
             if (tattooArtist.Subscription == null || !SubscriptionEntitlementRules.HasAccess(tattooArtist.Subscription, timeProvider.GetUtcNow().UtcDateTime))

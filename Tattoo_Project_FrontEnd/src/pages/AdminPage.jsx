@@ -12,6 +12,8 @@ import {
   setAdminArtistVerified,
 } from "../api/adminApi";
 import { getUiLanguage, getUiLocale } from "../i18n/locale";
+import { getAdminReports, getAdminModerationSubmissions, reviewAdminReport, reviewAdminSubmission } from "../api/moderationApi";
+import { getImageUrl } from "../utils/images";
 import { translateUiText } from "../i18n/translate";
 
 function AdminPage() {
@@ -19,6 +21,8 @@ function AdminPage() {
   const [users, setUsers] = useState([]);
   const [requests, setRequests] = useState([]);
   const [aiProjects, setAiProjects] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [moderationSubmissions, setModerationSubmissions] = useState([]);
   const [tab, setTab] = useState("users");
   const [loading, setLoading] = useState(true);
   const [busyKey, setBusyKey] = useState("");
@@ -29,16 +33,20 @@ function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const [overviewData, usersData, requestsData, aiData] = await Promise.all([
+      const [overviewData, usersData, requestsData, aiData, reportsData, submissionsData] = await Promise.all([
         getAdminOverview(),
         getAdminUsers(),
         getAdminTattooRequests(),
         getAdminAiProjects(),
+        getAdminReports(),
+        getAdminModerationSubmissions(),
       ]);
       setOverview(overviewData);
       setUsers(usersData || []);
       setRequests(requestsData || []);
       setAiProjects(aiData || []);
+      setReports(reportsData || []);
+      setModerationSubmissions(submissionsData || []);
     } catch (err) {
       setError(err.message || "Admin data could not be loaded.");
     } finally {
@@ -99,6 +107,8 @@ function AdminPage() {
           <button type="button" aria-pressed={tab === "users"} className={tab === "users" ? "active" : ""} onClick={() => setTab("users")}>Users & profiles</button>
           <button type="button" aria-pressed={tab === "requests"} className={tab === "requests" ? "active" : ""} onClick={() => setTab("requests")}>Tattoo requests</button>
           <button type="button" aria-pressed={tab === "ai"} className={tab === "ai" ? "active" : ""} onClick={() => setTab("ai")}>AI projects</button>
+          <button type="button" aria-pressed={tab === "reports"} className={tab === "reports" ? "active" : ""} onClick={() => setTab("reports")}>Artist reports</button>
+          <button type="button" aria-pressed={tab === "moderation"} className={tab === "moderation" ? "active" : ""} onClick={() => setTab("moderation")}>Reinstatement</button>
         </div>
 
         {tab === "users" && (
@@ -162,6 +172,56 @@ function AdminPage() {
                     <td><span>{project.tattooStyle}</span><small>{project.placement}</small></td>
                     <td>{project.versionCount}</td><td>{new Date(project.updatedAt).toLocaleString(getUiLocale())}</td>
                     <td><button className="admin-delete-button" disabled={busyKey === `ai-${project.id}`} onClick={() => runAction(`ai-${project.id}`, `Permanently delete AI project #${project.id} and all generated versions?`, () => deleteAdminAiProject(project.id))}>Delete AI project</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {tab === "reports" && (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead><tr><th>Report</th><th>Reporter</th><th>Artist</th><th>Reason</th><th>Status</th><th>Created</th><th>Action</th></tr></thead>
+              <tbody>
+                {reports.map((report) => (
+                  <tr key={report.id}>
+                    <td><strong>#{report.id}</strong>{report.description && <small>{report.description}</small>}</td>
+                    <td>{report.reporterName}<small>{report.reporterEmail}</small></td>
+                    <td><strong>{report.reportedArtistName}</strong><small>{report.reportedArtistEmail}</small><a className="admin-inline-link" href={`/artist/${report.publicProfileSlug}`} target="_blank" rel="noreferrer">Open public profile</a></td>
+                    <td>{report.reason}</td>
+                    <td><span className="admin-status">{report.status}</span></td>
+                    <td>{new Date(report.createdAtUtc).toLocaleString(getUiLocale())}</td>
+                    <td>
+                      {report.status === "Pending" ? <div className="admin-actions">
+                        <button disabled={busyKey === `report-dismiss-${report.id}`} onClick={() => runAction(`report-dismiss-${report.id}`, null, () => reviewAdminReport(report.id, false, window.prompt("Optional admin note", "")))}>Dismiss</button>
+                        <button className="danger" disabled={busyKey === `report-block-${report.id}`} onClick={() => runAction(`report-block-${report.id}`, `Block artist ${report.reportedArtistName} after reviewing report #${report.id}?`, () => reviewAdminReport(report.id, true, window.prompt("Block reason / admin note", "")))}>Block artist</button>
+                      </div> : <small>{report.decisionNote || "Reviewed"}</small>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {tab === "moderation" && (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead><tr><th>Artist</th><th>Status</th><th>Images</th><th>Source report</th><th>Created</th><th>Action</th></tr></thead>
+              <tbody>
+                {moderationSubmissions.map((submission) => (
+                  <tr key={submission.id}>
+                    <td><strong>{submission.artistName}</strong><small>{submission.artistEmail}</small></td>
+                    <td><span className="admin-status">{submission.status}</span></td>
+                    <td><div className="admin-moderation-thumbs">{submission.imageUrls.map((url, index) => <a href={url} target="_blank" rel="noreferrer" key={`${url}-${index}`}><img src={getImageUrl(url)} alt={`Submission ${index + 1}`} /></a>)}</div></td>
+                    <td>{submission.sourceReportId ? `#${submission.sourceReportId}` : "—"}</td>
+                    <td>{new Date(submission.createdAtUtc).toLocaleString(getUiLocale())}</td>
+                    <td>
+                      {submission.status === "Pending" ? <div className="admin-actions">
+                        <button disabled={busyKey === `submission-reject-${submission.id}`} onClick={() => runAction(`submission-reject-${submission.id}`, null, () => reviewAdminSubmission(submission.id, false, window.prompt("Reason for rejection", "")))}>Reject</button>
+                        <button className="primary-button compact-button" disabled={busyKey === `submission-approve-${submission.id}`} onClick={() => runAction(`submission-approve-${submission.id}`, `Approve reinstatement for ${submission.artistName}?`, () => reviewAdminSubmission(submission.id, true, window.prompt("Optional admin note", "")))}>Approve & unblock</button>
+                      </div> : <small>{submission.adminNote || "Reviewed"}</small>}
+                    </td>
                   </tr>
                 ))}
               </tbody>

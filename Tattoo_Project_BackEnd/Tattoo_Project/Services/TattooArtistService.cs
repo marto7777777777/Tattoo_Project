@@ -34,7 +34,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Requirements)
                 .Include(a => a.Reviews)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null)
+                .Where(a => a.StudioId != null && a.ModerationStatus == ArtistModerationStatus.Active)
                 .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .ToListAsync();
 
@@ -56,7 +56,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
                 .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
-                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null);
+                .FirstOrDefaultAsync(a => a.Id == id && a.StudioId != null && a.ModerationStatus == ArtistModerationStatus.Active);
 
             if (artist == null)
             {
@@ -82,7 +82,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.SpecialtyStyles)
                 .AsSplitQuery()
                 .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
-                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null);
+                .FirstOrDefaultAsync(a => a.PublicProfileSlug == normalizedSlug && a.StudioId != null && a.ModerationStatus == ArtistModerationStatus.Active);
 
             if (artist == null)
                 return ResultService<PublicTattooArtistDto>.Fail("Tattoo artist was not found.");
@@ -132,7 +132,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.Reviews)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null)
+                .Where(a => a.StudioId != null && a.Studio != null && a.ModerationStatus == ArtistModerationStatus.Active)
                 .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .AsSplitQuery()
                 .ToListAsync();
@@ -525,7 +525,7 @@ namespace Tattoo_Project.Services
                 .Include(a => a.PortfolioImages)
                 .Include(a => a.Requirements)
                 .Include(a => a.SpecialtyStyles)
-                .Where(a => a.StudioId != null && a.Studio != null)
+                .Where(a => a.StudioId != null && a.Studio != null && a.ModerationStatus == ArtistModerationStatus.Active)
                 .WithActiveEntitlement(timeProvider.GetUtcNow().UtcDateTime)
                 .AsQueryable();
 

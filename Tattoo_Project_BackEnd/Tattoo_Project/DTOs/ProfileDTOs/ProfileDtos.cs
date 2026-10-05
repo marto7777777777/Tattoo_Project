@@ -22,6 +22,9 @@ namespace Tattoo_Project.DTOs.ProfileDTOs
     public class ArtistProfileSectionDto
     {
         public int? StudioId { get; set; }
+        public string ModerationStatus { get; set; } = "Active";
+        public int? PendingModerationSubmissionId { get; set; }
+        public string? ModerationMessage { get; set; }
         public string? StudioName { get; set; }
         public string? StudioAddress { get; set; }
         public string? StudioCity { get; set; }

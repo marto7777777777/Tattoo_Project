@@ -21,6 +21,8 @@ namespace Tattoo_Project.Models
 
         public bool IsVerified { get; set; }
 
+        public ArtistModerationStatus ModerationStatus { get; set; } = ArtistModerationStatus.Active;
+
         public bool OffersOnlineConsultation { get; set; }
 
         public bool RequiresDeposit { get; set; }

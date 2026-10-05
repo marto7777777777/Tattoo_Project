@@ -60,6 +60,10 @@ namespace Tattoo_Project.Data
         public DbSet<AccountDeletionRequest> AccountDeletionRequests { get; set; }
         public DbSet<FileCleanupTask> FileCleanupTasks { get; set; }
         public DbSet<LegalConsentAudit> LegalConsentAudits { get; set; }
+        public DbSet<PortfolioImage> PortfolioImages { get; set; }
+        public DbSet<ArtistReport> ArtistReports { get; set; }
+        public DbSet<ArtistModerationSubmission> ArtistModerationSubmissions { get; set; }
+        public DbSet<ArtistModerationSubmissionImage> ArtistModerationSubmissionImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

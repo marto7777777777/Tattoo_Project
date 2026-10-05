@@ -101,6 +101,7 @@ namespace Tattoo_Project
             builder.Services.AddScoped<IArtistUnavailableDateService, ArtistUnavailableDateService>();
             builder.Services.AddScoped<IProfileService, ProfileService>();
             builder.Services.AddScoped<IAdminService, AdminService>();
+            builder.Services.AddScoped<IArtistModerationService, ArtistModerationService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
             builder.Services.AddScoped<IAiTattooService, AiTattooService>();

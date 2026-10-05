@@ -108,7 +108,7 @@ public sealed class StudioReadService(
 
         var studioIds = studioRows.Select(s => s.Id).ToArray();
         var artists = await VisibleArtists(now)
-            .Where(a => a.StudioId != null && studioIds.Contains(a.StudioId.Value))
+            .Where(a => a.StudioId != null && a.ModerationStatus == ArtistModerationStatus.Active && studioIds.Contains(a.StudioId.Value))
             .Select(a => new { StudioId = a.StudioId!.Value, a.Id, a.FirstName, a.LastName })
             .ToListAsync(cancellationToken);
         var artistIds = artists.Select(a => a.Id).ToArray();
@@ -148,7 +148,7 @@ public sealed class StudioReadService(
         var started = System.Diagnostics.Stopwatch.StartNew();
         var studioIds = studioRows.Select(s => s.Id).ToArray();
         var artists = await VisibleArtists(now)
-            .Where(a => a.StudioId != null && studioIds.Contains(a.StudioId.Value))
+            .Where(a => a.StudioId != null && a.ModerationStatus == ArtistModerationStatus.Active && studioIds.Contains(a.StudioId.Value))
             .Select(a => new ArtistRow(
                 a.Id, a.StudioId!.Value, a.FirstName, a.LastName,
                 a.User.ProfileImageUrl, a.Description,

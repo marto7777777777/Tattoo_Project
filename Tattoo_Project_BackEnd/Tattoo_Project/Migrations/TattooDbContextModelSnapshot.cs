@@ -1449,6 +1449,55 @@ namespace Tattoo_Project.Migrations
                     b.ToTable("PortfolioImage");
                 });
 
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistModerationSubmission", b =>
+                {
+                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("AdminNote").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
+                    b.Property<DateTime?>("ReviewedAtUtc").HasColumnType("datetime2");
+                    b.Property<string>("ReviewedByAdminId").HasColumnType("nvarchar(450)");
+                    b.Property<int?>("SourceReportId").HasColumnType("int");
+                    b.Property<int>("Status").HasColumnType("int");
+                    b.Property<int>("TattooArtistId").HasColumnType("int");
+                    b.HasKey("Id");
+                    b.HasIndex("ReviewedByAdminId");
+                    b.HasIndex("SourceReportId");
+                    b.HasIndex("TattooArtistId", "Status");
+                    b.ToTable("ArtistModerationSubmissions");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistModerationSubmissionImage", b =>
+                {
+                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<string>("ImageUrl").IsRequired().HasMaxLength(1000).HasColumnType("nvarchar(1000)");
+                    b.Property<int>("SubmissionId").HasColumnType("int");
+                    b.HasKey("Id");
+                    b.HasIndex("SubmissionId");
+                    b.ToTable("ArtistModerationSubmissionImages");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistReport", b =>
+                {
+                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    b.Property<DateTime>("CreatedAtUtc").HasColumnType("datetime2");
+                    b.Property<string>("DecisionNote").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<string>("Description").HasMaxLength(2000).HasColumnType("nvarchar(2000)");
+                    b.Property<int>("ReportedArtistId").HasColumnType("int");
+                    b.Property<string>("ReporterUserId").IsRequired().HasMaxLength(450).HasColumnType("nvarchar(450)");
+                    b.Property<string>("Reason").IsRequired().HasMaxLength(100).HasColumnType("nvarchar(100)");
+                    b.Property<string>("ReviewedByAdminId").HasColumnType("nvarchar(450)");
+                    b.Property<DateTime?>("ReviewedAtUtc").HasColumnType("datetime2");
+                    b.Property<int>("Status").HasColumnType("int");
+                    b.HasKey("Id");
+                    b.HasIndex("ReportedArtistId", "Status");
+                    b.HasIndex("ReporterUserId", "ReportedArtistId", "Status");
+                    b.HasIndex("ReviewedByAdminId");
+                    b.ToTable("ArtistReports");
+                });
+
             modelBuilder.Entity("Tattoo_Project.Models.ProviderSubscription", b =>
                 {
                     b.Property<long>("Id")
@@ -1839,6 +1888,9 @@ namespace Tattoo_Project.Migrations
 
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
+
+                    b.Property<int>("ModerationStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("JoinedStudioOn")
                         .HasColumnType("datetime2");
@@ -2310,6 +2362,28 @@ namespace Tattoo_Project.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistModerationSubmission", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "ReviewedByAdmin").WithMany().HasForeignKey("ReviewedByAdminId").OnDelete(DeleteBehavior.Restrict);
+                    b.HasOne("Tattoo_Project.Models.ArtistReport", "SourceReport").WithMany().HasForeignKey("SourceReportId").OnDelete(DeleteBehavior.SetNull);
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "TattooArtist").WithMany().HasForeignKey("TattooArtistId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                    b.Navigation("ReviewedByAdmin"); b.Navigation("SourceReport"); b.Navigation("TattooArtist");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistModerationSubmissionImage", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.ArtistModerationSubmission", "Submission").WithMany("Images").HasForeignKey("SubmissionId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                    b.Navigation("Submission");
+                });
+
+            modelBuilder.Entity("Tattoo_Project.Models.ArtistReport", b =>
+                {
+                    b.HasOne("Tattoo_Project.Models.TattooArtist", "ReportedArtist").WithMany().HasForeignKey("ReportedArtistId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "ReporterUser").WithMany().HasForeignKey("ReporterUserId").OnDelete(DeleteBehavior.Cascade).IsRequired();
+                    b.HasOne("Tattoo_Project.Models.ApplicationUser", "ReviewedByAdmin").WithMany().HasForeignKey("ReviewedByAdminId").OnDelete(DeleteBehavior.Restrict);
+                    b.Navigation("ReportedArtist"); b.Navigation("ReporterUser"); b.Navigation("ReviewedByAdmin");
                 });
 
             modelBuilder.Entity("Tattoo_Project.Models.PortfolioImage", b =>

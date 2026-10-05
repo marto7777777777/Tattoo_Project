@@ -5,14 +5,20 @@ import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../utils/images";
 import { clearPendingArtistRequest, rememberArtistRequest } from "../utils/pendingArtistRequest";
+import { reportArtist } from "../api/moderationApi";
 
 function PublicArtistPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { isLoggedIn, isClient } = useAuth();
+  const { isLoggedIn, isClient, isArtist } = useAuth();
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("Inappropriate content");
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportBusy, setReportBusy] = useState(false);
+  const [reportMessage, setReportMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -43,6 +49,24 @@ function PublicArtistPage() {
     navigate(requestPath);
   }
 
+
+  async function submitReport(event) {
+    event.preventDefault();
+    if (!artist?.id || reportBusy) return;
+    setReportBusy(true);
+    setReportMessage("");
+    try {
+      await reportArtist(artist.id, reportReason, reportDescription);
+      setReportMessage("Report submitted for admin review.");
+      setReportDescription("");
+      setReportOpen(false);
+    } catch (err) {
+      setReportMessage(err.message || "The report could not be submitted.");
+    } finally {
+      setReportBusy(false);
+    }
+  }
+
   if (loading) return <main className="page-shell"><section className="container"><p className="message">Loading artist profile...</p></section></main>;
   if (error || !artist) return <main className="page-shell"><section className="container"><div className="card form-card public-artist-missing"><h1>Artist profile unavailable</h1><p>{error || "This artist profile could not be found."}</p><button className="secondary-button" onClick={() => navigate("/explore")}>Explore studios</button></div></section></main>;
 
@@ -57,7 +81,10 @@ function PublicArtistPage() {
             <UserAvatar firstName={artist.firstName} lastName={artist.lastName} imageUrl={artist.profileImageUrl} size="xlarge" />
             <div><p className="subtitle">Tattoo artist</p><h1>{fullName}</h1><p className="public-artist-studio">{artist.studioName}{location ? ` · ${location}` : ""}</p></div>
           </div>
-          <button className="primary-button public-artist-request-button" type="button" onClick={sendRequest}>Send request</button>
+          <div className="public-artist-header-actions">
+            {(isClient || isArtist) && <button className="secondary-button compact-button" type="button" onClick={() => { setReportOpen(true); setReportMessage(""); }}>Report artist</button>}
+            <button className="primary-button public-artist-request-button" type="button" onClick={sendRequest}>Send request</button>
+          </div>
         </header>
 
         <div className="public-artist-grid">
@@ -75,6 +102,18 @@ function PublicArtistPage() {
         {artist.requirements?.length > 0 && <section className="card form-card public-requirements"><p className="subtitle inline-subtitle">Before you send a request</p><h2>Artist requirements</h2><ul>{artist.requirements.map((requirement) => <li key={requirement.id || requirement.description}>{requirement.description}</li>)}</ul></section>}
 
         <section className="public-artist-cta"><div><p className="subtitle">Start your tattoo project</p><h2><span>Send your idea directly to</span> {artist.firstName}</h2><p>InkRoute will keep your request, consultation and tattoo sessions organized in one place.</p></div><button className="primary-button" type="button" onClick={sendRequest}>Send request</button></section>
+        {reportMessage && <p className="success moderation-report-message">{reportMessage}</p>}
+        {reportOpen && (
+          <div className="moderation-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setReportOpen(false); }}>
+            <form className="card form-card moderation-modal" onSubmit={submitReport}>
+              <div className="section-heading"><p className="subtitle inline-subtitle">Safety</p><h2>Report artist</h2><p>Your report will be reviewed by an InkRoute administrator. The artist is not blocked automatically.</p></div>
+              <label>Reason<select value={reportReason} onChange={(event) => setReportReason(event.target.value)}><option>Inappropriate content</option><option>Harassment or abusive behavior</option><option>Spam or misleading profile</option><option>Copyright or intellectual property</option><option>Other</option></select></label>
+              <label>Details (optional)<textarea value={reportDescription} onChange={(event) => setReportDescription(event.target.value)} maxLength={2000} rows={5} placeholder="Tell the administrator what happened." /></label>
+              <div className="inline-actions"><button className="primary-button" disabled={reportBusy} type="submit">{reportBusy ? "Submitting..." : "Submit report"}</button><button className="secondary-button" type="button" onClick={() => setReportOpen(false)}>Cancel</button></div>
+              {reportMessage && <p className="error">{reportMessage}</p>}
+            </form>
+          </div>
+        )}
       </section>
     </main>
   );

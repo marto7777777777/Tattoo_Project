@@ -5309,3 +5309,25 @@ body,
     transition-duration:.01ms!important;
   }
 }
+
+/* =========================
+   Artist moderation / safety
+   ========================= */
+.public-artist-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.moderation-modal-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(4,4,8,.72);backdrop-filter:blur(8px)}
+.moderation-modal{width:min(560px,100%);max-height:90vh;overflow:auto;padding:28px;border-radius:22px;box-shadow:0 28px 90px rgba(0,0,0,.45)}
+.moderation-modal label{display:flex;flex-direction:column;gap:8px;margin:14px 0;color:#bdb8c6;font-size:12px;font-weight:800}
+.moderation-modal select,.moderation-modal textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d0d13;color:#f7f5fb;outline:none}
+.moderation-modal textarea{resize:vertical;min-height:120px}
+.moderation-report-message{margin-top:15px}
+.moderation-banner{margin-bottom:22px;padding:18px 20px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.025)}
+.moderation-banner h3{margin:3px 0 7px;color:#fff}
+.moderation-banner p:last-child{margin-bottom:0;color:#97929f;line-height:1.55}
+.moderation-blocked{border-color:rgba(255,100,100,.22);background:rgba(255,82,82,.055)}
+.moderation-pendingreinstatement{border-color:rgba(139,108,255,.25);background:rgba(139,108,255,.055)}
+.moderation-submit-actions{margin-top:18px}
+.admin-moderation-thumbs{display:flex;gap:6px;flex-wrap:wrap;max-width:240px}
+.admin-moderation-thumbs a{display:block;width:54px;height:54px;border-radius:9px;overflow:hidden;border:1px solid rgba(255,255,255,.08)}
+.admin-moderation-thumbs img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:700px){.public-artist-header-actions{width:100%;justify-content:flex-start}.moderation-modal{padding:22px}.admin-moderation-thumbs{max-width:180px}}
+.admin-inline-link{display:inline-block;margin-top:6px;color:#a995ff;text-decoration:none;font-size:.68rem;font-weight:800}.admin-inline-link:hover{color:#fff;text-decoration:underline}

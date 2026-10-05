@@ -22,6 +22,7 @@ import ImageCropModal from "../components/ImageCropModal";
 import UserAvatar from "../components/UserAvatar";
 import { useAuth } from "../context/AuthContext";
 import { getImageUrl } from "../utils/images";
+import { addReinstatementImage, deleteReinstatementImage, getMyModerationStatus, submitReinstatement } from "../api/moderationApi";
 
 const sectionTitles = {
   user: "Account & identity",
@@ -66,6 +67,8 @@ function ProfileSectionPage() {
   const [passwordForm, setPasswordForm] = useState({ code: "", newPassword: "", confirmNewPassword: "" });
   const [emailStep, setEmailStep] = useState("idle");
   const [emailForm, setEmailForm] = useState({ newEmail: "", code: "" });
+  const [moderationStatus, setModerationStatus] = useState(null);
+  const [moderationLoading, setModerationLoading] = useState(false);
   const settingsContentRef = useRef(null);
 
   const allowedSections = useMemo(() => {
@@ -96,6 +99,10 @@ function ProfileSectionPage() {
       const data = await getMyProfile();
       setProfile(data);
       setSpecialtyStylesDraft(data.artist?.specialtyStyles || []);
+      if (data.isTattooArtist) {
+        try { setModerationStatus(await getMyModerationStatus()); }
+        catch { setModerationStatus(null); }
+      }
     } catch (err) {
       setError(err.message || "Profile could not be loaded.");
     } finally {
@@ -261,13 +268,42 @@ function ProfileSectionPage() {
     if (!files.length) return;
 
     try {
-      for (const file of files) {
-        await addPortfolioImage(file);
+      if (profile?.artist?.moderationStatus && profile.artist.moderationStatus !== "Active") {
+        setModerationLoading(true);
+        for (const file of files) await addReinstatementImage(file);
+        setSuccess("Updated portfolio image added to your moderation submission.");
+        setModerationStatus(await getMyModerationStatus());
+      } else {
+        for (const file of files) await addPortfolioImage(file);
+        setSuccess("Portfolio image uploaded.");
+        await loadProfile();
       }
-      setSuccess("Portfolio image uploaded.");
-      await loadProfile();
     } catch (err) {
       setError(err.message || "Portfolio upload failed.");
+    } finally {
+      setModerationLoading(false);
+      event.target.value = "";
+    }
+  }
+
+  async function handleDeleteModerationImage(id) {
+    try {
+      await deleteReinstatementImage(id);
+      setSuccess("Moderation image removed.");
+      setModerationStatus(await getMyModerationStatus());
+    } catch (err) {
+      setError(err.message || "Moderation image could not be removed.");
+    }
+  }
+
+  async function handleSubmitReinstatement() {
+    try {
+      await submitReinstatement();
+      setSuccess("Your updated portfolio was submitted for admin review.");
+      setModerationStatus(await getMyModerationStatus());
+      await loadProfile();
+    } catch (err) {
+      setError(err.message || "The moderation submission could not be sent.");
     }
   }
 
@@ -522,23 +558,57 @@ function ProfileSectionPage() {
 
           {section === "portfolio" && (
             <div className="section">
-              <div className="portfolio-manage-grid">
-                <label className="portfolio-upload-card" title="Add portfolio images">
-                  <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} />
-                  <span className="portfolio-upload-card-icon" aria-hidden="true">＋</span>
-                  <strong>Add image</strong>
-                  <small>JPG, PNG or WEBP</small>
-                </label>
+              {profile.artist?.moderationStatus && profile.artist.moderationStatus !== "Active" ? (
+                <div className={`moderation-banner moderation-${profile.artist.moderationStatus.toLowerCase()}`}>
+                  <p className="subtitle">Artist profile moderation</p>
+                  <h3>{profile.artist.moderationStatus === "Blocked" ? "Your profile is currently blocked" : "Your updated profile is under review"}</h3>
+                  <p>{profile.artist.moderationMessage || "Your profile is not currently public."}</p>
+                  {profile.artist.moderationStatus === "Blocked" && (
+                    <p>Add updated portfolio images below and submit them for admin approval. Your new images remain private until approved.</p>
+                  )}
+                </div>
+              ) : null}
 
-                {(profile.artist?.portfolioImages || []).map((image) => (
-                  <div className="portfolio-manage-card" key={image.id}>
-                    <img src={getImageUrl(image.imageUrl)} alt="Portfolio" loading="lazy" decoding="async" />
-                    <button className="portfolio-delete-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>
-                      Delete
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {profile.artist?.moderationStatus && profile.artist.moderationStatus !== "Active" ? (
+                <div className="portfolio-manage-grid">
+                  {profile.artist.moderationStatus === "Blocked" && (
+                    <label className="portfolio-upload-card" title="Add images for moderation review">
+                      <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} disabled={moderationLoading} />
+                      <span className="portfolio-upload-card-icon" aria-hidden="true">＋</span>
+                      <strong>{moderationLoading ? "Uploading..." : "Add image for review"}</strong>
+                      <small>Private until an admin approves them</small>
+                    </label>
+                  )}
+                  {(moderationStatus?.images || []).map((image) => (
+                    <div className="portfolio-manage-card" key={image.id}>
+                      <img src={getImageUrl(image.imageUrl)} alt="Moderation submission" loading="lazy" decoding="async" />
+                      {moderationStatus.status === "Blocked" && <button className="portfolio-delete-button" type="button" onClick={() => handleDeleteModerationImage(image.id)}>Delete</button>}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="portfolio-manage-grid">
+                  <label className="portfolio-upload-card" title="Add portfolio images">
+                    <input type="file" accept="image/*" multiple hidden onChange={handlePortfolioUpload} />
+                    <span className="portfolio-upload-card-icon" aria-hidden="true">＋</span>
+                    <strong>Add image</strong>
+                    <small>JPG, PNG or WEBP</small>
+                  </label>
+                  {(profile.artist?.portfolioImages || []).map((image) => (
+                    <div className="portfolio-manage-card" key={image.id}>
+                      <img src={getImageUrl(image.imageUrl)} alt="Portfolio" loading="lazy" decoding="async" />
+                      <button className="portfolio-delete-button" type="button" onClick={() => handleDeletePortfolioImage(image.id)}>Delete</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {moderationStatus?.status === "Blocked" && (moderationStatus.images || []).length > 0 && (
+                <div className="inline-actions moderation-submit-actions">
+                  <button className="primary-button" type="button" onClick={handleSubmitReinstatement}>Submit for admin review</button>
+                </div>
+              )}
+              {moderationStatus?.status === "PendingReinstatement" && <p className="success">Your updated portfolio is waiting for admin approval.</p>}
             </div>
           )}
 

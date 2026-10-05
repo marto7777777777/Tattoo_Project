@@ -60,6 +60,17 @@ namespace Tattoo_Project.Services
                 Artist = artist == null ? null : new ArtistProfileSectionDto
                 {
                     StudioId = artist.StudioId,
+                    ModerationStatus = artist.ModerationStatus.ToString(),
+                    PendingModerationSubmissionId = await context.ArtistModerationSubmissions
+                        .Where(x => x.TattooArtistId == artist.Id && (x.Status == ArtistModerationSubmissionStatus.Draft || x.Status == ArtistModerationSubmissionStatus.Pending))
+                        .OrderByDescending(x => x.Id)
+                        .Select(x => (int?)x.Id)
+                        .FirstOrDefaultAsync(),
+                    ModerationMessage = artist.ModerationStatus == ArtistModerationStatus.Blocked
+                        ? "Your artist profile is currently blocked by InkRoute moderation. You can submit updated portfolio content for review."
+                        : artist.ModerationStatus == ArtistModerationStatus.PendingReinstatement
+                            ? "Your updated artist content is currently under admin review."
+                            : null,
                     StudioName = artist.Studio?.Name,
                     Description = artist.Description,
                     StudioAddress = artist.Studio?.Address,
