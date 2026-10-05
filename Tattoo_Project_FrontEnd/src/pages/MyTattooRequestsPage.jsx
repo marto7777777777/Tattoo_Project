@@ -11,6 +11,7 @@ import RequestWorkflowTimeline from "../components/RequestWorkflowTimeline";
 const STATUS = {
   SUBMITTED: 0,
   UNDER_REVIEW: 1,
+  APPROVED: 2,
   WAITING_FOR_CONSULTATION: 3,
   CONSULTATION_COMPLETED: 4,
   TATTOO_BOOKED: 5,
@@ -23,7 +24,19 @@ const STATUS = {
 const isClosed = (request) => [STATUS.COMPLETED, STATUS.REJECTED, STATUS.CANCELLED].includes(request.status);
 
 function canBookConsultation(request) {
-  return request.status === STATUS.WAITING_FOR_CONSULTATION && request.artistResponse && !request.consultation;
+  return (
+    request.status === STATUS.APPROVED &&
+    request.artistResponse?.workflowPath === 0 &&
+    !request.consultation
+  );
+}
+
+function canBookDirectTattooSession(request) {
+  return (
+    request.status === STATUS.APPROVED &&
+    request.artistResponse?.workflowPath === 1 &&
+    (getRemainingSessions(request) ?? 0) > 0
+  );
 }
 
 function isSessionWorkflow(request) {
@@ -145,6 +158,10 @@ function MyTattooRequestsPage() {
 
     if (canBookConsultation(request)) {
       return <Link className="primary-button" to={`/book-consultation/${id}`}>Book consultation</Link>;
+    }
+
+    if (canBookDirectTattooSession(request)) {
+      return <Link className="primary-button" to={`/book-session/${id}`}>Book tattoo session</Link>;
     }
 
     if (isSessionWorkflow(request)) {
