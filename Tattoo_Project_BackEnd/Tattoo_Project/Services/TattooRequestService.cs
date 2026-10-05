@@ -429,7 +429,7 @@ namespace Tattoo_Project.Services
             {
                 if (tattooRequest.Status != RequestStatus.Approved ||
                     tattooRequest.ArtistResponse?.WorkflowPath != ArtistResponseWorkflowPath.ConsultationFirst ||
-                    tattooRequest.Consultation != null)
+                    tattooRequest.Consultation is { IsCancelled: false })
                     return ResultService<BookingAvailabilityDto>.Fail("Consultation cannot be booked for the current request state.");
                 scheduleType = ScheduleType.Consultation;
                 durationMinutes = tattooRequest.TattooArtist.ConsultationDurationMinutes;
@@ -440,7 +440,7 @@ namespace Tattoo_Project.Services
                                      tattooRequest.ArtistResponse?.WorkflowPath == ArtistResponseWorkflowPath.DirectToSessions;
                 if (!approvedDirect && tattooRequest.Status is not (RequestStatus.ConsultationCompleted or RequestStatus.TattooBooked or RequestStatus.InProgress))
                     return ResultService<BookingAvailabilityDto>.Fail("Tattoo session cannot be booked for the current request state.");
-                var existingSessionsCount = tattooRequest.TattooSessions?.Count ?? 0;
+                var existingSessionsCount = tattooRequest.TattooSessions?.Count(s => !s.IsCancelled) ?? 0;
                 if (tattooRequest.DurationHoursForSession == null || existingSessionsCount >= tattooRequest.DurationHoursForSession.Count)
                     return ResultService<BookingAvailabilityDto>.Fail("No remaining session duration was found.");
                 scheduleType = ScheduleType.TattooSession;
@@ -687,16 +687,18 @@ namespace Tattoo_Project.Services
                 }).ToList(),
 
                 TattooSessions = tattooRequest.TattooSessions == null ||
-                                 !tattooRequest.TattooSessions.Any()
+                                 !tattooRequest.TattooSessions.Any(s => !s.IsCancelled)
                     ? null
-                    : tattooRequest.TattooSessions.Select(s => new TattooSessionDto
-                    {
-                        Id = s.Id,
-                        StartTime = s.StartTime,
-                        EndTime = s.EndTime,
-                        DurationHours = s.DurationHours,
-                        PriceForTheSession = s.PriceForTheSession
-                    }).ToList(),
+                    : tattooRequest.TattooSessions
+                        .Where(s => !s.IsCancelled)
+                        .Select(s => new TattooSessionDto
+                        {
+                            Id = s.Id,
+                            StartTime = s.StartTime,
+                            EndTime = s.EndTime,
+                            DurationHours = s.DurationHours,
+                            PriceForTheSession = s.PriceForTheSession
+                        }).ToList(),
 
                 ArtistResponse = tattooRequest.ArtistResponse == null
                     ? null
@@ -709,7 +711,7 @@ namespace Tattoo_Project.Services
                         CreatedOn = tattooRequest.ArtistResponse.CreatedOn
                     },
 
-                Consultation = tattooRequest.Consultation == null
+                Consultation = tattooRequest.Consultation == null || tattooRequest.Consultation.IsCancelled
                     ? null
                     : new ConsultationDto
                     {

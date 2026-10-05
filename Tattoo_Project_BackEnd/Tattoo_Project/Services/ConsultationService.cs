@@ -136,10 +136,10 @@ namespace Tattoo_Project.Services
                 return ResultService.Fail("Consultation cannot be booked in the past.");
             }
 
-            var alreadyHasConsultation = await context.Consultations
-                .AnyAsync(c => c.TattooRequestId == dto.TattooRequestId && !c.IsCancelled);
+            var existingConsultation = await context.Consultations
+                .FirstOrDefaultAsync(c => c.TattooRequestId == dto.TattooRequestId);
 
-            if (alreadyHasConsultation)
+            if (existingConsultation is { IsCancelled: false })
             {
                 return ResultService.Fail(
                     "This tattoo request already has a consultation.");
@@ -192,16 +192,33 @@ namespace Tattoo_Project.Services
                     "Tattoo artist already has a tattoo session at this time.");
             }
 
-            Consultation consultation = new()
+            Consultation consultation;
+            if (existingConsultation != null)
             {
-                TattooRequestId = dto.TattooRequestId,
-                StartTime = startTime,
-                EndTime = endTime,
-                Notes = dto.Notes,
-                IsCompleted = false
-            };
-
-            context.Consultations.Add(consultation);
+                // Consultation is a one-to-one child of TattooRequest. Reuse the cancelled
+                // row so rebooking does not violate the unique TattooRequestId constraint.
+                consultation = existingConsultation;
+                consultation.StartTime = startTime;
+                consultation.EndTime = endTime;
+                consultation.Notes = dto.Notes;
+                consultation.IsCompleted = false;
+                consultation.IsCancelled = false;
+                consultation.CancelledAt = null;
+                consultation.CancelledByUserId = null;
+                consultation.CancellationReason = null;
+            }
+            else
+            {
+                consultation = new Consultation
+                {
+                    TattooRequestId = dto.TattooRequestId,
+                    StartTime = startTime,
+                    EndTime = endTime,
+                    Notes = dto.Notes,
+                    IsCompleted = false
+                };
+                context.Consultations.Add(consultation);
+            }
             var transition = TattooRequestStateMachine.Transition(tattooRequest, RequestStatus.WaitingForConsultation);
             if (!transition.Success) return transition;
 

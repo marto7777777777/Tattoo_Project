@@ -56,8 +56,11 @@ function getWorkflowStep(request) {
   if (request.status === STATUS.CANCELLED) return "Cancelled";
   if (request.status === STATUS.COMPLETED) return "Completed project";
   if (!request.artistResponse || request.status === STATUS.SUBMITTED) return "Needs artist response";
-  if (request.status === STATUS.WAITING_FOR_CONSULTATION && !request.consultation) {
+  if (request.artistResponse?.workflowPath === 0 && request.status === STATUS.APPROVED && !request.consultation) {
     return "Response sent · waiting for client to book consultation";
+  }
+  if (request.artistResponse?.workflowPath === 1 && request.status === STATUS.APPROVED && !request.tattooSessions?.length) {
+    return "Response sent · waiting for client to book tattoo session";
   }
   if (request.status === STATUS.WAITING_FOR_CONSULTATION && request.consultation) {
     return "Consultation booked";
@@ -105,7 +108,7 @@ function getUpcomingTattooSession(request) {
 function matchesFilter(request, filter) {
   if (filter === "all") return true;
   if (filter === "new") return request.status === STATUS.SUBMITTED;
-  if (filter === "responded") return request.status === STATUS.WAITING_FOR_CONSULTATION;
+  if (filter === "responded") return request.status === STATUS.APPROVED || request.status === STATUS.WAITING_FOR_CONSULTATION;
   if (filter === "consultation-completed") return request.status === STATUS.CONSULTATION_COMPLETED;
   if (filter === "tattoo-active") {
     return request.status === STATUS.TATTOO_BOOKED || request.status === STATUS.IN_PROGRESS;
@@ -389,7 +392,7 @@ function ArtistRequestsPage() {
 
     return (
       <div className="info-list">
-        {request.artistResponse && !request.consultation && request.status === STATUS.WAITING_FOR_CONSULTATION && (
+        {request.artistResponse?.workflowPath === 0 && !request.consultation && request.status === STATUS.APPROVED && (
           <p><span>Consultation:</span> Not booked yet</p>
         )}
         {request.artistResponse?.workflowPath === 1 && (
