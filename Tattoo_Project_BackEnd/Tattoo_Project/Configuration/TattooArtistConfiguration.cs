@@ -40,6 +40,9 @@ namespace Tattoo_Project.Configuration
             builder.Property(x => x.ShowPhoneNumberOnPublicProfile)
                 .HasDefaultValue(true);
 
+            builder.Property(x => x.DepositAmount)
+                .HasPrecision(18, 2);
+
             builder.HasMany(x => x.Schedules)
                 .WithOne(x => x.TattooArtist)
                 .HasForeignKey(x => x.TattooArtistId);

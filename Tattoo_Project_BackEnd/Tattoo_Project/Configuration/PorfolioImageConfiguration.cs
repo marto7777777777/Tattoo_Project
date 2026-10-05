@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tattoo_Project.Models;
 
@@ -8,6 +8,11 @@ namespace Tattoo_Project.Configuration
     {
         public void Configure(EntityTypeBuilder<PortfolioImage> builder)
         {
+            // Keep the existing production table name stable. The DbSet is pluralized
+            // (PortfolioImages), but the historical SQL table is PortfolioImage.
+            // Explicit mapping prevents EF from generating a destructive/noisy rename.
+            builder.ToTable("PortfolioImage");
+
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.ImageUrl)

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tattoo_Project.Models;
 
@@ -14,6 +14,10 @@ namespace Tattoo_Project.Configuration
                 .IsRequired();
 
             builder.Property(x => x.EndTime)
+                .IsRequired();
+
+            builder.Property(x => x.PriceForTheSession)
+                .HasPrecision(18, 2)
                 .IsRequired();
             builder.Property(x => x.CancelledByUserId).HasMaxLength(450);
             builder.Property(x => x.CancellationReason).HasMaxLength(500);

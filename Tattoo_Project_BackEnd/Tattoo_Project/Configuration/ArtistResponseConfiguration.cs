@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Tattoo_Project.Models;
 
@@ -11,6 +11,7 @@ namespace Tattoo_Project.Configuration
             builder.HasKey(x => x.Id);
 
             builder.Property(x => x.EstimatedPrice)
+                .HasPrecision(18, 2)
                 .IsRequired();
 
             builder.Property(x => x.ResponseMessage)
