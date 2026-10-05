@@ -4,7 +4,8 @@ public enum ArtistModerationSubmissionStatus
 {
     Pending = 0,
     Rejected = 1,
-    Approved = 2
+    Approved = 2,
+    Draft = 3
 }
 
 public class ArtistModerationSubmission
