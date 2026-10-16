@@ -59,3 +59,39 @@ Backend, routes/DTOs, entitlements, pricing, subscriptions, billing native sourc
 11. Real iPhone/iPad camera tests and Xcode archive were NOT performed: no physical device/macOS/Xcode is available. External Codemagic settings are absent and may override the build number. Verify archive CFBundleVersion=5, version=1.0 and privacy keys in CI, then perform fresh-install permission/camera/Photos/cancel tests before submission.
 
 Cleanup changes relative to the previous corrected ZIP: src/utils/images.js; src/api/aiTattooApi.js; src/pages/CreateAiTattooPage.jsx; src/pages/AiTattooProjectPage.jsx; tests/images.test.mjs; this report. No additional plugins, dependencies, permissions, native architecture, API contracts, backend or billing changes.
+
+## First Image Selection Regression — latest patch
+
+This section supersedes earlier handler/reset/test-count descriptions. Baseline is InkRoute_FRONTEND_iOS_Build5_AppStore_FINAL.zip.
+
+### Evidence and root-cause limits
+The reported physical iPhone symptom (camera and library sometimes need 2–3 selections) is accepted as real. This environment cannot reproduce or instrument that physical WebView. An exact device-level root cause is therefore NOT established, and this patch must be retested on the affected iPhone before calling the symptom resolved.
+
+Verified code defect: in src/utils/images.js decodeImage's HTML Image fallback, URL.revokeObjectURL ran in finally immediately after onload, before the returned image was drawn to canvas. Large phone photos requiring resize could then fail processing and could not use the bounded original fallback. The URL now stays alive through drawing and asynchronous encoding; decoded.close() revokes it in the existing outer finally. Decode failures revoke immediately. A mock that invalidates the backing image when its URL is revoked reproduces the premature-release defect against the previous source. This is a resource lifetime fix, not proof that every WebKit version invalidates an already loaded image upon revocation.
+
+Related defensive handler change: CreateAiTattooPage.chooseReference previously copied the File then immediately cleared input.value. That is often valid browser code; copying File was already correct, and there is no evidence that React event pooling or a reset effect lost the result. To remove early picker-attachment release as a variable, the handler now captures input and File synchronously, retains the input value through the awaited processing, and clears the captured input in finally. No event object is accessed after await. Same-file reselection is rearmed after success/failure; Cancel does not clear previous React file/form state. The lock starts false, is checked before processing, and always clears in finally. No timer/retry/second optimization was added.
+
+### Complete traced path
+System picker -> input onChange -> captured input.files[0] -> local File -> basic validation -> createImageBitmap or HTML Image/object URL -> canvas encoding or safe original fallback -> exactly one setFile(prepared) when mounted -> existing filename/has-file UI -> same File in projectForm FormData referenceImage -> existing API request. This form has no image-thumbnail preview. No effect resets its file state; form style/placement edits only update form. Pending processing disables input/submit and successful selection is committed once. A valid fallback is returned by optimizeImageForUpload and committed by that same setter.
+
+### Failure feedback
+Cancel/empty result returns quietly and preserves prior selection. Known local invalid/unsupported/decode/dimension/output-size errors now receive their specific safe message; arbitrary optimization/native/browser exception text is not exposed. Failed replacement keeps the previous reference. Success (processed or fallback) commits a file and clears processing. Safe fallback, empty-MIME decode support, output/batch limits and no arbitrary input cap remain as in the previous final patch.
+
+### Regression tests
+npm test now runs the existing node test suite through a new package.json script. Fourteen tests pass, including:
+- first valid selection, first simulated library File and first simulated camera-shaped File each commit exactly once on their first handler invocation;
+- input stays populated during asynchronous processing, then clears; same-file reselection commits again;
+- Cancel does not overwrite the reference;
+- successful valid-original fallback reaches state on its first attempt;
+- corrupt file produces feedback and preserves existing state;
+- processing lock resets on error/success and repeated active processing is ignored;
+- unmount prevents subsequent state updates;
+- HTML Image URL remains alive during canvas draw/toBlob and is released afterwards;
+- prior image validation, safe fallback, byte/dimension limits and exact-one-reference FormData tests remain passing.
+
+Countercheck: the updated test suite run against the previous ZIP's source fails four tests: HTML Image URL lifetime plus the three first-selection tests with the input-retention assertion. Those first-selection countertests intentionally simulate a processing path requiring the input to remain attached; they do not prove that clearing input always invalidates a real iOS File. Tests use mocked decode/canvas and extracted real handler code with state callbacks; they are not mounted React/WebKit/native picker tests. Camera/library-shaped Files exercise the same common handler, not real hardware APIs.
+
+### Validation and scope
+npm ci PASS (540 packages); npm run lint PASS; npm run build PASS; npm test PASS (14/14); npm audit --omit=dev PASS (0 vulnerabilities); npx cap sync ios PASS; python3 scripts/check-ios-privacy.py PASS. ZIP integrity verified. No dependency/version/lockfile changes; package.json only gains test script. Source changes are limited to chooseReference, HTML Image fallback lifetime, tests and this report. Privacy plist, Xcode Build 5/version 1.0, Capacitor 8.4.3, native files, API FormData, billing, safe fallback and 60-second download URL cleanup are unchanged byte-for-byte. No backend is included or edited.
+
+No physical iPhone/iPad repeat test, Xcode compile or archive was performed (Linux environment; no device/Xcode). Next required verification is the same affected physical iPhone: first camera selection, first Photos selection, same image, different image, Cancel, then form submit; confirm whether the intermittent symptom is gone. If it persists, capture which stage fails rather than attributing it to permissions or silently retrying. External Codemagic build-number overrides remain outside this archive.

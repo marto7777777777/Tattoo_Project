@@ -80,10 +80,12 @@ async function decodeImage(file) {
       width: image.naturalWidth,
       height: image.naturalHeight,
       draw: (context, width, height) => context.drawImage(image, 0, 0, width, height),
-      close: () => {},
+      // Keep the backing URL alive until draw/transcode has finished.
+      close: () => URL.revokeObjectURL(objectUrl),
     };
-  } finally {
+  } catch (error) {
     URL.revokeObjectURL(objectUrl);
+    throw error;
   }
 }
 

@@ -113,8 +113,8 @@ function CreateAiTattooPage() {
   }, []);
 
   async function chooseReference(event) {
-    const selected = event.currentTarget.files?.[0];
-    event.currentTarget.value = "";
+    const input = event.currentTarget;
+    const selected = input.files?.[0];
     // Cancel preserves both the reference and the creative brief.
     if (!selected || imageLock.current) return;
     imageLock.current = true;
@@ -123,9 +123,22 @@ function CreateAiTattooPage() {
     try {
       const prepared = await optimizeImageForUpload(selected, { quality: 0.88 });
       if (mounted.current) setFile(prepared);
-    } catch {
-      if (mounted.current) setError("The image could not be prepared. Choose a valid JPG, PNG or WebP image, or try a smaller image.");
+    } catch (imageError) {
+      // Only display known local validation messages, never arbitrary errors.
+      const messages = new Set([
+        "Please select a valid image.",
+        "Only JPG, PNG and WEBP images are supported.",
+        "The selected file could not be decoded as an image.",
+        "The image has invalid dimensions.",
+        "The optimized image is still too large. Please choose a smaller image.",
+      ]);
+      if (mounted.current) setError(messages.has(imageError?.message)
+        ? imageError.message
+        : "The image could not be prepared. Choose a valid JPG, PNG or WebP image, or try a smaller image.");
     } finally {
+      // Keep the picker-owned File attached through asynchronous decoding.
+      // Reset afterwards so the same file can trigger the next change event.
+      input.value = "";
       imageLock.current = false;
       if (mounted.current) setPreparingImage(false);
     }

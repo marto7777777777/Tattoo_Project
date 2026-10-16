@@ -120,3 +120,61 @@ test('existing profile/studio/portfolio/request/moderation settings retain valid
     assert.ok(optimized.size <= 4.5 * 1024 * 1024);
   }
 });
+
+test('HTML Image backing URL remains alive through drawing and is released after processing', async () => {
+  const originalCreate = URL.createObjectURL, originalRevoke = URL.revokeObjectURL;
+  let revoked = false, draws = 0;
+  URL.createObjectURL = () => 'blob:test-lifetime';
+  URL.revokeObjectURL = () => { revoked = true; };
+  globalThis.createImageBitmap = async () => { throw new Error('use HTML fallback'); };
+  globalThis.Image = class {
+    naturalWidth = 4000; naturalHeight = 3000;
+    set src(value) { queueMicrotask(() => this.onload()); }
+  };
+  globalThis.document = {createElement: () => ({
+    getContext: () => ({drawImage(){ assert.equal(revoked,false,'URL revoked before canvas draw'); draws++; }}),
+    toBlob: callback => {assert.equal(revoked,false); callback(new Blob(['encoded'],{type:'image/webp'}));},
+  })};
+  try {
+    const result = await optimizeImageForUpload(new File([jpeg],'camera.jpg',{type:'image/jpeg'}));
+    assert.equal(result.type,'image/webp'); assert.equal(draws,1); assert.equal(revoked,true);
+  } finally {URL.createObjectURL=originalCreate; URL.revokeObjectURL=originalRevoke;}
+});
+
+async function makeChooser(process) {
+  const page = await readFile(new URL('../src/pages/CreateAiTattooPage.jsx',import.meta.url),'utf8');
+  const body = page.slice(page.indexOf('  async function chooseReference'),page.indexOf('  const [file, setFile]'));
+  const updates=[], imageLock={current:false}, mounted={current:true};
+  const choose = new Function('imageLock','mounted','setPreparingImage','setError','setFile','optimizeImageForUpload',`${body}; return chooseReference;`)(
+    imageLock,mounted,v=>updates.push(['busy',v]),v=>updates.push(['error',v]),v=>updates.push(['file',v]),process);
+  return {choose,updates,imageLock,mounted};
+}
+for (const [name,bytes,type] of [['first valid selection',jpeg,'image/jpeg'],['first photo-library selection',png,'image/png'],['first camera-shaped selection',jpeg,'image/jpeg']]) {
+  test(`${name} commits once, preserves input during processing, supports same-file reselection`,async()=>{
+    decoder(); canvas();
+    const state=await makeChooser(async file=>{assert.equal(input.value,'selected'); return optimizeImageForUpload(file);});
+    const input={files:[new File([bytes],'photo',{type})],value:'selected'};
+    await state.choose({currentTarget:input});
+    assert.equal(state.updates.filter(([key])=>key==='file').length,1);
+    assert.equal(input.value,''); assert.equal(state.imageLock.current,false);
+    input.value='selected';
+    await state.choose({currentTarget:input});
+    assert.equal(state.updates.filter(([key])=>key==='file').length,2);
+    await state.choose({currentTarget:{files:[],value:''}});
+    assert.equal(state.updates.filter(([key])=>key==='file').length,2);
+  });
+}
+test('valid optimization fallback reaches state on first attempt; corrupt file errors and unlocks',async()=>{
+  decoder();canvas(true);
+  const state=await makeChooser(file=>optimizeImageForUpload(file));
+  const original=new File([jpeg],'valid.jpg',{type:'image/jpeg'});
+  await state.choose({currentTarget:{files:[original],value:'selected'}});
+  assert.deepEqual(state.updates.filter(([key])=>key==='file'),[['file',original]]);
+  globalThis.createImageBitmap=async()=>{throw new Error('bad');};
+  globalThis.Image=class {set src(value){queueMicrotask(()=>this.onerror());}};
+  await state.choose({currentTarget:{files:[new File(['broken'],'bad.jpg',{type:'image/jpeg'})],value:'selected'}});
+  assert.equal(state.updates.filter(([key])=>key==='file').length,1);
+  assert.ok(state.updates.some(([key,value])=>key==='error' && value));
+  assert.equal(state.imageLock.current,false);
+  assert.deepEqual(state.updates.at(-1),['busy',false]);
+});
