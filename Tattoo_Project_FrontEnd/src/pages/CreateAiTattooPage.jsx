@@ -9,7 +9,8 @@ import {
 import { useCarouselEdges } from "../hooks/useCarouselEdges";
 import { moveCarouselPage } from "../utils/carousel";
 
-import { optimizeImageForUpload } from "../utils/images";
+import { useLanguage } from "../i18n/LanguageContext";
+import { optimizeImageForUpload, validateImageFile } from "../utils/images";
 
 function Selector({
   title,
@@ -91,6 +92,7 @@ function Selector({
 
 function CreateAiTattooPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const paid = searchParams.get("paid") === "1";
 
@@ -122,6 +124,8 @@ function CreateAiTattooPage() {
     setError("");
     try {
       const prepared = await optimizeImageForUpload(selected, { quality: 0.88 });
+      // Never silently commit an empty/malformed processing result.
+      validateImageFile(prepared);
       if (mounted.current) setFile(prepared);
     } catch (imageError) {
       // Only display known local validation messages, never arbitrary errors.
@@ -145,6 +149,13 @@ function CreateAiTattooPage() {
   }
 
   const [file, setFile] = useState(null);
+  const [referencePreview, setReferencePreview] = useState("");
+  useEffect(() => {
+    if (!file) return undefined;
+    const url = URL.createObjectURL(file);
+    setReferencePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -233,6 +244,8 @@ function CreateAiTattooPage() {
               </label>
 
               <label
+                data-i18n-ignore="true"
+                data-image-selection-state={preparingImage ? "processing" : file ? "ready" : error ? "error" : "empty"}
                 className={`ai-reference-upload ${
                   file ? "has-file" : ""
                 }`}
@@ -245,21 +258,23 @@ function CreateAiTattooPage() {
                   aria-label="Choose a reference image or take a photo"
                 />
 
-                <span className="ai-upload-icon">
-                  ＋
-                </span>
+                {referencePreview && file ? (
+                  <img src={referencePreview} alt={t("Selected reference image")}
+                    style={{ width: 72, height: 72, objectFit: "contain", marginBottom: 8 }} />
+                ) : <span className="ai-upload-icon">＋</span>}
 
                 <strong>
-                  {preparingImage ? "Preparing image…" : file
+                  {preparingImage ? t("Preparing image…") : file
                     ? file.name
-                    : "Add a reference image"}
+                    : t("Add a reference image")}
                 </strong>
 
                 <small>
                   {file
-                    ? "Click to replace the selected file"
-                    : "PNG, JPG or WebP · optional"}
+                    ? t("Click to replace the selected file")
+                    : t("PNG, JPG or WebP · optional")}
                 </small>
+                {error && !file && !preparingImage && <small role="alert" style={{ color: "#ffadb7" }}>{t(error)}</small>}
               </label>
 
               <p className="muted">If the camera is unavailable or access is denied, enable camera access in Settings or choose an image from your photo library.</p>
@@ -317,8 +332,8 @@ function CreateAiTattooPage() {
           />
 
           {error && (
-            <p className="error-message">
-              {error}
+            <p className="error-message" data-i18n-ignore="true" role="alert">
+              {t(error)}
             </p>
           )}
 

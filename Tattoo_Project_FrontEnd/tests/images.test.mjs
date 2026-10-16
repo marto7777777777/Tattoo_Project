@@ -90,8 +90,8 @@ test('AI chooser cancel preserves state, errors unlock and unmount prevents stat
   const body = page.slice(page.indexOf('  async function chooseReference'), page.indexOf('  const [file, setFile]'));
   let updates = [], process;
   const imageLock = {current:false}, mounted = {current:true};
-  const make = new Function('imageLock','mounted','setPreparingImage','setError','setFile','optimizeImageForUpload', `${body}; return chooseReference;`);
-  const choose = make(imageLock,mounted, v=>updates.push(['busy',v]), v=>updates.push(['error',v]), v=>updates.push(['file',v]), ()=>process());
+  const make = new Function('imageLock','mounted','setPreparingImage','setError','setFile','optimizeImageForUpload','validateImageFile', `${body}; return chooseReference;`);
+  const choose = make(imageLock,mounted, v=>updates.push(['busy',v]), v=>updates.push(['error',v]), v=>updates.push(['file',v]), ()=>process(),validateImageFile);
   await choose({currentTarget:{files:[],value:'old'}});
   assert.deepEqual(updates, []);
   process = async () => {throw new Error('bad');};
@@ -145,8 +145,8 @@ async function makeChooser(process) {
   const page = await readFile(new URL('../src/pages/CreateAiTattooPage.jsx',import.meta.url),'utf8');
   const body = page.slice(page.indexOf('  async function chooseReference'),page.indexOf('  const [file, setFile]'));
   const updates=[], imageLock={current:false}, mounted={current:true};
-  const choose = new Function('imageLock','mounted','setPreparingImage','setError','setFile','optimizeImageForUpload',`${body}; return chooseReference;`)(
-    imageLock,mounted,v=>updates.push(['busy',v]),v=>updates.push(['error',v]),v=>updates.push(['file',v]),process);
+  const choose = new Function('imageLock','mounted','setPreparingImage','setError','setFile','optimizeImageForUpload','validateImageFile',`${body}; return chooseReference;`)(
+    imageLock,mounted,v=>updates.push(['busy',v]),v=>updates.push(['error',v]),v=>updates.push(['file',v]),process,validateImageFile);
   return {choose,updates,imageLock,mounted};
 }
 for (const [name,bytes,type] of [['first valid selection',jpeg,'image/jpeg'],['first photo-library selection',png,'image/png'],['first camera-shaped selection',jpeg,'image/jpeg']]) {
@@ -175,6 +175,14 @@ test('valid optimization fallback reaches state on first attempt; corrupt file e
   await state.choose({currentTarget:{files:[new File(['broken'],'bad.jpg',{type:'image/jpeg'})],value:'selected'}});
   assert.equal(state.updates.filter(([key])=>key==='file').length,1);
   assert.ok(state.updates.some(([key,value])=>key==='error' && value));
+  assert.equal(state.imageLock.current,false);
+  assert.deepEqual(state.updates.at(-1),['busy',false]);
+});
+test('empty processing result cannot silently leave the first selection empty',async()=>{
+  const state=await makeChooser(async()=>undefined);
+  await state.choose({currentTarget:{files:[new File([jpeg],'photo.jpg',{type:'image/jpeg'})],value:'selected'}});
+  assert.equal(state.updates.filter(([key])=>key==='file').length,0);
+  assert.ok(state.updates.some(([key,value])=>key==='error' && value==='Please select a valid image.'));
   assert.equal(state.imageLock.current,false);
   assert.deepEqual(state.updates.at(-1),['busy',false]);
 });

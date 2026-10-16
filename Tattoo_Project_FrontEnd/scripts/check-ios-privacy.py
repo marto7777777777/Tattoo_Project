@@ -13,6 +13,6 @@ for key in ('NSCameraUsageDescription', 'NSPhotoLibraryUsageDescription'):
 assert 'NSPhotoLibraryAddUsageDescription' not in plist, 'No native Photos write API is used'
 project = (root / 'ios/App/App.xcodeproj/project.pbxproj').read_text()
 assert re.findall(r'INFOPLIST_FILE = ([^;]+);', project) == ['App/Info.plist'] * 2
-assert re.findall(r'CURRENT_PROJECT_VERSION = ([^;]+);', project) == ['5'] * 2
+assert re.findall(r'CURRENT_PROJECT_VERSION = ([^;]+);', project) == ['7'] * 2
 assert re.findall(r'MARKETING_VERSION = ([^;]+);', project) == ['1.0'] * 2
-print('PASS: canonical privacy plist, unique keys, Build 5 / version 1.0')
+print('PASS: canonical privacy plist, unique keys, Build 7 / version 1.0')
