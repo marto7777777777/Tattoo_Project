@@ -189,11 +189,14 @@ function AiTattooProjectPage() {
       const objectUrl =
         URL.createObjectURL(blob);
 
+      // Schedule cleanup even if creating/clicking the link later fails.
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+
       const link =
         document.createElement("a");
 
       const safeTitle =
-        project.title
+        (project?.title || "tattoo")
           .replace(/[^a-z0-9]+/gi, "-")
           .replace(/^-|-$/g, "")
           .toLowerCase() || "tattoo";
@@ -207,7 +210,6 @@ function AiTattooProjectPage() {
       link.click();
       link.remove();
 
-      URL.revokeObjectURL(objectUrl);
     } catch (downloadError) {
       setError(
         downloadError.message ||

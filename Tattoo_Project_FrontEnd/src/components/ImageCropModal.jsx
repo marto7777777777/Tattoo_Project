@@ -1,3 +1,4 @@
+import { validateImageFile } from "../utils/images";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 function clamp(value, min, max) {
@@ -25,6 +26,12 @@ function ImageCropModal({
 
   useEffect(() => {
     if (!file) return undefined;
+    setNaturalSize({ width: 0, height: 0 });
+    try { validateImageFile(file); } catch (error) {
+      setSourceUrl("");
+      setCropError(error.message);
+      return undefined;
+    }
     const url = URL.createObjectURL(file);
     setSourceUrl(url);
     setZoom(1);
@@ -130,6 +137,7 @@ function ImageCropModal({
       canvas.width = outputWidth;
       canvas.height = outputHeight;
       const context = canvas.getContext("2d", { alpha: false });
+      if (!context) throw new Error("Image processing is not available in this browser.");
       const image = new Image();
       image.src = sourceUrl;
       await image.decode();
@@ -191,6 +199,10 @@ function ImageCropModal({
                 src={sourceUrl}
                 alt=""
                 draggable="false"
+                onError={() => {
+                  setNaturalSize({ width: 0, height: 0 });
+                  setCropError("The selected file could not be decoded as an image.");
+                }}
                 onLoad={(event) => setNaturalSize({
                   width: event.currentTarget.naturalWidth,
                   height: event.currentTarget.naturalHeight,

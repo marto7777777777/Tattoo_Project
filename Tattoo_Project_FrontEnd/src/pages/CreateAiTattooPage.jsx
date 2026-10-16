@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createFreeAiProject, createPaidAiDraft } from "../api/aiTattooApi";
 import { purchaseAiProjectPass } from "../services/billingService";
@@ -8,6 +8,8 @@ import {
 } from "../data/tattooOptions";
 import { useCarouselEdges } from "../hooks/useCarouselEdges";
 import { moveCarouselPage } from "../utils/carousel";
+
+import { optimizeImageForUpload } from "../utils/images";
 
 function Selector({
   title,
@@ -102,12 +104,40 @@ function CreateAiTattooPage() {
     description: "",
   });
 
+  const imageLock = useRef(false);
+  const mounted = useRef(true);
+  const [preparingImage, setPreparingImage] = useState(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+
+  async function chooseReference(event) {
+    const selected = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    // Cancel preserves both the reference and the creative brief.
+    if (!selected || imageLock.current) return;
+    imageLock.current = true;
+    setPreparingImage(true);
+    setError("");
+    try {
+      const prepared = await optimizeImageForUpload(selected, { quality: 0.88 });
+      if (mounted.current) setFile(prepared);
+    } catch {
+      if (mounted.current) setError("The image could not be prepared. Choose a valid JPG, PNG or WebP image, or try a smaller image.");
+    } finally {
+      imageLock.current = false;
+      if (mounted.current) setPreparingImage(false);
+    }
+  }
+
   const [file, setFile] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const submit = async (event) => {
     event.preventDefault();
+    if (busy || imageLock.current) return;
     setError("");
 
     if (!form.tattooStyle || !form.placement) {
@@ -197,11 +227,9 @@ function CreateAiTattooPage() {
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
-                  onChange={(event) =>
-                    setFile(
-                      event.target.files?.[0] || null
-                    )
-                  }
+                  onChange={chooseReference}
+                  disabled={busy || preparingImage}
+                  aria-label="Choose a reference image or take a photo"
                 />
 
                 <span className="ai-upload-icon">
@@ -209,7 +237,7 @@ function CreateAiTattooPage() {
                 </span>
 
                 <strong>
-                  {file
+                  {preparingImage ? "Preparing image…" : file
                     ? file.name
                     : "Add a reference image"}
                 </strong>
@@ -220,6 +248,8 @@ function CreateAiTattooPage() {
                     : "PNG, JPG or WebP · optional"}
                 </small>
               </label>
+
+              <p className="muted">If the camera is unavailable or access is denied, enable camera access in Settings or choose an image from your photo library.</p>
 
               <label className="ai-field ai-description-field">
                 <span>Describe the tattoo</span>
@@ -281,7 +311,7 @@ function CreateAiTattooPage() {
 
           <button
             className="primary-button ai-generate-button"
-            disabled={busy}
+            disabled={busy || preparingImage}
           >
             {busy
               ? paid ? "Creating paid draft..." : "Creating your tattoo concept..."

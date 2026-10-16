@@ -1,5 +1,5 @@
 import { apiRequest, requestJson } from "./http";
-import { optimizeImageForUpload } from "../utils/images";
+import { validateImageFile } from "../utils/images";
 
 async function projectForm(values, file) {
   const form = new FormData();
@@ -9,12 +9,9 @@ async function projectForm(values, file) {
   form.append("description", values.description);
 
   if (file) {
-    const optimizedFile = await optimizeImageForUpload(file, {
-      maxWidth: 2048,
-      maxHeight: 2048,
-      quality: 0.88,
-    });
-    form.append("referenceImage", optimizedFile);
+    // CreateAiTattooPage prepares this exact file once before storing it.
+    validateImageFile(file);
+    form.append("referenceImage", file);
   }
 
   return form;

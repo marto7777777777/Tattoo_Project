@@ -22,6 +22,10 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>InkRoute uses the camera so you can take photos for tattoo references and AI projects.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>InkRoute uses your photo library so you can select images for tattoo requests, profiles, portfolios, and AI projects.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

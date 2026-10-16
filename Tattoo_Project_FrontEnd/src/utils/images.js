@@ -32,6 +32,26 @@ function canvasToBlob(canvas, type, quality) {
   });
 }
 
+export function validateImageFile(file) {
+  if (!(file instanceof Blob) || file.size <= 0) {
+    throw new Error("Please select a valid image.");
+  }
+  if (file.type && !SUPPORTED_IMAGE_TYPES.has(file.type.toLowerCase())) {
+    throw new Error("Only JPG, PNG and WEBP images are supported.");
+  }
+}
+
+// Used only for an original-file fallback, after successful image decode.
+// Extensions and declared MIME alone must not authorize this path.
+async function originalImageType(file) {
+  const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
+  if ([137, 80, 78, 71, 13, 10, 26, 10].every((byte, i) => bytes[i] === byte)) return "image/png";
+  if (String.fromCharCode(...bytes.slice(0, 4)) === "RIFF" &&
+      String.fromCharCode(...bytes.slice(8, 12)) === "WEBP") return "image/webp";
+  return "";
+}
+
 async function decodeImage(file) {
   if (typeof createImageBitmap === "function") {
     try {
@@ -73,13 +93,7 @@ async function decodeImage(file) {
  * backend must still validate, strip metadata and re-encode every upload.
  */
 export async function optimizeImageForUpload(file, options = {}) {
-  if (!(file instanceof Blob) || file.size <= 0) {
-    throw new Error("Please select a valid image.");
-  }
-
-  if (file.type && !SUPPORTED_IMAGE_TYPES.has(file.type.toLowerCase())) {
-    throw new Error("Only JPG, PNG and WEBP images are supported.");
-  }
+  validateImageFile(file);
 
   const settings = { ...DEFAULT_IMAGE_OPTIONS, ...options };
   let decoded;
@@ -106,36 +120,47 @@ export async function optimizeImageForUpload(file, options = {}) {
       return file;
     }
 
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d", { alpha: true });
-    if (!context) throw new Error("Image processing is not available in this browser.");
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
-    decoded.draw(context, width, height);
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { alpha: true });
+      if (!context) throw new Error("Image processing is not available in this browser.");
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      decoded.draw(context, width, height);
 
-    let quality = settings.quality;
-    let blob = await canvasToBlob(canvas, "image/webp", quality);
-    while (blob.size > settings.maxBytes && quality > 0.66) {
-      quality -= 0.08;
-      blob = await canvasToBlob(canvas, "image/webp", quality);
+      let quality = settings.quality;
+      let blob = await canvasToBlob(canvas, "image/webp", quality);
+      while (blob.size > settings.maxBytes && quality > 0.66) {
+        quality -= 0.08;
+        blob = await canvasToBlob(canvas, "image/webp", quality);
+      }
+
+      if (!SUPPORTED_IMAGE_TYPES.has(blob.type) || blob.size <= 0) {
+        throw new Error("The browser could not prepare this image.");
+      }
+      if (blob.size > settings.maxBytes) {
+        throw new Error("The optimized image is still too large. Please choose a smaller image.");
+      }
+
+      return new File([blob], replaceExtension(file.name, blob.type === "image/png" ? ".png" : blob.type === "image/jpeg" ? ".jpg" : ".webp"), {
+        type: blob.type,
+        lastModified: file.lastModified || Date.now(),
+      });
+    } catch (optimizationError) {
+      // Decode failure never reaches here. Keep fallback within existing
+      // byte/dimension limits and only for supported, signature-checked images.
+      if (file.size > settings.maxBytes || scale !== 1) throw optimizationError;
+      const type = await originalImageType(file);
+      if (!type || (file.type && file.type.toLowerCase() !== type)) throw optimizationError;
+      if (file.type === type) return file;
+      const extension = type === "image/jpeg" ? ".jpg" : type === "image/png" ? ".png" : ".webp";
+      return new File([file], replaceExtension(file.name, extension), {
+        type,
+        lastModified: file.lastModified || Date.now(),
+      });
     }
-
-    if (blob.size > settings.maxBytes) {
-      throw new Error("The optimized image is still too large. Please choose a smaller image.");
-    }
-
-    return new File([blob], replaceExtension(file.name, ".webp"), {
-      type: "image/webp",
-      lastModified: file.lastModified || Date.now(),
-    });
-  } catch (error) {
-    // Keep older Safari/Android WebViews usable. The backend remains the
-    // authoritative decoder and validator, so falling back does not weaken
-    // security. Oversized originals are never allowed through this fallback.
-    if (file.size <= settings.maxBytes) return file;
-    throw error;
   } finally {
     decoded?.close?.();
   }
