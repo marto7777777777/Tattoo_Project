@@ -186,3 +186,40 @@ test('empty processing result cannot silently leave the first selection empty',a
   assert.equal(state.imageLock.current,false);
   assert.deepEqual(state.updates.at(-1),['busy',false]);
 });
+
+test('WebKit PNG fallback ignores quality but dimension reduction fits limit on first selection',async()=>{
+  let decodes=0, draws=0, encodes=0, closed=0;
+  globalThis.createImageBitmap=async()=>{decodes++;return {width:4032,height:3024,close(){closed++;}};};
+  globalThis.document={createElement:()=>({
+    width:0,height:0,
+    getContext:()=>({drawImage(){draws++;}}),
+    toBlob(callback,type,quality){
+      encodes++;
+      // Model an unsupported WebP encoder returning lossless PNG; quality has no effect.
+      const size=Math.ceil(this.width*this.height*4);
+      callback(new Blob([new Uint8Array(size)],{type:'image/png'}));
+    },
+  })};
+  const state=await makeChooser(file=>optimizeImageForUpload(file,{quality:0.88}));
+  await state.choose({currentTarget:{files:[new File([jpeg],'iphone-photo.jpg',{type:'image/jpeg'})],value:'selected'}});
+  const commits=state.updates.filter(([key])=>key==='file');
+  assert.equal(commits.length,1);
+  assert.ok(commits[0][1].size<=4.5*1024*1024);
+  assert.equal(commits[0][1].type,'image/png');
+  assert.match(commits[0][1].name,/\.png$/);
+  assert.equal(decodes,1);assert.equal(closed,1);
+  assert.ok(draws>1);assert.ok(encodes<=13);
+  assert.equal(state.imageLock.current,false);
+  assert.deepEqual(state.updates.at(-1),['busy',false]);
+});
+
+test('oversized lossy output also fits through bounded resizing, without decoding again',async()=>{
+  let decodes=0;
+  globalThis.createImageBitmap=async()=>{decodes++;return {width:4000,height:3000,close(){}};};
+  globalThis.document={createElement:()=>({
+    width:0,height:0,getContext:()=>({drawImage(){}}),
+    toBlob(callback){callback(new Blob([new Uint8Array(Math.ceil(this.width*this.height*3))],{type:'image/webp'}));},
+  })};
+  const result=await optimizeImageForUpload(new File([jpeg],'large.jpg',{type:'image/jpeg'}));
+  assert.ok(result.size<=4.5*1024*1024);assert.equal(decodes,1);
+});

@@ -139,6 +139,22 @@ export async function optimizeImageForUpload(file, options = {}) {
         blob = await canvasToBlob(canvas, "image/webp", quality);
       }
 
+      // Some WebViews encode PNG when WebP is requested. PNG ignores quality,
+      // and even supported lossy encoders can exceed the byte limit. Reduce
+      // dimensions as a bounded last step, redrawing the decoded original.
+      for (let attempt = 0; blob.size > settings.maxBytes && attempt < 8; attempt += 1) {
+        const factor = Math.min(0.85, Math.max(0.5, Math.sqrt(settings.maxBytes / blob.size) * 0.9));
+        const nextWidth = Math.max(1, Math.floor(canvas.width * factor));
+        const nextHeight = Math.max(1, Math.floor(canvas.height * factor));
+        if (nextWidth === canvas.width && nextHeight === canvas.height) break;
+        canvas.width = nextWidth;
+        canvas.height = nextHeight;
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+        decoded.draw(context, nextWidth, nextHeight);
+        blob = await canvasToBlob(canvas, "image/webp", quality);
+      }
+
       if (!SUPPORTED_IMAGE_TYPES.has(blob.type) || blob.size <= 0) {
         throw new Error("The browser could not prepare this image.");
       }
